@@ -1,17 +1,10 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 const plugin = require('tailwindcss/plugin');
 
-// TODO: 개발하면서 spacing 추가
-const spacing = [...[...Array(1001).keys()]];
-
-const convertSpacing = spacing =>
-  [...new Set(spacing)].reduce((res, space) => {
-    res[space] = `${space}px`;
-    return res;
-  }, {});
-const convertSpacingWithoutPx = spacing =>
-  [...new Set(spacing)].reduce((res, space) => {
-    res[space] = `${space}`;
+const spacing = [...Array(2001).keys()];
+const convertSpacing = (spacing, withoutPx) =>
+  spacing.reduce((res, space) => {
+    res[space] = withoutPx ? `${space}` : `${space}px`;
     return res;
   }, {});
 
@@ -27,7 +20,6 @@ module.exports = {
 
     extend: {
       colors: {
-        ...defaultTheme.colors,
         primary: {
           20: '#51565D',
           50: '#F5FF83',
@@ -62,7 +54,7 @@ module.exports = {
       },
 
       fontFamily: {
-        sans: ['Pretendard Variable', ...defaultTheme.fontFamily.sans],
+        sans: ['Pretendard Variable', '-apple-system', 'Helvetica', 'Arial', 'sans-serif'],
       },
 
       fontSize: {
@@ -122,7 +114,7 @@ module.exports = {
 
       zIndex: theme => ({
         ...defaultTheme.zIndex,
-        ...convertSpacingWithoutPx([...Array(101).keys()]),
+        ...convertSpacing([...Array(101).keys()], true),
       }),
     },
   },
@@ -138,45 +130,7 @@ module.exports = {
   },
   plugins: [
     plugin(function ({ addBase, addComponents, addUtilities, theme }) {
-      addBase({});
-      addComponents({
-        '.flex-center': {
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        '.absolute-center': {
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        },
-        '.absolute-center-x': {
-          left: '50%',
-          transform: 'translateX(-50%)',
-        },
-        '.absolute-center-y': {
-          top: '50%',
-          transform: 'translateY(-50%)',
-        },
-
-        '.clickable': {
-          cursor: 'pointer',
-        },
-        '.non-clickable': {
-          cursor: 'not-allowed',
-          userSelect: 'none',
-        },
-
-        '.transition-color': {
-          transitionProperty: 'background-color,border-color,color,fill,stroke',
-          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-          transitionDuration: '150ms',
-        },
-
-        '.0x-address': {
-          fontVariantLigatures: 'no-contextual',
-        },
-
+      addBase({
         '.font-r-11': {
           fontFamily: 'Pretendard Variable',
           fontSize: '11px',
@@ -317,8 +271,46 @@ module.exports = {
           letterSpacing: '-1px',
         },
       });
+      addComponents({});
 
       addUtilities({
+        '.flex-center': {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        '.absolute-center': {
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        },
+        '.absolute-center-x': {
+          left: '50%',
+          transform: 'translateX(-50%)',
+        },
+        '.absolute-center-y': {
+          top: '50%',
+          transform: 'translateY(-50%)',
+        },
+
+        '.clickable': {
+          cursor: 'pointer',
+        },
+        '.non-clickable': {
+          cursor: 'not-allowed',
+          userSelect: 'none',
+        },
+
+        '.transition-color': {
+          transitionProperty: 'background-color,border-color,color,fill,stroke',
+          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+          transitionDuration: '150ms',
+        },
+
+        '.address': {
+          fontVariantLigatures: 'no-contextual',
+        },
+
         '.scrollbar-hide': {
           '-ms-overflow-style': 'none',
           'scrollbar-width': 'none',
