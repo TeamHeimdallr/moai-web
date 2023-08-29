@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-svgr/client" />
 
 import 'twin.macro';
 
@@ -19,4 +20,9 @@ declare module 'react' {
     tw?: string;
     css?: CSSInterpolation;
   }
+}
+
+declare module '*.svg' {
+  const content: React.FC<React.SVGProps<SVGElement>>;
+  export default content;
 }

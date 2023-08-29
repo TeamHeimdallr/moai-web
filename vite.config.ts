@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig, splitVendorChunkPlugin } from 'vite';
 import { compression } from 'vite-plugin-compression2';
-import { splitVendorChunkPlugin } from 'vite';
+import svgr from 'vite-plugin-svgr';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { resolve } from 'path';
 
 export default defineConfig({
   server: {
@@ -25,6 +25,7 @@ export default defineConfig({
   },
 
   plugins: [
+    svgr(),
     splitVendorChunkPlugin(),
     tsconfigPaths(),
     react({

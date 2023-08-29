@@ -8,7 +8,8 @@
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:storybook/recommended"
   ],
   "overrides": [],
   "parser": "@typescript-eslint/parser",
@@ -22,12 +23,10 @@
   "rules": {
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-
     "@typescript-eslint/no-unused-vars": [
       "warn",
       { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }
     ],
-
     "react/react-in-jsx-scope": "off"
   },
   "settings": {
