@@ -5,7 +5,7 @@ import tw from 'twin.macro';
 import * as Icons from '~/assets/icons';
 
 const meta = {
-  title: 'Components/Icons',
+  title: 'Components/Assets/Icons',
   tags: ['autodocs'],
   argTypes: {
     color: { control: { type: 'color' } },

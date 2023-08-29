@@ -5,7 +5,7 @@ import { IconFavorites } from '~/assets/icons';
 import { ButtonIconLarge } from '.';
 
 const meta = {
-  title: 'Components/Button/ButtonIconLarge',
+  title: 'Components/Buttons/ButtonIconLarge',
   component: ButtonIconLarge,
   tags: ['autodocs'],
   argTypes: {

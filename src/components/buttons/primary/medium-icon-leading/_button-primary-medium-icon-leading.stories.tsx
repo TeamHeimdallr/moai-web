@@ -5,7 +5,7 @@ import { IconSearch } from '~/assets/icons';
 import { ButtonPrimaryMediumIconLeading } from '.';
 
 const meta = {
-  title: 'Components/Button/ButtonPrimaryMediumIconLeading',
+  title: 'Components/Buttons/ButtonPrimaryMediumIconLeading',
   component: ButtonPrimaryMediumIconLeading,
   tags: ['autodocs'],
   argTypes: {

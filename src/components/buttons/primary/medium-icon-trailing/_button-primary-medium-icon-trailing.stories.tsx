@@ -5,7 +5,7 @@ import { IconNext } from '~/assets/icons';
 import { ButtonPrimaryMediumIconTrailing } from '.';
 
 const meta = {
-  title: 'Components/Button/ButtonPrimaryMediumIconTrailing',
+  title: 'Components/Buttons/ButtonPrimaryMediumIconTrailing',
   component: ButtonPrimaryMediumIconTrailing,
   tags: ['autodocs'],
   argTypes: {

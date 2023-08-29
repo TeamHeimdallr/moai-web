@@ -5,7 +5,7 @@ import tw from 'twin.macro';
 import { ReactComponent as LogoText } from '~/assets/logos/logo-text.svg';
 
 const meta = {
-  title: 'Components/Logos',
+  title: 'Components/Assets/Logos',
   tags: ['autodocs'],
   argTypes: {
     color: { control: { type: 'color' } },
