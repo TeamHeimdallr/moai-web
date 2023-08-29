@@ -1,4 +1,6 @@
 import type { Preview } from '@storybook/react';
+import { themes } from '@storybook/theming';
+
 import '../src/styles/index.css';
 
 const preview: Preview = {
@@ -9,6 +11,22 @@ const preview: Preview = {
         color: /(background|color)$/i,
         date: /Date$/,
       },
+    },
+    docs: {
+      theme: themes.dark,
+    },
+    backgrounds: {
+      default: 'dark',
+      values: [
+        {
+          name: 'light',
+          value: '#fff',
+        },
+        {
+          name: 'dark',
+          value: '#1C2033',
+        },
+      ],
     },
   },
 };
