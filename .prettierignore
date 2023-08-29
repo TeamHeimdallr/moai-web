@@ -1,0 +1,5 @@
+**/node_modules
+**/.github
+**/.yarn
+**/build/
+**/public/mockServiceWorker.js*
