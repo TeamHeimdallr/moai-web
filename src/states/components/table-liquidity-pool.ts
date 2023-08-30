@@ -1,12 +1,10 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
+import { SortingState } from '~/types/components/tables';
+
 import { logger } from '../middleware/logger';
 
-interface SortingState {
-  key: string;
-  order: 'asc' | 'desc';
-}
 export interface TableLiquidityState {
   sorting: SortingState | undefined;
 

@@ -37,7 +37,7 @@ export const Table = <T extends object>({
     <StyledTable>
       <Header>
         {table.getHeaderGroups().map(headerGroup => (
-          <HTR key={headerGroup.id}>
+          <HeaderInnerWrapper key={headerGroup.id}>
             {headerGroup.headers.map(header => (
               <Fragment key={header.id}>
                 {header.isPlaceholder
@@ -45,7 +45,7 @@ export const Table = <T extends object>({
                   : flexRender(header.column.columnDef.header, header.getContext())}
               </Fragment>
             ))}
-          </HTR>
+          </HeaderInnerWrapper>
         ))}
       </Header>
       <Divider />
@@ -54,13 +54,13 @@ export const Table = <T extends object>({
       ) : (
         <Body>
           {table.getRowModel().rows.map(row => (
-            <BTR key={row.id} rounded={!hasMore && !isLoading}>
+            <BodyInnerWrapper key={row.id} rounded={!hasMore && !isLoading}>
               {row.getVisibleCells().map(cell => (
                 <Fragment key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </Fragment>
               ))}
-            </BTR>
+            </BodyInnerWrapper>
           ))}
           {hasMore && (
             <More onClick={handleMoreClick}>
@@ -86,14 +86,14 @@ const Body = tw.div`
   flex flex-col items-center font-r-16 text-neutral-100
 `;
 
-const HTR = tw.div`
+const HeaderInnerWrapper = tw.div`
   flex w-full h-full gap-16
 `;
 
 interface BTRProps {
   rounded?: boolean;
 }
-const BTR = styled.div<BTRProps>(({ rounded }) => [
+const BodyInnerWrapper = styled.div<BTRProps>(({ rounded }) => [
   tw`
     flex w-full h-full px-24 py-20 clickable gap-16
     hover:(bg-neutral-15)

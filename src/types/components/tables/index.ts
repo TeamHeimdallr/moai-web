@@ -7,3 +7,8 @@ export interface LiquidityPoolTable {
   volumn: ReactNode;
   apr: ReactNode;
 }
+
+export interface SortingState {
+  key: string;
+  order: 'asc' | 'desc';
+}

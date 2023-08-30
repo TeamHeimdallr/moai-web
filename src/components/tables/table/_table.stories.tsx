@@ -6,7 +6,7 @@ import { LiquidityPoolTable } from '~/types/components/tables';
 import { Table } from '.';
 
 const meta = {
-  title: 'Components/Table/Table',
+  title: 'Components/Tables/Table',
   component: Table,
   tags: ['autodocs'],
   argTypes: {},
