@@ -20,7 +20,7 @@ interface WrapperProps {
 }
 const Wrapper = styled.button<WrapperProps>(({ selected }) => [
   tw`
-    p-6 flex-center rounded-full clickable
+    p-6 flex-center rounded-full clickable transition-colors
 
     bg-transparent
     hover:(bg-neutral-10)
@@ -35,6 +35,9 @@ const Wrapper = styled.button<WrapperProps>(({ selected }) => [
 
     & path {
       fill: ${COLOR.NEUTRAL[60]};
+      transition-property: background-color, border-color, color, fill, stroke;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 150ms;
     }
 
     &:hover {

@@ -45,7 +45,7 @@ interface WrapperProps {
   hasIcon?: boolean;
 }
 const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, hasIcon }) => [
-  tw`flex-shrink-0 gap-8 inline-flex-center bg-neutral-20 text-neutral-100 basis-auto`,
+  tw`flex-shrink-0 gap-8 transition-colors inline-flex-center bg-neutral-20 text-neutral-100 basis-auto`,
 
   selected && tw`border-solid bg-primary-20 border-1 border-primary-60 hover:(bg-primary-20)`,
 
