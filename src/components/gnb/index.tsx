@@ -1,6 +1,6 @@
 import { useWeb3Modal, Web3Button } from '@web3modal/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import tw, { styled } from 'twin.macro';
+import tw, { css, styled } from 'twin.macro';
 
 import logo from '~/assets/logos/logo-text.svg';
 import { Notification } from '~/components/notification';
@@ -74,10 +74,15 @@ export const Gnb = () => {
   );
 };
 
-const Wrapper = tw.div`
-  fixed top-0 left-0 w-full bg-transparent py-16 px-20
+const Wrapper = styled.div(() => [
+  tw`
+  fixed top-0 left-0 w-full py-16 px-20
   flex items-center justify-between
-`;
+  `,
+  css`
+    background: rgba(28, 32, 51, 0.01);
+  `,
+]);
 
 const LogoWrapper = tw.img`
   flex-center object-cover h-28
