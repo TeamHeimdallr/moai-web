@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import tw from 'twin.macro';
 
 import {
-  BgHeader,
+  BgMain,
   TokenDAI,
   TokenMNT,
   TokenMOAI,
@@ -24,7 +24,7 @@ type Story = StoryObj<typeof meta>;
 export const _Images: Story = {
   render: () => (
     <Wrapper>
-      <ImageBg title="bg-header" src={BgHeader} />
+      <ImageBg title="bg-header" src={BgMain} />
       <ImageWrapper>
         <Image title="token DAI" src={TokenDAI} />
         <Image title="token mnt" src={TokenMNT} />

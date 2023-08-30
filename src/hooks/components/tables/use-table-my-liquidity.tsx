@@ -2,20 +2,20 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode, useMemo } from 'react';
 
 import {
-  TableHeaderAPR,
   TableHeaderAssets,
   TableHeaderComposition,
+  TableHeaderMyAPR,
   TableHeaderSortable,
 } from '~/components/tables';
 import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
 import { TOKEN } from '~/constants';
-import { useTableLiquidityStore } from '~/states/components/table-liquidity-pool';
-import { LiquidityPoolTable } from '~/types/components/tables';
+import { useTableMyLiquidityStore } from '~/states/components/table-my-liquidity';
+import { MyLiquidityTable } from '~/types/components/tables';
 import { formatNumber } from '~/utils/number';
 import { sumPoolValues } from '~/utils/token';
 
-export const useTableLiquidityPool = () => {
-  const { sorting, setSorting } = useTableLiquidityStore();
+export const useTableMyLiquidity = () => {
+  const { sorting, setSorting } = useTableMyLiquidityStore();
 
   // TODO: fetch from contract api
   const data = [
@@ -29,25 +29,9 @@ export const useTableLiquidityPool = () => {
         [TOKEN.MOAI]: 429000,
         [TOKEN.WETH]: 148008,
       } as Record<TOKEN, number>,
-      volume: 693194,
+      balance: 693194,
       apr: 0.79,
-      isNew: true,
-    },
-    {
-      assets: [TOKEN.WETH, TOKEN.USDC, TOKEN.USDT],
-      composition: {
-        [TOKEN.WETH]: 50,
-        [TOKEN.USDC]: 30,
-        [TOKEN.USDT]: 20,
-      } as Record<TOKEN, number>,
-      pool: {
-        [TOKEN.MNT]: 10209000,
-        [TOKEN.DAI]: 3480800,
-        [TOKEN.USDC]: 6304000,
-      } as Record<TOKEN, number>,
-      volume: 639120,
-      apr: 0.87,
-      isNew: true,
+      isNew: false,
     },
   ];
 
@@ -57,15 +41,18 @@ export const useTableLiquidityPool = () => {
         ? sumPoolValues(a.pool) - sumPoolValues(b.pool)
         : sumPoolValues(b.pool) - sumPoolValues(a.pool);
     if (sorting?.key === 'VOLUMN')
-      return sorting.order === 'asc' ? a.volume - b.volume : b.volume - a.volume;
+      return sorting.order === 'asc' ? a.balance - b.balance : b.balance - a.balance;
     return 0;
   });
 
-  const tableData = useMemo<LiquidityPoolTable[]>(
+  const tableData = useMemo<MyLiquidityTable[]>(
     () =>
       sortedData.map(d => ({
         assets: <TableColumnTokenIcon tokens={d.assets} />,
         composition: <TableColumnToken tokens={d.composition} isNew={d.isNew} />,
+        balance: (
+          <TableColumn value={`$${formatNumber(d.balance, 2)}`} width={160} align="flex-end" />
+        ),
         poolValue: (
           <TableColumn
             value={`$${formatNumber(sumPoolValues(d.pool), 2)}`}
@@ -73,15 +60,12 @@ export const useTableLiquidityPool = () => {
             align="flex-end"
           />
         ),
-        volumn: (
-          <TableColumn value={`$${formatNumber(d.volume, 2)}`} width={160} align="flex-end" />
-        ),
         apr: <TableColumn value={`${d.apr}%`} width={160} align="flex-end" />,
       })),
     [sortedData]
   );
 
-  const columns = useMemo<ColumnDef<LiquidityPoolTable, ReactNode>[]>(
+  const columns = useMemo<ColumnDef<MyLiquidityTable, ReactNode>[]>(
     () => [
       {
         header: () => <TableHeaderAssets />,
@@ -96,6 +80,18 @@ export const useTableLiquidityPool = () => {
       {
         header: () => (
           <TableHeaderSortable
+            sortKey="BALANCE"
+            label="My Balance"
+            sorting={sorting}
+            setSorting={setSorting}
+          />
+        ),
+        cell: row => row.renderValue(),
+        accessorKey: 'balance',
+      },
+      {
+        header: () => (
+          <TableHeaderSortable
             sortKey="POOL_VALUE"
             label="Pool value"
             sorting={sorting}
@@ -106,19 +102,7 @@ export const useTableLiquidityPool = () => {
         accessorKey: 'poolValue',
       },
       {
-        header: () => (
-          <TableHeaderSortable
-            sortKey="VOLUMN"
-            label="Volume (24h)"
-            sorting={sorting}
-            setSorting={setSorting}
-          />
-        ),
-        cell: row => row.renderValue(),
-        accessorKey: 'volumn',
-      },
-      {
-        header: () => <TableHeaderAPR />,
+        header: () => <TableHeaderMyAPR />,
         cell: row => row.renderValue(),
         accessorKey: 'apr',
       },

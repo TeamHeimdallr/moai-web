@@ -18,12 +18,12 @@ export const TOKEN_IMAGE_MAPPER: Record<TOKEN, string> = {
   MOAI: TokenMOAI,
 };
 
-// TODO: static token price
-export const TOKEN_PRICE_MAPPER: Record<TOKEN, number> = {
+// TODO: static token usd
+export const TOKEN_USD_MAPPER: Record<TOKEN, number> = {
   DAI: 1,
   USDC: 1,
   USDT: 1,
   MNT: 0.4417,
   WETH: 1718.39,
-  MOAI: 100,
+  MOAI: 142.23,
 };
