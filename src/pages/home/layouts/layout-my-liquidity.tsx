@@ -12,7 +12,11 @@ export const MyLiquidityLayout = () => {
       <TitleWrapper>
         <Title>My liquidity in Moai pools</Title>
       </TitleWrapper>
-      <Table<MyLiquidityTable> data={data} columns={columns} />
+      <Table<MyLiquidityTable>
+        data={data}
+        columns={columns}
+        emptyText="You have no unsktaked liquidity on Mantle"
+      />
     </Wrapper>
   );
 };

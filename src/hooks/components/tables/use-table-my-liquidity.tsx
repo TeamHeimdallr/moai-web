@@ -18,7 +18,8 @@ export const useTableMyLiquidity = () => {
   const { sorting, setSorting } = useTableMyLiquidityStore();
 
   // TODO: fetch from contract api
-  const data = [
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data: any[] = [
     {
       assets: [TOKEN.MOAI, TOKEN.WETH],
       composition: {
@@ -35,7 +36,7 @@ export const useTableMyLiquidity = () => {
     },
   ];
 
-  const sortedData = data.sort((a, b) => {
+  const sortedData = data?.sort((a, b) => {
     if (sorting?.key === 'POOL_VALUE')
       return sorting.order === 'asc'
         ? sumPoolValues(a.pool) - sumPoolValues(b.pool)
@@ -47,7 +48,7 @@ export const useTableMyLiquidity = () => {
 
   const tableData = useMemo<MyLiquidityTable[]>(
     () =>
-      sortedData.map(d => ({
+      sortedData?.map(d => ({
         assets: <TableColumnTokenIcon tokens={d.assets} />,
         composition: <TableColumnToken tokens={d.composition} isNew={d.isNew} />,
         balance: (

@@ -42,17 +42,18 @@ export const POLYGONSCAN_POLYGON_MUMBAI_API = 'https://api-testnet.polygonscan.c
 /**
  * @description CHAIN ID / CONTRACT ADDRESS
  */
-type Chain = 'ETH' | 'GOERLI';
+type Chain = 'MANTLE' | 'MANTLE_TESTNET';
 type Contract = 'CONTRACT_NAME';
 
 export const CHAIN_ID: Record<Chain, number> = {
-  ETH: 1,
-  GOERLI: 5,
+  MANTLE: 5000,
+  MANTLE_TESTNET: 5001,
 };
 export const CONTRACT_ADDRESS: Record<Contract, Address> = {
   CONTRACT_NAME: IS_MAINNET ? '0x' : '0x',
 };
-export const DEFAULT_CHAIN_ID = IS_MAINNET ? CHAIN_ID.ETH : CHAIN_ID.GOERLI;
+export const DEFAULT_CHAIN_ID = IS_MAINNET ? CHAIN_ID.MANTLE : CHAIN_ID.MANTLE_TESTNET;
+export const MANTLE_CHAIN_ID = IS_MAINNET ? CHAIN_ID.MANTLE : CHAIN_ID.MANTLE_TESTNET;
 
 /**
  * @description RESPONSIVE BREAKPOINT

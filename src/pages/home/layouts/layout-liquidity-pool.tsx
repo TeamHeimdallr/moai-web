@@ -15,7 +15,11 @@ export const LiquidityPoolLayout = () => {
         <Title>Liquidity pools</Title>
         <ButtonPrimaryMediumIconTrailing text="Create a pool" icon={<IconNext />} disabled />
       </TitleWrapper>
-      <Table<LiquidityPoolTable> data={data} columns={columns} />
+      <Table<LiquidityPoolTable>
+        data={data}
+        columns={columns}
+        emptyText="No liquidity pools on Mantle"
+      />
     </Wrapper>
   );
 };
