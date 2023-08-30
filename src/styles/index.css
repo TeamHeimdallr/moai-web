@@ -46,3 +46,7 @@ button {
   border: none;
   outline: none;
 }
+
+td {
+  padding: 0px !important;
+}

@@ -2,7 +2,7 @@ import { HTMLAttributes, ReactNode } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { TOKEN, TOKEN_IMAGE_MAPPER } from '~/constants/constant-token';
+import { TOKEN, TOKEN_IMAGE_MAPPER } from '~/constants';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: TOKEN;

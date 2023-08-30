@@ -4,7 +4,7 @@ import * as yup from 'yup';
 
 import { IconDown } from '~/assets/icons';
 import { Token } from '~/components/token';
-import { TOKEN } from '~/constants/constant-token';
+import { TOKEN } from '~/constants';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { InputNumber } from '.';
@@ -42,6 +42,7 @@ const Template = () => {
       handleChange={setInputValue}
       token={<Token token={TOKEN.MNT} icon={<IconDown />} />}
       handleTokenClick={() => console.log('token clicked')}
+      maxButton
       slider
       sliderActive
     />
