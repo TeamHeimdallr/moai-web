@@ -4,12 +4,11 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 interface Props extends HTMLAttributes<HTMLDivElement> {
   selected: boolean;
-  select?: () => void;
 }
 
-export const Toggle = ({ selected, select, ...rest }: Props) => {
+export const Toggle = ({ selected, ...rest }: Props) => {
   return (
-    <Wrapper selected={selected} onClick={select} {...rest}>
+    <Wrapper selected={selected} {...rest}>
       <Circle selected={selected} />
     </Wrapper>
   );
