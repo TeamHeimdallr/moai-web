@@ -19,11 +19,11 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   token?: ReactNode;
   handleTokenClick?: () => void;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  schema?: any;
-
   slider?: boolean;
   sliderActive?: boolean;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  schema?: any;
 }
 
 interface FormState {
@@ -142,7 +142,7 @@ interface WrapperProps {
 }
 const Wrapper = styled.div<WrapperProps>(({ focused, error }) => [
   tw`
-    w-404 flex flex-col gap-12 pt-16 pb-12 pl-12 pr-20 transition-colors
+    w-404 flex flex-col gap-12 pt-15 pb-11 pl-11 pr-19 transition-colors
     border-transparent border-solid bg-neutral-15 rounded-8 border-1
     hover:(border-neutral-80)
   `,
@@ -168,7 +168,7 @@ const InputWrapper = tw.div`
 `;
 
 const Input = tw.input`
-  w-full flex flex-1 bg-transparent font-m-24 px-0 border-none caret-primary-50 text-right
+  w-full flex flex-1 bg-transparent font-m-24 leading-30 px-0 border-none caret-primary-50 text-right
   text-neutral-100 placeholder-neutral-60
 `;
 
@@ -177,7 +177,7 @@ const BalanceOuterWrapper = tw.div`
 `;
 
 const BalanceWrapper = tw.div`
-  flex gap-6 py-3 text-neutral-80 font-r-14 items-center
+  flex gap-6 h-28 text-neutral-80 font-r-14 items-center
 `;
 const BalanceLabel = tw.div`
   text-neutral-60
