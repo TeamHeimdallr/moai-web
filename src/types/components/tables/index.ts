@@ -8,6 +8,14 @@ export interface LiquidityPoolTable {
   apr: ReactNode;
 }
 
+export interface MyLiquidityTable {
+  assets: ReactNode;
+  composition: ReactNode;
+  balance: ReactNode;
+  poolValue: ReactNode;
+  apr: ReactNode;
+}
+
 export interface SortingState {
   key: string;
   order: 'asc' | 'desc';

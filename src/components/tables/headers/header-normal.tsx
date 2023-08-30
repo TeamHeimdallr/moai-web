@@ -53,3 +53,5 @@ export const TableHeaderComposition = () => (
 );
 
 export const TableHeaderAPR = () => <TableHeader label="APR" width={160} align="flex-end" />;
+
+export const TableHeaderMyAPR = () => <TableHeader label="My APR" width={160} align="flex-end" />;

@@ -7,7 +7,7 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
-import { TOKEN, TOKEN_PRICE_MAPPER } from '~/constants';
+import { TOKEN, TOKEN_USD_MAPPER } from '~/constants';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 import { formatNumber } from '~/utils/number';
 
@@ -54,7 +54,7 @@ export const InputNumber = ({
   const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
   const value = watch(HOOK_FORM_KEY.NUMBER_INPUT_VALUE);
 
-  const tokenPrice = (value || 0) * TOKEN_PRICE_MAPPER[TOKEN.MNT];
+  const tokenUSD = (value || 0) * TOKEN_USD_MAPPER[TOKEN.MNT];
   // TODO: get balance from wallet
   const currentBalance = balance || 1234.12;
 
@@ -109,7 +109,7 @@ export const InputNumber = ({
                 {maxButton && (
                   <ButtonPrimarySmall text="Max" onClick={() => onValueChange(currentBalance)} />
                 )}
-                <TokenPriceValue>${formatNumber(tokenPrice ?? 0, 2)}</TokenPriceValue>
+                <TokenUSDValue>${formatNumber(tokenUSD ?? 0, 2)}</TokenUSDValue>
               </BalanceWrapper>
               {slider && (
                 <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>
@@ -187,7 +187,7 @@ const BalanceLabel = tw.div`
 const BalanceValue = tw.div`
   text-neutral-60
 `;
-const TokenPriceValue = tw.div`
+const TokenUSDValue = tw.div`
   text-neutral-60 flex-1 text-right
 `;
 
