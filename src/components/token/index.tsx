@@ -30,7 +30,7 @@ export const Token = ({
   ...rest
 }: Props) => {
   return (
-    <Wrapper type={type} selected={selected} clickable={clickable} hasIcon={!!icon} {...rest}>
+    <Wrapper type={type} selected={selected} clickable={clickable} hasImage={!!image} {...rest}>
       {image && <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />}
       <TextWrapper>
         <TokenText>{token}</TokenText>
@@ -45,19 +45,19 @@ interface WrapperProps {
   type?: 'large' | 'small';
   selected?: boolean;
   clickable?: boolean;
-  hasIcon?: boolean;
+  hasImage?: boolean;
 }
-const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, hasIcon }) => [
+const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, hasImage }) => [
   tw`flex-shrink-0 gap-8 transition-colors inline-flex-center bg-neutral-20 text-neutral-100 basis-auto`,
 
   selected && tw`border-solid bg-primary-20 border-1 border-primary-60 hover:(bg-primary-20)`,
 
   type === 'large' && tw`py-8 px-14 rounded-10`,
 
-  type === 'large' && hasIcon && !selected && tw`pl-10 pr-14`,
-  type === 'large' && hasIcon && selected && tw`py-7 pl-9 pr-13`,
-  type === 'large' && !hasIcon && !selected && tw`px-14`,
-  type === 'large' && !hasIcon && selected && tw`py-7 px-13`,
+  type === 'large' && hasImage && !selected && tw`pl-10 pr-14`,
+  type === 'large' && hasImage && selected && tw`py-7 pl-9 pr-13`,
+  type === 'large' && !hasImage && !selected && tw`px-14`,
+  type === 'large' && !hasImage && selected && tw`py-7 px-13`,
 
   type === 'small' && tw`px-8 py-4 rounded-6`,
   type === 'small' && selected && tw`py-3 px-7`,
