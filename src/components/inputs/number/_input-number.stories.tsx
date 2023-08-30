@@ -42,6 +42,7 @@ const Template = () => {
       handleChange={setInputValue}
       token={<Token token={TOKEN.MNT} icon={<IconDown />} />}
       handleTokenClick={() => console.log('token clicked')}
+      maxButton
       slider
       sliderActive
     />

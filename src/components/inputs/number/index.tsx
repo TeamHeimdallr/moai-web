@@ -19,6 +19,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   token?: ReactNode;
   handleTokenClick?: () => void;
 
+  maxButton?: boolean;
   slider?: boolean;
   sliderActive?: boolean;
 
@@ -35,6 +36,7 @@ export const InputNumber = ({
   balance,
   placeholder = '0',
   schema,
+  maxButton,
   slider,
   sliderActive,
   handleChange,
@@ -104,7 +106,7 @@ export const InputNumber = ({
               <BalanceWrapper>
                 <BalanceLabel>Balance</BalanceLabel>
                 <BalanceValue>{formatNumber(currentBalance ?? 0, 2)}</BalanceValue>
-                {slider && sliderActive && (
+                {maxButton && (
                   <ButtonPrimarySmall text="Max" onClick={() => onValueChange(currentBalance)} />
                 )}
                 <TokenPriceValue>${formatNumber(tokenPrice ?? 0, 2)}</TokenPriceValue>
