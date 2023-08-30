@@ -1,7 +1,5 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { IconDown } from '~/assets/icons';
@@ -27,10 +25,6 @@ export const Normal: Story = {
   render: () => <Template />,
 };
 
-export const HookForm: Story = {
-  render: () => <Template />,
-};
-
 const Template = () => {
   const [_inputValue, setInputValue] = useState<number>();
 
@@ -48,6 +42,8 @@ const Template = () => {
       handleChange={setInputValue}
       token={<Token token={TOKEN.MNT} icon={<IconDown />} />}
       handleTokenClick={() => console.log('token clicked')}
+      slider
+      sliderActive
     />
   );
 };
@@ -56,5 +52,22 @@ export const SelectableToken: Story = {
   args: {
     token: <Token token={TOKEN.MNT} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
+  },
+};
+
+export const Slider: Story = {
+  args: {
+    token: <Token token={TOKEN.MNT} icon={<IconDown />} />,
+    handleTokenClick: () => console.log('token clicked'),
+    slider: true,
+  },
+};
+
+export const SliderActive: Story = {
+  args: {
+    token: <Token token={TOKEN.MNT} icon={<IconDown />} />,
+    handleTokenClick: () => console.log('token clicked'),
+    slider: true,
+    sliderActive: true,
   },
 };

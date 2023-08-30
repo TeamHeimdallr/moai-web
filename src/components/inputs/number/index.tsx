@@ -2,19 +2,18 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { InputHTMLAttributes, ReactNode, useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
+import ReactSlider from 'react-slider';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
+import { ButtonPrimarySmall } from '~/components/buttons/primary';
 import { TOKEN, TOKEN_PRICE_MAPPER } from '~/constants/constant-token';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 import { formatNumber } from '~/utils/number';
 
-interface Props
-  extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    'type' | 'value' | 'defaultValue' | 'onChange' | 'onBlur'
-  > {
-  balance?: number | string;
+type OmitType = 'type' | 'value' | 'defaultValue' | 'onChange' | 'onBlur';
+interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
+  balance?: number;
   handleChange?: (value?: number) => void;
 
   token?: ReactNode;
@@ -22,6 +21,9 @@ interface Props
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema?: any;
+
+  slider?: boolean;
+  sliderActive?: boolean;
 }
 
 interface FormState {
@@ -33,6 +35,8 @@ export const InputNumber = ({
   balance,
   placeholder = '0',
   schema,
+  slider,
+  sliderActive,
   handleChange,
   handleTokenClick,
   ...rest
@@ -71,6 +75,7 @@ export const InputNumber = ({
           onChange(value);
           handleChange?.(value);
         };
+
         return (
           <Wrapper focused={focused} error={!!errorMessage}>
             <TokenInputWrapper>
@@ -99,8 +104,29 @@ export const InputNumber = ({
               <BalanceWrapper>
                 <BalanceLabel>Balance</BalanceLabel>
                 <BalanceValue>{formatNumber(currentBalance ?? 0, 2)}</BalanceValue>
+                {slider && sliderActive && (
+                  <ButtonPrimarySmall text="Max" onClick={() => onValueChange(currentBalance)} />
+                )}
                 <TokenPriceValue>${formatNumber(tokenPrice ?? 0, 2)}</TokenPriceValue>
               </BalanceWrapper>
+              {slider && (
+                <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>
+                  <ReactSlider
+                    disabled={!sliderActive}
+                    className="slider"
+                    thumbClassName="thumb"
+                    trackClassName="track"
+                    min={0}
+                    max={currentBalance}
+                    value={value || 0}
+                    step={0.01}
+                    onChange={onValueChange}
+                    renderThumb={({ key, ...props }) => (
+                      <div className={sliderActive ? 'thumb' : ''} key={key} {...props} />
+                    )}
+                  />
+                </SliderWrapper>
+              )}
               {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             </BalanceOuterWrapper>
           </Wrapper>
@@ -151,7 +177,7 @@ const BalanceOuterWrapper = tw.div`
 `;
 
 const BalanceWrapper = tw.div`
-  flex gap-6 py-3 text-neutral-80 font-r-14
+  flex gap-6 py-3 text-neutral-80 font-r-14 items-center
 `;
 const BalanceLabel = tw.div`
   text-neutral-60
@@ -166,3 +192,88 @@ const TokenPriceValue = tw.div`
 const ErrorMessage = tw.div`
   w-full text-right font-r-14 text-red-50
 `;
+
+interface SliderWrapperProps {
+  sliderActive?: boolean;
+  error?: boolean;
+}
+const SliderWrapper = styled.div<SliderWrapperProps>(({ sliderActive, error }) => [
+  tw`flex items-center w-full h-16`,
+  css`
+    & .slider {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background-color: ${COLOR.NEUTRAL[30]};
+
+      & .track {
+        height: 100%;
+      }
+
+      & .track.track-0 {
+        background-color: ${COLOR.GREEN[50]};
+        border-radius: 2px;
+
+        transition-property: left, right;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
+
+      & .thumb {
+        transition-property: left, right;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
+    }
+  `,
+  sliderActive &&
+    css`
+      & .slider {
+        & .track.track-0 {
+          background-color: ${COLOR.PRIMARY[50]};
+          border-radius: 2px;
+
+          transition: none;
+        }
+
+        & .thumb {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background-color: ${COLOR.NEUTRAL[100]};
+          transform: translate(1px, -6px);
+
+          transition: none;
+        }
+      }
+    `,
+
+  error &&
+    css`
+      & .slider {
+        & .track.track-0 {
+          background-color: ${COLOR.RED[50]};
+          border-radius: 2px;
+
+          transition: none;
+        }
+
+        & .thumb {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background-color: ${COLOR.NEUTRAL[100]};
+          transform: translate(1px, -6px);
+
+          transition: none;
+        }
+      }
+    `,
+  !sliderActive &&
+    error &&
+    css`
+      & .slider .thumb {
+        display: none;
+      }
+    `,
+]);

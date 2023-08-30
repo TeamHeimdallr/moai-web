@@ -5362,6 +5362,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-slider@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@types/react-slider@npm:1.3.1"
+  dependencies:
+    "@types/react": "*"
+  checksum: 29805a32c377d9021beb20a8d7b55b2f4276b896ccd507baea1a544e2925afcdaa435c144d1fd9c6fc0695e0978ffb1087f1e6d5252c7b482fb74b95b311c8b0
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*, @types/react@npm:>=16":
   version: 18.2.0
   resolution: "@types/react@npm:18.2.0"
@@ -13318,6 +13327,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-slider@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "react-slider@npm:2.0.6"
+  dependencies:
+    prop-types: ^15.8.1
+  peerDependencies:
+    react: ^16 || ^17 || ^18
+  checksum: 452bdb57dc6b7c9f476d43019298f19b7ee89432d690d8b6f6054a01dc05513e6dfc62885b9347635d0494611961bcde5bdb9c2ec4bbf605e4e1d6eaca8c3921
+  languageName: node
+  linkType: hard
+
 "react-style-singleton@npm:^2.2.1":
   version: 2.2.1
   resolution: "react-style-singleton@npm:2.2.1"
@@ -13358,6 +13378,7 @@ __metadata:
     "@types/node": ^20.4.4
     "@types/react": ^18.2.16
     "@types/react-dom": ^18.2.7
+    "@types/react-slider": ^1.3.1
     "@types/tinycolor2": ^1.4.3
     "@typescript-eslint/eslint-plugin": ^6.2.0
     "@typescript-eslint/parser": ^6.2.0
@@ -13390,6 +13411,7 @@ __metadata:
     react-number-format: ^5.2.2
     react-responsive: ^9.0.2
     react-router-dom: ^6.14.2
+    react-slider: ^2.0.6
     rollup-plugin-visualizer: ^5.9.2
     storybook: ^7.4.0
     tailwindcss: ^3.3.3
