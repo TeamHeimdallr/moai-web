@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { IconDown } from '~/assets/icons';
-import { TOKEN } from '~/constants/constant-token';
+import { TOKEN } from '~/constants';
 
 import { Token } from '.';
 

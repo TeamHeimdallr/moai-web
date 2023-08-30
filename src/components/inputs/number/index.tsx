@@ -7,7 +7,7 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
-import { TOKEN, TOKEN_PRICE_MAPPER } from '~/constants/constant-token';
+import { TOKEN, TOKEN_PRICE_MAPPER } from '~/constants';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 import { formatNumber } from '~/utils/number';
 
