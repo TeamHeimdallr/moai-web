@@ -1,8 +1,13 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import * as yup from 'yup';
 
 import { IconDown } from '~/assets/icons';
 import { Token } from '~/components/token';
 import { TOKEN } from '~/constants/constant-token';
+import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { InputNumber } from '.';
 
@@ -19,9 +24,32 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Normal: Story = {
-  args: {
-    token: <Token token={TOKEN.MNT} percentage={80} clickable={false} />,
-  },
+  render: () => <Template />,
+};
+
+export const HookForm: Story = {
+  render: () => <Template />,
+};
+
+const Template = () => {
+  const [_inputValue, setInputValue] = useState<number>();
+
+  const balance = 1234.12;
+  const schema = yup.object({
+    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
+      .number()
+      .min(0)
+      .max(balance || 0, 'Exceeds wallet balance'),
+  });
+
+  return (
+    <InputNumber
+      schema={schema}
+      handleChange={setInputValue}
+      token={<Token token={TOKEN.MNT} icon={<IconDown />} />}
+      handleTokenClick={() => console.log('token clicked')}
+    />
+  );
 };
 
 export const SelectableToken: Story = {
