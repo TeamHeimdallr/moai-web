@@ -1,38 +1,41 @@
-import { HTMLAttributes } from 'react';
-import tw, { styled } from 'twin.macro';
+import { HTMLAttributes, ReactNode } from 'react';
+import tw, { css, styled } from 'twin.macro';
+
+import { COLOR } from '~/assets/colors';
+import { TOKEN, TOKEN_IMAGE_MAPPER } from '~/constants/constant-token';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  token: string;
+  token: TOKEN;
 
   percentage?: number;
 
-  icon?: string;
-  iconTitle?: string;
+  image?: boolean;
+  icon?: ReactNode;
 
   type?: 'large' | 'small';
 
   clickable?: boolean;
 
   selected?: boolean;
-  onSelect?: () => void;
 }
 
 export const Token = ({
   token,
   percentage,
+  image = true,
   icon,
-  iconTitle,
   type = 'large',
   selected,
   clickable = true,
   ...rest
 }: Props) => {
   return (
-    <Wrapper type={type} selected={selected} clickable={clickable} hasIcon={!!icon} {...rest}>
-      {icon && <IconWrapper src={icon} title={iconTitle} type={type} />}
+    <Wrapper type={type} selected={selected} clickable={clickable} hasImage={!!image} {...rest}>
+      {image && <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />}
       <TextWrapper>
         <TokenText>{token}</TokenText>
         {percentage && <Percentage>{percentage}%</Percentage>}
+        {icon && <IconWrapper>{icon}</IconWrapper>}
       </TextWrapper>
     </Wrapper>
   );
@@ -42,19 +45,19 @@ interface WrapperProps {
   type?: 'large' | 'small';
   selected?: boolean;
   clickable?: boolean;
-  hasIcon?: boolean;
+  hasImage?: boolean;
 }
-const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, hasIcon }) => [
-  tw`flex-shrink-0 gap-8 inline-flex-center bg-neutral-20 text-neutral-100 basis-auto`,
+const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, hasImage }) => [
+  tw`flex-shrink-0 gap-8 transition-colors inline-flex-center bg-neutral-20 text-neutral-100 basis-auto`,
 
   selected && tw`border-solid bg-primary-20 border-1 border-primary-60 hover:(bg-primary-20)`,
 
   type === 'large' && tw`py-8 px-14 rounded-10`,
 
-  type === 'large' && hasIcon && !selected && tw`pl-10 pr-14`,
-  type === 'large' && hasIcon && selected && tw`py-7 pl-9 pr-13`,
-  type === 'large' && !hasIcon && !selected && tw`px-14`,
-  type === 'large' && !hasIcon && selected && tw`py-7 px-13`,
+  type === 'large' && hasImage && !selected && tw`pl-10 pr-14`,
+  type === 'large' && hasImage && selected && tw`py-7 pl-9 pr-13`,
+  type === 'large' && !hasImage && !selected && tw`px-14`,
+  type === 'large' && !hasImage && selected && tw`py-7 px-13`,
 
   type === 'small' && tw`px-8 py-4 rounded-6`,
   type === 'small' && selected && tw`py-3 px-7`,
@@ -74,11 +77,23 @@ const Percentage = tw.div`
   font-r-12 text-neutral-80
 `;
 
-interface IconWrapperProps {
+interface TokenImageWrapperProps {
   type?: 'large' | 'small';
 }
-const IconWrapper = styled.img<IconWrapperProps>(({ type }) => [
+const TokenImageWrapper = styled.img<TokenImageWrapperProps>(({ type }) => [
   tw`flex-shrink-0 flex-center`,
   type === 'large' && tw`w-24 h-24`,
   type === 'small' && tw`w-20 h-20`,
+]);
+
+const IconWrapper = styled.div(() => [
+  tw`w-20 h-20 p-2`,
+  css`
+    & svg {
+      width: 16px;
+      height: 16px;
+
+      fill: ${COLOR.NEUTRAL[60]};
+    }
+  `,
 ]);

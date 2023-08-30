@@ -26,7 +26,7 @@ interface EmailInputProps {
 }
 const EmailInput = styled.input<EmailInputProps>(({ error }) => [
   tw`
-    w-full rounded-6 h-48 px-11 py-7 bg-neutral-15 text-neutral-100 font-r-16 border-1 border-solid border-transparent
+    w-full rounded-6 h-48 px-11 py-7 bg-neutral-15 text-neutral-100 font-r-16 border-1 border-solid border-transparent transition-colors
     caret-primary-50
 
     hover:(border-neutral-80)

@@ -50,7 +50,7 @@ interface WrapperProps {
 }
 const Wrapper = styled.button<WrapperProps>(({ isLoading }) => [
   tw`
-    gap-6 pr-16 pl-8 py-9 inline-flex-center rounded-10 clickable font-m-14 text-primary-60 relative bg-neutral-10
+    gap-6 pr-16 pl-8 py-9 inline-flex-center rounded-10 clickable font-m-14 text-primary-60 relative bg-neutral-10 transition-colors
 
     hover:(bg-primary-50 text-neutral-0)
 
@@ -71,6 +71,9 @@ const Wrapper = styled.button<WrapperProps>(({ isLoading }) => [
       height: 20px;
 
       fill: ${COLOR.PRIMARY[60]};
+      transition-property: background-color, border-color, color, fill, stroke;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 150ms;
     }
 
     &:hover .icon svg {

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { TokenMNT } from '~/assets/images';
+import { IconDown } from '~/assets/icons';
+import { TOKEN } from '~/constants/constant-token';
 
 import { Token } from '.';
 
@@ -18,55 +19,57 @@ type Story = StoryObj<typeof meta>;
 
 export const Normal: Story = {
   args: {
-    token: 'MNT',
-    icon: TokenMNT,
+    token: TOKEN.MNT,
   },
 };
 
-export const NoIcon: Story = {
+export const NoImage: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
+    image: false,
   },
 };
 
 export const Small: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     type: 'small',
-    icon: TokenMNT,
   },
 };
 
 export const Large: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     type: 'large',
-    icon: TokenMNT,
   },
 };
 
 export const WithRaio: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     percentage: 80,
-    icon: TokenMNT,
   },
 };
 
 export const Selected: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     percentage: 80,
-    icon: TokenMNT,
     selected: true,
   },
 };
 
 export const NonClickable: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     percentage: 80,
-    icon: TokenMNT,
     clickable: false,
+  },
+};
+
+export const WithIcon: Story = {
+  args: {
+    token: TOKEN.MNT,
+    icon: <IconDown />,
   },
 };
