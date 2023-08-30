@@ -311,6 +311,11 @@ module.exports = {
           transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
           transitionDuration: '150ms',
         },
+        '.transition-toggle': {
+          transitionProperty: 'width,height,left,right,top',
+          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+          transitionDuration: '150ms',
+        },
 
         '.transition-toggle': {
           transitionProperty: 'width, height, left, top',
@@ -328,6 +333,10 @@ module.exports = {
           '&::-webkit-scrollbar': {
             display: 'none',
           },
+        },
+
+        '.drop-shadow-default': {
+          filter: 'drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10))',
         },
       });
     }),
