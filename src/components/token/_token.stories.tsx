@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { IconDown } from '~/assets/icons';
-import { TokenMNT } from '~/assets/images';
+import { TOKEN } from '~/constants/constant-token';
 
 import { Token } from '.';
 
@@ -10,7 +10,6 @@ const meta = {
   component: Token,
   tags: ['autodocs'],
   argTypes: {
-    tokenImage: { control: { disable: true } },
     icon: { control: { disable: true } },
   },
 } satisfies Meta<typeof Token>;
@@ -20,63 +19,57 @@ type Story = StoryObj<typeof meta>;
 
 export const Normal: Story = {
   args: {
-    token: 'MNT',
-    tokenImage: TokenMNT,
+    token: TOKEN.MNT,
   },
 };
 
-export const NoIcon: Story = {
+export const NoImage: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
+    image: false,
   },
 };
 
 export const Small: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     type: 'small',
-    tokenImage: TokenMNT,
   },
 };
 
 export const Large: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     type: 'large',
-    tokenImage: TokenMNT,
   },
 };
 
 export const WithRaio: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     percentage: 80,
-    tokenImage: TokenMNT,
   },
 };
 
 export const Selected: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     percentage: 80,
-    tokenImage: TokenMNT,
     selected: true,
   },
 };
 
 export const NonClickable: Story = {
   args: {
-    token: 'MNT',
+    token: TOKEN.MNT,
     percentage: 80,
-    tokenImage: TokenMNT,
     clickable: false,
   },
 };
 
 export const WithIcon: Story = {
   args: {
-    token: 'MNT',
-    tokenImage: TokenMNT,
+    token: TOKEN.MNT,
     icon: <IconDown />,
   },
 };

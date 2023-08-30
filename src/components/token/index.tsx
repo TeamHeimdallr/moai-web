@@ -2,13 +2,14 @@ import { HTMLAttributes, ReactNode } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
+import { TOKEN, TOKEN_IMAGE_MAPPER } from '~/constants/constant-token';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  token: string;
+  token: TOKEN;
 
   percentage?: number;
 
-  tokenImage?: string;
+  image?: boolean;
   icon?: ReactNode;
 
   type?: 'large' | 'small';
@@ -16,13 +17,12 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   clickable?: boolean;
 
   selected?: boolean;
-  onSelect?: () => void;
 }
 
 export const Token = ({
   token,
   percentage,
-  tokenImage,
+  image = true,
   icon,
   type = 'large',
   selected,
@@ -31,7 +31,7 @@ export const Token = ({
 }: Props) => {
   return (
     <Wrapper type={type} selected={selected} clickable={clickable} hasIcon={!!icon} {...rest}>
-      {tokenImage && <TokenImageWrapper src={tokenImage} title={token} type={type} />}
+      {image && <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />}
       <TextWrapper>
         <TokenText>{token}</TokenText>
         {percentage && <Percentage>{percentage}%</Percentage>}
