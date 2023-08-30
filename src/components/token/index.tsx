@@ -1,13 +1,15 @@
-import { HTMLAttributes } from 'react';
-import tw, { styled } from 'twin.macro';
+import { HTMLAttributes, ReactNode } from 'react';
+import tw, { css, styled } from 'twin.macro';
+
+import { COLOR } from '~/assets/colors';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
 
   percentage?: number;
 
-  icon?: string;
-  iconTitle?: string;
+  tokenImage?: string;
+  icon?: ReactNode;
 
   type?: 'large' | 'small';
 
@@ -20,8 +22,8 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 export const Token = ({
   token,
   percentage,
+  tokenImage,
   icon,
-  iconTitle,
   type = 'large',
   selected,
   clickable = true,
@@ -29,10 +31,11 @@ export const Token = ({
 }: Props) => {
   return (
     <Wrapper type={type} selected={selected} clickable={clickable} hasIcon={!!icon} {...rest}>
-      {icon && <IconWrapper src={icon} title={iconTitle} type={type} />}
+      {tokenImage && <TokenImageWrapper src={tokenImage} title={token} type={type} />}
       <TextWrapper>
         <TokenText>{token}</TokenText>
         {percentage && <Percentage>{percentage}%</Percentage>}
+        {icon && <IconWrapper>{icon}</IconWrapper>}
       </TextWrapper>
     </Wrapper>
   );
@@ -74,11 +77,23 @@ const Percentage = tw.div`
   font-r-12 text-neutral-80
 `;
 
-interface IconWrapperProps {
+interface TokenImageWrapperProps {
   type?: 'large' | 'small';
 }
-const IconWrapper = styled.img<IconWrapperProps>(({ type }) => [
+const TokenImageWrapper = styled.img<TokenImageWrapperProps>(({ type }) => [
   tw`flex-shrink-0 flex-center`,
   type === 'large' && tw`w-24 h-24`,
   type === 'small' && tw`w-20 h-20`,
+]);
+
+const IconWrapper = styled.div(() => [
+  tw`w-20 h-20 p-2`,
+  css`
+    & svg {
+      width: 16px;
+      height: 16px;
+
+      fill: ${COLOR.NEUTRAL[60]};
+    }
+  `,
 ]);
