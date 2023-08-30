@@ -50,7 +50,7 @@ interface WrapperProps {
 }
 const Wrapper = styled.button<WrapperProps>(({ isLoading }) => [
   tw`
-    gap-6 pr-8 pl-16 py-9 flex-center rounded-10 clickable font-m-14 text-primary-60 relative bg-neutral-10
+    gap-6 pr-8 pl-16 py-9 inline-flex-center rounded-10 clickable font-m-14 text-primary-60 relative bg-neutral-10
 
     hover:(bg-primary-50 text-neutral-0)
 

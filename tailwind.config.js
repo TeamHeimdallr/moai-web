@@ -274,6 +274,11 @@ module.exports = {
       addComponents({});
 
       addUtilities({
+        '.inline-flex-center': {
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
         '.flex-center': {
           display: 'flex',
           alignItems: 'center',
