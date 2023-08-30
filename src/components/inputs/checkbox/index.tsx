@@ -25,9 +25,7 @@ interface DivProps {
 }
 
 const Wrapper = styled.div<DivProps>(({ selected }) => [
-  tw`
-    w-24 h-24 rounded-6 clickable flex-center
-  `,
+  tw`w-24 h-24 rounded-6 clickable flex-center transition-color`,
   selected
     ? tw`bg-primary-50`
     : tw`bg-neutral-0 border-1 border-solid border-neutral-60 hover:(border-1 border-solid border-neutral-80 bg-neutral-5)`,

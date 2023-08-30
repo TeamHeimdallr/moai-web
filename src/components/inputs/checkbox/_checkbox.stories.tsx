@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Checkbox } from '.';
 
 const meta = {
-  title: 'Components/Checkbox/Checkbox',
+  title: 'Components/Inputs/Checkbox',
   component: Checkbox,
   tags: ['autodocs'],
 } satisfies Meta<typeof Checkbox>;
@@ -11,8 +11,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const _Checkbox: Story = {
+export const _Normal: Story = {
   args: {
     selected: false,
+  },
+};
+
+export const _Selected: Story = {
+  args: {
+    selected: true,
   },
 };

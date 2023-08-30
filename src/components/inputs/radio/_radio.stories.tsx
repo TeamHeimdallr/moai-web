@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Radio } from '.';
 
 const meta = {
-  title: 'Components/Radio/Radio',
+  title: 'Components/Inputs/Radio',
   component: Radio,
   tags: ['autodocs'],
 } satisfies Meta<typeof Radio>;
@@ -11,8 +11,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const _Radio: Story = {
+export const _Normal: Story = {
   args: {
     selected: false,
+  },
+};
+
+export const _Selected: Story = {
+  args: {
+    selected: true,
   },
 };

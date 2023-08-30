@@ -18,17 +18,13 @@ interface DivProps {
 }
 
 const Wrapper = styled.div<DivProps>(({ selected }) => [
-  tw`
-    rounded-12 clickable flex-center w-20 h-20
-  `,
+  tw`w-20 h-20 rounded-12 clickable flex-center transition-color`,
   selected
     ? tw`border-transparent bg-primary-50`
     : tw`bg-neutral-0 border-1 border-solid border-neutral-60 hover:(border-1 border-solid border-neutral-80 bg-neutral-5)`,
 ]);
 
 const Circle = styled.div<DivProps>(({ selected }) => [
-  tw`
-    rounded-6 w-12 h-12 border-0
-  `,
-  selected && tw`bg-neutral-0 visible`,
+  tw`w-12 h-12 border-0 rounded-6 transition-color`,
+  selected && tw`visible bg-neutral-0`,
 ]);

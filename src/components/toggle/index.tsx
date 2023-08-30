@@ -19,9 +19,7 @@ interface DivProps {
 }
 
 const Wrapper = styled.div<DivProps>(({ selected }) => [
-  tw`
-    relative w-40 h-24 rounded-12 clickable transition-color 
-  `,
+  tw`relative w-40 h-24  rounded-12 clickable transition-color`,
   selected ? tw`bg-primary-50` : tw`bg-neutral-20 hover:bg-neutral-40`,
   !selected &&
     css`
@@ -32,8 +30,6 @@ const Wrapper = styled.div<DivProps>(({ selected }) => [
 ]);
 
 const Circle = styled.div<DivProps>(({ selected }) => [
-  tw`
-    absolute rounded-full drop-shadow-default transition-toggle transition-color
-  `,
-  selected ? tw`top-3 w-19 h-19 bg-neutral-100 left-18` : tw`top-4 w-16 h-16 bg-neutral-80 left-4`,
+  tw`absolute rounded-full  drop-shadow-default transition-toggle transition-color`,
+  selected ? tw`top-3 w-19 h-19 bg-neutral-100 left-18` : tw`w-16 h-16 top-4 bg-neutral-80 left-4`,
 ]);
