@@ -13,7 +13,7 @@ import {
 } from '~/assets/images';
 
 const meta = {
-  title: 'Components/Images',
+  title: 'Components/Assets/Images',
   tags: ['autodocs'],
   argTypes: {},
 } satisfies Meta;

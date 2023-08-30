@@ -3,7 +3,7 @@ import { type StateCreator, type StoreMutatorIdentifier } from 'zustand';
 type Logger = <
   T,
   Mps extends [StoreMutatorIdentifier, unknown][] = [],
-  Mcs extends [StoreMutatorIdentifier, unknown][] = []
+  Mcs extends [StoreMutatorIdentifier, unknown][] = [],
 >(
   f: StateCreator<T, Mps, Mcs>,
   name?: string
