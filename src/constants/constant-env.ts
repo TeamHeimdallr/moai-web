@@ -34,12 +34,8 @@ export const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJE
 export const PROVIDER_WSS_ENDPOINT = import.meta.env.VITE_PROVIDER_WSS_ENDPOINT;
 export const PROVIDER_HTTP_ENDPOINT = import.meta.env.VITE_PROVIDER_HTTP_ENDPOINT;
 
-export const ALCHEMY_POLYGON_MUMBAI_API_KEY = import.meta.env.VITE_ALCHEMY_POLYGON_MUMBAI_API_KEY;
-export const ALCHEMY_POLYGON_MUMBAI_API = 'https://polygon-mumbai.g.alchemy.com';
-
-export const POLYGONSCAN_POLYGON_MUMBAI_API_KEY = import.meta.env
-  .VITE_POLYGONSCAN_POLYGON_MUMBAI_API_KEY;
-export const POLYGONSCAN_POLYGON_MUMBAI_API = 'https://api-testnet.polygonscan.com';
+export const ALCHEMY_ETHEREUM_GOERLI_API_KEY = import.meta.env.VITE_ALCHEMY_ETHEREUM_GOERLI_API_KEY;
+export const ALCHEMY_ETHEREUM_GOERLI_API = 'https://eth-goerli.g.alchemy.com';
 
 /**
  * @description CHAIN ID / CONTRACT ADDRESS

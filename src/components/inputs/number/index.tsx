@@ -12,7 +12,7 @@ import { HOOK_FORM_KEY } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-type OmitType = 'type' | 'value' | 'defaultValue' | 'onChange' | 'onBlur';
+type OmitType = 'type' | 'onChange' | 'onBlur';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   balance?: number;
   handleChange?: (value?: number) => void;
@@ -20,6 +20,11 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   token?: ReactNode;
   tokenName?: TOKEN;
   handleTokenClick?: () => void;
+
+  value?: number;
+  defaultValue?: number;
+
+  focus?: boolean;
 
   maxButton?: boolean;
   slider?: boolean;
@@ -42,6 +47,7 @@ export const InputNumber = ({
   maxButton,
   slider,
   sliderActive,
+  focus = true,
   handleChange,
   handleTokenClick,
   ...rest
@@ -59,13 +65,12 @@ export const InputNumber = ({
 
   const tokenUSD = (value || 0) * TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI];
   // TODO: get balance from wallet
-  const currentBalance = balance || 1234.12;
+  const currentBalance = balance || 0;
 
   useEffect(() => {
+    if (!focus) return;
     setFocus(value !== undefined);
-  }, [value]);
-
-  useEffect(() => {}, []);
+  }, [value, focus]);
 
   const CustomInput = useCallback(({ ...rest }: Props) => <Input {...rest} />, []);
   return (
@@ -82,7 +87,7 @@ export const InputNumber = ({
         };
 
         return (
-          <Wrapper focused={focused} error={!!errorMessage}>
+          <Wrapper focus={focus} focused={focused} error={!!errorMessage}>
             <TokenInputWrapper>
               <TokenWrapper onClick={handleTokenClick}>{token}</TokenWrapper>
               <InputWrapper>
@@ -98,7 +103,9 @@ export const InputNumber = ({
                   value={value}
                   onValueChange={values => onValueChange(values.floatValue)}
                   customInput={CustomInput}
-                  onFocus={() => setFocus(true)}
+                  onFocus={() => {
+                    if (focus) setFocus(true);
+                  }}
                   onBlur={() => {
                     onBlur();
                     setFocus(false);
@@ -112,7 +119,11 @@ export const InputNumber = ({
                 <BalanceLabel>Balance</BalanceLabel>
                 <BalanceValue>{formatNumber(currentBalance ?? 0, 2)}</BalanceValue>
                 {maxButton && (
-                  <ButtonPrimarySmall text="Max" onClick={() => onValueChange(currentBalance)} />
+                  <ButtonPrimarySmall
+                    text="Max"
+                    onClick={() => onValueChange(currentBalance)}
+                    style={{ width: 'auto' }}
+                  />
                 )}
                 <TokenUSDValue>${formatNumber(tokenUSD ?? 0, 2)}</TokenUSDValue>
               </BalanceWrapper>
@@ -144,15 +155,13 @@ export const InputNumber = ({
 };
 
 interface WrapperProps {
+  focus?: boolean;
   focused?: boolean;
   error?: boolean;
 }
-const Wrapper = styled.div<WrapperProps>(({ focused, error }) => [
-  tw`
-    w-404 flex flex-col gap-12 pt-15 pb-11 pl-11 pr-19 transition-colors
-    border-transparent border-solid bg-neutral-15 rounded-8 border-1
-    hover:(border-neutral-80)
-  `,
+const Wrapper = styled.div<WrapperProps>(({ focus, focused, error }) => [
+  tw`flex flex-col gap-12 transition-colors border-transparent border-solid w-404 pt-15 pb-11 pl-11 pr-19 bg-neutral-15 rounded-8 border-1`,
+  focus && tw`hover:(border-neutral-80)`,
   focused && tw`border-primary-50 hover:(border-primary-50)`,
   error && tw`border-red-50 hover:(border-red-50)`,
   error &&

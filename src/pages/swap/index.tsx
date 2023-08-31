@@ -6,6 +6,9 @@ import { Gnb } from '~/components/gnb';
 import { MANTLE_CHAIN_ID } from '~/constants';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
 
+import { Balances } from './layouts/balances';
+import { SwapInputs } from './layouts/swap-inputs';
+
 const SwapPage = () => {
   const { needSwitchNetwork } = useSwitchNetwork(MANTLE_CHAIN_ID);
 
@@ -17,7 +20,14 @@ const SwapPage = () => {
           <Gnb />
         </GnbWrapper>
         <InnerWrapper>
-          <ContentWrapper></ContentWrapper>
+          <ContentWrapper>
+            <Title>Swap</Title>
+
+            <SwapWrapper>
+              <Balances />
+              <SwapInputs />
+            </SwapWrapper>
+          </ContentWrapper>
         </InnerWrapper>
         <Footer />
       </Wrapper>
@@ -28,22 +38,31 @@ const SwapPage = () => {
 const Wrapper = tw.div`
   relative flex flex-col justify-between w-full h-full
 `;
-const InnerWrapper = tw.div`
-  flex flex-col gap-40 pb-120
-`;
 
 const GnbWrapper = tw.div`
-  w-full h-80 absolute top-0 left-0 flex-center z-10
+  w-full h-80 flex-center
+`;
+
+const InnerWrapper = tw.div`
+  flex flex-col gap-40 pt-40 pb-120
 `;
 
 const ContentWrapper = styled.div(() => [
-  tw`flex flex-col items-center gap-80`,
+  tw`flex flex-col items-center gap-40`,
   css`
     & > div {
       width: 100%;
-      max-width: 1440px;
+      max-width: 786px;
     }
   `,
 ]);
+
+const Title = tw.div`
+  font-b-24 h-40 flex items-center text-neutral-100
+`;
+
+const SwapWrapper = tw.div`
+  flex gap-40 items-start
+`;
 
 export default SwapPage;

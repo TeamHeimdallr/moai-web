@@ -59,7 +59,7 @@ const Wrapper = styled.button<WrapperProps>(({ isLoading, buttonType }) => [
 
     hover:(bg-primary-50 text-neutral-0)
 
-    disabled:(bg-neutral-5 text-neutral-40)
+    disabled:(bg-neutral-5 text-neutral-40 non-clickable)
     disabled:hover:(bg-neutral-5 text-neutral-40)
   `,
   isLoading &&
@@ -75,7 +75,7 @@ const Wrapper = styled.button<WrapperProps>(({ isLoading, buttonType }) => [
     tw`
       py-3 bg-transparent border-solid px-25 border-1 border-primary-60 text-primary-60
 
-      disabled:(border-none px-26 py-4)
+      disabled:(border-none px-26 py-4 non-clickable)
     `,
   buttonType === 'outlined' &&
     isLoading &&
