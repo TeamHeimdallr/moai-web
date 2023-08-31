@@ -26,6 +26,13 @@ export const AddLpInput = ({ tokenList }: Props) => {
   const [inputValue2, setInputValue2] = useState<number>(0);
   const [inputValue3, setInputValue3] = useState<number>(0);
 
+  const getInputValue = (idx: number) => {
+    if (idx === 0) return inputValue1;
+    else if (idx === 1) return inputValue2;
+    else if (idx === 2) return inputValue3;
+    return 0;
+  };
+
   const [opened, open] = useState(false);
   const toggle = () => open(!opened);
 
@@ -81,6 +88,7 @@ export const AddLpInput = ({ tokenList }: Props) => {
               tokenName={token.name}
               balance={token.balance}
               handleChange={val => handleChange(idx, val)}
+              slider={getInputValue(idx) > 0}
             />
           ))}
         <Total>
@@ -123,7 +131,7 @@ const InnerWrapper = tw.div`
 `;
 
 const IconWrapper = tw.div`
-  clickable w-32 h-32 items-center justify-center flex
+  clickable w-32 h-32 items-center justify-center flex relative
 `;
 
 const SlippageWrapper = tw.div`
