@@ -18,7 +18,17 @@ const Web3Provider = ({ children }: Props) => {
     <QueryClientProvider client={queryClient}>
       <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>
       <Suspense fallback={<></>}>
-        <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+        <Web3Modal
+          projectId={projectId}
+          ethereumClient={ethereumClient}
+          themeVariables={{
+            '--w3m-accent-color': '#23263A',
+            '--w3m-font-family': 'Pretendard Variable',
+            '--w3m-text-medium-regular-size': '14px',
+            '--w3m-text-medium-regular-weight': '500',
+            '--w3m-text-medium-regular-line-height': '22px',
+          }}
+        />
       </Suspense>
     </QueryClientProvider>
   );
