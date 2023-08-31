@@ -1,4 +1,4 @@
-import { useWeb3Modal, Web3Button } from '@web3modal/react';
+import { useWeb3Modal } from '@web3modal/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
@@ -6,6 +6,7 @@ import logo from '~/assets/logos/logo-text.svg';
 import { Notification } from '~/components/notification';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 
+import { AccountProfile } from '../account-profile';
 import { ButtonPrimaryMedium } from '../buttons/primary';
 
 const MENU = [
@@ -43,7 +44,7 @@ export const Gnb = () => {
 
   return (
     <Wrapper>
-      <LogoWrapper src={logo} alt="Nox Finance" onClick={() => navigate('/')} />
+      <LogoWrapper src={logo} alt="Moai" onClick={() => navigate('/')} />
       <ContentWrapper>
         {MENU.map(({ id, text, path, disabled }) => (
           <MenuWrapper
@@ -58,8 +59,7 @@ export const Gnb = () => {
         {isConnected ? (
           <ConnectedButton>
             <Notification />
-            <Web3Button />
-            {/* TODO: use custom button instead of web3button */}
+            <AccountProfile />
           </ConnectedButton>
         ) : (
           <ButtonPrimaryMedium

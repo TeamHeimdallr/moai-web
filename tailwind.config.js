@@ -336,6 +336,11 @@ module.exports = {
         '.box-shadow-default': {
           boxShadow: '0px 4px 24px 0px rgba(25, 27, 40, 0.6)',
         },
+
+        '.gradient-chip': {
+          background:
+            'linear-gradient(0deg, #51565D, #51565D), linear-gradient(0deg, #F5FF83, #F5FF83)',
+        },
       });
     }),
   ],

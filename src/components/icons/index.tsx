@@ -45,3 +45,24 @@ export const IconLink = ({ color, ...rest }: IconProps) => {
     </svg>
   );
 };
+
+export const IconCopy = ({ color, ...rest }: IconProps) => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="none"
+      {...rest}
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.6667 4.66659H9.33333V5.99992H10.6667C11.403 5.99992 12 6.59687 12 7.33325V12.6666H14.6667V4.66659ZM12 13.9999V15.3333C12 16.0696 11.403 16.6666 10.6667 16.6666H5.33333C4.59695 16.6666 4 16.0696 4 15.3333V7.33325C4 6.59687 4.59695 5.99992 5.33333 5.99992H8V4.66659C8 3.93021 8.59695 3.33325 9.33333 3.33325H14.6667C15.403 3.33325 16 3.93021 16 4.66659V12.6666C16 13.403 15.403 13.9999 14.6667 13.9999H12ZM5.33333 15.3333L5.33333 7.33325H10.6667V15.3333H5.33333Z"
+        fill={color ?? '#9296AD'}
+      />
+    </svg>
+  );
+};
