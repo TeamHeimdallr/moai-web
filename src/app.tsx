@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { Toast } from './components/toasts';
+import { ToastContainer } from './components/toasts';
 import { AsyncBoundary } from './hocs/hoc-error-boundary';
 
 const HomePage = lazy(() => import('./pages/home'));
@@ -20,7 +20,7 @@ const App = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
-              <Toast />
+              <ToastContainer />
             </RouteWrapper>
           </AsyncBoundary>
         </Web3Provider>
