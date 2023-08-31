@@ -7732,7 +7732,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^1.1.0":
+"clsx@npm:^1.1.0, clsx@npm:^1.1.1":
   version: 1.2.1
   resolution: "clsx@npm:1.2.1"
   checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
@@ -13400,6 +13400,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-toastify@npm:^9.1.3":
+  version: 9.1.3
+  resolution: "react-toastify@npm:9.1.3"
+  dependencies:
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: e8bd92c5cbf831b43a042644ab9bc69abe6ceb3ce91ba71f5cd2d8b6a2c9885ca52770e1f1ba64c5632607f6df962db344a26c7fba57606faf5aa0e7bfc8535f
+  languageName: node
+  linkType: hard
+
 "react-tooltip@npm:^5.21.1":
   version: 5.21.1
   resolution: "react-tooltip@npm:5.21.1"
@@ -13473,6 +13485,7 @@ __metadata:
     react-responsive: ^9.0.2
     react-router-dom: ^6.14.2
     react-slider: ^2.0.6
+    react-toastify: ^9.1.3
     react-tooltip: ^5.21.1
     rollup-plugin-visualizer: ^5.9.2
     storybook: ^7.4.0

@@ -7,6 +7,7 @@ import { IS_MOCK } from '~/constants';
 
 if (IS_MOCK) import('~/configs/setup-mock');
 
+import('react-toastify/dist/ReactToastify.min.css');
 import('~/app').then(({ default: App }) =>
   createRoot(document.getElementById('root') as HTMLElement).render(<App />)
 );
