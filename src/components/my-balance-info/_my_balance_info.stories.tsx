@@ -14,8 +14,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const tokens = [
-  { title: 'MOAI', balance: 0, price: 0, image: TOKEN_IMAGE_MAPPER['MOAI'] },
-  { title: 'WETH', balance: 0, price: 0, image: TOKEN_IMAGE_MAPPER['WETH'] },
+  { title: 'MOAI', balance: 123123, price: 167904.87, image: TOKEN_IMAGE_MAPPER['MOAI'] },
+  { title: 'WETH', balance: 2.73857, price: 3.1212, image: TOKEN_IMAGE_MAPPER['WETH'] },
   { title: 'USDC', balance: 0, price: 0, image: TOKEN_IMAGE_MAPPER['USDC'] },
   { title: 'USDT', balance: 0, price: 0, image: TOKEN_IMAGE_MAPPER['USDT'] },
 ];

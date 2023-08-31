@@ -12,15 +12,15 @@ export const MyBalanceInfo = ({ tokens }: Props) => {
   const tokenInfos = tokens.map(token => {
     return {
       ...token,
-      balance: formatNumber(token.balance),
-      price: '$' + formatNumber(token.price),
+      balance: formatNumber(token.balance, 2),
+      price: '$' + formatNumber(token.price, 2),
     };
   });
   const totalBalance = tokens.reduce((acc, cur) => acc + cur.price, 0);
   return (
     <Wrapper>
       <Banner>
-        My Wallet <Balance>${formatNumber(totalBalance)}</Balance>
+        My Wallet <Balance>${formatNumber(totalBalance, 2)}</Balance>
       </Banner>
       <TokenLists>
         {tokenInfos.map(token => (
