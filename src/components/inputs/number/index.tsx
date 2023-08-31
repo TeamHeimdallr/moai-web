@@ -55,7 +55,7 @@ export const InputNumber = ({
   const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
   const value = watch(HOOK_FORM_KEY.NUMBER_INPUT_VALUE);
 
-  const tokenUSD = (value || 0) * TOKEN_USD_MAPPER[TOKEN.MNT];
+  const tokenUSD = (value || 0) * TOKEN_USD_MAPPER[TOKEN.MOAI];
   // TODO: get balance from wallet
   const currentBalance = balance || 1234.12;
 
