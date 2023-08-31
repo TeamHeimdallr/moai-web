@@ -19,41 +19,41 @@ type Story = StoryObj<typeof meta>;
 
 export const Normal: Story = {
   args: {
-    token: TOKEN.MNT,
+    token: TOKEN.MOAI,
   },
 };
 
 export const NoImage: Story = {
   args: {
-    token: TOKEN.MNT,
+    token: TOKEN.MOAI,
     image: false,
   },
 };
 
 export const Small: Story = {
   args: {
-    token: TOKEN.MNT,
+    token: TOKEN.MOAI,
     type: 'small',
   },
 };
 
 export const Large: Story = {
   args: {
-    token: TOKEN.MNT,
+    token: TOKEN.MOAI,
     type: 'large',
   },
 };
 
 export const WithRaio: Story = {
   args: {
-    token: TOKEN.MNT,
+    token: TOKEN.MOAI,
     percentage: 80,
   },
 };
 
 export const Selected: Story = {
   args: {
-    token: TOKEN.MNT,
+    token: TOKEN.MOAI,
     percentage: 80,
     selected: true,
   },
@@ -61,7 +61,7 @@ export const Selected: Story = {
 
 export const NonClickable: Story = {
   args: {
-    token: TOKEN.MNT,
+    token: TOKEN.MOAI,
     percentage: 80,
     clickable: false,
   },
@@ -69,7 +69,7 @@ export const NonClickable: Story = {
 
 export const WithIcon: Story = {
   args: {
-    token: TOKEN.MNT,
+    token: TOKEN.MOAI,
     icon: <IconDown />,
   },
 };

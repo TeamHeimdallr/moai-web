@@ -42,8 +42,8 @@ export const useTableLiquidityPool = () => {
         [TOKEN.USDT]: 20,
       } as Record<TOKEN, number>,
       pool: {
-        [TOKEN.MNT]: 10209000,
-        [TOKEN.DAI]: 3480800,
+        [TOKEN.MOAI]: 10209000,
+        [TOKEN.USDT]: 3480800,
         [TOKEN.USDC]: 6304000,
       } as Record<TOKEN, number>,
       volume: 639120,

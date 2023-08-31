@@ -40,7 +40,7 @@ const Template = () => {
     <InputNumber
       schema={schema}
       handleChange={setInputValue}
-      token={<Token token={TOKEN.MNT} icon={<IconDown />} />}
+      token={<Token token={TOKEN.MOAI} icon={<IconDown />} />}
       handleTokenClick={() => console.log('token clicked')}
       maxButton
       slider
@@ -51,14 +51,14 @@ const Template = () => {
 
 export const SelectableToken: Story = {
   args: {
-    token: <Token token={TOKEN.MNT} icon={<IconDown />} />,
+    token: <Token token={TOKEN.MOAI} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
   },
 };
 
 export const Slider: Story = {
   args: {
-    token: <Token token={TOKEN.MNT} icon={<IconDown />} />,
+    token: <Token token={TOKEN.MOAI} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
     slider: true,
   },
@@ -66,7 +66,7 @@ export const Slider: Story = {
 
 export const SliderActive: Story = {
   args: {
-    token: <Token token={TOKEN.MNT} icon={<IconDown />} />,
+    token: <Token token={TOKEN.MOAI} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
     slider: true,
     sliderActive: true,

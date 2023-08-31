@@ -2,15 +2,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import tw from 'twin.macro';
 
-import {
-  BgMain,
-  TokenDAI,
-  TokenMNT,
-  TokenMOAI,
-  TokenUSDC,
-  TokenUSDT,
-  TokenWETH,
-} from '~/assets/images';
+import { BgMain, TokenMOAI, TokenUSDC, TokenUSDT, TokenWETH } from '~/assets/images';
 
 const meta = {
   title: 'Components/Assets/Images',
@@ -26,8 +18,6 @@ export const _Images: Story = {
     <Wrapper>
       <ImageBg title="bg-header" src={BgMain} />
       <ImageWrapper>
-        <Image title="token DAI" src={TokenDAI} />
-        <Image title="token mnt" src={TokenMNT} />
         <Image title="token moai" src={TokenMOAI} />
         <Image title="token usdc" src={TokenUSDC} />
         <Image title="token usdt" src={TokenUSDT} />

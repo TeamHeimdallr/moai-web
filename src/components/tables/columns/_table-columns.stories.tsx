@@ -25,8 +25,8 @@ export const _TableColumnToken: Story = {
     <TableColumnToken
       tokens={
         {
-          [TOKEN.MNT]: 20,
-          [TOKEN.DAI]: 80,
+          [TOKEN.USDC]: 20,
+          [TOKEN.USDT]: 80,
         } as Record<TOKEN, number>
       }
     />
@@ -37,7 +37,7 @@ export const _TableColumnToken: Story = {
 };
 
 export const _TableColumnTokenIcon: Story = {
-  render: () => <TableColumnTokenIcon tokens={[TOKEN.MNT, TOKEN.DAI]} />,
+  render: () => <TableColumnTokenIcon tokens={[TOKEN.USDC, TOKEN.USDT]} />,
   args: {
     value: '$123,123,123.12',
   },
