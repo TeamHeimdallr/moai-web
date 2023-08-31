@@ -5,10 +5,9 @@ import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 import { useNetwork } from 'wagmi';
 
+import { IconCopy, IconLink } from '~/assets/icons';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { truncateAddress } from '~/utils/string';
-
-import { IconCopy, IconLink } from '../icons';
 
 export const AccountProfile = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -49,10 +48,10 @@ export const AccountProfile = () => {
                 <MediumText>{truncateAddress(address ?? '0x')}</MediumText>
                 {/* TODO: Copied! 문구 2초 노출 */}
                 <Copy onClick={() => copy(address ?? '')}>
-                  <IconCopy />
+                  <IconCopy fill="#9296AD" />
                 </Copy>
                 <Link onClick={() => handleLink()}>
-                  <IconLink />
+                  <IconLink fill="#9296AD" />
                 </Link>
               </AddressWrapper>
             </AccountWrapper>

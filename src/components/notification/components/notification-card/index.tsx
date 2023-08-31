@@ -1,7 +1,7 @@
 import { HTMLAttributes } from 'react';
 import tw from 'twin.macro';
 
-import { IconLink } from '~/components/icons';
+import { IconLink } from '~/assets/icons';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -18,7 +18,7 @@ export const NotificationCard = ({ title, link, description, ...rest }: Props) =
       <TitleWrapper>
         <Title>{title}</Title>
         <IconWrapper>
-          <IconLink onClick={() => handleClick()} />
+          <IconLink onClick={() => handleClick()} fill="#9296AD" />
         </IconWrapper>
       </TitleWrapper>
       <Description>{' ' + description}</Description>

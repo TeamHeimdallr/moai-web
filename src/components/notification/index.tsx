@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
-import { IconNoti } from '~/components/icons';
+import { IconNoti } from '~/assets/icons';
 
 import { NotificationCard } from './components/notification-card';
 
@@ -41,7 +41,7 @@ export const Notification = () => {
   return (
     <UpperWrapper ref={ref}>
       <NotiWrapper onClick={() => toggle()} opened={opened}>
-        <IconNoti color={opened ? '#191B28' : '#F8FFA7'}></IconNoti>
+        <IconNoti fill={opened ? '#191B28' : '#F8FFA7'}></IconNoti>
       </NotiWrapper>
       {opened && (
         <Wrapper>
