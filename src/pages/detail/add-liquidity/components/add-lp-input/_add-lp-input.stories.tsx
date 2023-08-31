@@ -5,7 +5,7 @@ import tw, { css, styled } from 'twin.macro';
 import { WagmiConfig } from 'wagmi';
 
 import { ethereumClient, projectId, wagmiConfig } from '~/configs/setup-wallet';
-import { TOKEN } from '~/constants';
+import { TOKEN } from '~/types/contracts';
 
 import { AddLpInput } from '.';
 
