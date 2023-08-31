@@ -8,7 +8,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   type?: 'selectable' | 'medium' | 'large';
   description?: string;
   balance?: string;
-  price?: string;
+  value?: string;
 
   backgroundColor?: string;
   selected?: boolean;
@@ -19,7 +19,7 @@ export const TokenList = ({
   type = 'large',
   description,
   balance,
-  price,
+  value,
 
   backgroundColor,
   selected,
@@ -37,7 +37,7 @@ export const TokenList = ({
 
       <RightWrapper>
         <Balance type={type}>{balance}</Balance>
-        <Price type={type}>{price}</Price>
+        <Value type={type}>{value}</Value>
       </RightWrapper>
     </Wrapper>
   );
@@ -62,7 +62,7 @@ const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
     `,
 ]);
 const LeftWrapper = tw.div`flex-center gap-12`;
-const Image = tw.img`w-36 h-36`;
+const Image = tw.img`w-36 h-36 rounded-18`;
 
 interface TextProps {
   type: 'selectable' | 'medium' | 'large';
@@ -83,7 +83,7 @@ const Balance = styled.div<TextProps>(({ type }) => [
   type === 'large' ? tw`font-m-20` : tw`font-m-16`,
   tw`text-neutral-100`,
 ]);
-const Price = styled.div<TextProps>(({ type }) => [
+const Value = styled.div<TextProps>(({ type }) => [
   type === 'large' ? tw`font-r-14` : tw`font-r-12`,
   tw`text-neutral-60`,
 ]);
