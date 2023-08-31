@@ -1,22 +1,25 @@
 import tw from 'twin.macro';
 
+import { TOKEN_IMAGE_MAPPER } from '~/constants';
+import { Token } from '~/types/components/tokens';
 import { formatNumber } from '~/utils/number';
 
 import { TokenList } from '../token-list';
 
 interface Props {
-  tokens: { title: string; balance: number; price: number; image: string }[];
+  tokens: Token[];
 }
 
 export const MyBalanceInfo = ({ tokens }: Props) => {
   const tokenInfos = tokens.map(token => {
     return {
-      ...token,
+      title: token.name,
       balance: formatNumber(token.balance, 2),
-      price: '$' + formatNumber(token.price, 2),
+      value: '$' + formatNumber(token.value, 2),
+      image: TOKEN_IMAGE_MAPPER[token.name],
     };
   });
-  const totalBalance = tokens.reduce((acc, cur) => acc + cur.price, 0);
+  const totalBalance = tokens.reduce((acc, cur) => acc + cur.value, 0);
   return (
     <Wrapper>
       <Banner>

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import tw from 'twin.macro';
 
-import { TOKEN_IMAGE_MAPPER } from '~/constants';
+import { Token } from '~/types/components/tokens';
 
 import { MyBalanceInfo } from '.';
 
@@ -13,11 +13,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const tokens = [
-  { title: 'MOAI', balance: 123123, price: 167904.87, image: TOKEN_IMAGE_MAPPER['MOAI'] },
-  { title: 'WETH', balance: 2.73857, price: 3.1212, image: TOKEN_IMAGE_MAPPER['WETH'] },
-  { title: 'USDC', balance: 0, price: 0, image: TOKEN_IMAGE_MAPPER['USDC'] },
-  { title: 'USDT', balance: 0, price: 0, image: TOKEN_IMAGE_MAPPER['USDT'] },
+const tokens: Token[] = [
+  { name: 'MOAI', balance: 123123, value: 167904.87 },
+  { name: 'WETH', balance: 2.73857, value: 3.1212 },
+  { name: 'USDC', balance: 0, value: 0 },
+  { name: 'USDT', balance: 0, value: 0 },
 ];
 
 export const _MyBalanceInfo: Story = {

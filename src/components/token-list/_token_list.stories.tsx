@@ -51,7 +51,7 @@ export const _Clickable = () => {
         selected={selected}
         onClick={() => select(prev => !prev)}
         balance="1,234"
-        price="$8.00"
+        value="$8.00"
       />
       <TokenList
         type="selectable"
@@ -59,7 +59,7 @@ export const _Clickable = () => {
         description={description}
         image={usdc}
         balance="1,234"
-        price="$8.00"
+        value="$8.00"
       />
       <TokenList
         type="selectable"
@@ -67,7 +67,7 @@ export const _Clickable = () => {
         description={description}
         image={usdc}
         balance="1,234"
-        price="$8.00"
+        value="$8.00"
       />
     </Wrapper>
   );
