@@ -62,7 +62,7 @@ const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
     `,
 ]);
 const LeftWrapper = tw.div`flex-center gap-12`;
-const Image = tw.img`w-36 h-36`;
+const Image = tw.img`w-36 h-36 rounded-18`;
 
 interface TextProps {
   type: 'selectable' | 'medium' | 'large';
