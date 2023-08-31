@@ -84,6 +84,8 @@ export const InputNumber = ({
               <TokenWrapper onClick={handleTokenClick}>{token}</TokenWrapper>
               <InputWrapper>
                 <NumericFormat
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-expect-error
                   name={name}
                   allowLeadingZeros={false}
                   allowNegative={false}
