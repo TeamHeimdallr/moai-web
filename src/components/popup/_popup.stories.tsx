@@ -38,7 +38,7 @@ export const NoButton = () => {
               description={'$100'}
               image={TOKEN_IMAGE_MAPPER['USDC']}
               balance="1,234"
-              price="$8.00"
+              value="$8.00"
             />
           }
         />
