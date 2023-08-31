@@ -5,7 +5,8 @@ import { IconSetting } from '~/assets/icons';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { InputNumber } from '~/components/inputs/number';
 import { Token } from '~/components/token';
-import { TOKEN, TOKEN_USD_MAPPER } from '~/constants';
+import { TOKEN_USD_MAPPER } from '~/constants';
+import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
 interface TokenInfo {
