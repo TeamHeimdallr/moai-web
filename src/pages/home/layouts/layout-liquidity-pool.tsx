@@ -4,7 +4,7 @@ import { IconNext } from '~/assets/icons';
 import { ButtonPrimaryMediumIconTrailing } from '~/components/buttons/primary';
 import { Table } from '~/components/tables';
 import { useTableLiquidityPool } from '~/hooks/components/tables/use-table-liquidity-pool';
-import { LiquidityPoolTable } from '~/types/components/tables';
+import { LiquidityPoolTable } from '~/types/components';
 
 export const LiquidityPoolLayout = () => {
   const { data, columns } = useTableLiquidityPool();

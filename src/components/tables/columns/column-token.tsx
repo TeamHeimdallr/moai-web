@@ -3,8 +3,8 @@ import tw from 'twin.macro';
 
 import { BadgeNew } from '~/components/badges/new';
 import { Token } from '~/components/token';
-import { TOKEN } from '~/constants';
-import { Entries } from '~/types';
+import { TOKEN } from '~/types/contracts';
+import { Entries } from '~/types/helpers';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: Record<TOKEN, number>;

@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 
-import { CreateUserRequest } from '~/types';
+import { CreateUserRequest } from '~/types/apis';
 
 import { api } from '..';
 import { CreateUsersResponse, UseCreateUsersMutationOptions } from './types';

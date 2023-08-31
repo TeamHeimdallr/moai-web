@@ -1,13 +1,5 @@
 import { TokenDAI, TokenMNT, TokenMOAI, TokenUSDC, TokenUSDT, TokenWETH } from '~/assets/images';
-
-export enum TOKEN {
-  DAI = 'DAI',
-  USDC = 'USDC',
-  USDT = 'USDT',
-  MNT = 'MNT',
-  WETH = 'WETH',
-  MOAI = 'MOAI',
-}
+import { TOKEN } from '~/types/contracts';
 
 export const TOKEN_IMAGE_MAPPER: Record<TOKEN, string> = {
   DAI: TokenDAI,

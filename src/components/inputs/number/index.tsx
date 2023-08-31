@@ -7,8 +7,9 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
-import { TOKEN, TOKEN_USD_MAPPER } from '~/constants';
-import { HOOK_FORM_KEY } from '~/types/components/inputs';
+import { TOKEN_USD_MAPPER } from '~/constants';
+import { HOOK_FORM_KEY } from '~/types/components';
+import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
 type OmitType = 'type' | 'value' | 'defaultValue' | 'onChange' | 'onBlur';

@@ -4,8 +4,8 @@ import * as yup from 'yup';
 
 import { IconDown } from '~/assets/icons';
 import { Token } from '~/components/token';
-import { TOKEN } from '~/constants';
-import { HOOK_FORM_KEY } from '~/types/components/inputs';
+import { HOOK_FORM_KEY } from '~/types/components';
+import { TOKEN } from '~/types/contracts';
 
 import { InputNumber } from '.';
 

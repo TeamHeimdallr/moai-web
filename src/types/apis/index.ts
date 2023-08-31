@@ -1,4 +1,2 @@
-export interface PaginationParams {
-  page?: number;
-  size?: number;
-}
+export * from './pagination';
+export * from './users';

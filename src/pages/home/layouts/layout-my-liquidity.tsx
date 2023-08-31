@@ -2,7 +2,7 @@ import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
 import { useTableMyLiquidity } from '~/hooks/components/tables/use-table-my-liquidity';
-import { MyLiquidityTable } from '~/types/components/tables';
+import { MyLiquidityTable } from '~/types/components';
 
 export const MyLiquidityLayout = () => {
   const { data, columns } = useTableMyLiquidity();

@@ -1,4 +1,4 @@
-import { SortingState } from '~/types/components/tables';
+import { SortingState } from '~/types/components';
 
 export const toggleSorting = (sorting?: SortingState): SortingState => {
   if (!sorting)

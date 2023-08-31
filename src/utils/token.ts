@@ -1,5 +1,6 @@
-import { TOKEN, TOKEN_USD_MAPPER } from '~/constants';
-import { Entries } from '~/types';
+import { TOKEN_USD_MAPPER } from '~/constants';
+import { TOKEN } from '~/types/contracts';
+import { Entries } from '~/types/helpers';
 
 export const sumPoolValues = (object: Record<string, number>) =>
   (Object.entries(object) as Entries<Record<TOKEN, number>>).reduce<number>(

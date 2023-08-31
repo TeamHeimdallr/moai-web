@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { useTableLiquidityPool } from '~/hooks/components/tables/use-table-liquidity-pool';
-import { LiquidityPoolTable } from '~/types/components/tables';
+import { LiquidityPoolTable } from '~/types/components';
 
 import { Table } from '.';
 

@@ -1,6 +1,6 @@
 import { nullable, primaryKey } from '@mswjs/data';
 
-import { User } from '~/types';
+import { User } from '~/types/apis';
 
 /**
  * factory

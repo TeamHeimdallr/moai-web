@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { TOKEN } from '~/constants';
+import { TOKEN } from '~/types/contracts';
 
 import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '.';
 
