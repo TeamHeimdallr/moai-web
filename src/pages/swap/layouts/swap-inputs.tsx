@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import tw from 'twin.macro';
 
 import { IconDown } from '~/assets/icons';
