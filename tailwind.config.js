@@ -332,6 +332,15 @@ module.exports = {
         '.drop-shadow-default': {
           filter: 'drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.10))',
         },
+
+        '.box-shadow-default': {
+          boxShadow: '0px 4px 24px 0px rgba(25, 27, 40, 0.6)',
+        },
+
+        '.gradient-chip': {
+          background:
+            'linear-gradient(0deg, #51565D, #51565D), linear-gradient(0deg, #F5FF83, #F5FF83)',
+        },
       });
     }),
   ],
