@@ -5,7 +5,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   image: string;
   title: string;
 
-  type?: 'clickable' | 'medium' | 'large';
+  type?: 'selectable' | 'medium' | 'large';
   description?: string;
   balance?: string;
   price?: string;
@@ -43,15 +43,15 @@ export const TokenList = ({
   );
 };
 interface DivProps {
-  type: 'clickable' | 'medium' | 'large';
+  type: 'selectable' | 'medium' | 'large';
   backgroundColor?: string;
   selected?: boolean;
 }
 const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
   tw`flex justify-between items-center`,
-  type === 'clickable' &&
+  type === 'selectable' &&
     (selected ? tw`border-1 border-solid border-primary-60 bg-primary-20` : tw`bg-neutral-10`),
-  type === 'clickable'
+  type === 'selectable'
     ? tw`px-12 py-8 rounded-8 hover:bg-neutral-20 clickable`
     : type === 'medium'
     ? tw`px-24 py-8`
@@ -65,7 +65,7 @@ const LeftWrapper = tw.div`flex-center gap-12`;
 const Image = tw.img`w-36 h-36`;
 
 interface TextProps {
-  type: 'clickable' | 'medium' | 'large';
+  type: 'selectable' | 'medium' | 'large';
 }
 
 const TitleWrapper = tw.div`flex flex-col`;
@@ -75,7 +75,7 @@ const Title = styled.div<TextProps>(({ type }) => [
 ]);
 const Description = styled.div<TextProps>(({ type }) => [
   type === 'large' ? tw`font-r-16` : tw`font-r-14`,
-  type === 'clickable' ? tw`text-neutral-90` : tw`text-neutral-60`,
+  type === 'selectable' ? tw`text-neutral-90` : tw`text-neutral-60`,
 ]);
 
 const RightWrapper = tw.div`flex flex-col items-end`;

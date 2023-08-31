@@ -44,7 +44,7 @@ export const _Clickable = () => {
   return (
     <Wrapper>
       <TokenList
-        type="clickable"
+        type="selectable"
         title={title}
         description={description}
         image={usdc}
@@ -54,7 +54,7 @@ export const _Clickable = () => {
         price="$8.00"
       />
       <TokenList
-        type="clickable"
+        type="selectable"
         title={title}
         description={description}
         image={usdc}
@@ -62,7 +62,7 @@ export const _Clickable = () => {
         price="$8.00"
       />
       <TokenList
-        type="clickable"
+        type="selectable"
         title={title}
         description={description}
         image={usdc}
