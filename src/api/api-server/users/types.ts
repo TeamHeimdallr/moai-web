@@ -1,7 +1,7 @@
 import { UseMutationOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
-import { CreateUserRequest, DeleteUsersRequest, UpdateUserRequest, User } from '~/types';
+import { CreateUserRequest, DeleteUsersRequest, UpdateUserRequest, User } from '~/types/apis';
 import { PaginationParams } from '~/types/apis';
 
 /**

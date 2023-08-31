@@ -1,7 +1,8 @@
 import { HTMLAttributes } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
-import { TOKEN, TOKEN_IMAGE_MAPPER } from '~/constants';
+import { TOKEN_IMAGE_MAPPER } from '~/constants';
+import { TOKEN } from '~/types/contracts';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: TOKEN[];

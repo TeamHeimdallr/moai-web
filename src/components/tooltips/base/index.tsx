@@ -4,7 +4,7 @@ import { ITooltip, Tooltip as ReactTooltip } from 'react-tooltip';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { TOOLTIP_ID } from '~/constants';
+import { TOOLTIP_ID } from '~/types/components';
 
 interface Props extends ITooltip {
   id: TOOLTIP_ID;

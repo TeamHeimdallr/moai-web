@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
-import { DeleteUsersRequest } from '~/types';
+import { DeleteUsersRequest } from '~/types/apis';
 
 import { api } from '..';
 import { DeleteUsersResponse, UseDeleteUsersMutationOptions } from './types';

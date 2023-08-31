@@ -8,9 +8,9 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
-import { TOKEN } from '~/constants';
 import { useTableLiquidityStore } from '~/states/components/table-liquidity-pool';
-import { LiquidityPoolTable } from '~/types/components/tables';
+import { LiquidityPoolTable } from '~/types/components';
+import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 import { sumPoolValues } from '~/utils/token';
 

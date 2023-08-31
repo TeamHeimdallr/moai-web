@@ -1,13 +1,13 @@
 import tw from 'twin.macro';
 
 import { TOKEN_IMAGE_MAPPER } from '~/constants';
-import { Token } from '~/types/components/tokens';
+import { TokenInfo } from '~/types/components';
 import { formatNumber } from '~/utils/number';
 
 import { TokenList } from '../token-list';
 
 interface Props {
-  tokens: Token[];
+  tokens: TokenInfo[];
 }
 
 export const MyBalanceInfo = ({ tokens }: Props) => {

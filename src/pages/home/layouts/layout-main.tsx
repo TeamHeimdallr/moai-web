@@ -3,8 +3,9 @@ import tw, { styled } from 'twin.macro';
 
 import bgMain from '~/assets/images/bg-main.png';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
-import { TOKEN, TOKEN_USD_MAPPER } from '~/constants';
+import { TOKEN_USD_MAPPER } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
+import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
 export const MainLayout = () => {

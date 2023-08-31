@@ -1,4 +1,4 @@
-export interface Token {
+export interface TokenInfo {
   name: string;
   balance: number;
   value: number;
