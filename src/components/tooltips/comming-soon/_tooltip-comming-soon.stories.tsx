@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
-import { TOOLTIP_ID } from '~/constants';
+import { TOOLTIP_ID } from '~/types/components/tooltip';
 
 import { TooltipCommingSoon } from '.';
 
