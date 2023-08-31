@@ -1,32 +1,27 @@
-import { useEffect, useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
-import { useNetwork } from 'wagmi';
 
+import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 import { MANTLE_CHAIN_ID } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
+import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
 
-import { SwitchNetwork } from './components/switch-network';
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';
 import { MyLiquidityLayout } from './layouts/layout-my-liquidity';
 
 const HomePage = () => {
-  const [needSwitchNetwork, setNeedSwitchNetwork] = useState(false);
-
   const { isConnected } = useConnectWallet();
-  const { chain } = useNetwork();
-
-  useEffect(() => {
-    if (!chain || chain.id === MANTLE_CHAIN_ID) setNeedSwitchNetwork(false);
-    else setNeedSwitchNetwork(true);
-  }, [chain]);
+  const { needSwitchNetwork } = useSwitchNetwork(MANTLE_CHAIN_ID);
 
   return (
     <>
       {needSwitchNetwork && <SwitchNetwork />}
       <Wrapper>
-        <GnbWrapper>GNB</GnbWrapper>
+        <GnbWrapper>
+          <Gnb />
+        </GnbWrapper>
         <InnerWrapper>
           <MainLayout />
           <ContentWrapper>
@@ -48,7 +43,7 @@ const InnerWrapper = tw.div`
 `;
 
 const GnbWrapper = tw.div`
-  w-full h-80 absolute top-0 left-0 flex-center bg-neutral-80/20 text-neutral-100 z-10
+  w-full h-80 absolute top-0 left-0 flex-center z-10
 `;
 
 const ContentWrapper = styled.div(() => [

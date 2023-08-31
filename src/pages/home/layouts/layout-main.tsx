@@ -26,12 +26,14 @@ export const MainLayout = () => {
       ) : (
         <>
           <Title>DeFi Liquidity pools built on Mantle</Title>
-          <ButtonPrimaryLarge
-            text="Connect wallet"
-            buttonType="outlined"
-            isLoading={isOpen}
-            onClick={open}
-          />
+          <ButtonWrapper>
+            <ButtonPrimaryLarge
+              text="Connect wallet"
+              buttonType="outlined"
+              isLoading={isOpen}
+              onClick={open}
+            />
+          </ButtonWrapper>
         </>
       )}
     </MainWrapper>
@@ -49,3 +51,7 @@ const MainWrapper = styled.div<MainWrapperProps>(({ isConnected }) => [
 const Title = tw.div`font-b-48 text-neutral-100`;
 const SubTitle = tw.div`font-b-36 text-neutral-100`;
 const Label = tw.div`font-b-24 text-neutral-100`;
+
+const ButtonWrapper = tw.div`
+  inline-flex-center
+`;

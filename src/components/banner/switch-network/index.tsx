@@ -3,20 +3,26 @@ import { useSwitchNetwork } from 'wagmi';
 
 import { COLOR } from '~/assets/colors';
 import { IconAlert } from '~/assets/icons';
+import { ButtonPrimarySmall } from '~/components/buttons/primary/small-black';
 import { MANTLE_CHAIN_ID } from '~/constants';
 
-import { ButtonPrimarySmall } from '../button-primary-small';
-
-export const SwitchNetwork = () => {
+interface Props {
+  chainName?: string;
+  chainId?: number;
+}
+export const SwitchNetwork = ({ chainName, chainId }: Props) => {
   const { switchNetwork } = useSwitchNetwork();
 
   return (
     <Wrapper>
       <TextWrapper>
         <IconAlert width={20} height={20} color={COLOR.NEUTRAL[100]} />
-        Please switch to Mantle
+        {`Please switch to ${chainName ?? 'Mantle'}`}
       </TextWrapper>
-      <ButtonPrimarySmall text="Switch network" onClick={() => switchNetwork?.(MANTLE_CHAIN_ID)} />
+      <ButtonPrimarySmall
+        text="Switch network"
+        onClick={() => switchNetwork?.(chainId ?? MANTLE_CHAIN_ID)}
+      />
     </Wrapper>
   );
 };
