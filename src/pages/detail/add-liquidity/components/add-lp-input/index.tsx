@@ -96,15 +96,11 @@ export const AddLpInput = ({ tokenList }: Props) => {
             <TotalText>Total</TotalText>
             <TotalValueWrapper>
               <TotalValue>{`$${formatNumber(
-                (tokenList.length > 0
-                  ? (inputValue1 || 0) * TOKEN_USD_MAPPER[tokenList[0].name]
-                  : 0) +
-                  (tokenList.length > 1
-                    ? (inputValue2 || 0) * TOKEN_USD_MAPPER[tokenList[1].name]
-                    : 0) +
-                  (tokenList.length > 2
-                    ? (inputValue3 || 0) * TOKEN_USD_MAPPER[tokenList[2].name]
-                    : 0),
+                tokenList.reduce((sum, token, idx) => {
+                  const inputValue = getInputValue(idx) || 0;
+                  const tokenValue = TOKEN_USD_MAPPER[token.name] || 0;
+                  return sum + inputValue * tokenValue;
+                }, 0),
                 2
               )}`}</TotalValue>
               <MaxButton onClick={() => handleMax()}>Max</MaxButton>
