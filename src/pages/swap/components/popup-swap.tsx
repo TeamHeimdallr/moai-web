@@ -3,7 +3,7 @@ import { useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
 import { parseEther } from 'viem';
 
-import { useSwap } from '~/api/api-contract/mantle/swap';
+import { useSwap } from '~/api/api-contract/swap';
 import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonChipSmall } from '~/components/buttons/chip';

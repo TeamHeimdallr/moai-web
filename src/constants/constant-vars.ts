@@ -2,6 +2,8 @@ import { TokenMOAI, TokenUSDC, TokenUSDT, TokenWETH } from '~/assets/images';
 import { GnbMenu } from '~/types/components/gnb';
 import { TOKEN } from '~/types/contracts';
 
+import { CHAIN } from '.';
+
 export const TOKEN_IMAGE_MAPPER: Record<TOKEN, string> = {
   USDC: TokenUSDC,
   USDT: TokenUSDT,
@@ -44,7 +46,8 @@ export const GNB_MENU: GnbMenu[] = [
   },
 ];
 
-export const TESTNET_SCANNER_URL = 'https://explorer.testnet.mantle.xyz';
+export const TESTNET_SCANNER_URL =
+  CHAIN === 'mantle' ? 'https://explorer.testnet.mantle.xyz' : 'https://goerli.lineascan.build';
 
 /**
  * @description FORMAT NUMBER 를 진행할때 UNIT(K,M,B,T) 를 붙이는 기준

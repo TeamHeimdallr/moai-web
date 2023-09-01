@@ -1,6 +1,7 @@
 import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
+import { CURRENT_CHAIN } from '~/constants';
 import { useTableMyLiquidity } from '~/hooks/components/tables/use-table-my-liquidity';
 import { MyLiquidityTable } from '~/types/components';
 
@@ -15,7 +16,7 @@ export const MyLiquidityLayout = () => {
       <Table<MyLiquidityTable>
         data={data}
         columns={columns}
-        emptyText="You have no unsktaked liquidity on Mantle"
+        emptyText={`You have no unsktaked liquidity on ${CURRENT_CHAIN}`}
       />
     </Wrapper>
   );

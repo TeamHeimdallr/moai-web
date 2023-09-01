@@ -8,7 +8,7 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { VAULT_ABI } from '~/abi/mantle/vault';
+import { VAULT_ABI } from '~/abi/vault';
 import { CHAIN_ID, CONTRACT_ADDRESS } from '~/constants';
 
 interface Props {

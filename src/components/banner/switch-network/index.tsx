@@ -4,7 +4,7 @@ import { useSwitchNetwork } from 'wagmi';
 import { COLOR } from '~/assets/colors';
 import { IconAlert } from '~/assets/icons';
 import { ButtonPrimarySmall } from '~/components/buttons/primary/small-black';
-import { CHAIN_ID } from '~/constants';
+import { CHAIN_ID, CURRENT_CHAIN } from '~/constants';
 
 interface Props {
   chainName?: string;
@@ -17,7 +17,7 @@ export const SwitchNetwork = ({ chainName, chainId }: Props) => {
     <Wrapper>
       <TextWrapper>
         <IconAlert width={20} height={20} color={COLOR.NEUTRAL[100]} />
-        {`Please switch to ${chainName ?? 'Mantle'}`}
+        {`Please switch to ${chainName ?? CURRENT_CHAIN}`}
       </TextWrapper>
       <ButtonPrimarySmall
         text="Switch network"

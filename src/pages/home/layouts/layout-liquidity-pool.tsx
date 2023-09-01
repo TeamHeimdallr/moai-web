@@ -3,6 +3,7 @@ import tw from 'twin.macro';
 import { IconNext } from '~/assets/icons';
 import { ButtonPrimaryMediumIconTrailing } from '~/components/buttons/primary';
 import { Table } from '~/components/tables';
+import { CURRENT_CHAIN } from '~/constants';
 import { useTableLiquidityPool } from '~/hooks/components/tables/use-table-liquidity-pool';
 import { LiquidityPoolTable } from '~/types/components';
 
@@ -18,7 +19,7 @@ export const LiquidityPoolLayout = () => {
       <Table<LiquidityPoolTable>
         data={data}
         columns={columns}
-        emptyText="No liquidity pools on Mantle"
+        emptyText={`No liquidity pools on ${CURRENT_CHAIN}`}
       />
     </Wrapper>
   );

@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 import { formatEther } from 'viem';
 import { useAccount } from 'wagmi';
 
-import { usePoolBalance, usePoolTotalLpTokens } from '~/api/api-contract/mantle/pool-balance';
+import { usePoolBalance, usePoolTotalLpTokens } from '~/api/api-contract/pool-balance';
 import { IconLink } from '~/assets/icons';
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
