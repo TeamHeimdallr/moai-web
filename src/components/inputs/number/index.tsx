@@ -12,7 +12,7 @@ import { HOOK_FORM_KEY } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-type OmitType = 'type' | 'value' | 'defaultValue' | 'onChange' | 'onBlur';
+type OmitType = 'type' | 'onChange' | 'onBlur';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   balance?: number;
   handleChange?: (value?: number) => void;
@@ -20,6 +20,11 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   token?: ReactNode;
   tokenName?: TOKEN;
   handleTokenClick?: () => void;
+
+  value?: number;
+  defaultValue?: number;
+
+  focus?: boolean;
 
   maxButton?: boolean;
   slider?: boolean;
@@ -42,30 +47,32 @@ export const InputNumber = ({
   maxButton,
   slider,
   sliderActive,
+  focus = true,
+  value,
   handleChange,
   handleTokenClick,
   ...rest
 }: Props) => {
   const [focused, setFocus] = useState(false);
 
-  const { control, watch, formState } = useForm<FormState>({
+  const { control, formState } = useForm<FormState>({
     mode: 'onChange',
     reValidateMode: 'onChange',
     resolver: schema && yupResolver(schema),
   });
 
   const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
-  const value = watch(HOOK_FORM_KEY.NUMBER_INPUT_VALUE);
+  const handledValue = value ? (value < 0 ? undefined : value) : undefined;
 
-  const tokenUSD = (value || 0) * TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI];
+  const tokenUSD = (handledValue || 0) * TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI];
   // TODO: get balance from wallet
-  const currentBalance = balance || 1234.12;
+  const currentBalance = balance || 0;
 
   useEffect(() => {
-    setFocus(value !== undefined);
-  }, [value]);
-
-  useEffect(() => {}, []);
+    if (!focus) return;
+    if (!handledValue) setFocus(false);
+    else setFocus(handledValue > 0);
+  }, [handledValue, focus]);
 
   const CustomInput = useCallback(({ ...rest }: Props) => <Input {...rest} />, []);
   return (
@@ -74,15 +81,15 @@ export const InputNumber = ({
       control={control}
       render={formProps => {
         const { field } = formProps;
-        const { onChange, onBlur, name, value } = field;
+        const { onChange, onBlur, name } = field;
 
-        const onValueChange = (value?: number) => {
-          onChange(value);
-          handleChange?.(value);
+        const onValueChange = (handledValue?: number) => {
+          onChange(handledValue);
+          handleChange?.(handledValue);
         };
 
         return (
-          <Wrapper focused={focused} error={!!errorMessage}>
+          <Wrapper focus={focus} focused={focused} error={!!errorMessage}>
             <TokenInputWrapper>
               <TokenWrapper onClick={handleTokenClick}>{token}</TokenWrapper>
               <InputWrapper>
@@ -91,14 +98,15 @@ export const InputNumber = ({
                   // @ts-expect-error
                   name={name}
                   allowLeadingZeros={false}
-                  allowNegative={false}
                   placeholder={placeholder}
                   thousandSeparator
                   maxLength={16}
-                  value={value}
+                  value={handledValue || ''}
                   onValueChange={values => onValueChange(values.floatValue)}
                   customInput={CustomInput}
-                  onFocus={() => setFocus(true)}
+                  onFocus={() => {
+                    if (focus) setFocus(true);
+                  }}
                   onBlur={() => {
                     onBlur();
                     setFocus(false);
@@ -112,7 +120,11 @@ export const InputNumber = ({
                 <BalanceLabel>Balance</BalanceLabel>
                 <BalanceValue>{formatNumber(currentBalance ?? 0, 2)}</BalanceValue>
                 {maxButton && (
-                  <ButtonPrimarySmall text="Max" onClick={() => onValueChange(currentBalance)} />
+                  <ButtonPrimarySmall
+                    text="Max"
+                    onClick={() => onValueChange(currentBalance)}
+                    style={{ width: 'auto' }}
+                  />
                 )}
                 <TokenUSDValue>${formatNumber(tokenUSD ?? 0, 2)}</TokenUSDValue>
               </BalanceWrapper>
@@ -124,8 +136,8 @@ export const InputNumber = ({
                     thumbClassName="thumb"
                     trackClassName="track"
                     min={0}
-                    max={currentBalance}
-                    value={value || 0}
+                    max={currentBalance || 100}
+                    value={handledValue || 0}
                     step={0.01}
                     onChange={onValueChange}
                     renderThumb={({ key, ...props }) => (
@@ -144,15 +156,13 @@ export const InputNumber = ({
 };
 
 interface WrapperProps {
+  focus?: boolean;
   focused?: boolean;
   error?: boolean;
 }
-const Wrapper = styled.div<WrapperProps>(({ focused, error }) => [
-  tw`
-    w-404 flex flex-col gap-12 pt-15 pb-11 pl-11 pr-19 transition-colors
-    border-transparent border-solid bg-neutral-15 rounded-8 border-1
-    hover:(border-neutral-80)
-  `,
+const Wrapper = styled.div<WrapperProps>(({ focus, focused, error }) => [
+  tw`flex flex-col gap-12 transition-colors border-transparent border-solid w-404 pt-15 pb-11 pl-11 pr-19 bg-neutral-15 rounded-8 border-1`,
+  focus && tw`hover:(border-neutral-80)`,
   focused && tw`border-primary-50 hover:(border-primary-50)`,
   error && tw`border-red-50 hover:(border-red-50)`,
   error &&

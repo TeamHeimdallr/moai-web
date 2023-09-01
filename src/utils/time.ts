@@ -4,6 +4,7 @@ export const DATE_FORMATTER = {
   MMM_d_yyyy: 'MMM d, yyyy',
   HHMM_AA_mm_dd: 'h:mm aa, MMM d',
   HHMMSS: 'HH:mm:ss',
+  FULL: 'ccc, MMM dd, yyyy, hh:mm:ss a O',
 };
 
 export const elapsedTime = (timestamp: number) => {
