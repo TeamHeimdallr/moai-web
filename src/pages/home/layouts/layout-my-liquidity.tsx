@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
@@ -7,6 +8,11 @@ import { MyLiquidityTable } from '~/types/components';
 
 export const MyLiquidityLayout = () => {
   const { data, columns } = useTableMyLiquidity();
+  const navigate = useNavigate();
+
+  const handleRowClick = (poolIndex?: string) => {
+    navigate(`/pools/${poolIndex}/liquidity`);
+  };
 
   return (
     <Wrapper>
@@ -17,6 +23,7 @@ export const MyLiquidityLayout = () => {
         data={data}
         columns={columns}
         emptyText={`You have no unsktaked liquidity on ${CURRENT_CHAIN}`}
+        handleRowClick={handleRowClick}
       />
     </Wrapper>
   );

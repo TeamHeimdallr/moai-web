@@ -27,11 +27,11 @@ export const useTableLiquidityPool = () => {
         [TOKEN.WETH]: 20,
       } as Record<TOKEN, number>,
       pool: {
-        [TOKEN.MOAI]: 429000,
-        [TOKEN.WETH]: 148008,
+        [TOKEN.MOAI]: 7077.75,
+        [TOKEN.WETH]: 147,
       } as Record<TOKEN, number>,
-      volume: 693194,
-      apr: 0.79,
+      volume: 78086.25,
+      apr: 6.79,
       isNew: true,
     },
     {
@@ -42,12 +42,12 @@ export const useTableLiquidityPool = () => {
         [TOKEN.USDT]: 20,
       } as Record<TOKEN, number>,
       pool: {
-        [TOKEN.MOAI]: 10209000,
-        [TOKEN.USDT]: 3480800,
-        [TOKEN.USDC]: 6304000,
+        [TOKEN.WETH]: 293,
+        [TOKEN.USDC]: 302205,
+        [TOKEN.USDT]: 201470,
       } as Record<TOKEN, number>,
-      volume: 639120,
-      apr: 0.87,
+      volume: 45813,
+      apr: 4.98,
       isNew: true,
     },
   ];

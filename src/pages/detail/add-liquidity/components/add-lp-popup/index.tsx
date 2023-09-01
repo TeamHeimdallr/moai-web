@@ -58,8 +58,11 @@ export const AddLpPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
   const { close } = usePopup(POPUP_ID.ADD_LP);
 
   const handleButton = async () => {
-    if (isSuccess) close();
-    await writeAsync?.();
+    if (isSuccess) {
+      close();
+    } else {
+      await writeAsync?.();
+    }
   };
 
   const handleLink = () => {
