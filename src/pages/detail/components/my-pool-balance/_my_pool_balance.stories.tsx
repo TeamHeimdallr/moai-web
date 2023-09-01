@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import tw from 'twin.macro';
 
+import { pools } from '~/data';
 import { TokenInfo } from '~/types/components';
 
 import { MyPoolBalance } from '.';
@@ -23,7 +24,7 @@ const totalBalance = 2001234;
 export const _MyPoolBalance: Story = {
   render: () => (
     <Wrapper>
-      <MyPoolBalance tokens={tokens} totalBalance={totalBalance} />
+      <MyPoolBalance compositions={tokens} totalBalance={totalBalance} pool={pools[0]} />
     </Wrapper>
   ),
 };

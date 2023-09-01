@@ -5,9 +5,15 @@ export interface TokenInfo {
   balance: number;
   value: number;
 }
+export interface Composition {
+  name: TOKEN;
+  weight: number;
+  balance: number;
+}
 export interface PoolInfo {
-  compositions: TOKEN[];
+  compositions: Composition[];
   value: string;
   volume: string;
   apr: string;
+  lpTokens: number;
 }
