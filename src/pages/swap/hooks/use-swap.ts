@@ -18,6 +18,7 @@ export const useSwap = () => {
     setFromValue,
     setToToken,
     resetFromValue,
+    resetAll,
   } = useSwapStore();
 
   const fromTokenBalance = tokenBalances.find(t => t.symbol === fromToken)?.balance ?? 0;
@@ -49,6 +50,7 @@ export const useSwap = () => {
     setFromValue,
     setToToken,
     resetFromValue,
+    resetAll,
 
     fromTokenBalance,
     toTokenBalance,

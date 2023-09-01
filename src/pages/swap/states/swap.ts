@@ -13,6 +13,7 @@ export interface SwapState {
   setToToken: (toToken: string) => void;
 
   resetFromValue: () => void;
+  resetAll: () => void;
 }
 
 export const useSwapStore = create<SwapState>()(
@@ -29,6 +30,7 @@ export const useSwapStore = create<SwapState>()(
       setToToken: toToken => set({ toToken }),
 
       resetFromValue: () => set({ fromValue: -1 }),
+      resetAll: () => set({ fromToken: 'MOAI', fromValue: -1, toToken: 'USDC' }),
     }))
   )
 );

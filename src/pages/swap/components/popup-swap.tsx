@@ -1,8 +1,11 @@
-import { useState } from 'react';
-import tw from 'twin.macro';
+import { add, format } from 'date-fns';
+import { useMemo, useState } from 'react';
+import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
+import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonChipSmall } from '~/components/buttons/chip';
+import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
@@ -11,16 +14,24 @@ import { usePopup } from '~/hooks/pages/use-popup';
 import { useSlippageStore } from '~/states/components/slippage';
 import { POPUP_ID } from '~/types/components';
 import { formatNumber } from '~/utils/number';
+import { DATE_FORMATTER } from '~/utils/time';
 
 import { useSwap } from '../hooks/use-swap';
 import { SwapArrowDown } from './arrow-down';
 
 export const PopupSwap = () => {
-  const { fromToken, fromValue, toToken, toValue, swapRatio } = useSwap();
+  const { fromToken, fromValue, toToken, toValue, swapRatio, resetAll } = useSwap();
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippageId } = useSlippageStore();
 
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
+
+  // TODO: connect contract
+  const [success, setSuccess] = useState(false);
+  const [time, setTime] = useState(add(new Date(), { months: 1 }));
+  const handleLink = (txHash: string) => {
+    window.open(`https://explorer.mantle.xyz/tx/${txHash}`);
+  };
 
   const effectivePrice = `1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`;
   const fromUSDValue = (fromValue ?? 0) * TOKEN_USD_MAPPER[fromToken];
@@ -34,27 +45,71 @@ export const PopupSwap = () => {
   const slippageText = (slippage * 100).toFixed(1);
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
 
+  const handleSusscee = () => {
+    close();
+    resetAll();
+  };
+
+  const SuccessIcon = useMemo(
+    () => (
+      <SuccessIconWrapper>
+        <IconCheck />
+      </SuccessIconWrapper>
+    ),
+    []
+  );
+
+  const Button = useMemo(
+    () =>
+      success ? (
+        <PrimaryButtonWrapper>
+          <TimeWrapper onClick={() => handleLink('')}>
+            <IconTime />
+            {format(time, DATE_FORMATTER.FULL)}
+            <ClickableIcon>
+              <IconLink />
+            </ClickableIcon>
+          </TimeWrapper>
+          <ButtonPrimaryLarge
+            buttonType="outlined"
+            text="Return to swap page"
+            onClick={handleSusscee}
+          />
+        </PrimaryButtonWrapper>
+      ) : (
+        <ButtonPrimaryLarge text="Confirm swap" onClick={() => setSuccess(true)} />
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [success]
+  );
+
   return (
-    <Popup id={POPUP_ID.SWAP} title="Preview swap" style={{ backgroundColor: COLOR.NEUTRAL[10] }}>
+    <Popup
+      id={POPUP_ID.SWAP}
+      title="Preview swap"
+      icon={success ? SuccessIcon : undefined}
+      button={Button}
+    >
       <Wrapper>
         <ListWrapper>
           <List title={`Effective price: ${effectivePrice}`}>
             <TokenList
-              title={fromToken}
+              title={`${fromValue} ${fromToken}`}
+              description={`$${formatNumber(fromUSDValue, 2)}`}
               image={TOKEN_IMAGE_MAPPER[fromToken]}
               type="large"
-              balance={formatNumber(fromValue, 2)}
-              value={formatNumber(fromUSDValue, 2)}
+              leftAlign
             />
+            <Divider />
             <IconWrapper>
               <SwapArrowDown />
             </IconWrapper>
             <TokenList
-              title={toToken}
+              title={`${toValue} ${toToken}`}
+              description={`$${formatNumber(toUSDValue, 2)}`}
               image={TOKEN_IMAGE_MAPPER[toToken]}
               type="large"
-              balance={formatNumber(toValue, 2)}
-              value={`${formatNumber(toUSDValue, 2)} / Price impact : 0.012%`}
+              leftAlign
             />
           </List>
         </ListWrapper>
@@ -78,14 +133,14 @@ export const PopupSwap = () => {
           <DetailInfoWrapper>
             <DetailInfoTextWrapper>
               <DetailInfoText>Total expected after fees</DetailInfoText>
-              <DetailInfoText>{`${formatNumber(totalAfterFee, 2)} ${currentUnit}`}</DetailInfoText>
+              <DetailInfoText>{`${formatNumber(totalAfterFee, 6)} ${currentUnit}`}</DetailInfoText>
             </DetailInfoTextWrapper>
             <DetailInfoTextWrapper>
-              <DetailInfoText>{`The least you'll get at ${slippageText}% slippage`}</DetailInfoText>
-              <DetailInfoText>{`${formatNumber(
+              <DetailInfoSubtext>{`The least you'll get at ${slippageText}% slippage`}</DetailInfoSubtext>
+              <DetailInfoSubtext>{`${formatNumber(
                 totalAfterSlippage,
-                2
-              )} ${currentUnit}`}</DetailInfoText>
+                6
+              )} ${currentUnit}`}</DetailInfoSubtext>
             </DetailInfoTextWrapper>
           </DetailInfoWrapper>
         </DetailWrapper>
@@ -95,7 +150,7 @@ export const PopupSwap = () => {
 };
 
 const Wrapper = tw.div`
-  px-24 flex flex-col gap-24
+  px-24 pb-24 flex flex-col gap-24
 `;
 
 const ListWrapper = tw.div`
@@ -133,3 +188,41 @@ const DetailInfoText = tw.div`
 const DetailInfoSubtext = tw.div`
   font-r-12 text-neutral-60
 `;
+const Divider = tw.div`
+  w-full h-1 bg-neutral-20 flex-shrink-0
+`;
+
+const SuccessIconWrapper = styled.div(() => [
+  tw`w-32 h-32 rounded-full flex-center bg-green-50`,
+  css`
+    & svg {
+      width: 20px;
+      height: 20px;
+      fill: ${COLOR.NEUTRAL[100]};
+    }
+  `,
+]);
+
+const PrimaryButtonWrapper = tw.div`
+  w-full flex flex-col gap-16
+`;
+
+const TimeWrapper = styled.div(() => [
+  tw`flex items-center gap-4 text-neutral-60`,
+  css`
+    & svg {
+      width: 20px;
+      height: 20px;
+      fill: ${COLOR.NEUTRAL[60]};
+    }
+  `,
+]);
+
+const ClickableIcon = styled.div(() => [
+  tw` clickable flex-center`,
+  css`
+    &:hover svg {
+      fill: ${COLOR.NEUTRAL[80]};
+    }
+  `,
+]);
