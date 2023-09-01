@@ -27,11 +27,11 @@ export const useTableMyLiquidity = () => {
         [TOKEN.WETH]: 20,
       } as Record<TOKEN, number>,
       pool: {
-        [TOKEN.MOAI]: 429000,
-        [TOKEN.WETH]: 148008,
+        [TOKEN.MOAI]: 7077.75,
+        [TOKEN.WETH]: 147,
       } as Record<TOKEN, number>,
       balance: 693194,
-      apr: 0.79,
+      apr: 6.79,
       isNew: false,
     },
   ];

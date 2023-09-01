@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { IconNext } from '~/assets/icons';
@@ -9,6 +10,11 @@ import { LiquidityPoolTable } from '~/types/components';
 
 export const LiquidityPoolLayout = () => {
   const { data, columns } = useTableLiquidityPool();
+  const navigate = useNavigate();
+
+  const handleRowClick = (poolIndex?: string) => {
+    navigate(`/pools/${poolIndex}/liquidity`);
+  };
 
   return (
     <Wrapper>
@@ -20,6 +26,7 @@ export const LiquidityPoolLayout = () => {
         data={data}
         columns={columns}
         emptyText={`No liquidity pools on ${CURRENT_CHAIN}`}
+        handleRowClick={handleRowClick}
       />
     </Wrapper>
   );

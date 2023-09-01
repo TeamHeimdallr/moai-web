@@ -24,6 +24,10 @@ export const useAddLiquidity = ({ enabled, poolId, request }: Props) => {
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
   const publicClient = usePublicClient();
 
+  const sortedTokens = request.tokens.slice().sort((a, b) => a.localeCompare(b));
+  const sortedIndex = sortedTokens.map(token => request.tokens.findIndex(t => t === token));
+  const sortedAmountsIn = sortedIndex.map(index => request.amountsIn[index]);
+
   const {
     isLoading: prepareLoading,
     status: prepareStatus,
@@ -41,9 +45,9 @@ export const useAddLiquidity = ({ enabled, poolId, request }: Props) => {
       walletAddress,
       walletAddress,
       [
-        request.tokens,
-        request.amountsIn,
-        WeightedPoolEncoder.joinExactTokensInForBPTOut(request.amountsIn, '0'),
+        sortedTokens,
+        sortedAmountsIn,
+        WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
         false,
       ],
     ],
