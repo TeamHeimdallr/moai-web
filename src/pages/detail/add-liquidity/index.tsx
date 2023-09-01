@@ -26,16 +26,11 @@ const LiquidityPage = () => {
   useRequirePrarams([id], () => navigate(-1));
   const { compositions, name: lpName } = pools[Number(id) - 1];
   const { balancesMap } = useGetBalancesAll(address);
-<<<<<<< HEAD
 
   const tokens: TokenInfo[] = compositions.map(compositon => {
     const { name } = compositon;
     const balance = balancesMap?.[name]?.rawValue ?? BigInt(0);
 
-=======
-  const tokens: TokenInfo[] = compositions.map(token => {
-    const balance = balancesMap?.[token]?.rawValue ?? BigInt(0);
->>>>>>> 109792f (feat: combine add liquidity page)
     return {
       name,
       balance: Number(formatEther(balance)),
