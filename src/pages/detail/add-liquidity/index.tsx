@@ -24,13 +24,14 @@ const LiquidityPage = () => {
   const { compositions } = pools[Number(id) - 1];
   const { balancesMap } = useGetBalancesAll(address);
 
-  const tokens: TokenInfo[] = compositions.map(token => {
-    const balance = balancesMap?.[token]?.rawValue ?? BigInt(0);
+  const tokens: TokenInfo[] = compositions.map(compositon => {
+    const { name } = compositon;
+    const balance = balancesMap?.[name]?.rawValue ?? BigInt(0);
 
     return {
-      name: token,
+      name,
       balance: Number(formatEther(balance)),
-      value: Number(formatEther(balance)) * TOKEN_USD_MAPPER[token],
+      value: Number(formatEther(balance)) * TOKEN_USD_MAPPER[name],
     };
   });
 
