@@ -12,6 +12,7 @@ export interface Composition {
   price: number;
 }
 export interface PoolInfo {
+  tokenAddress: string;
   compositions: Composition[];
   value: string;
   volume: string;

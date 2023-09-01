@@ -1,14 +1,38 @@
 import { ReactNode } from 'react';
+import { Address } from 'viem';
+
+import { TOKEN } from '~/types/contracts';
+
+export interface LiquidityPoolData {
+  id: string;
+  assets: TOKEN[];
+  composition: Record<TOKEN, number>;
+  pool: Record<TOKEN, number>;
+  volume: number;
+  apr: number;
+  isNew: boolean;
+}
 
 export interface LiquidityPoolTable {
+  id: string;
   assets: ReactNode;
   composition: ReactNode;
   poolValue: ReactNode;
-  volumn: ReactNode;
+  volume: ReactNode;
   apr: ReactNode;
 }
 
+export interface MyLiquidityData {
+  id: string;
+  assets: TOKEN[];
+  composition: Record<TOKEN, number>;
+  pool: Record<TOKEN, number>;
+  balance: number;
+  apr: number;
+  isNew: boolean;
+}
 export interface MyLiquidityTable {
+  id: string;
   assets: ReactNode;
   composition: ReactNode;
   balance: ReactNode;
@@ -19,4 +43,21 @@ export interface MyLiquidityTable {
 export interface SortingState {
   key: string;
   order: 'asc' | 'desc';
+}
+
+export interface PoolCompositionData {
+  tokenAddress: Address;
+  token: TOKEN;
+  weight: number;
+  balance: number;
+  value: number;
+  currentWeight: number;
+}
+export interface PoolCompositionTable {
+  tokenAddress: string;
+  token: ReactNode;
+  weight: ReactNode;
+  balance: ReactNode;
+  value: ReactNode;
+  currentWeight: ReactNode;
 }

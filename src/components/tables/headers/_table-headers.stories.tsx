@@ -50,9 +50,9 @@ export const _TableHeaderAPR: Story = {
 export const _TableHeaderSortable: Story = {
   render: () => (
     <TableHeaderSortable
-      sortKey="VOLUMN"
-      label="Volumn(24h)"
-      sorting={{ key: 'VOLUMN', order: 'asc' }}
+      sortKey="VOLUME"
+      label="Volume(24h)"
+      sorting={{ key: 'VOLUME', order: 'asc' }}
     />
   ),
   args: {

@@ -7,25 +7,25 @@ import { WagmiConfig } from 'wagmi';
 import { ethereumClient, projectId, wagmiConfig } from '~/configs/setup-wallet';
 import { TOKEN } from '~/types/contracts';
 
-import { AddLpInput } from '.';
+import { AddLiquidityInput } from '.';
 
 const meta = {
-  title: 'Pages/Detail/AddLiquidity/AddLpInput',
-  component: AddLpInput,
+  title: 'Pages/Detail/AddLiquidity/AddLiquidityInput',
+  component: AddLiquidityInput,
   tags: ['autodocs'],
   argTypes: {},
-} satisfies Meta<typeof AddLpInput>;
+} satisfies Meta<typeof AddLiquidityInput>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const _AddLpInput: Story = {
+export const _AddLiquidityInput: Story = {
   render: args => (
     <>
       <WagmiConfig config={wagmiConfig}>
         <BrowserRouter>
           <Wrapper>
-            <AddLpInput tokenList={args.tokenList} />
+            <AddLiquidityInput tokenList={args.tokenList} />
           </Wrapper>
         </BrowserRouter>
       </WagmiConfig>
