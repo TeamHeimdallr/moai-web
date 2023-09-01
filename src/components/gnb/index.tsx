@@ -6,7 +6,7 @@ import logo from '~/assets/logos/logo-text.svg';
 import { Notification } from '~/components/notification';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 
-import { AccountProfile } from '../account-profile';
+import { AccountProfile } from '../account-profile/account-profile';
 import { ButtonPrimaryMedium } from '../buttons/primary';
 
 const MENU = [

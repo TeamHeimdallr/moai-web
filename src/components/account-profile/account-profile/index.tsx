@@ -6,12 +6,14 @@ import { useOnClickOutside } from 'usehooks-ts';
 import { useNetwork } from 'wagmi';
 
 import { IconCopy, IconLink } from '~/assets/icons';
+import { ButtonIconSmall } from '~/components/buttons/icon';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { truncateAddress } from '~/utils/string';
 
+import { Slippage } from '../slippage';
+
 export const AccountProfile = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const [slippage, setSlippage] = useState(1);
 
   const { address, disconnect } = useConnectWallet();
   const { chain } = useNetwork();
@@ -24,6 +26,18 @@ export const AccountProfile = () => {
   const handleLink = () => {
     window.open(`https://explorer.mantle.xyz/address/${address}`);
   };
+
+  const network =
+    chain &&
+    (chain.id === 5000
+      ? 'Mantle'
+      : chain.id === 5001
+      ? 'Mantle Testnet'
+      : chain.id === 59144
+      ? 'Linea'
+      : chain.id === 59140
+      ? 'Linea Testnet'
+      : chain.name);
 
   return (
     <Wrapper ref={ref} opened={opened}>
@@ -47,52 +61,18 @@ export const AccountProfile = () => {
               <AddressWrapper>
                 <MediumText>{truncateAddress(address ?? '0x')}</MediumText>
                 {/* TODO: Copied! 문구 2초 노출 */}
-                <Copy onClick={() => copy(address ?? '')}>
-                  <IconCopy fill="#9296AD" />
-                </Copy>
-                <Link onClick={() => handleLink()}>
-                  <IconLink fill="#9296AD" />
-                </Link>
+                <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(address ?? '')} />
+                <ButtonIconSmall icon={<IconLink />} onClick={handleLink} />
               </AddressWrapper>
             </AccountWrapper>
             <Divider />
-            <SlippageWrapper>
-              <SlippageInnerWarpper>
-                <SlippageText>Slippage tolerance</SlippageText>
-                <SlippageOptions>
-                  <SlippageOption selected={slippage === 0} onClick={() => setSlippage(0)}>
-                    {'0.5%'}
-                  </SlippageOption>
-                  <SlippageOption selected={slippage === 1} onClick={() => setSlippage(1)}>
-                    {'1.0%'}
-                  </SlippageOption>
-                  <SlippageOption selected={slippage === 2} onClick={() => setSlippage(2)}>
-                    {'2.0%'}
-                  </SlippageOption>
-                  <SlippageOption selected={slippage === 3} disabled={true}>
-                    {'or enter manually'}
-                  </SlippageOption>
-                </SlippageOptions>
-              </SlippageInnerWarpper>
-            </SlippageWrapper>
+            <Slippage />
             <Divider />
             <NetworkWrapper>
               <Text>{'Network'}</Text>
               <CurrentNetwork>
                 <NetworkStatus />
-                {chain && (
-                  <NetworkText>
-                    {chain.id === 5000
-                      ? 'Mantle'
-                      : chain.id === 5001
-                      ? 'Mantle Testnet'
-                      : chain.id === 59144
-                      ? 'Linea'
-                      : chain.id === 59140
-                      ? 'Linea Testnet'
-                      : chain.name}
-                  </NetworkText>
-                )}
+                {network && <NetworkText>{network}</NetworkText>}
               </CurrentNetwork>
             </NetworkWrapper>
           </Panel>
@@ -103,20 +83,20 @@ export const AccountProfile = () => {
 };
 
 const InnerWrapper = tw.div`
-  inline-block
+  flex-center
 `;
 
 interface WrapperProps {
   opened?: boolean;
 }
 const Wrapper = styled.div<WrapperProps>(({ opened }) => [
-  tw`relative flex select-none bg-neutral-10 rounded-10 gap-6 pr-16 pl-8 py-9 w-145 h-40`,
+  tw`relative flex h-40 gap-6 pl-8 pr-16 select-none bg-neutral-10 rounded-10 py-9 w-145`,
   opened ? tw`text-neutral-0` : tw`hover:text-primary-80`,
   opened ? tw`bg-primary-50` : tw`hover:bg-neutral-20`,
 ]);
 
 const ContentWrapper = styled.div<WrapperProps>(({ opened }) => [
-  tw`w-full h-full clickable truncate text-center text-neutral-100 font-m-14 address`,
+  tw`w-full h-full text-center truncate clickable text-neutral-100 font-m-14 address`,
   opened ? tw`text-neutral-0` : tw`hover:text-primary-80`,
 ]);
 
@@ -156,10 +136,6 @@ const MediumText = tw.div`
   text-neutral-100 font-m-16 address w-158
 `;
 
-const SlippageWrapper = tw.div`
-  gap-20 px-16 py-12 w-full
-`;
-
 const NetworkWrapper = tw.div`
   flex justify-between px-16 pb-16 pt-12 w-full
 `;
@@ -179,37 +155,3 @@ const NetworkStatus = tw.div`
 const NetworkText = tw.div`
   text-neutral-80 font-r-12
 `;
-
-const Copy = tw.div`
-  clickable
-`;
-
-const Link = tw.div`
-  clickable
-`;
-
-const SlippageInnerWarpper = tw.div`
-  flex flex-col gap-12 max-w-230
-`;
-
-const SlippageText = tw.div`
-  text-neutral-100 font-m-16
-`;
-
-const SlippageOptions = tw.div`
-  flex gap-8 w-full flex-wrap
-`;
-
-interface SlippageOptionProps {
-  selected?: boolean;
-  disabled?: boolean;
-}
-const SlippageOption = styled.div<SlippageOptionProps>(({ selected, disabled }) => [
-  tw`
-  gap-10 px-16 py-6 rounded-8 bg-transparent text-neutral-60 font-r-16 border-solid border-1 border-neutral-60 clickable
-`,
-  !disabled && selected
-    ? tw`text-primary-50 border-primary-50 gradient-chip`
-    : tw`hover:bg-neutral-20 hover:text-neutral-60 border-neutral-80`,
-  disabled && tw`non-clickable`,
-]);
