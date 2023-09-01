@@ -1,4 +1,4 @@
-import { TOKEN_USD_MAPPER } from '~/constants';
+import { CONTRACT_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
 import { TOKEN } from '~/types/contracts';
 import { Entries } from '~/types/helpers';
 
@@ -10,3 +10,8 @@ export const sumPoolValues = (object: Record<string, number>) =>
     },
     0
   );
+export const getPoolAddress = (id: number) => {
+  const poolAddress = [CONTRACT_ADDRESS.POOL_A, CONTRACT_ADDRESS.POOL_B];
+
+  return poolAddress[id - 1];
+};

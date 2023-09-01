@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
+import { usePoolBalance } from '~/api/api-contract/contract/pool-balance';
 import { IconLink } from '~/assets/icons';
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
@@ -18,6 +19,9 @@ const DetailPage = () => {
   useRequirePrarams([id], () => navigate(-1));
 
   const { compositions, value, volume, apy, fees } = pools[Number(id) - 1];
+
+  const { data } = usePoolBalance(Number(id));
+  console.log(data);
 
   return (
     <Wrapper>
