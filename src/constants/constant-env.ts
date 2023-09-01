@@ -1,5 +1,7 @@
 import { Address } from 'viem';
 
+import { TOKEN } from '~/types/contracts';
+
 /**
  * @description 서버 START ENV / MOCK 환경
  */
@@ -43,7 +45,7 @@ export const POLYGONSCAN_POLYGON_MUMBAI_API = 'https://api-testnet.polygonscan.c
  * @description CHAIN ID / CONTRACT ADDRESS
  */
 type Chain = 'MANTLE' | 'MANTLE_TESTNET';
-type Contract = 'CONTRACT_NAME';
+type Contract = TOKEN | 'CONTRACT_NAME';
 
 export const CHAIN_ID: Record<Chain, number> = {
   MANTLE: 5000,
@@ -51,6 +53,10 @@ export const CHAIN_ID: Record<Chain, number> = {
 };
 export const CONTRACT_ADDRESS: Record<Contract, Address> = {
   CONTRACT_NAME: IS_MAINNET ? '0x' : '0x',
+  [TOKEN.MOAI]: IS_MAINNET ? '0x' : '0xaf5F3781678a0Bd4258cB4e9885b26E6629b7930',
+  [TOKEN.WETH]: IS_MAINNET ? '0x' : '0xd1A5c7Dd009e578bf4aC8f9392D1fFdbC27B86BB',
+  [TOKEN.USDC]: IS_MAINNET ? '0x' : '0xcBdaCEaE8660BE805Deaf36A210c770989Ed4888',
+  [TOKEN.USDT]: IS_MAINNET ? '0x' : '0xF01C2F30D8e7DCa8D589B66B4cC5214c8Eb993E4',
 };
 export const DEFAULT_CHAIN_ID = IS_MAINNET ? CHAIN_ID.MANTLE : CHAIN_ID.MANTLE_TESTNET;
 export const MANTLE_CHAIN_ID = IS_MAINNET ? CHAIN_ID.MANTLE : CHAIN_ID.MANTLE_TESTNET;
