@@ -20,3 +20,5 @@ export const POOL_ID = CHAIN === 'linea' ? POLL_ID_LINEA : POLL_ID_MANTLE;
 export const CONTRACT_ADDRESS =
   CHAIN === 'linea' ? CONTRACT_ADDRESS_LINEA : CONTRACT_ADDRESS_MANTLE;
 export const TOKEN_ADDRESS = CHAIN === 'linea' ? TOKEN_ADDRESS_LINEA : TOKEN_ADDRESS_MANTLE;
+
+export const CURRENT_CHAIN = CHAIN === 'linea' ? 'Linea' : 'Mantle';

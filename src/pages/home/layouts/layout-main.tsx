@@ -3,7 +3,8 @@ import tw, { styled } from 'twin.macro';
 
 import bgMain from '~/assets/images/bg-main.png';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
-import { TOKEN_USD_MAPPER } from '~/constants';
+import { CURRENT_CHAIN } from '~/constants';
+import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
@@ -12,20 +13,19 @@ export const MainLayout = () => {
   const { isOpen, open } = useWeb3Modal();
   const { isConnected } = useConnectWallet();
 
-  // TODO: get moai balance
-  const moaiBalance = 123.12;
-  const moaiBalanceUSD = moaiBalance * TOKEN_USD_MAPPER[TOKEN.MOAI];
+  const { balancesMap } = useBalancesAll();
+  const moaiBalance = balancesMap?.[TOKEN.MOAI];
 
   return (
     <MainWrapper isConnected={isConnected} style={{ backgroundImage: `url(${bgMain})` }}>
       {isConnected ? (
         <>
           <Label>My Moai balance</Label>
-          <SubTitle>{`$${formatNumber(moaiBalanceUSD, 2)}`}</SubTitle>
+          <SubTitle>{`$${formatNumber(moaiBalance?.valueUSD ?? 0, 4)}`}</SubTitle>
         </>
       ) : (
         <>
-          <Title>DeFi Liquidity pools built on Mantle</Title>
+          <Title>{`DeFi Liquidity pools built on ${CURRENT_CHAIN}`}</Title>
           <ButtonWrapper>
             <ButtonPrimaryLarge
               text="Connect wallet"

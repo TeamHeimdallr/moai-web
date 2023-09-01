@@ -6,7 +6,7 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { VAULT_ABI } from '~/abi/mantle/vault';
+import { VAULT_ABI } from '~/abi/vault';
 import { CONTRACT_ADDRESS } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/types/contracts';

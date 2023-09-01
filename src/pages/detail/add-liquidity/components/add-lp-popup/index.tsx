@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { Address, parseEther } from 'viem';
 
-import { useAddLiquidity } from '~/api/api-contract/mantle/add-liquidity/add-liquiditiy';
+import { useAddLiquidity } from '~/api/api-contract/add-liquiditiy';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
