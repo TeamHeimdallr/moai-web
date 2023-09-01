@@ -7,7 +7,7 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
-import { TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
+import { TESTNET_SCANNER_URL, TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
@@ -41,7 +41,7 @@ export const AddLpPopup = ({ tokenList, totalValue, lpName, priceImpact }: Props
   };
 
   const handleLink = (txHash: string) => {
-    window.open(`https://explorer.mantle.xyz/tx/${txHash}`);
+    window.open(`${TESTNET_SCANNER_URL}/tx/${txHash}`);
   };
 
   return (

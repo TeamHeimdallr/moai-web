@@ -25,7 +25,7 @@ export const _AddLpInput: Story = {
       <WagmiConfig config={wagmiConfig}>
         <BrowserRouter>
           <Wrapper>
-            <AddLpInput tokenList={args.tokenList} />
+            <AddLpInput tokenList={args.tokenList} lpName="" />
           </Wrapper>
         </BrowserRouter>
       </WagmiConfig>
@@ -37,6 +37,7 @@ export const _AddLpInput: Story = {
       { name: TOKEN.MOAI, balance: 4.75, value: 0 },
       { name: TOKEN.WETH, balance: 0.15, value: 0 },
     ],
+    lpName: '',
   },
 };
 

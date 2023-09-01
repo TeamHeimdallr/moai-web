@@ -14,7 +14,7 @@ import { SwapArrowDown } from '../components/arrow-down';
 import { PopupSwapSelectTokenFrom } from '../components/popup-select-token-from';
 import { PopupSwapSelectTokenTo } from '../components/popup-select-token-to';
 import { PopupSwap } from '../components/popup-swap';
-import { useSwap } from '../hooks/use-swap';
+import { useSwapData } from '../hooks/use-swap-data';
 
 export const SwapInputs = () => {
   const {
@@ -33,7 +33,7 @@ export const SwapInputs = () => {
 
     swapRatio,
     validToSwap,
-  } = useSwap();
+  } = useSwapData();
 
   const { opened: selectTokenFromPopupOpened, open: openSelectTokenFromPopup } = usePopup(
     POPUP_ID.SWAP_SELECT_TOKEN_FROM

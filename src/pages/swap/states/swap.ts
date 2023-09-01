@@ -5,7 +5,7 @@ import { logger } from '~/states/middleware/logger';
 
 export interface SwapState {
   fromToken: string;
-  fromValue: number | undefined;
+  fromValue: number | string;
   toToken: string;
 
   setFromToken: (fromToken: string) => void;
@@ -22,15 +22,15 @@ export const useSwapStore = create<SwapState>()(
       name: 'swap-store',
 
       fromToken: 'MOAI',
-      fromValue: undefined,
-      toToken: 'USDC',
+      fromValue: '',
+      toToken: 'WETH',
 
       setFromToken: fromToken => set({ fromToken }),
       setFromValue: fromValue => set({ fromValue }),
       setToToken: toToken => set({ toToken }),
 
-      resetFromValue: () => set({ fromValue: -1 }),
-      resetAll: () => set({ fromToken: 'MOAI', fromValue: -1, toToken: 'USDC' }),
+      resetFromValue: () => set({ fromValue: '' }),
+      resetAll: () => set({ fromToken: 'MOAI', fromValue: '', toToken: 'USDC' }),
     }))
   )
 );

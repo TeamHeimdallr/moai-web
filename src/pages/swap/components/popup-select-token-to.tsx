@@ -10,11 +10,11 @@ import { POPUP_ID } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-import { useSwap } from '../hooks/use-swap';
+import { useSwapData } from '../hooks/use-swap-data';
 
 export const PopupSwapSelectTokenTo = () => {
   const { balancesMap } = useBalancesAll();
-  const { toToken, setToToken } = useSwap();
+  const { toToken, setToToken } = useSwapData();
   const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_TO);
 
   return (
