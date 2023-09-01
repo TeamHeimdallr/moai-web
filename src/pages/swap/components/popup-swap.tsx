@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
 import { parseEther } from 'viem';
 
@@ -30,8 +30,7 @@ import { SwapArrowDown } from './arrow-down';
 
 export const PopupSwap = () => {
   const { address } = useConnectWallet();
-  const { fromToken, fromValue, toToken, toValue, swapRatio, poolId, validToSwap, resetAll } =
-    useSwapData();
+  const { fromToken, fromValue, toToken, toValue, swapRatio, poolId, resetAll } = useSwapData();
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippageId } = useSlippageStore();
 
@@ -67,47 +66,41 @@ export const PopupSwap = () => {
   const slippageText = (slippage * 100).toFixed(1);
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
 
-  const handleSusscee = () => {
+  const handleSuccess = () => {
     close();
     resetAll();
   };
 
-  const SuccessIcon = useMemo(
-    () => (
-      <SuccessIconWrapper>
-        <IconCheck />
-      </SuccessIconWrapper>
-    ),
-    []
+  const SuccessIcon = (
+    <SuccessIconWrapper>
+      <IconCheck />
+    </SuccessIconWrapper>
   );
 
-  const Button = useMemo(
-    () =>
-      isSuccess ? (
-        <PrimaryButtonWrapper>
-          <TimeWrapper onClick={handleLink}>
-            <IconTime />
-            {format(new Date(blockTimestamp), DATE_FORMATTER.FULL)}
-            <ClickableIcon>
-              <IconLink />
-            </ClickableIcon>
-          </TimeWrapper>
-          <ButtonPrimaryLarge
-            buttonType="outlined"
-            text="Return to swap page"
-            onClick={handleSusscee}
-          />
-        </PrimaryButtonWrapper>
-      ) : (
-        <ButtonPrimaryLarge
-          text="Confirm swap"
-          isLoading={isLoading}
-          onClick={swap}
-          disabled={!!error || !validToSwap}
-        />
-      ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isSuccess]
+  const Button = isSuccess ? (
+    <PrimaryButtonWrapper>
+      {blockTimestamp > 0 && (
+        <TimeWrapper>
+          <IconTime />
+          {format(new Date(blockTimestamp), DATE_FORMATTER.FULL)}
+          <ClickableIcon onClick={handleLink}>
+            <IconLink />
+          </ClickableIcon>
+        </TimeWrapper>
+      )}
+      <ButtonPrimaryLarge
+        buttonType="outlined"
+        text="Return to swap page"
+        onClick={handleSuccess}
+      />
+    </PrimaryButtonWrapper>
+  ) : (
+    <ButtonPrimaryLarge
+      text="Confirm swap"
+      isLoading={isLoading}
+      onClick={swap}
+      disabled={!!error}
+    />
   );
 
   return (

@@ -30,7 +30,7 @@ export const useSwapStore = create<SwapState>()(
       setToToken: toToken => set({ toToken }),
 
       resetFromValue: () => set({ fromValue: '' }),
-      resetAll: () => set({ fromToken: 'MOAI', fromValue: '', toToken: 'USDC' }),
+      resetAll: () => set({ fromToken: 'MOAI', fromValue: '', toToken: 'WETH' }),
     }))
   )
 );

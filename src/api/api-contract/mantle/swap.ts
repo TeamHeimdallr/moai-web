@@ -26,8 +26,8 @@ export const useSwap = ({
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const publicClient = usePublicClient();
-
   const { address } = useConnectWallet();
+
   const enabled = !!singleSwap && !!fundManagement && !!address;
 
   const { config, error } = usePrepareContractWrite({
@@ -50,20 +50,20 @@ export const useSwap = ({
   });
 
   const getBlockTimestamp = async () => {
-    if (!txData?.blockNumber) return;
+    if (!txData || !txData.blockNumber) return;
 
     const { timestamp } = await publicClient.getBlock({ blockNumber: txData.blockNumber });
-    setBlockTimestamp(Number(timestamp));
+    setBlockTimestamp(Number(timestamp) * 1000);
   };
 
   useEffect(() => {
     getBlockTimestamp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [txData?.blockNumber]);
+  }, [txData]);
 
   return {
     isLoading: isLoading || fetchStatus === 'fetching',
-    isSuccess: !!txData || !!blockTimestamp,
+    isSuccess: !!txData,
     error,
 
     data,

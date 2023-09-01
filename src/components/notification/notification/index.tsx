@@ -66,7 +66,7 @@ export const Notification = () => {
 };
 
 const UpperWrapper = tw.div`
-  flex flex-col items-end gap-20 relative z-100
+  flex flex-col items-end gap-20 relative z-10
 `;
 
 const Wrapper = tw.div`

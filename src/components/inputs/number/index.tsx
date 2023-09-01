@@ -99,6 +99,7 @@ export const InputNumber = ({
                   // @ts-expect-error
                   name={name}
                   allowLeadingZeros={false}
+                  allowNegative={false}
                   placeholder={placeholder}
                   thousandSeparator
                   maxLength={16}

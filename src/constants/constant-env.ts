@@ -50,7 +50,7 @@ export const CHAIN_ID: Record<Chain, number> = {
 
 export const POOL_ID: Record<'POOL_A' | 'POOL_B', string> = {
   POOL_A: IS_MAINNET ? '0x' : '0x7e6acf4545f676d250f856a8b10f67f6244c1912000200000000000000000001',
-  POOL_B: IS_MAINNET ? '0x' : '0x',
+  POOL_B: IS_MAINNET ? '0x' : '0xd9d0b686d77c1f33902bcfee5522332b96decb38000100000000000000000002',
 };
 
 export const CONTRACT_ADDRESS: Record<Contract, Address> = {
