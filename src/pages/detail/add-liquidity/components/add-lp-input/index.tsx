@@ -8,19 +8,22 @@ import { InputNumber } from '~/components/inputs/number';
 import { Token } from '~/components/token';
 import { TOKEN_USD_MAPPER } from '~/constants';
 import { useOnClickOutside } from '~/hooks/pages/use-onclick-outside';
+import { usePopup } from '~/hooks/pages/use-popup';
+import { POPUP_ID, TokenInfo } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-interface TokenInfo {
-  name: TOKEN;
-  balance: number;
-}
+import { AddLpPopup } from '../add-lp-popup';
+
 interface Props {
   tokenList: TokenInfo[];
+  lpName: string;
 }
-export const AddLpInput = ({ tokenList }: Props) => {
+export const AddLpInput = ({ tokenList, lpName }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
+
+  const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
 
   const priceImpact = 0.13; // TODO
   const [inputValue1, setInputValue1] = useState<number>(0);
@@ -76,8 +79,8 @@ export const AddLpInput = ({ tokenList }: Props) => {
             // TODO: out of balance validation
             <InputNumber
               key={idx}
-              token={<Token token={token.name} />}
-              tokenName={token.name}
+              token={<Token token={token.name as TOKEN} />}
+              tokenName={token.name as TOKEN}
               balance={token.balance}
               handleChange={val => handleChange(idx, val)}
               slider={getInputValue(idx) > 0}
@@ -94,7 +97,17 @@ export const AddLpInput = ({ tokenList }: Props) => {
           <PriceImpact>{`Price impact  ${formatNumber(priceImpact, 2)}%`}</PriceImpact>
         </Total>
       </InnerWrapper>
-      <ButtonPrimaryLarge text="Preview" />
+      <ButtonPrimaryLarge text="Preview" onClick={popupOpen} />
+      {popupOpened && (
+        <AddLpPopup
+          tokenList={tokenList.map((token, idx) => {
+            return { name: token.name as TOKEN, amount: getInputValue(idx) };
+          })}
+          totalValue={totalValue}
+          lpName={lpName}
+          priceImpact={0.13}
+        />
+      )}
     </Wrapper>
   );
 };

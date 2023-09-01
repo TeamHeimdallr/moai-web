@@ -16,4 +16,5 @@ export interface PoolInfo {
   volume: string;
   apr: string;
   lpTokens: number;
+  name: string;
 }
