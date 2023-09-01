@@ -32,10 +32,6 @@ jobs:
         env:
           VARS_CONTEXT: ${{ toJson(vars) }}
 
-      - name: Update .env
-        run: |
-          echo "VITE_CHAIN_ENV=linea" >> .env
-
       - name: Build
         run: yarn build
 
