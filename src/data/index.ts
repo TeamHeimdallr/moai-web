@@ -1,9 +1,10 @@
-import { TOKEN_USD_MAPPER } from '~/constants';
+import { POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
 import { PoolInfo } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 
 export const pools: PoolInfo[] = [
   {
+    id: POOL_ID.POOL_A,
     compositions: [
       { name: TOKEN.MOAI, weight: 80, balance: 7077.75, price: TOKEN_USD_MAPPER[TOKEN.MOAI] },
       { name: TOKEN.WETH, weight: 20, balance: 147, price: TOKEN_USD_MAPPER[TOKEN.WETH] },
@@ -16,6 +17,7 @@ export const pools: PoolInfo[] = [
     name: '80MOAI-20WETH',
   },
   {
+    id: POOL_ID.POOL_B,
     compositions: [
       { name: TOKEN.WETH, weight: 50, balance: 147, price: TOKEN_USD_MAPPER[TOKEN.WETH] },
       { name: TOKEN.USDC, weight: 30, balance: 90, price: TOKEN_USD_MAPPER[TOKEN.USDC] },

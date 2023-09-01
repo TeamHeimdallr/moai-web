@@ -15,6 +15,7 @@
     "check:type": "tsc --p ./tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@balancer-labs/balancer-js": "^2.0.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.3.1",
