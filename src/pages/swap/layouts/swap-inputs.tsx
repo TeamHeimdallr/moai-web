@@ -8,9 +8,11 @@ import { Token } from '~/components/token';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
+import { formatNumber } from '~/utils/number';
 
 import { SwapArrowDown } from '../components/arrow-down';
 import { PopupSwapSelectTokenFrom } from '../components/popup-select-token-from';
+import { PopupSwapSelectTokenTo } from '../components/popup-select-token-to';
 import { useSwap } from '../hooks/use-swap';
 
 export const SwapInputs = () => {
@@ -32,8 +34,11 @@ export const SwapInputs = () => {
     validToSwap,
   } = useSwap();
 
-  const { opened: selectFromTokenPopupOpened, open: openSelectFromTokenPopup } = usePopup(
+  const { opened: selectTokenFromPopupOpened, open: openSelectTokenFromPopup } = usePopup(
     POPUP_ID.SWAP_SELECT_TOKEN_FROM
+  );
+  const { opened: selectTokenToPopupOpened, open: openSelectTokenToPopup } = usePopup(
+    POPUP_ID.SWAP_SELECT_TOKEN_TO
   );
 
   useEffect(
@@ -55,7 +60,7 @@ export const SwapInputs = () => {
               maxButton
               slider
               handleChange={setFromValue}
-              handleTokenClick={openSelectFromTokenPopup}
+              handleTokenClick={openSelectTokenFromPopup}
             />
             <IconWrapper>
               <SwapArrowDown />
@@ -66,14 +71,15 @@ export const SwapInputs = () => {
               balance={toTokenBalance}
               value={toValue}
               focus={false}
-              handleTokenClick={() => console.log('token clicked')}
+              handleTokenClick={openSelectTokenToPopup}
             />
           </InputInnerWrapper>
-          <InputLabel>{`1 ${fromToken} = ${swapRatio} ${toToken}`}</InputLabel>
+          <InputLabel>{`1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`}</InputLabel>
         </InputWrapper>
         <ButtonPrimaryLarge text="Preview" disabled={!validToSwap} />
       </Wrapper>
-      {selectFromTokenPopupOpened && <PopupSwapSelectTokenFrom />}
+      {selectTokenFromPopupOpened && <PopupSwapSelectTokenFrom />}
+      {selectTokenToPopupOpened && <PopupSwapSelectTokenTo />}
     </>
   );
 };
