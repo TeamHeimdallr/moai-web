@@ -1,13 +1,21 @@
-import { useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
+import { parseEther } from 'viem';
 
+import { useAddLiquidity } from '~/api/api-contract/mantle/add-liquidity/add-liquiditiy';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
-import { TESTNET_SCANNER_URL, TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
+import {
+  TESTNET_SCANNER_URL,
+  TOKEN_ADDRESS,
+  TOKEN_IMAGE_MAPPER,
+  TOKEN_USD_MAPPER,
+} from '~/constants';
+import { pools } from '~/data';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
@@ -20,28 +28,42 @@ interface TokenInfo {
 interface Props {
   tokenList: TokenInfo[];
   totalValue: number;
-  lpName: string;
   priceImpact: number;
 }
 
-export const AddLpPopup = ({ tokenList, totalValue, lpName, priceImpact }: Props) => {
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const lpAmount = 124.52; // TODO
-  const lpAddress = '0x1234'; // TODO
+export const AddLpPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
+  const { id } = useParams();
+  const { name: lpName } = pools[Number(id) - 1];
+
+  const prepareRequestData = () => {
+    return {
+      tokens: tokenList.map(t => TOKEN_ADDRESS[t.name]),
+      amountsIn: tokenList.map(t => parseEther(t.amount.toString())),
+    };
+  };
+
+  const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useAddLiquidity({
+    enabled: id && Number(id) > 0 && totalValue > 0,
+    poolId: pools[Number(id) - 1].id,
+    request: prepareRequestData(),
+  });
+
+  const txDate = new Date(blockTimestamp ?? 0);
+
+  // TODO
+  const lpAmount = (
+    (tokenList.length > 0 ? tokenList[0].amount : 0) +
+    (Math.random() * (20 - 10) + 10)
+  ).toFixed(2);
   const { close } = usePopup(POPUP_ID.ADD_LP);
 
   const handleButton = async () => {
-    // TODO
     if (isSuccess) close();
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsSuccess(true);
-    setIsLoading(false);
+    await writeAsync?.();
   };
 
-  const handleLink = (txHash: string) => {
-    window.open(`${TESTNET_SCANNER_URL}/tx/${txHash}`);
+  const handleLink = () => {
+    window.open(`${TESTNET_SCANNER_URL}/tx/${txData?.transactionHash}`);
   };
 
   return (
@@ -68,9 +90,9 @@ export const AddLpPopup = ({ tokenList, totalValue, lpName, priceImpact }: Props
       <Wrapper>
         <List title={`You're providing`}>
           {tokenList.map(({ name, amount }, idx) => (
-            <>
+            <div key={idx}>
               <TokenList
-                key={name}
+                key={`token-${idx}`}
                 type="large"
                 title={`${amount}`}
                 subTitle={`${name}`}
@@ -78,8 +100,8 @@ export const AddLpPopup = ({ tokenList, totalValue, lpName, priceImpact }: Props
                 image={TOKEN_IMAGE_MAPPER[name]}
                 leftAlign={true}
               />
-              {idx !== tokenList.length - 1 && <Divider />}
-            </>
+              {idx !== tokenList.length - 1 && <Divider key={`divider-${idx}`} />}
+            </div>
           ))}
         </List>
 
@@ -89,7 +111,14 @@ export const AddLpPopup = ({ tokenList, totalValue, lpName, priceImpact }: Props
             title={`${lpAmount}`}
             subTitle={`${lpName}`}
             description={`$${formatNumber(totalValue)}`}
-            image={<Jazzicon diameter={36} seed={jsNumberForAddress(lpAddress ?? '0x')} />}
+            image={
+              <Jazzicon
+                diameter={36}
+                seed={jsNumberForAddress(
+                  (id === 0 ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B) ?? '0x'
+                )}
+              />
+            }
             leftAlign={true}
           />
         </List>
@@ -106,9 +135,9 @@ export const AddLpPopup = ({ tokenList, totalValue, lpName, priceImpact }: Props
         </List>
 
         {isSuccess && (
-          <Scanner onClick={() => handleLink('')}>
+          <Scanner onClick={() => handleLink()}>
             <IconTime width={20} height={20} fill="#6D728C" />
-            <ScannerText>Sun, Aug 27, 2023, 02:18:32 PM GMT+9</ScannerText>
+            <ScannerText>{txDate.toString()}</ScannerText>
             <IconLink width={20} height={20} fill="#6D728C" />
           </Scanner>
         )}

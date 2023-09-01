@@ -18,9 +18,8 @@ import { AddLpPopup } from '../add-lp-popup';
 
 interface Props {
   tokenList: TokenInfo[];
-  lpName: string;
 }
-export const AddLpInput = ({ tokenList, lpName }: Props) => {
+export const AddLpInput = ({ tokenList }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
 
@@ -115,7 +114,6 @@ export const AddLpInput = ({ tokenList, lpName }: Props) => {
             return { name: token.name as TOKEN, amount: getInputValue(idx) };
           })}
           totalValue={totalValue}
-          lpName={lpName}
           priceImpact={0.13}
         />
       )}
