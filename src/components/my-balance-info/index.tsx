@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const MyBalanceInfo = ({ tokens }: Props) => {
-  const tokenInfos = tokens.map(token => {
+  const tokenInfos = tokens?.map(token => {
     return {
       title: token.name,
       balance: formatNumber(token.balance, 2),
@@ -27,9 +27,7 @@ export const MyBalanceInfo = ({ tokens }: Props) => {
       </Banner>
       <Divider />
       <TokenLists>
-        {tokenInfos.map(token => (
-          <TokenList key={token.title} {...token} />
-        ))}
+        {tokenInfos?.map(token => <TokenList key={token.title} {...token} />)}
       </TokenLists>
     </Wrapper>
   );

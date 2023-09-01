@@ -7,7 +7,7 @@ import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 import { MyBalanceInfo } from '~/components/my-balance-info';
-import { MANTLE_CHAIN_ID } from '~/constants';
+import { CHAIN_ID } from '~/constants';
 import { pools } from '~/data';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
@@ -17,17 +17,17 @@ import { TokenInfo } from '~/types/components';
 import { AddLpInput } from './components/add-lp-input';
 
 const LiquidityPage = () => {
-  const { needSwitchNetwork } = useSwitchNetwork(MANTLE_CHAIN_ID);
+  const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
   const navigate = useNavigate();
 
   const { id } = useParams();
 
   useRequirePrarams([id], () => navigate(-1));
-  const { compositions, name: lpName } = pools[Number(id) - 1];
+  const { compositions } = pools[Number(id) - 1];
 
   const { balancesMap } = useBalancesAll();
 
-  const tokens: TokenInfo[] = compositions.map(token => {
+  const tokens: TokenInfo[] = compositions?.map(token => {
     const data = balancesMap?.[token.name];
 
     if (!data) return { name: token.name, balance: 0, value: 0 };
@@ -56,7 +56,7 @@ const LiquidityPage = () => {
 
             <LiquidityWrapper>
               <MyBalanceInfo tokens={tokens} />
-              <AddLpInput tokenList={tokens} lpName={lpName} />
+              <AddLpInput tokenList={tokens} />
             </LiquidityWrapper>
           </ContentWrapper>
         </InnerWrapper>

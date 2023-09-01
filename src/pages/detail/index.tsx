@@ -32,7 +32,7 @@ const DetailPage = () => {
     Number(id),
     data
   );
-  const myCompositions = myCompositionsInfo.map(composition => {
+  const myCompositions = myCompositionsInfo?.map(composition => {
     const balance =
       (Number(composition.balance) * Number(lpTokenBalance)) /
       Number(formatEther(totalLpTokenBalance as bigint));
@@ -52,7 +52,7 @@ const DetailPage = () => {
         <HeaderWrapper>
           <Title>Weighted Pool</Title>
           <TokenWrapper>
-            {myCompositions.map(composition => (
+            {myCompositions?.map(composition => (
               <Token
                 key={composition.name}
                 token={composition.name}

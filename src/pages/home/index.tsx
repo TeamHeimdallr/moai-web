@@ -3,7 +3,7 @@ import tw, { css, styled } from 'twin.macro';
 import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
-import { MANTLE_CHAIN_ID } from '~/constants';
+import { CHAIN_ID } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
 
@@ -13,7 +13,7 @@ import { MyLiquidityLayout } from './layouts/layout-my-liquidity';
 
 const HomePage = () => {
   const { isConnected } = useConnectWallet();
-  const { needSwitchNetwork } = useSwitchNetwork(MANTLE_CHAIN_ID);
+  const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
 
   return (
     <>

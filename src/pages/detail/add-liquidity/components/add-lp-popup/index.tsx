@@ -1,7 +1,7 @@
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
-import { parseEther } from 'viem';
+import { Address, parseEther } from 'viem';
 
 import { useAddLiquidity } from '~/api/api-contract/mantle/add-liquidity/add-liquiditiy';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
@@ -43,8 +43,8 @@ export const AddLpPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
   };
 
   const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useAddLiquidity({
-    enabled: id && Number(id) > 0 && totalValue > 0,
-    poolId: pools[Number(id) - 1].id,
+    enabled: !!id && Number(id) > 0 && totalValue > 0,
+    poolId: pools[Number(id) - 1].id as Address,
     request: prepareRequestData(),
   });
 
@@ -115,7 +115,7 @@ export const AddLpPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
               <Jazzicon
                 diameter={36}
                 seed={jsNumberForAddress(
-                  (id === 0 ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B) ?? '0x'
+                  (Number(id) === 0 ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B) ?? '0x'
                 )}
               />
             }
