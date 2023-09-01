@@ -10,6 +10,7 @@ import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 import {
+  POOL_ID,
   TESTNET_SCANNER_URL,
   TOKEN_ADDRESS,
   TOKEN_IMAGE_MAPPER,
@@ -33,7 +34,7 @@ interface Props {
 
 export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
   const { id } = useParams();
-  const { name: lpName } = pools[Number(id) - 1];
+  const { name: lpName } = pools.find(p => p.id === id)!;
 
   const prepareRequestData = () => {
     return {
@@ -43,8 +44,8 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
   };
 
   const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useAddLiquidity({
-    enabled: !!id && Number(id) > 0 && totalValue > 0,
-    poolId: pools[Number(id) - 1].id as Address,
+    enabled: !!id && totalValue > 0,
+    poolId: id as Address,
     request: prepareRequestData(),
   });
 
@@ -118,7 +119,7 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
               <Jazzicon
                 diameter={36}
                 seed={jsNumberForAddress(
-                  (Number(id) === 0 ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B) ?? '0x'
+                  (id === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B) ?? '0x'
                 )}
               />
             }

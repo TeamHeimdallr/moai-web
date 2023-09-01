@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Address } from 'viem';
 
 import { TOKEN } from '~/types/contracts';
 
@@ -42,4 +43,21 @@ export interface MyLiquidityTable {
 export interface SortingState {
   key: string;
   order: 'asc' | 'desc';
+}
+
+export interface PoolCompositionData {
+  tokenAddress: Address;
+  token: TOKEN;
+  weight: number;
+  balance: number;
+  value: number;
+  currentWeight: number;
+}
+export interface PoolCompositionTable {
+  tokenAddress: string;
+  token: ReactNode;
+  weight: ReactNode;
+  balance: ReactNode;
+  value: ReactNode;
+  currentWeight: ReactNode;
 }

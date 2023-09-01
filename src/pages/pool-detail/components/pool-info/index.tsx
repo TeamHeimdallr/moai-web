@@ -1,16 +1,22 @@
 import tw from 'twin.macro';
+
+import { PoolInfoCard } from '../pool-info-card';
+
 interface Props {
-  name: string;
-  value: string;
+  totalBalances: string;
+  volume: string;
+  apy: string;
+  fees: string;
 }
-export const PoolInfo = ({ name, value }: Props) => {
+export const PoolInfo = ({ totalBalances, volume, apy, fees }: Props) => {
   return (
-    <Wrapper>
-      <Name>{name}</Name>
-      <Value>{value}</Value>
-    </Wrapper>
+    <PoolValueContainer>
+      <PoolInfoCard name="Pool Value" value={totalBalances} />
+      <PoolInfoCard name="Volume (24h)" value={volume} />
+      <PoolInfoCard name="Fees (24h)" value={fees} />
+      <PoolInfoCard name="APY" value={apy} />
+    </PoolValueContainer>
   );
 };
-const Wrapper = tw.div`w-190 flex flex-col bg-neutral-10 rounded-12 py-20 px-24 gap-16`;
-const Name = tw.div`font-m-14 text-neutral-80`;
-const Value = tw.div`font-m-20 text-neutral-100`;
+
+const PoolValueContainer = tw.div`flex gap-16`;
