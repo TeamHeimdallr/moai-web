@@ -8,9 +8,9 @@ import { IconBack } from '~/assets/icons';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 import { MyBalanceInfo } from '~/components/my-balance-info';
-import { CONTRACT_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
+import { TOKEN_USD_MAPPER } from '~/constants';
 import { pools } from '~/data';
-import { useTokenBalances } from '~/hooks/data/use-balance';
+import { useGetBalancesAll } from '~/hooks/data/use-balance';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { TokenInfo } from '~/types/components/contracts';
 
@@ -22,21 +22,15 @@ const LiquidityPage = () => {
   useRequirePrarams([id], () => navigate(-1));
 
   const { compositions } = pools[Number(id) - 1];
-
-  const { rawValue: balanceA } = useTokenBalances(address, CONTRACT_ADDRESS[compositions[0]]);
-  const { rawValue: balanceB } = useTokenBalances(address, CONTRACT_ADDRESS[compositions[1]]);
-  const { rawValue: balanceC } = useTokenBalances(address, CONTRACT_ADDRESS[compositions[2]]);
-  const balances = {
-    [compositions[0]]: balanceA,
-    [compositions[1]]: balanceB,
-    [compositions[2]]: balanceC,
-  };
+  const { balancesMap } = useGetBalancesAll(address);
 
   const tokens: TokenInfo[] = compositions.map(token => {
+    const balance = balancesMap?.[token]?.rawValue ?? BigInt(0);
+
     return {
       name: token,
-      balance: Number(formatEther(balances[token])),
-      value: Number(formatEther(balances[token])) * TOKEN_USD_MAPPER[token],
+      balance: Number(formatEther(balance)),
+      value: Number(formatEther(balance)) * TOKEN_USD_MAPPER[token],
     };
   });
 
