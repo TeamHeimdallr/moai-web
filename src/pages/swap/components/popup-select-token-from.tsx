@@ -1,7 +1,7 @@
 import tw from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { tokenInfos } from '~/assets/tokens/token-mantle-testnet';
+import { tokenInfos } from '~/assets/tokens';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';

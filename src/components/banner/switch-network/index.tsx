@@ -4,7 +4,7 @@ import { useSwitchNetwork } from 'wagmi';
 import { COLOR } from '~/assets/colors';
 import { IconAlert } from '~/assets/icons';
 import { ButtonPrimarySmall } from '~/components/buttons/primary/small-black';
-import { MANTLE_CHAIN_ID } from '~/constants';
+import { CHAIN_ID } from '~/constants';
 
 interface Props {
   chainName?: string;
@@ -21,7 +21,7 @@ export const SwitchNetwork = ({ chainName, chainId }: Props) => {
       </TextWrapper>
       <ButtonPrimarySmall
         text="Switch network"
-        onClick={() => switchNetwork?.(chainId ?? MANTLE_CHAIN_ID)}
+        onClick={() => switchNetwork?.(chainId ?? CHAIN_ID)}
       />
     </Wrapper>
   );

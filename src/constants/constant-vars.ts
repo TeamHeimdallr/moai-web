@@ -45,3 +45,21 @@ export const GNB_MENU: GnbMenu[] = [
 ];
 
 export const TESTNET_SCANNER_URL = 'https://explorer.testnet.mantle.xyz';
+
+/**
+ * @description FORMAT NUMBER 를 진행할때 UNIT(K,M,B,T) 를 붙이는 기준
+ */
+export const FORMAT_NUMBER_THRESHOLD = 1000000000;
+
+/**
+ * @description RESPONSIVE BREAKPOINT
+ */
+export const BREAKPOINT = {
+  SM: 0,
+  MD: 848,
+  LG: 1280,
+
+  MEDIA_SM: '(min-width: 0px)',
+  MEDIA_MD: '(min-width: 848px)',
+  MEDIA_LG: '(min-width: 1280px)',
+};
