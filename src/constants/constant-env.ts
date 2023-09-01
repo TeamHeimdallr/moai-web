@@ -45,13 +45,14 @@ export const POLYGONSCAN_POLYGON_MUMBAI_API = 'https://api-testnet.polygonscan.c
  * @description CHAIN ID / CONTRACT ADDRESS
  */
 type Chain = 'MANTLE' | 'MANTLE_TESTNET';
-type Contract = TOKEN;
+type Contract = TOKEN | 'CONTRACT_NAME';
 
 export const CHAIN_ID: Record<Chain, number> = {
   MANTLE: 5000,
   MANTLE_TESTNET: 5001,
 };
 export const CONTRACT_ADDRESS: Record<Contract, Address> = {
+  CONTRACT_NAME: IS_MAINNET ? '0x' : '0x',
   [TOKEN.MOAI]: IS_MAINNET ? '0x' : '0xaf5F3781678a0Bd4258cB4e9885b26E6629b7930',
   [TOKEN.WETH]: IS_MAINNET ? '0x' : '0xd1A5c7Dd009e578bf4aC8f9392D1fFdbC27B86BB',
   [TOKEN.USDC]: IS_MAINNET ? '0x' : '0xcBdaCEaE8660BE805Deaf36A210c770989Ed4888',

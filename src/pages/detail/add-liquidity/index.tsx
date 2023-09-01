@@ -12,7 +12,7 @@ import { CONTRACT_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
 import { pools } from '~/data';
 import { useTokenBalances } from '~/hooks/data/use-balance';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
-import { TokenInfo } from '~/types/components/tokens';
+import { TokenInfo } from '~/types/components/contracts';
 
 const LiquidityPage = () => {
   const { id } = useParams();
