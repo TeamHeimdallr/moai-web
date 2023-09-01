@@ -73,6 +73,7 @@ export const AddLpInput = ({ tokenList }: Props) => {
       <InnerWrapper>
         {tokenList &&
           tokenList.map((token, idx) => (
+            // TODO: out of balance validation
             <InputNumber
               key={idx}
               token={<Token token={token.name} />}
