@@ -15,7 +15,7 @@ import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { getPoolInfoById } from '~/utils/token';
 
 import { MyPoolBalance } from '../../components/my-pool-balance';
-import { PoolInfo } from '../../components/poll-info';
+import { PoolInfo } from '../../components/pool-info';
 
 const PoolDetailMainPage = () => {
   const { id } = useParams();
