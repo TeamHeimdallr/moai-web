@@ -1,12 +1,13 @@
 import { useRef, useState } from 'react';
-import tw, { styled } from 'twin.macro';
-import { useOnClickOutside } from 'usehooks-ts';
+import tw from 'twin.macro';
 
 import { IconSetting } from '~/assets/icons';
+import { Slippage } from '~/components/account-profile/slippage';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { InputNumber } from '~/components/inputs/number';
 import { Token } from '~/components/token';
 import { TOKEN_USD_MAPPER } from '~/constants';
+import { useOnClickOutside } from '~/hooks/pages/use-onclick-outside';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
@@ -19,7 +20,7 @@ interface Props {
 }
 export const AddLpInput = ({ tokenList }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [slippage, setSlippage] = useState(1);
+  const iconRef = useRef<HTMLDivElement>(null);
 
   const priceImpact = 0.13; // TODO
   const [inputValue1, setInputValue1] = useState<number>(0);
@@ -36,7 +37,7 @@ export const AddLpInput = ({ tokenList }: Props) => {
   const [opened, open] = useState(false);
   const toggle = () => open(!opened);
 
-  useOnClickOutside(ref, () => open(false));
+  useOnClickOutside([ref, iconRef], () => open(false));
 
   const handleMax = () => {
     // TODO
@@ -50,32 +51,22 @@ export const AddLpInput = ({ tokenList }: Props) => {
     else if (idx === 2) setInputValue3(value ?? 0);
   };
 
+  const totalValue = tokenList.reduce((sum, token, idx) => {
+    const inputValue = getInputValue(idx) || 0;
+    const tokenValue = TOKEN_USD_MAPPER[token.name] || 0;
+    return sum + inputValue * tokenValue;
+  }, 0);
+
   return (
     <Wrapper>
-      <Header ref={ref}>
+      <Header>
         <Title>Enter liquidity amount</Title>
-        <IconWrapper onClick={toggle}>
+        <IconWrapper onClick={toggle} ref={iconRef}>
           <IconSetting fill={opened ? '#F5FF83' : '#9296AD'} width={20} height={20} />
         </IconWrapper>
         {opened && (
-          <SlippageWrapper>
-            <SlippageInnerWarpper>
-              <SlippageText>Slippage tolerance</SlippageText>
-              <SlippageOptions>
-                <SlippageOption selected={slippage === 0} onClick={() => setSlippage(0)}>
-                  {'0.5%'}
-                </SlippageOption>
-                <SlippageOption selected={slippage === 1} onClick={() => setSlippage(1)}>
-                  {'1.0%'}
-                </SlippageOption>
-                <SlippageOption selected={slippage === 2} onClick={() => setSlippage(2)}>
-                  {'2.0%'}
-                </SlippageOption>
-                <SlippageOption selected={slippage === 3} disabled={true}>
-                  {'or enter manually'}
-                </SlippageOption>
-              </SlippageOptions>
-            </SlippageInnerWarpper>
+          <SlippageWrapper ref={ref}>
+            <Slippage shadow />
           </SlippageWrapper>
         )}
       </Header>
@@ -95,14 +86,7 @@ export const AddLpInput = ({ tokenList }: Props) => {
           <TotalInnerWrapper>
             <TotalText>Total</TotalText>
             <TotalValueWrapper>
-              <TotalValue>{`$${formatNumber(
-                tokenList.reduce((sum, token, idx) => {
-                  const inputValue = getInputValue(idx) || 0;
-                  const tokenValue = TOKEN_USD_MAPPER[token.name] || 0;
-                  return sum + inputValue * tokenValue;
-                }, 0),
-                2
-              )}`}</TotalValue>
+              <TotalValue>{`$${formatNumber(totalValue, 2)}`}</TotalValue>
               <MaxButton onClick={() => handleMax()}>Max</MaxButton>
             </TotalValueWrapper>
           </TotalInnerWrapper>
@@ -119,7 +103,11 @@ const Wrapper = tw.div`
 `;
 
 const Header = tw.div`
-  flex justify-between gap-10 w-full
+  flex justify-between items-center gap-10 w-full relative
+`;
+
+const SlippageWrapper = tw.div`
+  absolute top-40 right-0
 `;
 
 const InnerWrapper = tw.div`
@@ -129,36 +117,6 @@ const InnerWrapper = tw.div`
 const IconWrapper = tw.div`
   clickable w-32 h-32 items-center justify-center flex relative
 `;
-
-const SlippageWrapper = tw.div`
-  gap-12 bg-neutral-15 rounded-8 box-shadow-default px-16 py-12 max-w-294 absolute top-60 right-24
-`;
-
-const SlippageInnerWarpper = tw.div`
-  flex flex-col gap-12
-`;
-
-const SlippageText = tw.div`
-  text-neutral-100 font-m-16
-`;
-
-const SlippageOptions = tw.div`
-  flex gap-8 w-full flex-wrap
-`;
-
-interface SlippageOptionProps {
-  selected?: boolean;
-  disabled?: boolean;
-}
-const SlippageOption = styled.div<SlippageOptionProps>(({ selected, disabled }) => [
-  tw`
-  gap-10 px-16 py-6 rounded-8 bg-transparent text-neutral-60 font-r-16 border-solid border-1 border-neutral-60 clickable
-`,
-  !disabled && selected
-    ? tw`text-primary-50 border-primary-50 gradient-chip`
-    : tw`hover:bg-neutral-20 hover:text-neutral-60 border-neutral-80`,
-  disabled && tw`non-clickable`,
-]);
 
 const Title = tw.div`
   text-neutral-100 font-b-16

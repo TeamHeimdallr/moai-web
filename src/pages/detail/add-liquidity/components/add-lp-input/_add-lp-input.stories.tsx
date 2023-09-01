@@ -10,7 +10,7 @@ import { TOKEN } from '~/types/contracts';
 import { AddLpInput } from '.';
 
 const meta = {
-  title: 'Components/AddLpInput',
+  title: 'Pages/Detail/AddLiquidity/AddLpInput',
   component: AddLpInput,
   tags: ['autodocs'],
   argTypes: {},
