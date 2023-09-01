@@ -28,20 +28,16 @@ export const NoButton = () => {
     <Wrapper>
       <ButtonPrimarySmall text="open popup !" onClick={open} />
       {opened && (
-        <Popup
-          id={POPUP_ID.SAMPLE}
-          title="Select token"
-          content={
-            <TokenList
-              type="selectable"
-              title={'MOAI'}
-              description={'$100'}
-              image={TOKEN_IMAGE_MAPPER['USDC']}
-              balance="1,234"
-              value="$8.00"
-            />
-          }
-        />
+        <Popup id={POPUP_ID.SAMPLE} title="Select token">
+          <TokenList
+            type="selectable"
+            title={'MOAI'}
+            description={'$100'}
+            image={TOKEN_IMAGE_MAPPER['USDC']}
+            balance="1,234"
+            value="$8.00"
+          />
+        </Popup>
       )}
     </Wrapper>
   );
@@ -53,8 +49,9 @@ export const HasButton = () => {
       id={POPUP_ID.SAMPLE}
       title="Preview swap"
       button={<ButtonPrimaryLarge text="Confirm swap" />}
-      content={<Text>content here</Text>}
-    />
+    >
+      <Text>content here</Text>
+    </Popup>
   );
 };
 
@@ -64,13 +61,14 @@ export const Success = () => {
       id={POPUP_ID.SAMPLE}
       title="Preview swap"
       button={<ButtonPrimaryLarge text="Confirm swap" />}
-      content={<Text>content here</Text>}
       icon={
         <IconWrapper>
           <IconCheck />
         </IconWrapper>
       }
-    />
+    >
+      <Text>content here</Text>
+    </Popup>
   );
 };
 const IconWrapper = tw.div`flex-center w-32 h-32 rounded-full bg-green-50`;
