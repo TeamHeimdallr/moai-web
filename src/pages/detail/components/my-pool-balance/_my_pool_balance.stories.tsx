@@ -19,12 +19,10 @@ const tokens: TokenInfo[] = [
   { name: 'WETH', balance: 2.73857, value: 37.1212 },
 ];
 
-const totalBalance = 2001234;
-
 export const _MyPoolBalance: Story = {
   render: () => (
     <Wrapper>
-      <MyPoolBalance compositions={tokens} totalBalance={totalBalance} pool={pools[0]} />
+      <MyPoolBalance compositions={tokens} pool={pools[0]} />
     </Wrapper>
   ),
 };

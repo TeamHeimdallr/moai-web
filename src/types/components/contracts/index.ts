@@ -9,12 +9,14 @@ export interface Composition {
   name: TOKEN;
   weight: number;
   balance: number;
+  price: number;
 }
 export interface PoolInfo {
   compositions: Composition[];
   value: string;
   volume: string;
-  apr: string;
+  apy: string;
+  fees: string;
   lpTokens: number;
   name: string;
 }

@@ -8,7 +8,7 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { TOKEN_ABI } from '~/abi/sample-token';
+import { TOKEN_ABI } from '~/abi/base/token';
 import { CONTRACT_ADDRESS, DEFAULT_CHAIN_ID } from '~/constants';
 
 interface Props {
