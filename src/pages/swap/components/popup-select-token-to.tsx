@@ -4,15 +4,17 @@ import { COLOR } from '~/assets/colors';
 import { tokenInfos } from '~/assets/tokens/token-mantle-testnet';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
-import { TOKEN_USD_MAPPER } from '~/constants';
+import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
+import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
 import { useSwap } from '../hooks/use-swap';
 
 export const PopupSwapSelectTokenTo = () => {
-  const { tokenBalances, toToken, setToToken } = useSwap();
+  const { balancesMap } = useBalancesAll();
+  const { toToken, setToToken } = useSwap();
   const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_TO);
 
   return (
@@ -23,14 +25,12 @@ export const PopupSwapSelectTokenTo = () => {
     >
       <Wrapper>
         {tokenInfos.map(token => {
-          const tokenBalance =
-            tokenBalances.find(tokenBalance => tokenBalance.symbol === token.symbol)?.balance ?? 0;
-          const formattedTokenBalance = tokenBalance ? formatNumber(tokenBalance, 2) : undefined;
+          const balance = balancesMap?.[token.symbol as TOKEN];
+          if (!balance) return <></>;
 
-          const tokenValue = TOKEN_USD_MAPPER[token.symbol];
-          const formattedTokenValue = tokenValue
-            ? '$' + formatNumber(tokenValue * tokenBalance, 2)
-            : undefined;
+          const { value, valueUSD } = balance;
+          const formattedTokenBalance = value > 0 ? formatNumber(value, 2) : undefined;
+          const formattedTokenValue = valueUSD > 0 ? '$' + formatNumber(valueUSD, 2) : undefined;
 
           const handleClick = () => {
             setToToken(token.symbol);
