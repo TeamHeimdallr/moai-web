@@ -13,3 +13,14 @@ export interface TokenInfo {
   decimals: number;
   logoURI: string;
 }
+
+export interface TokenBalanceInfo {
+  value: number;
+  valueUSD: number;
+  symbol: string;
+}
+
+export interface TokenBalanceInfoAll {
+  balancesMap?: Record<TOKEN, TokenBalanceInfo>;
+  balancesArray?: TokenBalanceInfo[];
+}

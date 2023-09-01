@@ -1,19 +1,20 @@
 import tw from 'twin.macro';
 
 import { TokenList } from '~/components/token-list';
-import { TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
-import { useTokenBalances } from '~/hooks/data/use-token-balances';
+import { TOKEN_IMAGE_MAPPER } from '~/constants';
+import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { formatNumber } from '~/utils/number';
 
 export const Balances = () => {
-  const { tokenBalances } = useTokenBalances();
+  const { balancesArray } = useBalancesAll();
 
-  const filteredTokenBalances = tokenBalances.filter(({ balance }) => balance > 0);
-  const isEmpty = filteredTokenBalances.length === 0;
-  const total = filteredTokenBalances.reduce((acc, { balance, symbol }) => {
-    acc += balance * (TOKEN_USD_MAPPER[symbol] ?? 0);
-    return acc;
-  }, 0);
+  const filteredTokenBalances = balancesArray?.filter(({ value }) => value > 0);
+  const isEmpty = !filteredTokenBalances || filteredTokenBalances.length === 0;
+  const total =
+    filteredTokenBalances?.reduce((acc, { valueUSD }) => {
+      acc += valueUSD;
+      return acc;
+    }, 0) ?? 0;
 
   return (
     <Wrapper>
@@ -33,14 +34,14 @@ export const Balances = () => {
           </Header>
           <Divider />
           <Body>
-            {filteredTokenBalances.map(({ symbol, balance }) => (
+            {filteredTokenBalances.map(({ symbol, value, valueUSD }) => (
               <TokenList
                 key={symbol}
                 image={TOKEN_IMAGE_MAPPER[symbol]}
                 title={symbol}
                 type="medium"
-                balance={formatNumber(balance)}
-                value={`$${formatNumber(balance * (TOKEN_USD_MAPPER[symbol] ?? 0))}`}
+                balance={formatNumber(value, 4)}
+                value={`$${formatNumber(valueUSD, 4)}`}
               />
             ))}
           </Body>

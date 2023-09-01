@@ -1,7 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
-import { formatEther } from 'viem';
-import { useAccount } from 'wagmi';
 
 import { COLOR } from '~/assets/colors';
 import { IconBack } from '~/assets/icons';
@@ -9,9 +7,9 @@ import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 import { MyBalanceInfo } from '~/components/my-balance-info';
-import { MANTLE_CHAIN_ID, TOKEN_USD_MAPPER } from '~/constants';
+import { MANTLE_CHAIN_ID } from '~/constants';
 import { pools } from '~/data';
-import { useGetBalancesAll } from '~/hooks/data/use-balance';
+import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
 import { TokenInfo } from '~/types/components';
@@ -21,20 +19,22 @@ import { AddLpInput } from './components/add-lp-input';
 const LiquidityPage = () => {
   const { needSwitchNetwork } = useSwitchNetwork(MANTLE_CHAIN_ID);
   const navigate = useNavigate();
+
   const { id } = useParams();
-  const { address } = useAccount();
+
   useRequirePrarams([id], () => navigate(-1));
   const { compositions, name: lpName } = pools[Number(id) - 1];
-  const { balancesMap } = useGetBalancesAll(address);
 
-  const tokens: TokenInfo[] = compositions.map(compositon => {
-    const { name } = compositon;
-    const balance = balancesMap?.[name]?.rawValue ?? BigInt(0);
+  const { balancesMap } = useBalancesAll();
 
+  const tokens: TokenInfo[] = compositions.map(token => {
+    const data = balancesMap?.[token.name];
+
+    if (!data) return { name: token.name, balance: 0, value: 0 };
     return {
-      name,
-      balance: Number(formatEther(balance)),
-      value: Number(formatEther(balance)) * TOKEN_USD_MAPPER[name],
+      name: token.name,
+      balance: data.value,
+      value: data.valueUSD,
     };
   });
 

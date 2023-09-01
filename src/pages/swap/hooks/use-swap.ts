@@ -1,13 +1,13 @@
 import * as yup from 'yup';
 
 import { TOKEN_USD_MAPPER } from '~/constants';
-import { useTokenBalances } from '~/hooks/data/use-token-balances';
+import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { HOOK_FORM_KEY } from '~/types/components';
 
 import { useSwapStore } from '../states/swap';
 
 export const useSwap = () => {
-  const { tokenBalances } = useTokenBalances();
+  const { balancesMap } = useBalancesAll();
 
   const {
     fromToken,
@@ -21,8 +21,8 @@ export const useSwap = () => {
     resetAll,
   } = useSwapStore();
 
-  const fromTokenBalance = tokenBalances.find(t => t.symbol === fromToken)?.balance ?? 0;
-  const toTokenBalance = tokenBalances.find(t => t.symbol === toToken)?.balance ?? 0;
+  const fromTokenBalance = balancesMap?.[fromToken]?.value ?? 0;
+  const toTokenBalance = balancesMap?.[toToken]?.value ?? 0;
 
   const fromSchema = yup.object({
     [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
@@ -39,8 +39,6 @@ export const useSwap = () => {
     fromValue && fromValue > 0 && fromValue <= fromTokenBalance && toValue && toValue > 0;
 
   return {
-    tokenBalances,
-
     fromToken,
     fromValue,
     toToken,

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import tw from 'twin.macro';
+import * as yup from 'yup';
 
 import { IconSetting } from '~/assets/icons';
 import { Slippage } from '~/components/account-profile/slippage';
@@ -9,7 +10,7 @@ import { Token } from '~/components/token';
 import { TOKEN_USD_MAPPER } from '~/constants';
 import { useOnClickOutside } from '~/hooks/pages/use-onclick-outside';
 import { usePopup } from '~/hooks/pages/use-popup';
-import { POPUP_ID, TokenInfo } from '~/types/components';
+import { HOOK_FORM_KEY, POPUP_ID, TokenInfo } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
@@ -75,17 +76,27 @@ export const AddLpInput = ({ tokenList, lpName }: Props) => {
       </Header>
       <InnerWrapper>
         {tokenList &&
-          tokenList.map((token, idx) => (
-            // TODO: out of balance validation
-            <InputNumber
-              key={idx}
-              token={<Token token={token.name as TOKEN} />}
-              tokenName={token.name as TOKEN}
-              balance={token.balance}
-              handleChange={val => handleChange(idx, val)}
-              slider={getInputValue(idx) > 0}
-            />
-          ))}
+          tokenList.map((token, idx) => {
+            const schema = yup.object({
+              [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
+                .number()
+                .min(0)
+                .max(token.balance || 0, 'Exceeds wallet balance'),
+            });
+            return (
+              // TODO: out of balance validation
+              <InputNumber
+                key={idx}
+                schema={schema}
+                token={<Token token={token.name as TOKEN} />}
+                tokenName={token.name as TOKEN}
+                balance={token.balance}
+                value={getInputValue(idx)}
+                handleChange={val => handleChange(idx, val)}
+                slider={getInputValue(idx) > 0}
+              />
+            );
+          })}
         <Total>
           <TotalInnerWrapper>
             <TotalText>Total</TotalText>
