@@ -5,6 +5,7 @@ import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
 import { IconNoti } from '~/assets/icons';
+import { TESTNET_SCANNER_URL } from '~/constants';
 
 import { NotificationCard } from '../notification-card';
 
@@ -24,13 +25,13 @@ export const Notification = () => {
       id: '1',
       title: 'Add liquidity',
       description: '$0.10 in 20% MOAI, 80% USDC',
-      link: 'https://explorer.mantle.xyz/',
+      link: TESTNET_SCANNER_URL,
     },
     {
       id: '2',
       title: 'Withdraw',
       description: '$0.10 in 20% MOAI, 80% USDC',
-      link: 'https://explorer.mantle.xyz/',
+      link: TESTNET_SCANNER_URL,
     },
   ];
 
@@ -65,7 +66,7 @@ export const Notification = () => {
 };
 
 const UpperWrapper = tw.div`
-  flex flex-col items-end gap-20 relative z-100
+  flex flex-col items-end gap-20 relative z-10
 `;
 
 const Wrapper = tw.div`

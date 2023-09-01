@@ -1,12 +1,13 @@
 import * as yup from 'yup';
 
-import { TOKEN_USD_MAPPER } from '~/constants';
+import { POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { HOOK_FORM_KEY } from '~/types/components';
+import { TOKEN } from '~/types/contracts';
 
 import { useSwapStore } from '../states/swap';
 
-export const useSwap = () => {
+export const useSwapData = () => {
   const { balancesMap } = useBalancesAll();
 
   const {
@@ -34,9 +35,15 @@ export const useSwap = () => {
   const swapRatio =
     fromToken && toToken ? TOKEN_USD_MAPPER[fromToken] / TOKEN_USD_MAPPER[toToken] : 0;
 
-  const toValue = fromValue ? Number((fromValue * swapRatio).toFixed(2)) : undefined;
+  const toValue = fromValue ? Number((Number(fromValue) * swapRatio).toFixed(6)) : undefined;
   const validToSwap =
-    fromValue && fromValue > 0 && fromValue <= fromTokenBalance && toValue && toValue > 0;
+    fromValue && Number(fromValue) > 0 && fromValue <= fromTokenBalance && toValue && toValue > 0;
+
+  const poolId =
+    (fromToken === TOKEN.MOAI && toToken === TOKEN.WETH) ||
+    (toToken === TOKEN.MOAI && fromToken === TOKEN.WETH)
+      ? POOL_ID.POOL_A
+      : POOL_ID.POOL_B;
 
   return {
     fromToken,
@@ -57,5 +64,7 @@ export const useSwap = () => {
 
     swapRatio,
     validToSwap,
+
+    poolId,
   };
 };

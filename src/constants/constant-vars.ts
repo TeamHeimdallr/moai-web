@@ -43,3 +43,5 @@ export const GNB_MENU: GnbMenu[] = [
     commingSoon: true,
   },
 ];
+
+export const TESTNET_SCANNER_URL = 'https://explorer.testnet.mantle.xyz';

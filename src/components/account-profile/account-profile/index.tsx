@@ -7,6 +7,7 @@ import { useNetwork } from 'wagmi';
 
 import { IconCopy, IconLink } from '~/assets/icons';
 import { ButtonIconSmall } from '~/components/buttons/icon';
+import { TESTNET_SCANNER_URL } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { truncateAddress } from '~/utils/string';
 
@@ -24,7 +25,7 @@ export const AccountProfile = () => {
   useOnClickOutside(ref, () => open(false));
 
   const handleLink = () => {
-    window.open(`https://explorer.mantle.xyz/address/${address}`);
+    window.open(`${TESTNET_SCANNER_URL}/address/${address}`);
   };
 
   const network =

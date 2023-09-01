@@ -1,7 +1,9 @@
-import { add, format } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { format } from 'date-fns';
+import { useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
+import { parseEther } from 'viem';
 
+import { useSwap } from '~/api/api-contract/mantle/swap';
 import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonChipSmall } from '~/components/buttons/chip';
@@ -9,35 +11,54 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
-import { TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
+import {
+  TESTNET_SCANNER_URL,
+  TOKEN_ADDRESS,
+  TOKEN_IMAGE_MAPPER,
+  TOKEN_USD_MAPPER,
+} from '~/constants';
+import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { useSlippageStore } from '~/states/components/slippage';
 import { POPUP_ID } from '~/types/components';
+import { SwapKind } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 import { DATE_FORMATTER } from '~/utils/time';
 
-import { useSwap } from '../hooks/use-swap';
+import { useSwapData } from '../hooks/use-swap-data';
 import { SwapArrowDown } from './arrow-down';
 
 export const PopupSwap = () => {
-  const { fromToken, fromValue, toToken, toValue, swapRatio, resetAll } = useSwap();
+  const { address } = useConnectWallet();
+  const { fromToken, fromValue, toToken, toValue, swapRatio, poolId, resetAll } = useSwapData();
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippageId } = useSlippageStore();
 
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
 
-  // TODO: connect contract
-  const [success, setSuccess] = useState(false);
-  const [time, _setTime] = useState(add(new Date(), { months: 1 }));
-  const handleLink = (txHash: string) => {
-    window.open(`https://explorer.mantle.xyz/tx/${txHash}`);
+  const { data, blockTimestamp, isLoading, isSuccess, error, swap } = useSwap({
+    singleSwap: [
+      poolId,
+      SwapKind.GivenIn,
+      TOKEN_ADDRESS[fromToken],
+      TOKEN_ADDRESS[toToken],
+      parseEther(`${fromValue ?? 0}`),
+      '0x',
+    ],
+    fundManagement: [address ?? '0x', false, address ?? '0x', false],
+  });
+
+  // const timestamp = txData
+  const handleLink = () => {
+    window.open(`${TESTNET_SCANNER_URL}/tx/${data?.hash ?? ''}`);
   };
 
+  const numFromValue = Number(fromValue) || 0;
   const effectivePrice = `1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`;
-  const fromUSDValue = (fromValue ?? 0) * TOKEN_USD_MAPPER[fromToken];
-  const toUSDValue = (fromValue ?? 0) * TOKEN_USD_MAPPER[fromToken];
+  const fromUSDValue = numFromValue * TOKEN_USD_MAPPER[fromToken];
+  const toUSDValue = numFromValue * TOKEN_USD_MAPPER[fromToken];
 
-  const currentValue = selectedDetailInfo === 'TOKEN' ? fromValue : fromUSDValue;
+  const currentValue = selectedDetailInfo === 'TOKEN' ? numFromValue : fromUSDValue;
   const currentUnit = selectedDetailInfo === 'TOKEN' ? fromToken : 'USD';
 
   const totalAfterFee = (1 - 0.005) * (currentValue ?? 0);
@@ -45,49 +66,48 @@ export const PopupSwap = () => {
   const slippageText = (slippage * 100).toFixed(1);
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
 
-  const handleSusscee = () => {
+  const handleSuccess = () => {
     close();
     resetAll();
   };
 
-  const SuccessIcon = useMemo(
-    () => (
-      <SuccessIconWrapper>
-        <IconCheck />
-      </SuccessIconWrapper>
-    ),
-    []
+  const SuccessIcon = (
+    <SuccessIconWrapper>
+      <IconCheck />
+    </SuccessIconWrapper>
   );
 
-  const Button = useMemo(
-    () =>
-      success ? (
-        <PrimaryButtonWrapper>
-          <TimeWrapper onClick={() => handleLink('')}>
-            <IconTime />
-            {format(time, DATE_FORMATTER.FULL)}
-            <ClickableIcon>
-              <IconLink />
-            </ClickableIcon>
-          </TimeWrapper>
-          <ButtonPrimaryLarge
-            buttonType="outlined"
-            text="Return to swap page"
-            onClick={handleSusscee}
-          />
-        </PrimaryButtonWrapper>
-      ) : (
-        <ButtonPrimaryLarge text="Confirm swap" onClick={() => setSuccess(true)} />
-      ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [success]
+  const Button = isSuccess ? (
+    <PrimaryButtonWrapper>
+      {blockTimestamp > 0 && (
+        <TimeWrapper>
+          <IconTime />
+          {format(new Date(blockTimestamp), DATE_FORMATTER.FULL)}
+          <ClickableIcon onClick={handleLink}>
+            <IconLink />
+          </ClickableIcon>
+        </TimeWrapper>
+      )}
+      <ButtonPrimaryLarge
+        buttonType="outlined"
+        text="Return to swap page"
+        onClick={handleSuccess}
+      />
+    </PrimaryButtonWrapper>
+  ) : (
+    <ButtonPrimaryLarge
+      text="Confirm swap"
+      isLoading={isLoading}
+      onClick={swap}
+      disabled={!!error}
+    />
   );
 
   return (
     <Popup
       id={POPUP_ID.SWAP}
       title="Preview swap"
-      icon={success ? SuccessIcon : undefined}
+      icon={isSuccess ? SuccessIcon : undefined}
       button={Button}
     >
       <Wrapper>

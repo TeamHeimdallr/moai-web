@@ -11,11 +11,11 @@ type Logger = <
 
 type LoggerImpl = <T>(f: StateCreator<T, [], []>, name?: string) => StateCreator<T, [], []>;
 
-const loggerImpl: LoggerImpl = (f, name) => (set, get, store) => {
+const loggerImpl: LoggerImpl = (f, _name) => (set, get, store) => {
   const loggedSet: typeof set = (...a) => {
     set(...a);
 
-    console.log('[STATE]', ...(name ? [`${name}:`] : []), JSON.parse(JSON.stringify(get())));
+    // console.log('[STATE]', ...(name ? [`${name}:`] : []), JSON.parse(JSON.stringify(get())));
   };
   store.setState = loggedSet;
 

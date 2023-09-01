@@ -21,7 +21,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   tokenName?: TOKEN;
   handleTokenClick?: () => void;
 
-  value?: number;
+  value?: number | string;
   defaultValue?: number;
 
   focus?: boolean;
@@ -62,7 +62,8 @@ export const InputNumber = ({
   });
 
   const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
-  const handledValue = value ? (value < 0 ? undefined : value) : undefined;
+  const numValue = Number(value) || 0;
+  const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
   const tokenUSD = (handledValue || 0) * TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI];
   // TODO: get balance from wallet
@@ -98,6 +99,7 @@ export const InputNumber = ({
                   // @ts-expect-error
                   name={name}
                   allowLeadingZeros={false}
+                  allowNegative={false}
                   placeholder={placeholder}
                   thousandSeparator
                   maxLength={16}

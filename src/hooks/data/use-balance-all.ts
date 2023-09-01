@@ -1,7 +1,7 @@
 import { formatEther, isAddress } from 'viem';
 import { useBalance } from 'wagmi';
 
-import { CONTRACT_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
+import { TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
 import { TOKEN, TokenBalanceInfoAll } from '~/types/contracts';
 
 import { useConnectWallet } from './use-connect-wallet';
@@ -12,22 +12,22 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
 
   const { data: moaiData } = useBalance({
     address,
-    token: CONTRACT_ADDRESS[TOKEN.MOAI],
+    token: TOKEN_ADDRESS[TOKEN.MOAI],
     enabled,
   });
   const { data: usdcData } = useBalance({
     address,
-    token: CONTRACT_ADDRESS[TOKEN.USDC],
+    token: TOKEN_ADDRESS[TOKEN.USDC],
     enabled,
   });
   const { data: usdtData } = useBalance({
     address,
-    token: CONTRACT_ADDRESS[TOKEN.USDT],
+    token: TOKEN_ADDRESS[TOKEN.USDT],
     enabled,
   });
   const { data: wethData } = useBalance({
     address,
-    token: CONTRACT_ADDRESS[TOKEN.WETH],
+    token: TOKEN_ADDRESS[TOKEN.WETH],
     enabled,
   });
 
