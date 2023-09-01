@@ -9,10 +9,9 @@ import { formatNumber } from '~/utils/number';
 interface Props {
   pool: PoolInfo;
   compositions: TokenInfo[];
-  totalBalance: number;
 }
 
-export const MyPoolBalance = ({ compositions, totalBalance, pool }: Props) => {
+export const MyPoolBalance = ({ compositions, pool }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const totalPoolBalance = compositions.reduce((acc, cur) => acc + cur.value, 0);
@@ -38,9 +37,6 @@ export const MyPoolBalance = ({ compositions, totalBalance, pool }: Props) => {
         ))}
       </TokenLists>
       <Footer>
-        <Header>
-          My wallet balance <Balance>${formatNumber(totalBalance, 2)}</Balance>
-        </Header>
         <ButtonWrapper>
           <ButtonPrimaryLarge
             text="Add liquidity"
@@ -58,5 +54,5 @@ const Balance = tw.div`font-m-20`;
 const TokenLists = tw.div``;
 
 const Footer = tw.div`flex flex-col gap-12 bg-neutral-15 rounded-b-12`;
-const ButtonWrapper = tw.div`px-24 pb-20 flex gap-8`;
+const ButtonWrapper = tw.div`px-24 py-20 flex gap-8`;
 const Divider = tw.div`flex h-1 bg-neutral-15`;

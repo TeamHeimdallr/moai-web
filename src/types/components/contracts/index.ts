@@ -9,6 +9,7 @@ export interface Composition {
   name: TOKEN;
   weight: number;
   balance: number;
+  price: number;
 }
 export interface PoolInfo {
   compositions: Composition[];

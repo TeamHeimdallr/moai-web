@@ -1,27 +1,47 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
+import { formatEther } from 'viem';
+import { useAccount } from 'wagmi';
 
-import { usePoolBalance } from '~/api/api-contract/contract/pool-balance';
+import { usePoolBalance, usePoolTotalLpTokens } from '~/api/api-contract/contract/pool-balance';
 import { IconLink } from '~/assets/icons';
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 import { Token } from '~/components/token';
-import { pools } from '~/data';
+import { TOKEN_ADDRESS } from '~/constants';
+import { useTokenBalances } from '~/hooks/data/use-balance';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
+import { getPoolInfoById } from '~/utils/token';
 
+import { MyPoolBalance } from './components/my-pool-balance';
 import { PoolInfoCard } from './components/pool-info-card';
 
 const DetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { address } = useAccount();
+  const tokenAddress = Number(id) === 1 ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
 
   useRequirePrarams([id], () => navigate(-1));
-
-  const { compositions, value, volume, apy, fees } = pools[Number(id) - 1];
-
+  const { value: lpTokenBalance } = useTokenBalances(address, tokenAddress);
   const { data } = usePoolBalance(Number(id));
-  console.log(data);
+  const { data: totalLpTokenBalance } = usePoolTotalLpTokens();
+
+  const { myCompositionsInfo, pool, totalBalances, volume, apy, fees } = getPoolInfoById(
+    Number(id),
+    data
+  );
+  const myCompositions = myCompositionsInfo.map(composition => {
+    const balance =
+      (Number(composition.balance) * Number(lpTokenBalance)) /
+      Number(formatEther(totalLpTokenBalance as bigint));
+    return {
+      ...composition,
+      balance,
+      value: balance * composition.price,
+    };
+  });
 
   return (
     <Wrapper>
@@ -32,8 +52,13 @@ const DetailPage = () => {
         <HeaderWrapper>
           <Title>Weighted Pool</Title>
           <TokenWrapper>
-            {compositions.map(token => (
-              <Token key={token.name} token={token.name} percentage={token.weight} type="small" />
+            {myCompositions.map(composition => (
+              <Token
+                key={composition.name}
+                token={composition.name}
+                percentage={composition.weight}
+                type="small"
+              />
             ))}
             <ButtonIconMedium icon={<IconLink />} />
           </TokenWrapper>
@@ -45,12 +70,14 @@ const DetailPage = () => {
         <ContentWrapper>
           <PoolInfo>
             <PoolValueContainer>
-              <PoolInfoCard name="Pool Value" value={value} />
+              <PoolInfoCard name="Pool Value" value={totalBalances} />
               <PoolInfoCard name="Volume (24h)" value={volume} />
               <PoolInfoCard name="Fees (24h)" value={fees} />
               <PoolInfoCard name="APY" value={apy} />
             </PoolValueContainer>
           </PoolInfo>
+
+          <MyPoolBalance pool={pool} compositions={myCompositions} />
         </ContentWrapper>
       </InnerWrapper>
       <Footer />
@@ -69,7 +96,7 @@ const TokenWrapper = tw.div`flex gap-8 items-center`;
 const Fee = tw.div`font-m-14`;
 const Text = tw.div`font-r-14 text-neutral-60 inline-flex whitespace-pre`;
 
-const ContentWrapper = tw.div`flex`;
+const ContentWrapper = tw.div`flex gap-40`;
 const PoolInfo = tw.div``;
 const PoolValueContainer = tw.div`flex gap-16`;
 export default DetailPage;
