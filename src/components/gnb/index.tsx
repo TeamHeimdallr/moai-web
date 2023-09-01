@@ -75,10 +75,7 @@ export const Gnb = () => {
 };
 
 const Wrapper = styled.div(() => [
-  tw`
-  fixed top-0 left-0 w-full py-16 px-20
-  flex items-center justify-between
-  `,
+  tw`fixed top-0 left-0 flex items-center justify-between w-full px-20 py-16 `,
   css`
     background: rgba(28, 32, 51, 0.01);
   `,
