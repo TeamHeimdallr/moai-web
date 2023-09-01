@@ -34,8 +34,8 @@ export const _AddLpInput: Story = {
   ),
   args: {
     tokenList: [
-      { name: TOKEN.MOAI, balance: 4.75 },
-      { name: TOKEN.WETH, balance: 0.15 },
+      { name: TOKEN.MOAI, balance: 4.75, value: 0 },
+      { name: TOKEN.WETH, balance: 0.15, value: 0 },
     ],
   },
 };

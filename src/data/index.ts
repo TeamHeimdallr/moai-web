@@ -11,6 +11,7 @@ export const pools: PoolInfo[] = [
     volume: '$78,086',
     apr: '6.79%',
     lpTokens: 100,
+    name: '80MOAI-20WETH',
   },
   {
     compositions: [
@@ -22,5 +23,6 @@ export const pools: PoolInfo[] = [
     volume: '$458,137',
     apr: '4.98%',
     lpTokens: 100,
+    name: '50WETH-30USDC-20USDT',
   },
 ];
