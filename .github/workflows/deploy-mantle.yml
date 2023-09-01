@@ -36,10 +36,6 @@ jobs:
         run: |
           echo "VITE_CHAIN_ENV=mantle" >> .env
 
-      - name: Update .env
-        run: |
-          echo "VITE_CHAIN_ENV=linea" >> .env
-
       - name: Build
         run: yarn build
 
