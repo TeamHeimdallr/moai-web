@@ -6,7 +6,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 
 import { IconNoti } from '~/assets/icons';
 
-import { NotificationCard } from './components/notification-card';
+import { NotificationCard } from '../notification-card';
 
 export const Notification = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -76,16 +76,8 @@ interface Props {
   opened: boolean;
 }
 const NotiWrapper = styled.div<Props>(({ opened }: Props) => [
-  tw`
-    flex items-start px-8 py-9 gap-6 bg-neutral-10 rounded-10 w-40 h-40 clickable relative
-  `,
-  opened
-    ? tw`
-    bg-primary-50
-  `
-    : tw`
-    hover:bg-neutral-20
-  `,
+  tw`relative flex items-start w-40 h-40 gap-6 px-8 py-9 bg-neutral-10 rounded-10 clickable`,
+  opened ? tw` bg-primary-50` : tw` hover:bg-neutral-20`,
   opened
     ? css`
         & > svg path {

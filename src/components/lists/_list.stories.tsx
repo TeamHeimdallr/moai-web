@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import tw from 'twin.macro';
 
-import { COLOR } from '~/assets/colors';
 import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
 import { TokenList } from '../token-list';
