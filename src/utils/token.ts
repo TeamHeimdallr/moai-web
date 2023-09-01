@@ -35,7 +35,7 @@ export const getPoolInfoById = (id: number, data: unknown) => {
     };
   });
   const totalBalances = formatNumber(
-    myCompositionsInfo.reduce((acc: number, cur) => acc + cur.balance * cur.price, 0),
+    myCompositionsInfo?.reduce((acc: number, cur) => acc + cur.balance * cur.price, 0) ?? 0,
     2
   );
   return { myCompositionsInfo, totalBalances, volume, apy, fees, pool };

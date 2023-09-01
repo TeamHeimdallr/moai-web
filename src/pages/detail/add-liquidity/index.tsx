@@ -27,7 +27,7 @@ const LiquidityPage = () => {
 
   const { balancesMap } = useBalancesAll();
 
-  const tokens: TokenInfo[] = compositions.map(token => {
+  const tokens: TokenInfo[] = compositions?.map(token => {
     const data = balancesMap?.[token.name];
 
     if (!data) return { name: token.name, balance: 0, value: 0 };
