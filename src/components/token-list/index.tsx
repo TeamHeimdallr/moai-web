@@ -1,8 +1,8 @@
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  image: string;
+  image: string | ReactNode;
   title: string;
 
   type?: 'selectable' | 'medium' | 'large';
@@ -12,10 +12,13 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
   backgroundColor?: string;
   selected?: boolean;
+  leftAlign?: boolean;
+  subTitle?: string;
 }
 export const TokenList = ({
   image,
   title,
+  subTitle = '',
   type = 'large',
   description,
   balance,
@@ -23,22 +26,28 @@ export const TokenList = ({
 
   backgroundColor,
   selected,
+  leftAlign = false,
   ...rest
 }: Props) => {
   return (
     <Wrapper {...rest} type={type} backgroundColor={backgroundColor} selected={selected}>
       <LeftWrapper>
-        <Image src={image} />
+        {typeof image === 'string' ? <Image src={image} /> : image}
         <TitleWrapper>
-          <Title type={type}>{title}</Title>
+          <TitleInnerWrapper>
+            <Title type={type}>{title}</Title>
+            {subTitle && <SubTitle type={type}>{subTitle}</SubTitle>}
+          </TitleInnerWrapper>
           <Description type={type}>{description}</Description>
         </TitleWrapper>
       </LeftWrapper>
 
-      <RightWrapper>
-        <Balance type={type}>{balance}</Balance>
-        <Value type={type}>{value}</Value>
-      </RightWrapper>
+      {!leftAlign && (
+        <RightWrapper>
+          <Balance type={type}>{balance}</Balance>
+          <Value type={type}>{value}</Value>
+        </RightWrapper>
+      )}
     </Wrapper>
   );
 };
@@ -73,6 +82,11 @@ const Title = styled.div<TextProps>(({ type }) => [
   type === 'large' ? tw`font-r-18` : tw`font-r-16`,
   tw`text-neutral-100`,
 ]);
+const SubTitle = styled.div<TextProps>(({ type }) => [
+  type === 'large' ? tw`font-r-18` : tw`font-r-16`,
+  tw`text-neutral-60`,
+]);
+const TitleInnerWrapper = tw.div`flex gap-8`;
 const Description = styled.div<TextProps>(({ type }) => [
   type === 'large' ? tw`font-r-16` : tw`font-r-14`,
   type === 'selectable' ? tw`text-neutral-90` : tw`text-neutral-60`,

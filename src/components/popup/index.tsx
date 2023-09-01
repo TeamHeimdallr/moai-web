@@ -48,7 +48,7 @@ const Dim = tw.div`
   fixed w-screen h-screen bg-neutral-0/60 top-0 left-0
 `;
 const ContentContainer = tw.div`
-  fixed absolute-center bg-neutral-0 w-452 rounded-12 z-1 pop-up-shadow
+  fixed absolute-center bg-neutral-10 w-452 rounded-12 z-1 pop-up-shadow
 `;
 const Header = tw.div`flex items-center justify-between font-b-20 text-neutral-100 px-24 py-20`;
 const TitleWrapper = tw.div`flex-center  gap-8`;
