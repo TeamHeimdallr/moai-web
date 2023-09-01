@@ -13,6 +13,7 @@ import { formatNumber } from '~/utils/number';
 import { SwapArrowDown } from '../components/arrow-down';
 import { PopupSwapSelectTokenFrom } from '../components/popup-select-token-from';
 import { PopupSwapSelectTokenTo } from '../components/popup-select-token-to';
+import { PopupSwap } from '../components/popup-swap';
 import { useSwap } from '../hooks/use-swap';
 
 export const SwapInputs = () => {
@@ -40,6 +41,7 @@ export const SwapInputs = () => {
   const { opened: selectTokenToPopupOpened, open: openSelectTokenToPopup } = usePopup(
     POPUP_ID.SWAP_SELECT_TOKEN_TO
   );
+  const { opened: swapPopupOpened, open: openSwapPopup } = usePopup(POPUP_ID.SWAP);
 
   useEffect(
     () => resetFromValue(),
@@ -76,10 +78,11 @@ export const SwapInputs = () => {
           </InputInnerWrapper>
           <InputLabel>{`1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`}</InputLabel>
         </InputWrapper>
-        <ButtonPrimaryLarge text="Preview" disabled={!validToSwap} />
+        <ButtonPrimaryLarge text="Preview" disabled={!validToSwap} onClick={openSwapPopup} />
       </Wrapper>
       {selectTokenFromPopupOpened && <PopupSwapSelectTokenFrom />}
       {selectTokenToPopupOpened && <PopupSwapSelectTokenTo />}
+      {swapPopupOpened && <PopupSwap />}
     </>
   );
 };
