@@ -28,7 +28,7 @@ export const PopupSwap = () => {
 
   // TODO: connect contract
   const [success, setSuccess] = useState(false);
-  const [time, setTime] = useState(add(new Date(), { months: 1 }));
+  const [time, _setTime] = useState(add(new Date(), { months: 1 }));
   const handleLink = (txHash: string) => {
     window.open(`https://explorer.mantle.xyz/tx/${txHash}`);
   };
