@@ -3,14 +3,14 @@ import tw, { css, styled } from 'twin.macro';
 import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
-import { MANTLE_CHAIN_ID } from '~/constants';
+import { CHAIN_ID } from '~/constants';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
 
 import { Balances } from './layouts/balances';
 import { SwapInputs } from './layouts/swap-inputs';
 
 const SwapPage = () => {
-  const { needSwitchNetwork } = useSwitchNetwork(MANTLE_CHAIN_ID);
+  const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
 
   return (
     <>

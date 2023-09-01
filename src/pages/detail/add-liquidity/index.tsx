@@ -7,7 +7,7 @@ import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 import { MyBalanceInfo } from '~/components/my-balance-info';
-import { MANTLE_CHAIN_ID } from '~/constants';
+import { CHAIN_ID } from '~/constants';
 import { pools } from '~/data';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
@@ -17,7 +17,7 @@ import { TokenInfo } from '~/types/components';
 import { AddLpInput } from './components/add-lp-input';
 
 const LiquidityPage = () => {
-  const { needSwitchNetwork } = useSwitchNetwork(MANTLE_CHAIN_ID);
+  const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
   const navigate = useNavigate();
 
   const { id } = useParams();

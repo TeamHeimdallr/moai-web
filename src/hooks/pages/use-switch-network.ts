@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useNetwork } from 'wagmi';
 
-import { MANTLE_CHAIN_ID } from '~/constants';
+import { CHAIN_ID } from '~/constants';
 import { useSwitchNetworkStore } from '~/states/pages/switch-network';
 
-export const useSwitchNetwork = (chainId: number = MANTLE_CHAIN_ID) => {
+export const useSwitchNetwork = (chainId: number = CHAIN_ID) => {
   const { needSwitchNetwork, setNeedSwitchNetwork, reset } = useSwitchNetworkStore();
 
   const { chain } = useNetwork();
