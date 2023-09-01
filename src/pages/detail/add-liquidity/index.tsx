@@ -23,7 +23,7 @@ const LiquidityPage = () => {
   const { id } = useParams();
 
   useRequirePrarams([id], () => navigate(-1));
-  const { compositions, name: lpName } = pools[Number(id) - 1];
+  const { compositions } = pools[Number(id) - 1];
 
   const { balancesMap } = useBalancesAll();
 
@@ -56,7 +56,7 @@ const LiquidityPage = () => {
 
             <LiquidityWrapper>
               <MyBalanceInfo tokens={tokens} />
-              <AddLpInput tokenList={tokens} lpName={lpName} />
+              <AddLpInput tokenList={tokens} />
             </LiquidityWrapper>
           </ContentWrapper>
         </InnerWrapper>

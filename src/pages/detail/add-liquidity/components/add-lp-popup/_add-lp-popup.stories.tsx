@@ -30,7 +30,6 @@ export const _AddLpPopup = () => {
             { name: TOKEN.WETH, amount: 0.1 },
           ]}
           totalValue={810.45}
-          lpName={'80MOAI-20WETH'}
           priceImpact={0.13}
         />
       )}

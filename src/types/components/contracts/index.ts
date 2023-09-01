@@ -19,5 +19,5 @@ export interface PoolInfo {
   fees: string;
   lpTokens: number;
   name: string;
-  id: `0x${string}`;
+  id: string;
 }

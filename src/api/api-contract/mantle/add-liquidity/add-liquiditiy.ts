@@ -9,7 +9,7 @@ import {
 } from 'wagmi';
 
 import { VAULT_ABI } from '~/abi/mantle/vault';
-import { CONTRACT_ADDRESS, DEFAULT_CHAIN_ID } from '~/constants';
+import { CHAIN_ID, CONTRACT_ADDRESS } from '~/constants';
 
 interface Props {
   enabled?: boolean;
@@ -33,7 +33,7 @@ export const useAddLiquidity = ({ enabled, poolId, request }: Props) => {
     address: CONTRACT_ADDRESS.VAULT,
     abi: VAULT_ABI,
     functionName: 'joinPool',
-    chainId: DEFAULT_CHAIN_ID,
+    chainId: CHAIN_ID,
 
     account: walletAddress,
     args: [
