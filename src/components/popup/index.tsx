@@ -11,12 +11,12 @@ import { ButtonIconLarge } from '../buttons/icon';
 interface Props {
   id: string;
   title: string;
-  content: ReactNode;
+  children?: ReactNode;
   button?: ReactNode;
   icon?: ReactNode;
 }
 
-export const Popup = ({ id, title, content, button, icon }: Props) => {
+export const Popup = ({ id, title, children, button, icon }: Props) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const { close } = usePopup(id);
 
@@ -33,7 +33,7 @@ export const Popup = ({ id, title, content, button, icon }: Props) => {
           <ButtonIconLarge onClick={close} icon={<IconCancel fill={COLOR.NEUTRAL[60]} />} />
         </Header>
 
-        <ContentWrapper>{content}</ContentWrapper>
+        <ContentWrapper>{children}</ContentWrapper>
 
         <Footer>
           <ButtonWrapper>{button}</ButtonWrapper>
@@ -60,6 +60,6 @@ interface FooterProps {
 }
 const Footer = styled.div<FooterProps>(({ button }) => [
   tw`rounded-b-12`,
-  button ? tw`pb-20 px-24` : tw`pb-24`,
+  button ? tw`px-24 pb-20` : tw`pb-24`,
 ]);
 const ButtonWrapper = tw.div`flex-center px-24 w-full`;
