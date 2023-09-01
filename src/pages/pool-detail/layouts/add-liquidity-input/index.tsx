@@ -14,12 +14,12 @@ import { HOOK_FORM_KEY, POPUP_ID, TokenInfo } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-import { AddLpPopup } from '../add-lp-popup';
+import { AddLiquidityPopup } from '../add-liquidity-popup';
 
 interface Props {
   tokenList: TokenInfo[];
 }
-export const AddLpInput = ({ tokenList }: Props) => {
+export const AddLiquidityInput = ({ tokenList }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
 
@@ -109,7 +109,7 @@ export const AddLpInput = ({ tokenList }: Props) => {
       </InnerWrapper>
       <ButtonPrimaryLarge text="Preview" onClick={popupOpen} />
       {popupOpened && (
-        <AddLpPopup
+        <AddLiquidityPopup
           tokenList={tokenList.map((token, idx) => {
             return { name: token.name as TOKEN, amount: getInputValue(idx) };
           })}

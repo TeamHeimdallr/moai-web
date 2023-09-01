@@ -6,8 +6,7 @@ import { ToastContainer } from './components/toasts';
 import { AsyncBoundary } from './hocs/hoc-error-boundary';
 
 const HomePage = lazy(() => import('./pages/home'));
-const DetailPage = lazy(() => import('./pages/detail'));
-const LiquidityPage = lazy(() => import('./pages/detail/add-liquidity'));
+const PoolDetailPage = lazy(() => import('./pages/pool-detail'));
 const SwapPage = lazy(() => import('./pages/swap'));
 const Web3Provider = lazy(() => import('~/hocs/hoc-web3-provider'));
 
@@ -21,9 +20,8 @@ const App = () => {
             <RouteWrapper>
               <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/pools/:id" element={<DetailPage />} />
-                <Route path="/pools/:id/liquidity" element={<LiquidityPage />} />
                 <Route path="/swap" element={<SwapPage />} />
+                <Route path="/pools/*" element={<PoolDetailPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               <ToastContainer />

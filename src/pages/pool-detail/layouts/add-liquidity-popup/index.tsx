@@ -31,7 +31,7 @@ interface Props {
   priceImpact: number;
 }
 
-export const AddLpPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
+export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
   const { id } = useParams();
   const { name: lpName } = pools[Number(id) - 1];
 

@@ -14,9 +14,9 @@ import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
 import { TokenInfo } from '~/types/components';
 
-import { AddLpInput } from './components/add-lp-input';
+import { AddLiquidityInput } from '../../layouts/add-liquidity-input';
 
-const LiquidityPage = () => {
+const PoolDetailAddLiquidityPage = () => {
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
   const navigate = useNavigate();
 
@@ -56,7 +56,7 @@ const LiquidityPage = () => {
 
             <LiquidityWrapper>
               <MyBalanceInfo tokens={tokens} />
-              <AddLpInput tokenList={tokens} />
+              <AddLiquidityInput tokenList={tokens} />
             </LiquidityWrapper>
           </ContentWrapper>
         </InnerWrapper>
@@ -99,4 +99,4 @@ const LiquidityWrapper = tw.div`
 `;
 const IconWrapper = tw.div`flex-center clickable`;
 
-export default LiquidityPage;
+export default PoolDetailAddLiquidityPage;

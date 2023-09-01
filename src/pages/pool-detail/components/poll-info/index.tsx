@@ -3,7 +3,7 @@ interface Props {
   name: string;
   value: string;
 }
-export const PoolInfoCard = ({ name, value }: Props) => {
+export const PoolInfo = ({ name, value }: Props) => {
   return (
     <Wrapper>
       <Name>{name}</Name>

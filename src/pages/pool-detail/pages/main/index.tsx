@@ -14,10 +14,10 @@ import { useTokenBalances } from '~/hooks/data/use-balance';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { getPoolInfoById } from '~/utils/token';
 
-import { MyPoolBalance } from './components/my-pool-balance';
-import { PoolInfoCard } from './components/pool-info-card';
+import { MyPoolBalance } from '../../components/my-pool-balance';
+import { PoolInfo } from '../../components/poll-info';
 
-const DetailPage = () => {
+const PoolDetailMainPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { address } = useAccount();
@@ -68,14 +68,12 @@ const DetailPage = () => {
         </HeaderWrapper>
 
         <ContentWrapper>
-          <PoolInfo>
-            <PoolValueContainer>
-              <PoolInfoCard name="Pool Value" value={totalBalances} />
-              <PoolInfoCard name="Volume (24h)" value={volume} />
-              <PoolInfoCard name="Fees (24h)" value={fees} />
-              <PoolInfoCard name="APY" value={apy} />
-            </PoolValueContainer>
-          </PoolInfo>
+          <PoolValueContainer>
+            <PoolInfo name="Pool Value" value={totalBalances} />
+            <PoolInfo name="Volume (24h)" value={volume} />
+            <PoolInfo name="Fees (24h)" value={fees} />
+            <PoolInfo name="APY" value={apy} />
+          </PoolValueContainer>
 
           <MyPoolBalance pool={pool} compositions={myCompositions} />
         </ContentWrapper>
@@ -97,6 +95,6 @@ const Fee = tw.div`font-m-14`;
 const Text = tw.div`font-r-14 text-neutral-60 inline-flex whitespace-pre`;
 
 const ContentWrapper = tw.div`flex gap-40`;
-const PoolInfo = tw.div``;
 const PoolValueContainer = tw.div`flex gap-16`;
-export default DetailPage;
+
+export default PoolDetailMainPage;
