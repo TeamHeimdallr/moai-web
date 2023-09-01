@@ -14,9 +14,9 @@ interface Props {
 export const MyPoolBalance = ({ compositions, pool }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const totalPoolBalance = compositions.reduce((acc, cur) => acc + cur.value, 0);
+  const totalPoolBalance = compositions?.reduce((acc, cur) => acc + cur.value, 0) ?? 0;
 
-  const tokenInfos = compositions.map(token => {
+  const tokenInfos = compositions?.map(token => {
     const weight = pool.compositions.find(pool => pool.name === token.name)?.weight;
     return {
       title: weight + '% ' + token.name,
@@ -32,9 +32,7 @@ export const MyPoolBalance = ({ compositions, pool }: Props) => {
       </Header>
       <Divider />
       <TokenLists>
-        {tokenInfos.map(token => (
-          <TokenList key={token.title} {...token} />
-        ))}
+        {tokenInfos?.map(token => <TokenList key={token.title} {...token} />)}
       </TokenLists>
       <Footer>
         <ButtonWrapper>
