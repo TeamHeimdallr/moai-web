@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useContractRead } from 'wagmi';
 
-import { LIQUIDITY_POOL_ABI } from '~/abi/pool-contract';
-import { TOKEN_ABI } from '~/abi/sample-token';
+import { TOKEN_ABI } from '~/abi/base/token';
+import { LIQUIDITY_POOL_ABI } from '~/abi/mantle/liquidity-pool';
 import { CONTRACT_ADDRESS, TOKEN_ADDRESS } from '~/constants';
 import { getPoolId } from '~/utils/token';
 
