@@ -26,6 +26,16 @@ jobs:
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
 
+      - name: Update .env
+        run: |
+          jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' <<< "$VARS_CONTEXT" >> .env
+        env:
+          VARS_CONTEXT: ${{ toJson(vars) }}
+
+      - name: Update .env
+        run: |
+          echo "VITE_CHAIN_ENV=linea" >> .env
+
       - name: Build
         run: yarn build
 
@@ -35,5 +45,5 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 sync dist s3://${{ secrets.S3_BUCKET }}
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_ID }}  --paths '/*'
+          aws s3 sync dist s3://${{ secrets.S3_BUCKET_LINEA }}
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_ID_LINEA }}  --paths '/*'
