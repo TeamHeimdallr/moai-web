@@ -1,0 +1,49 @@
+name: Deploy to prod
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy Prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'latest'
+
+      - name: Install packages
+        run: yarn
+
+      - name: Create .env
+        run: |
+          jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' <<< "$SECRETS_CONTEXT" > .env
+        env:
+          SECRETS_CONTEXT: ${{ toJson(secrets) }}
+
+      - name: Update .env
+        run: |
+          jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' <<< "$VARS_CONTEXT" >> .env
+        env:
+          VARS_CONTEXT: ${{ toJson(vars) }}
+
+      - name: Update .env
+        run: |
+          echo "VITE_CHAIN_ENV=mantle" >> .env
+
+      - name: Build
+        run: yarn build
+
+      - name: Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
+        run: |
+          aws s3 sync dist s3://${{ secrets.S3_BUCKET_MENTLE }}
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_ID_MENTLE }}  --paths '/*'
