@@ -22,10 +22,10 @@ const LiquidityPage = () => {
   useRequirePrarams([id], () => navigate(-1));
 
   const { compositions } = pools[Number(id) - 1];
-  const data = useGetBalancesAll(address);
+  const { balancesMap } = useGetBalancesAll(address);
 
   const tokens: TokenInfo[] = compositions.map(token => {
-    const balance = data?.[token]?.rawValue ?? BigInt(0);
+    const balance = balancesMap?.[token]?.rawValue ?? BigInt(0);
 
     return {
       name: token,

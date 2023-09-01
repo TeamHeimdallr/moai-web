@@ -84,30 +84,58 @@ export const useGetBalancesAll = (address?: Address) => {
     wethStatus === 'success'
   ) {
     return {
-      [TOKEN.MOAI]: {
-        value: moaiData?.formatted,
-        rawValue: moaiData?.value ?? 0n,
-        decimals: moaiData?.decimals ?? 0,
-        symbol: moaiData?.symbol ?? '',
+      balancesMap: {
+        [TOKEN.MOAI]: {
+          value: moaiData?.formatted,
+          rawValue: moaiData?.value ?? 0n,
+          decimals: moaiData?.decimals ?? 0,
+          symbol: moaiData?.symbol ?? '',
+        },
+        [TOKEN.USDC]: {
+          value: usdcData?.formatted,
+          rawValue: usdcData?.value ?? 0n,
+          decimals: usdcData?.decimals ?? 0,
+          symbol: usdcData?.symbol ?? '',
+        },
+        [TOKEN.USDT]: {
+          value: usdtData?.formatted,
+          rawValue: usdtData?.value ?? 0n,
+          decimals: usdtData?.decimals ?? 0,
+          symbol: usdtData?.symbol ?? '',
+        },
+        [TOKEN.WETH]: {
+          value: wethData?.formatted,
+          rawValue: wethData?.value ?? 0n,
+          decimals: wethData?.decimals ?? 0,
+          symbol: wethData?.symbol ?? '',
+        },
       },
-      [TOKEN.USDC]: {
-        value: usdcData?.formatted,
-        rawValue: usdcData?.value ?? 0n,
-        decimals: usdcData?.decimals ?? 0,
-        symbol: usdcData?.symbol ?? '',
-      },
-      [TOKEN.USDT]: {
-        value: usdtData?.formatted,
-        rawValue: usdtData?.value ?? 0n,
-        decimals: usdtData?.decimals ?? 0,
-        symbol: usdtData?.symbol ?? '',
-      },
-      [TOKEN.WETH]: {
-        value: wethData?.formatted,
-        rawValue: wethData?.value ?? 0n,
-        decimals: wethData?.decimals ?? 0,
-        symbol: wethData?.symbol ?? '',
-      },
+      balancesArray: [
+        {
+          value: moaiData?.formatted,
+          rawValue: moaiData?.value ?? 0n,
+          decimals: moaiData?.decimals ?? 0,
+          symbol: moaiData?.symbol ?? '',
+        },
+        {
+          value: usdcData?.formatted,
+          rawValue: usdcData?.value ?? 0n,
+          decimals: usdcData?.decimals ?? 0,
+          symbol: usdcData?.symbol ?? '',
+        },
+        {
+          value: usdtData?.formatted,
+          rawValue: usdtData?.value ?? 0n,
+          decimals: usdtData?.decimals ?? 0,
+          symbol: usdtData?.symbol ?? '',
+        },
+        {
+          value: wethData?.formatted,
+          rawValue: wethData?.value ?? 0n,
+          decimals: wethData?.decimals ?? 0,
+          symbol: wethData?.symbol ?? '',
+        },
+      ],
     };
   }
   return {};
