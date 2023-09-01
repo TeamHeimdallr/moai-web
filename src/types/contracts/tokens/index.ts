@@ -1,3 +1,5 @@
+import { Address } from 'viem';
+
 export enum TOKEN {
   USDC = 'USDC',
   USDT = 'USDT',
@@ -24,3 +26,5 @@ export interface TokenBalanceInfoAll {
   balancesMap?: Record<TOKEN, TokenBalanceInfo>;
   balancesArray?: TokenBalanceInfo[];
 }
+
+export type PoolBalance = [Address[], bigint[], bigint];

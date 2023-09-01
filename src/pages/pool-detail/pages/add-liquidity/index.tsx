@@ -23,8 +23,8 @@ const PoolDetailAddLiquidityPage = () => {
   const { id } = useParams();
 
   useRequirePrarams([id], () => navigate(-1));
-  const { compositions } = pools[Number(id) - 1];
 
+  const { compositions } = pools.find(pool => pool.id === id) ?? pools[0];
   const { balancesMap } = useBalancesAll();
 
   const tokens: TokenInfo[] = compositions?.map(token => {

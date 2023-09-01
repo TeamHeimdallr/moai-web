@@ -15,7 +15,7 @@ interface ReactTableProps<T extends object> {
   isLoading?: boolean;
 
   handleMoreClick?: () => void;
-  handleRowClick?: (idx: string) => void;
+  handleRowClick?: (id: string) => void;
 }
 
 export const Table = <T extends object>({
@@ -32,6 +32,9 @@ export const Table = <T extends object>({
   const table = useReactTable({
     data,
     columns,
+    state: {
+      columnVisibility: { id: false },
+    },
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -59,7 +62,7 @@ export const Table = <T extends object>({
             <BodyInnerWrapper
               key={row.id}
               rounded={!hasMore && !isLoading}
-              onClick={handleRowClick ? () => handleRowClick(`${Number(row.id) + 1}`) : undefined}
+              onClick={() => handleRowClick?.(row.getValue('id'))}
             >
               {row.getVisibleCells().map(cell => (
                 <Fragment key={cell.id}>

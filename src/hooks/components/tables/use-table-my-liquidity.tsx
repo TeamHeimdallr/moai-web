@@ -8,8 +8,9 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
+import { POOL_ID } from '~/constants';
 import { useTableMyLiquidityStore } from '~/states/components/table-my-liquidity';
-import { MyLiquidityTable } from '~/types/components';
+import { MyLiquidityData, MyLiquidityTable } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 import { sumPoolValues } from '~/utils/token';
@@ -17,10 +18,9 @@ import { sumPoolValues } from '~/utils/token';
 export const useTableMyLiquidity = () => {
   const { sorting, setSorting } = useTableMyLiquidityStore();
 
-  // TODO: fetch from contract api
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data: any[] = [
+  const data: MyLiquidityData[] = [
     {
+      id: POOL_ID.POOL_A,
       assets: [TOKEN.MOAI, TOKEN.WETH],
       composition: {
         [TOKEN.MOAI]: 80,
@@ -41,7 +41,7 @@ export const useTableMyLiquidity = () => {
       return sorting.order === 'asc'
         ? sumPoolValues(a.pool) - sumPoolValues(b.pool)
         : sumPoolValues(b.pool) - sumPoolValues(a.pool);
-    if (sorting?.key === 'VOLUMN')
+    if (sorting?.key === 'VOLUME')
       return sorting.order === 'asc' ? a.balance - b.balance : b.balance - a.balance;
     return 0;
   });
@@ -49,6 +49,7 @@ export const useTableMyLiquidity = () => {
   const tableData = useMemo<MyLiquidityTable[]>(
     () =>
       sortedData?.map(d => ({
+        id: d.id,
         assets: <TableColumnTokenIcon tokens={d.assets} />,
         composition: <TableColumnToken tokens={d.composition} isNew={d.isNew} />,
         balance: (
@@ -68,6 +69,10 @@ export const useTableMyLiquidity = () => {
 
   const columns = useMemo<ColumnDef<MyLiquidityTable, ReactNode>[]>(
     () => [
+      {
+        cell: row => row.renderValue(),
+        accessorKey: 'id',
+      },
       {
         header: () => <TableHeaderAssets />,
         cell: row => row.renderValue(),

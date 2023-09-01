@@ -8,8 +8,9 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
+import { POOL_ID } from '~/constants';
 import { useTableLiquidityStore } from '~/states/components/table-liquidity-pool';
-import { LiquidityPoolTable } from '~/types/components';
+import { LiquidityPoolData, LiquidityPoolTable } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 import { sumPoolValues } from '~/utils/token';
@@ -17,10 +18,9 @@ import { sumPoolValues } from '~/utils/token';
 export const useTableLiquidityPool = () => {
   const { sorting, setSorting } = useTableLiquidityStore();
 
-  // TODO: fetch from contract api
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data: any[] = [
+  const data: LiquidityPoolData[] = [
     {
+      id: POOL_ID.POOL_A,
       assets: [TOKEN.MOAI, TOKEN.WETH],
       composition: {
         [TOKEN.MOAI]: 80,
@@ -35,6 +35,7 @@ export const useTableLiquidityPool = () => {
       isNew: true,
     },
     {
+      id: POOL_ID.POOL_B,
       assets: [TOKEN.WETH, TOKEN.USDC, TOKEN.USDT],
       composition: {
         [TOKEN.WETH]: 50,
@@ -57,7 +58,7 @@ export const useTableLiquidityPool = () => {
       return sorting.order === 'asc'
         ? sumPoolValues(a.pool) - sumPoolValues(b.pool)
         : sumPoolValues(b.pool) - sumPoolValues(a.pool);
-    if (sorting?.key === 'VOLUMN')
+    if (sorting?.key === 'VOLUME')
       return sorting.order === 'asc' ? a.volume - b.volume : b.volume - a.volume;
     return 0;
   });
@@ -65,6 +66,7 @@ export const useTableLiquidityPool = () => {
   const tableData = useMemo<LiquidityPoolTable[]>(
     () =>
       sortedData?.map(d => ({
+        id: d.id,
         assets: <TableColumnTokenIcon tokens={d.assets} />,
         composition: <TableColumnToken tokens={d.composition} isNew={d.isNew} />,
         poolValue: (
@@ -74,7 +76,7 @@ export const useTableLiquidityPool = () => {
             align="flex-end"
           />
         ),
-        volumn: (
+        volume: (
           <TableColumn value={`$${formatNumber(d.volume, 2)}`} width={160} align="flex-end" />
         ),
         apr: <TableColumn value={`${d.apr}%`} width={160} align="flex-end" />,
@@ -84,6 +86,10 @@ export const useTableLiquidityPool = () => {
 
   const columns = useMemo<ColumnDef<LiquidityPoolTable, ReactNode>[]>(
     () => [
+      {
+        cell: row => row.renderValue(),
+        accessorKey: 'id',
+      },
       {
         header: () => <TableHeaderAssets />,
         cell: row => row.renderValue(),
@@ -109,14 +115,14 @@ export const useTableLiquidityPool = () => {
       {
         header: () => (
           <TableHeaderSortable
-            sortKey="VOLUMN"
+            sortKey="VOLUME"
             label="Volume (24h)"
             sorting={sorting}
             setSorting={setSorting}
           />
         ),
         cell: row => row.renderValue(),
-        accessorKey: 'volumn',
+        accessorKey: 'volume',
       },
       {
         header: () => <TableHeaderAPR />,

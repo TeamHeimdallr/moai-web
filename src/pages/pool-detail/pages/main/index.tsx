@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
-import { formatEther } from 'viem';
 import { useAccount } from 'wagmi';
 
 import { usePoolBalance, usePoolTotalLpTokens } from '~/api/api-contract/pool-balance';
@@ -18,29 +17,24 @@ import { MyPoolBalance } from '../../components/my-pool-balance';
 import { PoolInfo } from '../../components/pool-info';
 
 const PoolDetailMainPage = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
+
+  const { id } = useParams();
   const { address } = useAccount();
+
   const tokenAddress = Number(id) === 1 ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
 
   useRequirePrarams([id], () => navigate(-1));
-  const { value: lpTokenBalance } = useTokenBalances(address, tokenAddress);
-  const { data } = usePoolBalance(Number(id));
-  const { data: totalLpTokenBalance } = usePoolTotalLpTokens();
 
-  const { myCompositionsInfo, pool, totalBalances, volume, apy, fees } = getPoolInfoById(
-    Number(id),
-    data
-  );
-  const myCompositions = myCompositionsInfo?.map(composition => {
-    const balance =
-      (Number(composition.balance) * Number(lpTokenBalance)) /
-      Number(formatEther(totalLpTokenBalance as bigint));
-    return {
-      ...composition,
-      balance,
-      value: balance * composition.price,
-    };
+  const { value: lpTokenBalance } = useTokenBalances(address, tokenAddress);
+  const { data: poolBalance } = usePoolBalance(id);
+  const { data: totalLpTokenBalance } = usePoolTotalLpTokens(id);
+
+  const { myCompositions, totalBalances, volume, apy, fees, pool } = getPoolInfoById({
+    id: id ?? '',
+    lpTokenBalance,
+    totalLpTokenBalance,
+    poolBalance,
   });
 
   return (
