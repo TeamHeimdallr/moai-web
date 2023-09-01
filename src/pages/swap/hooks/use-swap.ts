@@ -17,6 +17,7 @@ export const useSwap = () => {
     setFromToken,
     setFromValue,
     setToToken,
+    resetFromValue,
   } = useSwapStore();
 
   const fromTokenBalance = tokenBalances.find(t => t.symbol === fromToken)?.balance ?? 0;
@@ -32,10 +33,13 @@ export const useSwap = () => {
   const swapRatio =
     fromToken && toToken ? TOKEN_USD_MAPPER[fromToken] / TOKEN_USD_MAPPER[toToken] : 0;
 
-  const toValue = Number(((fromValue ?? 0) * swapRatio).toFixed(2));
-  const validToSwap = fromValue && fromValue > 0 && fromValue <= fromTokenBalance && toValue > 0;
+  const toValue = fromValue ? Number((fromValue * swapRatio).toFixed(2)) : undefined;
+  const validToSwap =
+    fromValue && fromValue > 0 && fromValue <= fromTokenBalance && toValue && toValue > 0;
 
   return {
+    tokenBalances,
+
     fromToken,
     fromValue,
     toToken,
@@ -44,6 +48,7 @@ export const useSwap = () => {
     setFromToken,
     setFromValue,
     setToToken,
+    resetFromValue,
 
     fromTokenBalance,
     toTokenBalance,

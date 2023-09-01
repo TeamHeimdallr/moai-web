@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from 'react';
+import { HTMLAttributes, ReactNode, useRef } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
@@ -8,7 +8,7 @@ import { usePopup } from '~/hooks/pages/use-popup';
 
 import { ButtonIconLarge } from '../buttons/icon';
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   id: string;
   title: string;
   children?: ReactNode;
@@ -16,14 +16,14 @@ interface Props {
   icon?: ReactNode;
 }
 
-export const Popup = ({ id, title, children, button, icon }: Props) => {
+export const Popup = ({ id, title, children, button, icon, ...rest }: Props) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const { close } = usePopup(id);
 
   useOnClickOutside(popupRef, close);
   return (
-    <Wrapper>
-      <ContentContainer ref={popupRef}>
+    <>
+      <ContentContainer ref={popupRef} {...rest}>
         <Header>
           <TitleWrapper>
             <IconWrapper>{icon}</IconWrapper>
@@ -40,10 +40,9 @@ export const Popup = ({ id, title, children, button, icon }: Props) => {
         </Footer>
       </ContentContainer>
       <Dim />
-    </Wrapper>
+    </>
   );
 };
-const Wrapper = tw.div``;
 const Dim = tw.div`
   fixed w-screen h-screen bg-neutral-0/60 top-0 left-0
 `;

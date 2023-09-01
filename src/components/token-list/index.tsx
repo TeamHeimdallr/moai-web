@@ -57,14 +57,18 @@ interface DivProps {
   selected?: boolean;
 }
 const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
-  tw`flex justify-between items-center`,
-  type === 'selectable' &&
-    (selected ? tw`border-1 border-solid border-primary-60 bg-primary-20` : tw`bg-neutral-10`),
+  tw`flex items-center justify-between`,
+
   type === 'selectable'
-    ? tw`px-12 py-8 rounded-8 hover:bg-neutral-20 clickable`
+    ? tw`border-transparent border-solid px-11 py-7 rounded-8 border-1 hover:bg-neutral-20 clickable`
     : type === 'medium'
     ? tw`px-24 py-8`
     : tw`px-24 py-12`,
+  type === 'selectable' &&
+    (selected
+      ? tw`border-solid border-1 border-primary-60 bg-primary-20 hover:bg-primary-20`
+      : tw`bg-neutral-10`),
+
   backgroundColor &&
     css`
       background-color: ${backgroundColor};

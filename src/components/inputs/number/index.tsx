@@ -48,29 +48,31 @@ export const InputNumber = ({
   slider,
   sliderActive,
   focus = true,
+  value,
   handleChange,
   handleTokenClick,
   ...rest
 }: Props) => {
   const [focused, setFocus] = useState(false);
 
-  const { control, watch, formState } = useForm<FormState>({
+  const { control, formState } = useForm<FormState>({
     mode: 'onChange',
     reValidateMode: 'onChange',
     resolver: schema && yupResolver(schema),
   });
 
   const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
-  const value = watch(HOOK_FORM_KEY.NUMBER_INPUT_VALUE);
+  const handledValue = value ? (value < 0 ? undefined : value) : undefined;
 
-  const tokenUSD = (value || 0) * TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI];
+  const tokenUSD = (handledValue || 0) * TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI];
   // TODO: get balance from wallet
   const currentBalance = balance || 0;
 
   useEffect(() => {
     if (!focus) return;
-    setFocus(value !== undefined);
-  }, [value, focus]);
+    if (!handledValue) setFocus(false);
+    else setFocus(handledValue > 0);
+  }, [handledValue, focus]);
 
   const CustomInput = useCallback(({ ...rest }: Props) => <Input {...rest} />, []);
   return (
@@ -79,11 +81,11 @@ export const InputNumber = ({
       control={control}
       render={formProps => {
         const { field } = formProps;
-        const { onChange, onBlur, name, value } = field;
+        const { onChange, onBlur, name } = field;
 
-        const onValueChange = (value?: number) => {
-          onChange(value);
-          handleChange?.(value);
+        const onValueChange = (handledValue?: number) => {
+          onChange(handledValue);
+          handleChange?.(handledValue);
         };
 
         return (
@@ -96,11 +98,10 @@ export const InputNumber = ({
                   // @ts-expect-error
                   name={name}
                   allowLeadingZeros={false}
-                  allowNegative={false}
                   placeholder={placeholder}
                   thousandSeparator
                   maxLength={16}
-                  value={value}
+                  value={handledValue || ''}
                   onValueChange={values => onValueChange(values.floatValue)}
                   customInput={CustomInput}
                   onFocus={() => {
@@ -135,8 +136,8 @@ export const InputNumber = ({
                     thumbClassName="thumb"
                     trackClassName="track"
                     min={0}
-                    max={currentBalance}
-                    value={value || 0}
+                    max={currentBalance || 100}
+                    value={handledValue || 0}
                     step={0.01}
                     onChange={onValueChange}
                     renderThumb={({ key, ...props }) => (
