@@ -7,6 +7,7 @@ import { POOL_ID, TOKEN_ADDRESS } from '~/constants';
 import { useTokenBalances } from '~/hooks/data/use-balance';
 import { getPoolInfoById } from '~/utils/token';
 
+import { LiquidityProvisions } from '../../components/liquidity-provisions';
 import { PoolCompositions } from '../../components/pool-compositions';
 import { PoolInfo } from '../../components/pool-info';
 
@@ -31,6 +32,7 @@ export const MainLeft = () => {
     <Wrapper>
       <PoolInfo totalBalances={totalBalances} volume={volume} apr={apr} fees={fees} />
       <PoolCompositions pool={pool} />
+      <LiquidityProvisions pool={pool} />
     </Wrapper>
   );
 };

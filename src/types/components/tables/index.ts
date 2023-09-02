@@ -3,6 +3,8 @@ import { Address } from 'viem';
 
 import { TOKEN } from '~/types/contracts';
 
+import { TokenInfo } from '..';
+
 export interface LiquidityPoolData {
   id: string;
   assets: TOKEN[];
@@ -60,4 +62,18 @@ export interface PoolCompositionTable {
   balance: ReactNode;
   value: ReactNode;
   currentWeight: ReactNode;
+}
+export interface LiquidityProvisionData {
+  id: number;
+  action: 'add' | 'withdraw';
+  tokens: TokenInfo[];
+  value: number;
+  time: string;
+}
+export interface LiquidityProvisionTable {
+  id: number;
+  action: ReactNode;
+  tokens: ReactNode;
+  value: ReactNode;
+  time: ReactNode;
 }
