@@ -45,7 +45,7 @@ export const useTableSwap = (id: string) => {
         { name: TOKEN.WETH, balance: 0.1, value: 0.1 * TOKEN_USD_MAPPER[TOKEN.WETH] },
         { name: TOKEN.USDC, balance: 162.93, value: 162.93 * TOKEN_USD_MAPPER[TOKEN.USDC] },
       ],
-      value: 11947.32,
+      value: 162.93,
       time: '2 months',
     },
     {
@@ -55,7 +55,7 @@ export const useTableSwap = (id: string) => {
         { name: TOKEN.USDT, balance: 10, value: 10 * TOKEN_USD_MAPPER[TOKEN.USDT] },
         { name: TOKEN.WETH, balance: 0.0061, value: 0.0061 * TOKEN_USD_MAPPER[TOKEN.WETH] },
       ],
-      value: 177.78,
+      value: 10,
       time: '2 months',
     },
   ];
