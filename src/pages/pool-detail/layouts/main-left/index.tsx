@@ -10,6 +10,7 @@ import { getPoolInfoById } from '~/utils/token';
 import { LiquidityProvisions } from '../../components/liquidity-provisions';
 import { PoolCompositions } from '../../components/pool-compositions';
 import { PoolInfo } from '../../components/pool-info';
+import { Swap } from '../../components/swap';
 
 export const MainLeft = () => {
   const { id } = useParams();
@@ -33,6 +34,7 @@ export const MainLeft = () => {
       <PoolInfo totalBalances={totalBalances} volume={volume} apr={apr} fees={fees} />
       <PoolCompositions pool={pool} />
       <LiquidityProvisions pool={pool} />
+      <Swap pool={pool} />
     </Wrapper>
   );
 };

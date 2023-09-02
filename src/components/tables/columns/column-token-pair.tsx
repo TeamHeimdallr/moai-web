@@ -22,7 +22,6 @@ export const TableColumnTokenPair = ({ tokens, isNew, ...rest }: Props) => {
           type="small"
         />
       ))}
-      {isNew && <BadgeNew />}
     </Wrapper>
   );
 };

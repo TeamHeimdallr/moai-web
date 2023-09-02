@@ -77,3 +77,18 @@ export interface LiquidityProvisionTable {
   value: ReactNode;
   time: ReactNode;
 }
+
+export interface SwapData {
+  id: number;
+  trader: string;
+  tradeDetail: TokenInfo[];
+  value: number;
+  time: string;
+}
+export interface SwapTable {
+  id: number;
+  trader: ReactNode;
+  tradeDetail: ReactNode;
+  value: ReactNode;
+  time: ReactNode;
+}
