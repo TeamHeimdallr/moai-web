@@ -33,7 +33,7 @@ export const Table = <T extends object>({
     data,
     columns,
     state: {
-      columnVisibility: { id: false },
+      columnVisibility: { id: false, tokenAddress: false },
     },
     getCoreRowModel: getCoreRowModel(),
   });
