@@ -3,9 +3,10 @@ import { ReactNode } from 'react';
 
 import { COLOR } from '~/assets/colors';
 import { IconMinus, IconPlus } from '~/assets/icons';
-import { TableHeader } from '~/components/tables';
+import { TableHeader, TableHeaderSortable } from '~/components/tables';
 import { TableColumn } from '~/components/tables/columns';
 import { TableColumnIcon } from '~/components/tables/columns/column-icon';
+import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenPair } from '~/components/tables/columns/column-token-pair';
 import { TOKEN_USD_MAPPER } from '~/constants';
 import { LiquidityProvisionData, LiquidityProvisionTable } from '~/types/components';
@@ -54,7 +55,7 @@ export const useTableTotalProvision = () => {
     ),
     tokens: <TableColumnTokenPair tokens={d.tokens} />,
     value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
-    time: <TableColumn value={`${d.time} ago`} align="flex-end" width={'full'} />,
+    time: <TableColumnLink token={`${d.time} ago`} align="flex-end" width={160} />,
   }));
 
   const columns: ColumnDef<LiquidityProvisionTable, ReactNode>[] = [
@@ -78,7 +79,9 @@ export const useTableTotalProvision = () => {
       accessorKey: 'value',
     },
     {
-      header: () => <TableHeader label="Time" width={160} align="flex-end" />,
+      header: () => (
+        <TableHeaderSortable sortKey="TIME" label="Time" sorting={{ key: 'TIME', order: 'desc' }} />
+      ),
       cell: row => row.renderValue(),
       accessorKey: 'time',
     },

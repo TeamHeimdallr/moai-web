@@ -11,7 +11,6 @@ interface Props {
 export const LiquidityProvisions = ({ pool }: Props) => {
   const tabs = [{ key: 'total-provision', name: 'All liquidity provision' }];
   const { data, columns } = useTableTotalProvision();
-  console.log(data);
 
   return (
     <Wrapper>

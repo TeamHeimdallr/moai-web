@@ -28,5 +28,5 @@ export const TableColumnTokenPair = ({ tokens, isNew, ...rest }: Props) => {
 };
 
 const Wrapper = tw.div`
-  w-272 flex gap-8 items-center h-32
+  w-full flex flex-1 gap-8 items-center h-32
 `;
