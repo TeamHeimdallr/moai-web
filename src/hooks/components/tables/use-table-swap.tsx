@@ -86,12 +86,12 @@ export const useTableSwap = (id: string) => {
       accessorKey: 'trader',
     },
     {
-      header: () => <TableHeader label="Trade details" width={272} align="flex-start" />,
+      header: () => <TableHeader label="Trade details" width="full" align="flex-start" />,
       cell: row => row.renderValue(),
       accessorKey: 'tradeDetail',
     },
     {
-      header: () => <TableHeader label="Valule" width={120} align="flex-end" />,
+      header: () => <TableHeader label="Value" width={120} align="flex-end" />,
       cell: row => row.renderValue(),
       accessorKey: 'value',
     },

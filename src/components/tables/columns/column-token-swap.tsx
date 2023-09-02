@@ -10,9 +10,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: TokenInfo[];
 }
 export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
-  const tokenA = tokens[0];
-  const tokenB = tokens[1];
-  console.log(tokens);
+  const [tokenA, tokenB] = tokens;
   return (
     <Wrapper {...rest}>
       <Token

@@ -95,12 +95,12 @@ export const useTableTotalProvision = (id: string) => {
       accessorKey: 'action',
     },
     {
-      header: () => <TableHeader label="Tokens" width={272} align="flex-start" />,
+      header: () => <TableHeader label="Tokens" width="full" align="flex-start" />,
       cell: row => row.renderValue(),
       accessorKey: 'tokens',
     },
     {
-      header: () => <TableHeader label="Valule" width={120} align="flex-end" />,
+      header: () => <TableHeader label="Value" width={120} align="flex-end" />,
       cell: row => row.renderValue(),
       accessorKey: 'value',
     },
