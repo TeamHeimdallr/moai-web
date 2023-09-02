@@ -16,7 +16,7 @@ export interface PoolInfo {
   compositions: Composition[];
   value: string;
   volume: string;
-  apy: string;
+  apr: string;
   fees: string;
   lpTokens: number;
   name: string;

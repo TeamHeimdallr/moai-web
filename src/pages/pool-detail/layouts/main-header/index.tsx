@@ -3,12 +3,14 @@ import tw from 'twin.macro';
 import { IconLink } from '~/assets/icons';
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
+import { POOL_ID, TESTNET_SCANNER_URL, TOKEN_ADDRESS } from '~/constants';
 import { PoolInfo } from '~/types/components';
 
 interface Props {
   pool: PoolInfo;
 }
 export const MainHeader = ({ pool }: Props) => {
+  const tokenAddress = pool.id === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
   return (
     <HeaderWrapper>
       <Title>Weighted Pool</Title>
@@ -21,7 +23,10 @@ export const MainHeader = ({ pool }: Props) => {
             type="small"
           />
         ))}
-        <ButtonIconMedium icon={<IconLink />} />
+        <ButtonIconMedium
+          icon={<IconLink />}
+          onClick={() => window.open(`${TESTNET_SCANNER_URL}/address/${tokenAddress}`)}
+        />
       </TokenWrapper>
       <Text>
         Dynamic swap fees : Currently <Fee>{`0.3`}</Fee>%
