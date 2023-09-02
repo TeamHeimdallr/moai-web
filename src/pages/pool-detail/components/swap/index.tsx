@@ -8,7 +8,7 @@ interface Props {
   pool: PoolInfo;
 }
 export const Swap = ({ pool }: Props) => {
-  const { data, columns } = useTableSwap();
+  const { data, columns } = useTableSwap(pool.id);
 
   return (
     <Wrapper>

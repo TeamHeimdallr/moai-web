@@ -22,7 +22,7 @@ export const MainLeft = () => {
   const { data: poolBalance } = usePoolBalance(id);
   const { data: totalLpTokenBalance } = usePoolTotalLpTokens(id);
 
-  const { totalBalances, volume, apr, fees, pool } = getPoolInfoById({
+  const { value, volume, apr, fees, pool } = getPoolInfoById({
     id: id ?? '',
     lpTokenBalance,
     totalLpTokenBalance,
@@ -31,7 +31,7 @@ export const MainLeft = () => {
 
   return (
     <Wrapper>
-      <PoolInfo totalBalances={totalBalances} volume={volume} apr={apr} fees={fees} />
+      <PoolInfo value={value} volume={volume} apr={apr} fees={fees} />
       <PoolCompositions pool={pool} />
       <LiquidityProvisions pool={pool} />
       <Swap pool={pool} />

@@ -7,15 +7,15 @@ import { TableColumn } from '~/components/tables/columns';
 import { TableColumnIcon } from '~/components/tables/columns/column-icon';
 import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenSwap } from '~/components/tables/columns/column-token-swap';
-import { TOKEN_USD_MAPPER } from '~/constants';
+import { POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
 import { SwapData, SwapTable } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 import { truncateAddress } from '~/utils/string';
 
-export const useTableSwap = () => {
+export const useTableSwap = (id: string) => {
   // TODO: connect api
-  const data: SwapData[] = [
+  const poolAData: SwapData[] = [
     {
       id: 0,
       trader: '0x64c3baab47c8f78dd78abc',
@@ -27,7 +27,7 @@ export const useTableSwap = () => {
       time: '2 months',
     },
     {
-      id: 0,
+      id: 1,
       trader: '0xb47c8f764c378abcbaa8dd',
       tradeDetail: [
         { name: TOKEN.MOAI, balance: 1.25, value: 1.25 * TOKEN_USD_MAPPER[TOKEN.MOAI] },
@@ -37,6 +37,29 @@ export const useTableSwap = () => {
       time: '2 months',
     },
   ];
+  const poolBData: SwapData[] = [
+    {
+      id: 0,
+      trader: '0x64c3baab47c8f78dd78abc',
+      tradeDetail: [
+        { name: TOKEN.WETH, balance: 0.1, value: 0.1 * TOKEN_USD_MAPPER[TOKEN.WETH] },
+        { name: TOKEN.USDC, balance: 162.93, value: 162.93 * TOKEN_USD_MAPPER[TOKEN.USDC] },
+      ],
+      value: 11947.32,
+      time: '2 months',
+    },
+    {
+      id: 1,
+      trader: '0xb47c8f764c378abcbaa8dd',
+      tradeDetail: [
+        { name: TOKEN.USDT, balance: 10, value: 10 * TOKEN_USD_MAPPER[TOKEN.USDT] },
+        { name: TOKEN.WETH, balance: 0.0061, value: 0.0061 * TOKEN_USD_MAPPER[TOKEN.WETH] },
+      ],
+      value: 177.78,
+      time: '2 months',
+    },
+  ];
+  const data = id === POOL_ID.POOL_A ? poolAData : poolBData;
 
   const tableData: SwapTable[] = data?.map(d => ({
     id: d.id,

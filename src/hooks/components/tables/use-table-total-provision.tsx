@@ -8,14 +8,14 @@ import { TableColumn } from '~/components/tables/columns';
 import { TableColumnIcon } from '~/components/tables/columns/column-icon';
 import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenPair } from '~/components/tables/columns/column-token-pair';
-import { TOKEN_USD_MAPPER } from '~/constants';
+import { POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
 import { LiquidityProvisionData, LiquidityProvisionTable } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-export const useTableTotalProvision = () => {
+export const useTableTotalProvision = (id: string) => {
   // TODO: connect api
-  const data: LiquidityProvisionData[] = [
+  const poolAData: LiquidityProvisionData[] = [
     {
       id: 0,
       action: { key: 'add', label: 'Add tokens' },
@@ -37,6 +37,32 @@ export const useTableTotalProvision = () => {
       time: '10 days',
     },
   ];
+
+  const poolBData: LiquidityProvisionData[] = [
+    {
+      id: 0,
+      action: { key: 'add', label: 'Add tokens' },
+      tokens: [
+        { name: TOKEN.WETH, balance: 0.13, value: 0.13 * TOKEN_USD_MAPPER[TOKEN.WETH] },
+        { name: TOKEN.USDC, balance: 105.9, value: 105.9 * TOKEN_USD_MAPPER[TOKEN.USDC] },
+        { name: TOKEN.USDT, balance: 105.89, value: 105.89 * TOKEN_USD_MAPPER[TOKEN.USDT] },
+      ],
+      value: 423.604,
+      time: '2 months',
+    },
+    {
+      id: 1,
+      action: { key: 'add', label: 'Add tokens' },
+      tokens: [
+        { name: TOKEN.WETH, balance: 0.62, value: 0.62 * TOKEN_USD_MAPPER[TOKEN.WETH] },
+        { name: TOKEN.USDT, balance: 505.09, value: 505.09 * TOKEN_USD_MAPPER[TOKEN.USDC] },
+        { name: TOKEN.USDC, balance: 505.09, value: 505.09 * TOKEN_USD_MAPPER[TOKEN.USDC] },
+      ],
+      value: 2020.362,
+      time: '2 months',
+    },
+  ];
+  const data = id === POOL_ID.POOL_A ? poolAData : poolBData;
 
   const tableData: LiquidityProvisionTable[] = data?.map(d => ({
     id: d.id,

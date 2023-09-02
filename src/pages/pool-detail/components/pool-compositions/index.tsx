@@ -9,8 +9,11 @@ interface Props {
   pool: PoolInfo;
 }
 export const PoolCompositions = ({ pool }: Props) => {
-  const tabs = [{ key: 'total-composition', name: 'Total composition' }];
-  const { data, columns } = useTableTotalComposition();
+  const tabs = [
+    { key: 'total-composition', name: 'Total composition' },
+    { key: 'my-composition', name: 'My pool share' },
+  ];
+  const { data, columns } = useTableTotalComposition(pool.id);
 
   return (
     <Wrapper>

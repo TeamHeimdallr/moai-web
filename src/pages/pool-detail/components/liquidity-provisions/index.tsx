@@ -9,13 +9,16 @@ interface Props {
   pool: PoolInfo;
 }
 export const LiquidityProvisions = ({ pool }: Props) => {
-  const tabs = [{ key: 'total-provision', name: 'All liquidity provision' }];
-  const { data, columns } = useTableTotalProvision();
+  const tabs = [
+    { key: 'total-provision', name: 'All liquidity provision' },
+    { key: 'my-provision', name: 'My liquidity' },
+  ];
+  const { data, columns } = useTableTotalProvision(pool.id);
 
   return (
     <Wrapper>
       <Title>Liquidity Provision</Title>
-      <Tab tabs={tabs} selectedTab={'total-composition'} />
+      <Tab tabs={tabs} selectedTab={'total-provision'} />
       <Table<LiquidityProvisionTable> data={data} columns={columns} />
     </Wrapper>
   );

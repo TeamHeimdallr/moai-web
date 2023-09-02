@@ -4,14 +4,14 @@ import { ReactNode } from 'react';
 import { TableHeader } from '~/components/tables';
 import { TableColumn } from '~/components/tables/columns';
 import { TableColumnTokenAddress } from '~/components/tables/columns/column-token-address';
-import { TOKEN_ADDRESS } from '~/constants';
+import { POOL_ID, TOKEN_ADDRESS } from '~/constants';
 import { PoolCompositionData, PoolCompositionTable } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-export const useTableTotalComposition = () => {
+export const useTableTotalComposition = (id: string) => {
   // TODO: connect api
-  const data: PoolCompositionData[] = [
+  const poolAData: PoolCompositionData[] = [
     {
       tokenAddress: TOKEN_ADDRESS.MOAI,
       token: TOKEN.MOAI,
@@ -29,6 +29,33 @@ export const useTableTotalComposition = () => {
       currentWeight: 20.06,
     },
   ];
+  const poolBData: PoolCompositionData[] = [
+    {
+      tokenAddress: TOKEN_ADDRESS.WETH,
+      token: TOKEN.WETH,
+      weight: 50,
+      balance: 12.24,
+      value: 19893.06,
+      currentWeight: 50,
+    },
+    {
+      tokenAddress: TOKEN_ADDRESS.USDC,
+      token: TOKEN.USDC,
+      weight: 25,
+      balance: 9946.45,
+      value: 9946.91,
+      currentWeight: 25.02,
+    },
+    {
+      tokenAddress: TOKEN_ADDRESS.USDT,
+      token: TOKEN.USDT,
+      weight: 25,
+      balance: 9945.98,
+      value: 9946.15,
+      currentWeight: 24.98,
+    },
+  ];
+  const data = id === POOL_ID.POOL_A ? poolAData : poolBData;
 
   const tableData: PoolCompositionTable[] = data?.map(d => ({
     tokenAddress: d.tokenAddress,
@@ -37,7 +64,7 @@ export const useTableTotalComposition = () => {
     balance: <TableColumn value={`${formatNumber(d.balance, 2)}`} width={120} align="flex-end" />,
     value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
     currentWeight: (
-      <TableColumn value={`$${formatNumber(d.currentWeight, 2)}`} width={120} align="flex-end" />
+      <TableColumn value={`${formatNumber(d.currentWeight, 2)}%`} width={120} align="flex-end" />
     ),
   }));
 
