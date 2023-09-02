@@ -32,7 +32,7 @@ const PoolDetailMainPage = () => {
   const { data: poolBalance } = usePoolBalance(id);
   const { data: totalLpTokenBalance } = usePoolTotalLpTokens(id);
 
-  const { myCompositions, totalBalances, volume, apy, fees, pool } = getPoolInfoById({
+  const { myCompositions, pool } = getPoolInfoById({
     id: id ?? '',
     lpTokenBalance,
     totalLpTokenBalance,
