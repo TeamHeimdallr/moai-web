@@ -8,6 +8,7 @@ import { TOKEN } from '~/types/contracts';
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: TOKEN;
 
+  title?: string;
   percentage?: number;
 
   image?: boolean;
@@ -22,6 +23,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 export const Token = ({
   token,
+  title,
   percentage,
   image = true,
   icon,
@@ -34,7 +36,7 @@ export const Token = ({
     <Wrapper type={type} selected={selected} clickable={clickable} hasImage={!!image} {...rest}>
       {image && <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />}
       <TextWrapper>
-        <TokenText>{token}</TokenText>
+        <TokenText>{title ? title : token}</TokenText>
         {percentage && <Percentage>{percentage}%</Percentage>}
         {icon && <IconWrapper>{icon}</IconWrapper>}
       </TextWrapper>

@@ -65,7 +65,7 @@ export interface PoolCompositionTable {
 }
 export interface LiquidityProvisionData {
   id: number;
-  action: 'add' | 'withdraw';
+  action: { key: 'add' | 'withdraw'; label: string };
   tokens: TokenInfo[];
   value: number;
   time: string;
