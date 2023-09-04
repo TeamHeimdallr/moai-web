@@ -53,8 +53,15 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
 
   // TODO
   const lpAmount = (
-    (tokenList.length > 0 ? tokenList[0].amount : 0) +
-    (Math.random() * (20 - 10) + 10)
+    tokenList.length > 2
+      ? Math.sqrt(
+          tokenList[0].amount * tokenList[0].amount +
+            tokenList[1].amount * tokenList[1].amount +
+            tokenList[2].amount * tokenList[2].amount
+        )
+      : Math.sqrt(
+          tokenList[0].amount * tokenList[0].amount + tokenList[1].amount * tokenList[1].amount
+        )
   ).toFixed(2);
   const { close } = usePopup(POPUP_ID.ADD_LP);
 
