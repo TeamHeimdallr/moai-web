@@ -52,7 +52,7 @@ export const Balances = () => {
 };
 
 const Wrapper = tw.div`
-  w-full flex flex-col rounded-12 bg-neutral-15
+  flex flex-col rounded-12 bg-neutral-15 w-294
 `;
 
 const Header = tw.div`
@@ -60,10 +60,10 @@ const Header = tw.div`
 `;
 
 const HeaderLabel = tw.div`
-  flex font-m-16 text-neutral-100
+  flex font-m-16 text-neutral-100 flex-shrink-0
 `;
 const HeaderText = tw.div`
-  flex font-r-16 text-neutral-100 flex-1 justify-end
+  flex font-r-16 text-neutral-100 flex-1 text-end truncate
 `;
 
 const Divider = tw.div`

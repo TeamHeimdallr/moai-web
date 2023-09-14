@@ -202,7 +202,7 @@ const BalanceLabel = tw.div`
   text-neutral-60
 `;
 const BalanceValue = tw.div`
-  text-neutral-60
+  text-neutral-60 truncate max-w-120
 `;
 const TokenUSDValue = tw.div`
   text-neutral-60 flex-1 text-right

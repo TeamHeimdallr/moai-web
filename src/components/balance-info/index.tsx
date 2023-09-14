@@ -23,7 +23,8 @@ export const BalanceInfo = ({ tokens }: Props) => {
   return (
     <Wrapper>
       <Banner>
-        My Wallet <Balance>${formatNumber(totalBalance, 2)}</Balance>
+        <Text>My Wallet</Text>
+        <Balance>${formatNumber(totalBalance, 2)}</Balance>
       </Banner>
       <Divider />
       <TokenLists>
@@ -36,10 +37,13 @@ const Wrapper = tw.div`
   w-294 bg-neutral-10 rounded-t-12
 `;
 const Banner = tw.div`
-  py-20 px-24 flex items-center justify-between font-m-16 text-neutral-100
+  py-20 px-24 flex items-center justify-between font-m-16 text-neutral-100 gap-16
+`;
+const Text = tw.div`
+  flex-shrink-0
 `;
 const Balance = tw.div`
-  font-r-16
+  font-r-16 truncate
 `;
 const TokenLists = tw.div``;
 const Divider = tw.div`
