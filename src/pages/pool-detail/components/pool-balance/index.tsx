@@ -11,7 +11,7 @@ interface Props {
   compositions: TokenInfo[];
 }
 
-export const MyPoolBalance = ({ compositions, pool }: Props) => {
+export const PoolBalance = ({ compositions, pool }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const totalPoolBalance = compositions?.reduce((acc, cur) => acc + cur.value, 0) ?? 0;
@@ -46,11 +46,23 @@ export const MyPoolBalance = ({ compositions, pool }: Props) => {
     </Wrapper>
   );
 };
-const Wrapper = tw.div`w-400 bg-neutral-10 rounded-12`;
-const Header = tw.div`py-20 px-24 flex items-center justify-between font-m-16 text-neutral-100`;
-const Balance = tw.div`font-m-20`;
+const Wrapper = tw.div`
+  w-400 bg-neutral-10 rounded-12
+`;
+const Header = tw.div`
+  py-20 px-24 flex items-center justify-between font-m-16 text-neutral-100
+`;
+const Balance = tw.div`
+  font-m-20
+`;
 const TokenLists = tw.div``;
 
-const Footer = tw.div`flex flex-col gap-12 bg-neutral-15 rounded-b-12`;
-const ButtonWrapper = tw.div`px-24 py-20 flex gap-8`;
-const Divider = tw.div`flex h-1 bg-neutral-15`;
+const Footer = tw.div`
+  flex flex-col gap-12 bg-neutral-15 rounded-b-12
+`;
+const ButtonWrapper = tw.div`
+  px-24 py-20 flex gap-8
+`;
+const Divider = tw.div`
+  flex h-1 bg-neutral-15
+`;

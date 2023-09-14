@@ -9,7 +9,7 @@ import { getPoolInfoById } from '~/utils/token';
 
 import { LiquidityProvisions } from '../../components/liquidity-provisions';
 import { PoolCompositions } from '../../components/pool-compositions';
-import { PoolInfo } from '../../components/pool-info';
+import { PoolInfo } from '../../components/pool-info/pool-info';
 import { Swap } from '../../components/swap';
 
 export const MainLeft = () => {

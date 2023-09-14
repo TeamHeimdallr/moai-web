@@ -1,7 +1,6 @@
 import { HTMLAttributes } from 'react';
 import tw from 'twin.macro';
 
-import { BadgeNew } from '~/components/badges/new';
 import { Token } from '~/components/token';
 import { TokenInfo } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
@@ -10,7 +9,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: TokenInfo[];
   isNew?: boolean;
 }
-export const TableColumnTokenPair = ({ tokens, isNew, ...rest }: Props) => {
+export const TableColumnTokenPair = ({ tokens, ...rest }: Props) => {
   return (
     <Wrapper {...rest}>
       {tokens.map(token => (

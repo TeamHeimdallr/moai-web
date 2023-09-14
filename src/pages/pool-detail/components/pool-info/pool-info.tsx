@@ -1,6 +1,6 @@
 import tw from 'twin.macro';
 
-import { PoolInfoCard } from '../pool-info-card';
+import { PoolInfoCard } from './pool-info-card';
 
 interface Props {
   value: string;

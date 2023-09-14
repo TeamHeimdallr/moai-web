@@ -14,7 +14,7 @@ import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
 import { TokenInfo } from '~/types/components';
 
-import { AddLiquidityInput } from '../../layouts/add-liquidity-input';
+import { AddLiquidityInput } from '../../layouts/add-liquidity-input-group';
 
 const PoolDetailAddLiquidityPage = () => {
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);

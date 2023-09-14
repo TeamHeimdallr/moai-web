@@ -4,10 +4,10 @@ import tw from 'twin.macro';
 import { pools } from '~/data';
 import { TokenInfo } from '~/types/components';
 
-import { MyPoolBalance } from '.';
+import { PoolBalance } from '.';
 
 const meta = {
-  title: 'Components/Info/MyPoolBalanceInfo',
+  title: 'Components/Info/PoolBalance',
   tags: ['autodocs'],
 } satisfies Meta;
 
@@ -22,7 +22,7 @@ const tokens: TokenInfo[] = [
 export const _MyPoolBalance: Story = {
   render: () => (
     <Wrapper>
-      <MyPoolBalance compositions={tokens} pool={pools[0]} />
+      <PoolBalance compositions={tokens} pool={pools[0]} />
     </Wrapper>
   ),
 };

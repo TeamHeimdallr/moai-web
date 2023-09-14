@@ -14,7 +14,7 @@ import { HOOK_FORM_KEY, POPUP_ID, TokenInfo } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-import { AddLiquidityPopup } from '../add-liquidity-popup';
+import { AddLiquidityPopup } from '../../components/popup/popup-add-liquidity';
 
 interface Props {
   tokenList: TokenInfo[];

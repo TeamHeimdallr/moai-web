@@ -6,8 +6,8 @@ import { Gnb } from '~/components/gnb';
 import { CHAIN_ID } from '~/constants';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
 
-import { Balances } from './layouts/balances';
-import { SwapInputs } from './layouts/swap-inputs';
+import { Balances } from './layouts/balances-group';
+import { SwapInputs } from './layouts/swap-input-group';
 
 const SwapPage = () => {
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
