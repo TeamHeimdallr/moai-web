@@ -27,10 +27,10 @@ module.exports = {
           80: '#FCFFD6',
         },
         red: {
-          50: '#FF767E',
+          50: '#FF685F',
         },
         green: {
-          50: '#5CC3AA',
+          50: '#43CF9D',
         },
         neutral: {
           0: '#191B28',
