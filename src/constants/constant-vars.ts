@@ -1,8 +1,9 @@
-import { TokenMOAI, TokenUSDC, TokenUSDT, TokenWETH } from '~/assets/images';
-import { GnbMenu } from '~/types/components/gnb';
+import { ChainROOT, ChainXRPL, TokenMOAI, TokenUSDC, TokenUSDT, TokenWETH } from '~/assets/images';
+import { ChainSelect, GnbMenu } from '~/types/components/gnb';
 import { TOKEN } from '~/types/contracts';
 
-import { CHAIN } from '.';
+import { CHAIN_ID as ROOT_CHAIN_ID } from './constant-chain-root';
+import { CHAIN_ID as XRPL_CHAIN_ID } from './constant-chain-xrpl';
 
 export const TOKEN_IMAGE_MAPPER: Record<TOKEN, string> = {
   USDC: TokenUSDC,
@@ -17,6 +18,11 @@ export const TOKEN_USD_MAPPER: Record<TOKEN, number> = {
   USDT: 1,
   WETH: 1718.39,
   MOAI: 142.23,
+};
+
+export const CHAIN_IMAGE_MAPPER: Record<number, string> = {
+  [XRPL_CHAIN_ID]: ChainXRPL,
+  [ROOT_CHAIN_ID]: ChainROOT,
 };
 
 export const GNB_MENU: GnbMenu[] = [
@@ -41,6 +47,19 @@ export const GNB_MENU: GnbMenu[] = [
     id: 'rewards',
     text: 'Rewards',
     path: '/',
+    disabled: true,
+    commingSoon: true,
+  },
+];
+
+export const CHAIN_SELECT_LIST: ChainSelect[] = [
+  {
+    id: ROOT_CHAIN_ID,
+    text: 'The Root Network',
+  },
+  {
+    id: XRPL_CHAIN_ID,
+    text: 'XRPL',
     disabled: true,
     commingSoon: true,
   },

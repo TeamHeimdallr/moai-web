@@ -4,7 +4,7 @@ import { ChainInfo } from '~/types/constants';
 
 import { IS_MAINNET } from '.';
 
-export const CHAIN_ID = IS_MAINNET ? 0 : 0;
+export const CHAIN_ID = IS_MAINNET ? -1 : -1;
 
 export const POOL_ID: Record<string, Address> = {};
 

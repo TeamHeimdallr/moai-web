@@ -4,15 +4,15 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconCheck } from '~/assets/icons';
 
-interface Props extends HTMLAttributes<HTMLDivElement> {
+interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'id'> {
   image?: string;
   imageTitle?: string;
   imageAlt?: string;
 
-  id: string;
+  id: number;
   text: string;
 
-  handleSelect?: (id: string) => void;
+  handleSelect?: (id: number) => void;
   selected?: boolean;
 
   disabled?: boolean;
