@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import tw from 'twin.macro';
 
+import { pools } from '~/data';
 import { TokenInfo } from '~/types/components';
 
-import { MyBalanceInfo } from '.';
+import { PoolBalance } from '.';
 
 const meta = {
-  title: 'Components/Info/MyBalanceInfo',
+  title: 'Components/Info/PoolBalance',
   tags: ['autodocs'],
 } satisfies Meta;
 
@@ -14,16 +15,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const tokens: TokenInfo[] = [
-  { name: 'MOAI', balance: 123123, value: 167904.87 },
-  { name: 'WETH', balance: 2.73857, value: 3.1212 },
-  { name: 'USDC', balance: 0, value: 0 },
-  { name: 'USDT', balance: 0, value: 0 },
+  { name: 'MOAI', balance: 123.123, value: 104.87 },
+  { name: 'WETH', balance: 2.73857, value: 37.1212 },
 ];
 
-export const _MyBalanceInfo: Story = {
+export const _MyPoolBalance: Story = {
   render: () => (
     <Wrapper>
-      <MyBalanceInfo tokens={tokens} />
+      <PoolBalance compositions={tokens} pool={pools[0]} />
     </Wrapper>
   ),
 };

@@ -10,16 +10,17 @@ import { POPUP_ID } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-import { useSwapData } from '../hooks/use-swap-data';
+import { useSwapData } from '../../hooks/use-swap-data';
 
-export const PopupSwapSelectTokenTo = () => {
+export const PopupSwapSelectTokenFrom = () => {
   const { balancesMap } = useBalancesAll();
-  const { toToken, setToToken } = useSwapData();
-  const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_TO);
+
+  const { fromToken, setFromToken } = useSwapData();
+  const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_FROM);
 
   return (
     <Popup
-      id={POPUP_ID.SWAP_SELECT_TOKEN_TO}
+      id={POPUP_ID.SWAP_SELECT_TOKEN_FROM}
       title="Select token"
       style={{ backgroundColor: COLOR.NEUTRAL[10] }}
     >
@@ -33,7 +34,7 @@ export const PopupSwapSelectTokenTo = () => {
           const formattedTokenValue = valueUSD > 0 ? '$' + formatNumber(valueUSD, 2) : undefined;
 
           const handleClick = () => {
-            setToToken(token.symbol);
+            setFromToken(token.symbol);
             close();
           };
 
@@ -45,7 +46,7 @@ export const PopupSwapSelectTokenTo = () => {
               type={'selectable'}
               balance={formattedTokenBalance}
               value={formattedTokenValue}
-              selected={toToken === token.symbol}
+              selected={fromToken === token.symbol}
               onClick={handleClick}
             />
           );

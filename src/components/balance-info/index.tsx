@@ -10,7 +10,7 @@ interface Props {
   tokens: TokenInfo[];
 }
 
-export const MyBalanceInfo = ({ tokens }: Props) => {
+export const BalanceInfo = ({ tokens }: Props) => {
   const tokenInfos = tokens?.map(token => {
     return {
       title: token.name,
@@ -32,8 +32,16 @@ export const MyBalanceInfo = ({ tokens }: Props) => {
     </Wrapper>
   );
 };
-const Wrapper = tw.div`w-294 bg-neutral-10 rounded-t-12`;
-const Banner = tw.div`py-20 px-24 flex items-center justify-between font-m-16 text-neutral-100`;
-const Balance = tw.div`font-r-16`;
+const Wrapper = tw.div`
+  w-294 bg-neutral-10 rounded-t-12
+`;
+const Banner = tw.div`
+  py-20 px-24 flex items-center justify-between font-m-16 text-neutral-100
+`;
+const Balance = tw.div`
+  font-r-16
+`;
 const TokenLists = tw.div``;
-const Divider = tw.div`flex h-1 bg-neutral-15`;
+const Divider = tw.div`
+  flex h-1 bg-neutral-15
+`;

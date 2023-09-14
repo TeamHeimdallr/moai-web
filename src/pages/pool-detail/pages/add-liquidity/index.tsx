@@ -3,10 +3,10 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconBack } from '~/assets/icons';
+import { BalanceInfo } from '~/components/balance-info';
 import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
-import { MyBalanceInfo } from '~/components/my-balance-info';
 import { CHAIN_ID } from '~/constants';
 import { pools } from '~/data';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';
@@ -14,7 +14,7 @@ import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
 import { TokenInfo } from '~/types/components';
 
-import { AddLiquidityInput } from '../../layouts/add-liquidity-input';
+import { AddLiquidityInput } from '../../layouts/add-liquidity-input-group';
 
 const PoolDetailAddLiquidityPage = () => {
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
@@ -55,7 +55,7 @@ const PoolDetailAddLiquidityPage = () => {
             </Header>
 
             <LiquidityWrapper>
-              <MyBalanceInfo tokens={tokens} />
+              <BalanceInfo tokens={tokens} />
               <AddLiquidityInput tokenList={tokens} />
             </LiquidityWrapper>
           </ContentWrapper>

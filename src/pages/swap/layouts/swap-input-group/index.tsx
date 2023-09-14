@@ -10,11 +10,11 @@ import { POPUP_ID } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-import { SwapArrowDown } from '../components/arrow-down';
-import { PopupSwapSelectTokenFrom } from '../components/popup-select-token-from';
-import { PopupSwapSelectTokenTo } from '../components/popup-select-token-to';
-import { PopupSwap } from '../components/popup-swap';
-import { useSwapData } from '../hooks/use-swap-data';
+import { SwapArrowDown } from '../../components/arrow-down';
+import { PopupSwapSelectTokenFrom } from '../../components/popup/popup-select-token-from';
+import { PopupSwapSelectTokenTo } from '../../components/popup/popup-select-token-to';
+import { PopupSwap } from '../../components/popup/popup-swap';
+import { useSwapData } from '../../hooks/use-swap-data';
 
 export const SwapInputs = () => {
   const {

@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 import * as yup from 'yup';
 
 import { IconSetting } from '~/assets/icons';
-import { Slippage } from '~/components/account-profile/slippage';
+import { Slippage } from '~/components/account-profile';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { InputNumber } from '~/components/inputs/number';
 import { Token } from '~/components/token';
@@ -14,7 +14,7 @@ import { HOOK_FORM_KEY, POPUP_ID, TokenInfo } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-import { AddLiquidityPopup } from '../add-liquidity-popup';
+import { AddLiquidityPopup } from '../../components/popup/popup-add-liquidity';
 
 interface Props {
   tokenList: TokenInfo[];

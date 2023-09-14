@@ -25,8 +25,8 @@ import { SwapKind } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 import { DATE_FORMATTER } from '~/utils/time';
 
-import { useSwapData } from '../hooks/use-swap-data';
-import { SwapArrowDown } from './arrow-down';
+import { useSwapData } from '../../hooks/use-swap-data';
+import { SwapArrowDown } from '../arrow-down';
 
 export const PopupSwap = () => {
   const { address } = useConnectWallet();

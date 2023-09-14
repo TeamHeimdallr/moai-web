@@ -6,10 +6,10 @@ export const COLOR = {
     80: '#FCFFD6',
   },
   RED: {
-    50: '#ff767e',
+    50: '#FF685F',
   },
   GREEN: {
-    50: '#5cc3aa',
+    50: '#43CF9D',
   },
   NEUTRAL: {
     0: '#191b28',

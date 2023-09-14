@@ -7,7 +7,7 @@ import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 
-import { AddLiquidityPopup } from '.';
+import { AddLiquidityPopup } from './popup-add-liquidity';
 
 const meta = {
   title: 'Pages/Detail/AddLiquidity/AddLiquidityPopup',
