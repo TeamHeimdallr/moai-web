@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 import * as yup from 'yup';
 
 import { IconSetting } from '~/assets/icons';
-import { Slippage } from '~/components/account-profile/slippage';
+import { Slippage } from '~/components/account-profile';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { InputNumber } from '~/components/inputs/number';
 import { Token } from '~/components/token';

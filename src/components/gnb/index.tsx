@@ -8,7 +8,7 @@ import { GNB_MENU } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { TOOLTIP_ID } from '~/types/components';
 
-import { AccountProfile } from '../account-profile/account-profile';
+import { AccountProfile } from '../account-profile';
 import { ButtonPrimaryMedium } from '../buttons/primary';
 import { TooltipCommingSoon } from '../tooltips/comming-soon';
 

@@ -3,10 +3,10 @@ import tw from 'twin.macro';
 
 import { TokenInfo } from '~/types/components';
 
-import { MyBalanceInfo } from '.';
+import { BalanceInfo } from '.';
 
 const meta = {
-  title: 'Components/Info/MyBalanceInfo',
+  title: 'Components/Info/BalanceInfo',
   tags: ['autodocs'],
 } satisfies Meta;
 
@@ -23,7 +23,7 @@ const tokens: TokenInfo[] = [
 export const _MyBalanceInfo: Story = {
   render: () => (
     <Wrapper>
-      <MyBalanceInfo tokens={tokens} />
+      <BalanceInfo tokens={tokens} />
     </Wrapper>
   ),
 };
