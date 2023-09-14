@@ -11,12 +11,7 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
-import {
-  TESTNET_SCANNER_URL,
-  TOKEN_ADDRESS,
-  TOKEN_IMAGE_MAPPER,
-  TOKEN_USD_MAPPER,
-} from '~/constants';
+import { SCANNER_URL, TOKEN_ADDRESS, TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { useSlippageStore } from '~/states/components/slippage';
@@ -50,7 +45,7 @@ export const PopupSwap = () => {
 
   // const timestamp = txData
   const handleLink = () => {
-    window.open(`${TESTNET_SCANNER_URL}/tx/${data?.hash ?? ''}`);
+    window.open(`${SCANNER_URL}/tx/${data?.hash ?? ''}`);
   };
 
   const numFromValue = Number(fromValue) || 0;

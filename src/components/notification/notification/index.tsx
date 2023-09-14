@@ -5,7 +5,7 @@ import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
 import { IconNoti } from '~/assets/icons';
-import { TESTNET_SCANNER_URL } from '~/constants';
+import { SCANNER_URL } from '~/constants';
 
 import { NotificationCard } from '../notification-card';
 
@@ -25,13 +25,13 @@ export const Notification = () => {
       id: '1',
       title: 'Add liquidity',
       description: '$0.10 in 20% MOAI, 80% USDC',
-      link: TESTNET_SCANNER_URL,
+      link: SCANNER_URL,
     },
     {
       id: '2',
       title: 'Withdraw',
       description: '$0.10 in 20% MOAI, 80% USDC',
-      link: TESTNET_SCANNER_URL,
+      link: SCANNER_URL,
     },
   ];
 

@@ -11,7 +11,7 @@ import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 import {
   POOL_ID,
-  TESTNET_SCANNER_URL,
+  SCANNER_URL,
   TOKEN_ADDRESS,
   TOKEN_IMAGE_MAPPER,
   TOKEN_USD_MAPPER,
@@ -74,7 +74,7 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
   };
 
   const handleLink = () => {
-    window.open(`${TESTNET_SCANNER_URL}/tx/${txData?.transactionHash}`);
+    window.open(`${SCANNER_URL}/tx/${txData?.transactionHash}`);
   };
 
   return (

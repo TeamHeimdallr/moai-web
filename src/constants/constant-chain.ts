@@ -1,24 +1,21 @@
-import { CHAIN, IS_MAINNET } from '.';
-import { CHAIN_ID as CHAIN_ID_LINEA } from './constant-chain-linea';
-import { POOL_ID as POOL_ID_LINEA } from './constant-chain-linea';
-import { CONTRACT_ADDRESS as CONTRACT_ADDRESS_LINEA } from './constant-chain-linea';
-import { TOKEN_ADDRESS as TOKEN_ADDRESS_LINEA } from './constant-chain-linea';
-import { CHAIN_ID as CHAIN_ID_MANTLE } from './constant-chain-mantle';
-import { POOL_ID as POOL_ID_MANTLE } from './constant-chain-mantle';
-import { CONTRACT_ADDRESS as CONTRACT_ADDRESS_MANTLE } from './constant-chain-mantle';
-import { TOKEN_ADDRESS as TOKEN_ADDRESS_MANTLE } from './constant-chain-mantle';
+import { CHAIN } from '.';
+import { CHAIN_LINEA } from './constant-chain-linea';
+import { CHAIN_MANTLE } from './constant-chain-mantle';
+import { CHAIN_ROOT } from './constant-chain-root';
+import { CHAIN_XRPL } from './constant-chain-xrpl';
 
-export const CHAIN_ID =
-  CHAIN === 'linea'
-    ? IS_MAINNET
-      ? CHAIN_ID_LINEA.MAINNET
-      : CHAIN_ID_LINEA.TESTNET
-    : IS_MAINNET
-    ? CHAIN_ID_MANTLE.MAINNET
-    : CHAIN_ID_MANTLE.TESTNET;
-export const POOL_ID = CHAIN === 'linea' ? POOL_ID_LINEA : POOL_ID_MANTLE;
-export const CONTRACT_ADDRESS =
-  CHAIN === 'linea' ? CONTRACT_ADDRESS_LINEA : CONTRACT_ADDRESS_MANTLE;
-export const TOKEN_ADDRESS = CHAIN === 'linea' ? TOKEN_ADDRESS_LINEA : TOKEN_ADDRESS_MANTLE;
+const integrated = {
+  linea: CHAIN_LINEA,
+  mantle: CHAIN_MANTLE,
+  root: CHAIN_ROOT,
+  xrpl: CHAIN_XRPL,
+};
 
-export const CURRENT_CHAIN = CHAIN === 'linea' ? 'Linea' : 'Mantle';
+const selected = integrated?.[CHAIN as keyof typeof integrated] ?? integrated.xrpl;
+
+export const CHAIN_ID = selected.CHAIN_ID;
+export const POOL_ID = selected.POOL_ID;
+export const CONTRACT_ADDRESS = selected.CONTRACT_ADDRESS;
+export const TOKEN_ADDRESS = selected.TOKEN_ADDRESS;
+export const SCANNER_URL = selected.SCANNER_URL;
+export const CURRENT_CHAIN = CHAIN;
