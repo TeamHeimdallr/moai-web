@@ -1,12 +1,10 @@
-import { TOKEN } from '~/types/contracts';
-
 export interface TokenInfo {
   name: string;
   balance: number;
   value: number;
 }
 export interface Composition {
-  name: TOKEN;
+  name: string;
   weight: number;
   balance: number;
   price: number;

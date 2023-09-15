@@ -32,6 +32,8 @@ export const getPoolInfoById = ({
   const pool = pools.find(pool => pool.id === id)!;
   const { compositions, volume, apr, fees, value } = pool;
 
+  console.log(poolBalance);
+
   const myCompositionsInfo: Composition[] = poolBalance?.[1]?.map(
     (balance: bigint, idx: number) => {
       const { name, weight } = compositions[idx];
@@ -43,6 +45,8 @@ export const getPoolInfoById = ({
       };
     }
   );
+
+  console.log(myCompositionsInfo);
 
   const totalBalances = formatNumber(
     myCompositionsInfo?.reduce((acc: number, cur) => acc + cur.balance * cur.price, 0) ?? 0,

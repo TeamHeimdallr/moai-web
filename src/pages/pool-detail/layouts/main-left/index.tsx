@@ -1,11 +1,7 @@
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
-import { useAccount } from 'wagmi';
 
-import { usePoolBalance, usePoolTotalLpTokens } from '~/api/api-contract/pool-balance';
-import { POOL_ID, TOKEN_ADDRESS } from '~/constants';
-import { useTokenBalances } from '~/hooks/data/use-balance';
-import { getPoolInfoById } from '~/utils/token';
+import { usePoolBalance } from '~/api/api-contract/pool-balance';
 
 import { LiquidityProvisions } from '../../components/liquidity-provisions';
 import { PoolCompositions } from '../../components/pool-compositions';
@@ -14,27 +10,18 @@ import { Swap } from '../../components/swap';
 
 export const MainLeft = () => {
   const { id } = useParams();
-  const { address } = useAccount();
 
-  const tokenAddress = id === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
+  const { poolInfo, compositions } = usePoolBalance(id);
+  console.log(poolInfo, compositions);
 
-  const { value: lpTokenBalance } = useTokenBalances(address, tokenAddress);
-  const { data: poolBalance } = usePoolBalance(id);
-  const { data: totalLpTokenBalance } = usePoolTotalLpTokens(id);
-
-  const { value, volume, apr, fees, pool } = getPoolInfoById({
-    id: id ?? '',
-    lpTokenBalance,
-    totalLpTokenBalance,
-    poolBalance,
-  });
+  const { value, volume, apr, fees } = poolInfo;
 
   return (
     <Wrapper>
       <PoolInfo value={value} volume={volume} apr={apr} fees={fees} />
-      <PoolCompositions pool={pool} />
-      <LiquidityProvisions pool={pool} />
-      <Swap pool={pool} />
+      <PoolCompositions pool={poolInfo} />
+      <LiquidityProvisions pool={poolInfo} />
+      <Swap pool={poolInfo} />
     </Wrapper>
   );
 };

@@ -4,24 +4,26 @@ import tw from 'twin.macro';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
 import { TOKEN_IMAGE_MAPPER } from '~/constants';
-import { PoolInfo, TokenInfo } from '~/types/components';
+import { Composition, PoolInfo } from '~/types/components';
 import { formatNumber } from '~/utils/number';
 interface Props {
   pool: PoolInfo;
-  compositions: TokenInfo[];
+  compositions: Composition[];
 }
 
 export const PoolBalance = ({ compositions, pool }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const totalPoolBalance = compositions?.reduce((acc, cur) => acc + cur.value, 0) ?? 0;
+  const totalPoolBalance =
+    compositions?.reduce((acc, cur) => acc + cur.balance * cur.price, 0) ?? 0;
 
   const tokenInfos = compositions?.map(token => {
     const weight = pool.compositions.find(pool => pool.name === token.name)?.weight;
+    const value = token.balance * token.price;
     return {
       title: weight + '% ' + token.name,
       balance: formatNumber(token.balance, 2),
-      value: '$' + formatNumber(token.value, 2),
+      value: '$' + formatNumber(value, 2),
       image: TOKEN_IMAGE_MAPPER[token.name],
     };
   });

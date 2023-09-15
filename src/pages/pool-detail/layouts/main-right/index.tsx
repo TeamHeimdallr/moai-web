@@ -1,12 +1,12 @@
 import tw from 'twin.macro';
 
-import { PoolInfo, TokenInfo } from '~/types/components';
+import { Composition, PoolInfo } from '~/types/components';
 
 import { PoolBalance } from '../../components/pool-balance';
 
 interface Props {
   pool: PoolInfo;
-  compositions: TokenInfo[];
+  compositions: Composition[];
 }
 export const MainRight = ({ pool, compositions }: Props) => {
   return (
