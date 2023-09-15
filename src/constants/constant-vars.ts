@@ -10,6 +10,8 @@ export const TOKEN_IMAGE_MAPPER: Record<TOKEN, string> = {
   USDT: TokenUSDT,
   WETH: TokenWETH,
   MOAI: TokenMOAI,
+  ROOT: ChainROOT,
+  XRP: ChainXRPL,
 };
 
 // TODO: static token usd
@@ -18,6 +20,8 @@ export const TOKEN_USD_MAPPER: Record<TOKEN, number> = {
   USDT: 1,
   WETH: 1718.39,
   MOAI: 142.23,
+  ROOT: 0.0141,
+  XRP: 0.5,
 };
 
 export const CHAIN_IMAGE_MAPPER: Record<number, string> = {

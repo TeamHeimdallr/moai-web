@@ -5,6 +5,8 @@ export enum TOKEN {
   USDT = 'USDT',
   WETH = 'WETH',
   MOAI = 'MOAI',
+  ROOT = 'ROOT',
+  XRP = 'XRP',
 }
 
 export interface TokenInfo {
