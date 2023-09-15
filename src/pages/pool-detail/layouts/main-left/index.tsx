@@ -1,27 +1,24 @@
-import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { usePoolBalance } from '~/api/api-contract/pool-balance';
+import { PoolInfo } from '~/types/components';
 
 import { LiquidityProvisions } from '../../components/liquidity-provisions';
 import { PoolCompositions } from '../../components/pool-compositions';
-import { PoolInfo } from '../../components/pool-info/pool-info';
+import { PoolInfo as PoolInfoComponent } from '../../components/pool-info/pool-info';
 import { Swap } from '../../components/swap';
 
-export const MainLeft = () => {
-  const { id } = useParams();
-
-  const { poolInfo, compositions } = usePoolBalance(id);
-  console.log(poolInfo, compositions);
-
-  const { value, volume, apr, fees } = poolInfo;
+interface Props {
+  pool: PoolInfo;
+}
+export const MainLeft = ({ pool }: Props) => {
+  const { value, volume, apr, fees } = pool;
 
   return (
     <Wrapper>
-      <PoolInfo value={value} volume={volume} apr={apr} fees={fees} />
-      <PoolCompositions pool={poolInfo} />
-      <LiquidityProvisions pool={poolInfo} />
-      <Swap pool={poolInfo} />
+      <PoolInfoComponent value={value} volume={volume} apr={apr} fees={fees} />
+      <PoolCompositions pool={pool} />
+      <LiquidityProvisions pool={pool} />
+      <Swap pool={pool} />
     </Wrapper>
   );
 };

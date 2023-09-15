@@ -11,9 +11,9 @@ import { formatNumber } from '~/utils/number';
 
 import { useTokenInfos } from './token';
 
-export const usePoolBalance = (address?: string) => {
+export const usePoolBalance = (poolId?: string) => {
   const balancerAddress = CONTRACT_ADDRESS.VAULT;
-  const poolAddress = TOKEN_ADDRESS.POOL_B;
+  const poolAddress = TOKEN_ADDRESS.POOL_A;
 
   const {
     data: poolTokensData,
@@ -25,11 +25,9 @@ export const usePoolBalance = (address?: string) => {
     address: balancerAddress,
     abi: VAULT_ABI,
     functionName: 'getPoolTokens',
-    args: [address],
-    enabled: !!address,
+    args: [poolId],
+    enabled: !!poolId,
   });
-
-  console.log(poolTokensData);
 
   const {
     data: weightData,

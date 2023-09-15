@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
+import { usePoolBalance } from '~/api/api-contract/pool-balance';
 import { COLOR } from '~/assets/colors';
 import { IconBack } from '~/assets/icons';
 import { BalanceInfo } from '~/components/balance-info';
@@ -8,7 +9,6 @@ import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 import { CHAIN_ID } from '~/constants';
-import { pools } from '~/data';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
@@ -24,7 +24,7 @@ const PoolDetailAddLiquidityPage = () => {
 
   useRequirePrarams([id], () => navigate(-1));
 
-  const { compositions } = pools.find(pool => pool.id === id) ?? pools[0];
+  const { compositions } = usePoolBalance(id);
   const { balancesMap } = useBalancesAll();
 
   const tokens: TokenInfo[] = compositions?.map(token => {

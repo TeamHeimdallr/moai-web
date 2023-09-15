@@ -1,63 +1,30 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode } from 'react';
 
+import { usePoolBalance } from '~/api/api-contract/pool-balance';
 import { TableHeader } from '~/components/tables';
 import { TableColumn } from '~/components/tables/columns';
 import { TableColumnTokenAddress } from '~/components/tables/columns/column-token-address';
-import { POOL_ID, TOKEN_ADDRESS } from '~/constants';
 import { PoolCompositionData, PoolCompositionTable } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
 export const useTableTotalComposition = (id: string) => {
-  // TODO: connect api
-  const poolAData: PoolCompositionData[] = [
-    {
-      tokenAddress: TOKEN_ADDRESS.MOAI,
-      token: TOKEN.MOAI,
-      weight: 80,
-      balance: 7077.75,
-      value: 1006668,
-      currentWeight: 79.94,
-    },
-    {
-      tokenAddress: TOKEN_ADDRESS.WETH,
-      token: TOKEN.WETH,
-      weight: 20,
-      balance: 147,
-      value: 252612,
-      currentWeight: 20.06,
-    },
-  ];
-  const poolBData: PoolCompositionData[] = [
-    {
-      tokenAddress: TOKEN_ADDRESS.WETH,
-      token: TOKEN.WETH,
-      weight: 50,
-      balance: 293,
-      value: 503581.64,
-      currentWeight: 50,
-    },
-    {
-      tokenAddress: TOKEN_ADDRESS.USDC,
-      token: TOKEN.USDC,
-      weight: 30,
-      balance: 302350,
-      value: 302350,
-      currentWeight: 30.02,
-    },
-    {
-      tokenAddress: TOKEN_ADDRESS.USDT,
-      token: TOKEN.USDT,
-      weight: 20,
-      balance: 201231,
-      value: 201231,
-      currentWeight: 19.98,
-    },
-  ];
-  const data = id === POOL_ID.POOL_A ? poolAData : poolBData;
+  const { compositions } = usePoolBalance(id);
+  const totalBalance = compositions.reduce((acc, cur) => acc + cur.balance, 0);
+  const poolData: PoolCompositionData[] = compositions.map(composition => {
+    const { name, balance, price, weight } = composition;
+    return {
+      tokenAddress: '0x',
+      token: name as TOKEN,
+      weight,
+      balance,
+      value: balance * price,
+      currentWeight: (balance / totalBalance) * 100,
+    };
+  });
 
-  const tableData: PoolCompositionTable[] = data?.map(d => ({
+  const tableData: PoolCompositionTable[] = poolData?.map(d => ({
     tokenAddress: d.tokenAddress,
     token: <TableColumnTokenAddress token={d.token} tokenAddress={d.tokenAddress} width={216} />,
     weight: <TableColumn value={`${d.weight.toFixed(2)}%`} width={120} align="flex-end" />,

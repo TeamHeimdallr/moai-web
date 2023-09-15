@@ -1,13 +1,16 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
+import { useAccount } from 'wagmi';
 
-import { usePoolBalance } from '~/api/api-contract/pool-balance';
+import { usePoolBalance, usePoolTotalLpTokens } from '~/api/api-contract/pool-balance';
 import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
-import { CHAIN_ID } from '~/constants';
+import { CHAIN_ID, POOL_ID, TOKEN_ADDRESS } from '~/constants';
+import { useTokenBalances } from '~/hooks/data/use-balance';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
+import { getPoolMyInfoById } from '~/utils/token';
 
 import { MainHeader } from '../../layouts/main-header';
 import { MainLeft } from '../../layouts/main-left';
@@ -15,14 +18,22 @@ import { MainRight } from '../../layouts/main-right';
 
 const PoolDetailMainPage = () => {
   const navigate = useNavigate();
-
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
-
   const { id } = useParams();
+  const { address } = useAccount();
+  const tokenAddress = id === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
 
   useRequirePrarams([id], () => navigate(-1));
-
   const { poolInfo, compositions } = usePoolBalance(id);
+
+  const { value: lpTokenBalance } = useTokenBalances(address, tokenAddress);
+  const { data: totalLpTokenBalance } = usePoolTotalLpTokens(id);
+  const { myCompositions } = getPoolMyInfoById({
+    id: id ?? '',
+    lpTokenBalance,
+    totalLpTokenBalance,
+    compositions,
+  });
 
   return (
     <>
@@ -35,8 +46,8 @@ const PoolDetailMainPage = () => {
           <ContentOuterWrapper>
             <MainHeader pool={poolInfo} />
             <ContentWrapper>
-              <MainLeft />
-              <MainRight pool={poolInfo} compositions={compositions} />
+              <MainLeft pool={poolInfo} />
+              <MainRight pool={poolInfo} compositions={myCompositions} />
             </ContentWrapper>
           </ContentOuterWrapper>
         </InnerWrapper>

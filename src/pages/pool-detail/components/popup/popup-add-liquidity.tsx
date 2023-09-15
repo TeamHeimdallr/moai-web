@@ -4,6 +4,7 @@ import tw from 'twin.macro';
 import { Address, parseEther } from 'viem';
 
 import { useAddLiquidity } from '~/api/api-contract/add-liquiditiy';
+import { usePoolBalance } from '~/api/api-contract/pool-balance';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
@@ -16,7 +17,6 @@ import {
   TOKEN_IMAGE_MAPPER,
   TOKEN_USD_MAPPER,
 } from '~/constants';
-import { pools } from '~/data';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
@@ -34,7 +34,8 @@ interface Props {
 
 export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
   const { id } = useParams();
-  const { name: lpName } = pools.find(p => p.id === id)!;
+  const { poolInfo } = usePoolBalance(id);
+  const { name: lpName } = poolInfo;
 
   const prepareRequestData = () => {
     return {
