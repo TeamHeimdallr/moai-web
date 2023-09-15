@@ -1,4 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { WagmiConfig } from 'wagmi';
+
+import { wagmiConfig } from '~/configs/setup-wallet';
 
 import { AccountProfile } from '.';
 
@@ -13,5 +16,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Normal: Story = {
+  render: () => (
+    <WagmiConfig config={wagmiConfig}>
+      <AccountProfile />
+    </WagmiConfig>
+  ),
   args: {},
 };

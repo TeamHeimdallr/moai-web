@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { TESTNET_SCANNER_URL } from '~/constants';
+import { SCANNER_URL } from '~/constants';
 
 import { NotificationCard } from '.';
 
@@ -19,6 +19,6 @@ export const _Normal: Story = {
   args: {
     title: 'Add liquidity',
     description: '$0.10 in 20% MOAI, 80% USDC',
-    link: TESTNET_SCANNER_URL,
+    link: SCANNER_URL,
   },
 };

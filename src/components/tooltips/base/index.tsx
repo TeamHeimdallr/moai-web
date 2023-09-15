@@ -14,7 +14,7 @@ interface Props extends ITooltip {
 export const Tooltip = ({ id, children, ...rest }: Props) => {
   return (
     <Wrapper>
-      <ReactTooltip id={id} {...rest}>
+      <ReactTooltip id={id} style={{ zIndex: 100 }} {...rest}>
         {children}
       </ReactTooltip>
     </Wrapper>
