@@ -25,7 +25,7 @@ export interface TokenBalanceInfo {
 }
 
 export interface TokenBalanceInfoAll {
-  balancesMap?: Record<TOKEN, TokenBalanceInfo>;
+  balancesMap?: Record<string, TokenBalanceInfo>;
   balancesArray?: TokenBalanceInfo[];
 }
 

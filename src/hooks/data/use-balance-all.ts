@@ -15,6 +15,7 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
     token: TOKEN_ADDRESS[TOKEN.MOAI],
     enabled,
   });
+
   const { data: usdcData } = useBalance({
     address,
     token: TOKEN_ADDRESS[TOKEN.USDC],
@@ -31,19 +32,7 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
     enabled,
   });
 
-  const { data: rootData } = useBalance({
-    address,
-    token: TOKEN_ADDRESS[TOKEN.ROOT],
-    enabled,
-  });
-
-  const { data: xrpData } = useBalance({
-    address,
-    token: TOKEN_ADDRESS[TOKEN.XRP],
-    enabled,
-  });
-
-  const success = moaiData && usdcData && usdtData && wethData && rootData && xrpData;
+  const success = moaiData && usdcData && usdtData && wethData;
 
   if (!success)
     return {
@@ -72,28 +61,14 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
     symbol: wethData.symbol,
   };
 
-  const root = {
-    value: Number(formatEther(rootData.value)),
-    valueUSD: Number(formatEther(rootData.value)) * (TOKEN_USD_MAPPER[rootData.symbol] ?? 0),
-    symbol: rootData.symbol,
-  };
-
-  const xrp = {
-    value: Number(formatEther(xrpData.value)),
-    valueUSD: Number(formatEther(xrpData.value)) * (TOKEN_USD_MAPPER[xrpData.symbol] ?? 0),
-    symbol: xrpData.symbol,
-  };
-
   const balancesMap = {
     [TOKEN.MOAI]: moai,
     [TOKEN.USDC]: usdc,
     [TOKEN.USDT]: usdt,
     [TOKEN.WETH]: weth,
-    [TOKEN.ROOT]: root,
-    [TOKEN.XRP]: xrp,
   };
 
-  const balancesArray = [moai, usdc, usdt, weth, root, xrp];
+  const balancesArray = [moai, usdc, usdt, weth];
 
   return {
     balancesMap,
