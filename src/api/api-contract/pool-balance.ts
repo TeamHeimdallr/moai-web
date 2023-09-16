@@ -12,9 +12,6 @@ import { formatNumber } from '~/utils/number';
 import { useTokenInfos } from './token';
 
 export const usePoolBalance = (poolId?: string) => {
-  const balancerAddress = CONTRACT_ADDRESS.VAULT;
-  const poolAddress = TOKEN_ADDRESS.POOL_A;
-
   const {
     data: poolTokensData,
     fetchStatus: poolTokensFetchStatus,
@@ -22,12 +19,14 @@ export const usePoolBalance = (poolId?: string) => {
     isSuccess: poolTokenIsSuucess,
     isError: poolTokenIsError,
   } = useContractRead({
-    address: balancerAddress,
+    address: CONTRACT_ADDRESS.VAULT,
     abi: VAULT_ABI,
     functionName: 'getPoolTokens',
     args: [poolId],
     enabled: !!poolId,
   });
+
+  const poolAddress = poolId === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
 
   const {
     data: weightData,
@@ -61,21 +60,26 @@ export const usePoolBalance = (poolId?: string) => {
       };
     });
 
-  const value = formatNumber(
-    compositions.reduce((acc, cur) => acc + cur.balance * cur.price, 0),
-    2
+  const totalValue = compositions.reduce((acc, cur) => acc + cur.balance * cur.price, 0);
+
+  const lpTokenName = compositions.reduce(
+    (acc, cur) => acc + cur.weight.toString() + cur.name + '-',
+    ''
   );
 
+  // TODO : fix here using get logs
+  const volume = 386;
+
   const poolInfo: PoolInfo = {
-    id: POOL_ID.POOL_A,
-    tokenAddress: TOKEN_ADDRESS.POOL_A,
+    id: poolId ?? '',
+    tokenAddress: poolAddress,
     compositions,
-    value,
-    volume: '$78,086',
-    apr: '6.79%',
-    fees: '$234.25',
-    lpTokens: 100,
-    name: '50ROOT-50XRP',
+    value: formatNumber(totalValue, 2),
+
+    volume: '$' + formatNumber(volume, 2),
+    apr: formatNumber(((volume * 0.003 * 365) / totalValue) * 100, 2) + '%',
+    fees: '$' + formatNumber(volume * 0.003, 2),
+    name: lpTokenName.slice(0, -1),
   };
 
   return {
