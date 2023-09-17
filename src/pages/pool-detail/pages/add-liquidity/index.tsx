@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
-import { usePoolBalance } from '~/api/api-contract/pool-balance';
+import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import { COLOR } from '~/assets/colors';
 import { IconBack } from '~/assets/icons';
 import { BalanceInfo } from '~/components/balance-info';

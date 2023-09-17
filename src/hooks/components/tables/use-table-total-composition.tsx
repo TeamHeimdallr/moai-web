@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode } from 'react';
 
-import { usePoolBalance } from '~/api/api-contract/pool-balance';
+import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import { TableHeader } from '~/components/tables';
 import { TableColumn } from '~/components/tables/columns';
 import { TableColumnTokenAddress } from '~/components/tables/columns/column-token-address';

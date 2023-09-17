@@ -9,7 +9,7 @@ import { Composition, PoolInfo } from '~/types/components';
 import { PoolBalance, TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-import { useTokenInfos } from './token';
+import { useTokenInfos } from '../token/token';
 
 export const usePoolBalance = (poolId?: string) => {
   const {

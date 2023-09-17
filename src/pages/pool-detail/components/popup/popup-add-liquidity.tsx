@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { Address, parseEther } from 'viem';
 
-import { useAddLiquidity } from '~/api/api-contract/add-liquiditiy';
-import { usePoolBalance } from '~/api/api-contract/pool-balance';
+import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
+import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';

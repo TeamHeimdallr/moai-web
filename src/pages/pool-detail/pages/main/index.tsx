@@ -2,7 +2,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 import { useAccount } from 'wagmi';
 
-import { usePoolBalance, usePoolTotalLpTokens } from '~/api/api-contract/pool-balance';
+import {
+  usePoolBalance,
+  usePoolTotalLpTokens,
+} from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
