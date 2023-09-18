@@ -9,7 +9,9 @@ import { theRootNetwork } from './setup-network';
 export const chains = IS_MAINNET ? [mantle, linea] : [mantleTestnet, lineaTestnet, theRootNetwork];
 export const projectId = WALLETCONNECT_PROJECT_ID;
 
-const { publicClient } = configureChains([...chains], [w3mProvider({ projectId })]);
+const { publicClient } = configureChains([...chains], [w3mProvider({ projectId })], {
+  batch: { multicall: true },
+});
 
 export const wagmiConfig = createConfig({
   autoConnect: true,

@@ -6,11 +6,11 @@ import { TOKEN_ABI } from '~/abi/token';
 import { VAULT_ABI } from '~/abi/vault';
 import { CONTRACT_ADDRESS, POOL_ID, TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
 import { Composition, PoolInfo } from '~/types/components';
-import { PoolBalance, TOKEN } from '~/types/contracts';
+import { PoolBalance } from '~/types/contracts';
 import { Entries } from '~/types/helpers';
 import { formatNumber } from '~/utils/number';
 
-import { useTokenInfos } from '../token/token';
+import { useTokenSymbol } from '../token/symbol';
 
 export const usePoolBalance = (poolAddress?: string) => {
   const {
@@ -45,23 +45,16 @@ export const usePoolBalance = (poolAddress?: string) => {
 
   const tokenAddresses = (poolTokensData as PoolBalance)?.[0];
   const balances = (poolTokensData as PoolBalance)?.[1];
-  const {
-    data: tokensData,
-    isLoading: tokenInfoIsLoading,
-    isError: tokenInfoIsError,
-    isSuccess: tokenInfoIsSuccess,
-  } = useTokenInfos(tokenAddresses ?? []);
+  const symbols = useTokenSymbol(tokenAddresses ?? []);
 
-  const compositions: Composition[] = tokensData
-    ?.filter(token => token !== undefined)
-    ?.map((token, idx) => {
-      return {
-        name: token as string,
-        weight: Number(formatEther((weightData as Array<bigint>)[idx])) * 100,
-        balance: Number(formatEther(balances[idx])),
-        price: TOKEN_USD_MAPPER[token as TOKEN],
-      };
-    });
+  const compositions: Composition[] = balances?.map((balance, idx) => {
+    return {
+      name: symbols?.[idx] ?? '',
+      weight: Number(formatEther((weightData as Array<bigint>)[idx])) * 100,
+      balance: Number(formatEther(balance)),
+      price: TOKEN_USD_MAPPER[symbols?.[idx]],
+    };
+  });
 
   const totalValue = compositions?.reduce((acc, cur) => acc + cur.balance * cur.price, 0) ?? 0;
   const liquidityPoolTokenName =
@@ -87,9 +80,9 @@ export const usePoolBalance = (poolAddress?: string) => {
   return {
     poolInfo,
     compositions,
-    isLoading: tokenInfoIsLoading || weightDataIsLoading || poolTokensIsLoading,
-    isError: weightDataIsError || poolTokenIsError || tokenInfoIsError,
-    isSuccess: weightDataIsSuccess && poolTokenIsSuucess && tokenInfoIsSuccess,
+    isLoading: weightDataIsLoading || poolTokensIsLoading,
+    isError: weightDataIsError || poolTokenIsError,
+    isSuccess: weightDataIsSuccess && poolTokenIsSuucess,
   };
 };
 

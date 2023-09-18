@@ -12,13 +12,14 @@ interface Props {
 }
 export const MainHeader = ({ pool }: Props) => {
   const tokenAddress = pool.id === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
+
   return (
     <HeaderWrapper>
       <Title>Weighted Pool</Title>
       <TokenWrapper>
         {pool.compositions.map(composition => (
           <Token
-            key={composition.name}
+            key={`${composition.weight}-${composition.name}`}
             token={composition.name as TOKEN}
             percentage={composition.weight}
             type="small"
