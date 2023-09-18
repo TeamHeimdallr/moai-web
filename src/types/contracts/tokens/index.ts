@@ -7,6 +7,8 @@ export enum TOKEN {
   MOAI = 'MOAI',
   ROOT = 'ROOT',
   XRP = 'XRP',
+  SYLO = 'SYLO',
+  ASTO = 'ASTO',
 }
 
 export interface TokenInfo {
