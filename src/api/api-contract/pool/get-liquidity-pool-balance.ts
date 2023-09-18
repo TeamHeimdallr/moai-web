@@ -1,4 +1,4 @@
-import { formatEther } from 'viem';
+import { Address, formatEther } from 'viem';
 import { useContractRead } from 'wagmi';
 
 import { LIQUIDITY_POOL_ABI } from '~/abi/liquidity-pool';
@@ -11,8 +11,9 @@ import { Entries } from '~/types/helpers';
 import { formatNumber } from '~/utils/number';
 
 import { useTokenSymbol } from '../token/symbol';
+import { useGetLiquidityPoolProvisions } from './get-liquidity-pool-provisions';
 
-export const usePoolBalance = (poolAddress?: string) => {
+export const usePoolBalance = (poolAddress?: Address) => {
   const {
     data: poolTokensData,
     isLoading: poolTokensIsLoading,
@@ -41,11 +42,17 @@ export const usePoolBalance = (poolAddress?: string) => {
     abi: LIQUIDITY_POOL_ABI,
     functionName: 'getNormalizedWeights',
     enabled: !!liquidityPoolTokenAddress,
+    staleTime: Infinity,
   });
 
   const tokenAddresses = (poolTokensData as PoolBalance)?.[0];
   const balances = (poolTokensData as PoolBalance)?.[1];
-  const symbols = useTokenSymbol(tokenAddresses ?? []);
+  const {
+    data: symbols,
+    isLoading: tokenSymbolLoading,
+    isError: tokenSymbolError,
+    isSuccess: tokenSymbolSuccess,
+  } = useTokenSymbol(tokenAddresses ?? []);
 
   const compositions: Composition[] = balances?.map((balance, idx) => {
     return {
@@ -56,14 +63,18 @@ export const usePoolBalance = (poolAddress?: string) => {
     };
   });
 
-  const totalValue = compositions?.reduce((acc, cur) => acc + cur.balance * cur.price, 0) ?? 0;
+  const totalValue =
+    compositions?.reduce((acc, cur) => acc + (cur?.balance ?? 0) * (cur?.price ?? 0), 0) ?? 0;
   const liquidityPoolTokenName =
     compositions
       ?.reduce((acc, cur) => acc + cur.weight.toString() + cur.name + '-', '')
       ?.slice(0, -1) ?? '';
 
   // TODO : fix here using get logs
+  const { data } = useGetLiquidityPoolProvisions({ poolAddress });
+
   const volume = 386;
+  const apr = totalValue === 0 ? 0 : ((volume * 0.003 * 365) / totalValue) * 100;
 
   const poolInfo: PoolInfo = {
     id: poolAddress ?? '',
@@ -72,7 +83,7 @@ export const usePoolBalance = (poolAddress?: string) => {
     value: '$' + formatNumber(totalValue, 2),
 
     volume: '$' + formatNumber(volume, 2),
-    apr: formatNumber(((volume * 0.003 * 365) / totalValue) * 100, 2) + '%',
+    apr: formatNumber(apr, 2) + '%',
     fees: '$' + formatNumber(volume * 0.003, 2),
     name: liquidityPoolTokenName,
   };
@@ -80,9 +91,9 @@ export const usePoolBalance = (poolAddress?: string) => {
   return {
     poolInfo,
     compositions,
-    isLoading: weightDataIsLoading || poolTokensIsLoading,
-    isError: weightDataIsError || poolTokenIsError,
-    isSuccess: weightDataIsSuccess && poolTokenIsSuucess,
+    isLoading: weightDataIsLoading || poolTokensIsLoading || tokenSymbolLoading,
+    isError: weightDataIsError || poolTokenIsError || tokenSymbolError,
+    isSuccess: weightDataIsSuccess && poolTokenIsSuucess && tokenSymbolSuccess,
   };
 };
 

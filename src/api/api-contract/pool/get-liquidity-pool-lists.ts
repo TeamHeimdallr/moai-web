@@ -48,12 +48,12 @@ const getLogsRequest = async (client: PublicClient) =>
 
 export const useGetMyLiquidityPoolLists = (options?: UseQueryOptions) => {
   const client = usePublicClient();
-  const { data } = useQuery(QUERY_KEYS.getMyLiquidityPoolLists, () => getLogsRequest(client), {
-    keepPreviousData: true,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(options as any),
-  });
-  console.log(data);
+  // const { data } = useQuery(QUERY_KEYS.getMyLiquidityPoolLists, () => getLogsRequest(client), {
+  //   keepPreviousData: true,
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   ...(options as any),
+  // });
+  // console.log(data);
 
   if (CHAIN_ID === CHAIN_ID_MANTLE || CHAIN_ID === CHAIN_ID_LINEA)
     return myLiquidityPoolLists.mantle_linea;

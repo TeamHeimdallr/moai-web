@@ -27,6 +27,7 @@ export const PoolBalance = ({ compositions, pool }: Props) => {
       image: TOKEN_IMAGE_MAPPER[token.name],
     };
   });
+
   return (
     <Wrapper>
       <Header>
@@ -34,7 +35,7 @@ export const PoolBalance = ({ compositions, pool }: Props) => {
       </Header>
       <Divider />
       <TokenLists>
-        {tokenInfos?.map(token => <TokenList key={token.title} {...token} />)}
+        {tokenInfos?.map((token, i) => <TokenList key={token.title + i} {...token} />)}
       </TokenLists>
       <Footer>
         <ButtonWrapper>
