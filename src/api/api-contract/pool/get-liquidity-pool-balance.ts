@@ -5,6 +5,7 @@ import { LIQUIDITY_POOL_ABI } from '~/abi/liquidity-pool';
 import { TOKEN_ABI } from '~/abi/token';
 import { VAULT_ABI } from '~/abi/vault';
 import { CONTRACT_ADDRESS, POOL_ID, TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
+import { useTokenBalances } from '~/hooks/data/use-balance';
 import { Composition, PoolInfo } from '~/types/components';
 import { PoolBalance } from '~/types/contracts';
 import { Entries } from '~/types/helpers';
@@ -12,13 +13,8 @@ import { formatNumber } from '~/utils/number';
 
 import { useTokenSymbol } from '../token/symbol';
 
-export const usePoolBalance = (poolAddress?: Address) => {
-  const {
-    data: poolTokensData,
-    isLoading: poolTokensIsLoading,
-    isSuccess: poolTokenIsSuucess,
-    isError: poolTokenIsError,
-  } = useContractRead({
+export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) => {
+  const { data: poolTokensData } = useContractRead({
     address: CONTRACT_ADDRESS.VAULT,
     abi: VAULT_ABI,
     functionName: 'getPoolTokens',
@@ -31,12 +27,7 @@ export const usePoolBalance = (poolAddress?: Address) => {
   )?.[0];
   const liquidityPoolTokenAddress = poolName ? TOKEN_ADDRESS[poolName] : undefined;
 
-  const {
-    data: weightData,
-    isLoading: weightDataIsLoading,
-    isSuccess: weightDataIsSuccess,
-    isError: weightDataIsError,
-  } = useContractRead({
+  const { data: weightData } = useContractRead({
     address: liquidityPoolTokenAddress,
     abi: LIQUIDITY_POOL_ABI,
     functionName: 'getNormalizedWeights',
@@ -44,17 +35,24 @@ export const usePoolBalance = (poolAddress?: Address) => {
     staleTime: Infinity,
   });
 
+  const { data: tokenTotalSupplyData } = usePoolTotalLpTokens(poolAddress);
+  const { rawValue: liquidityPoolTokenBalanceData } = useTokenBalances(
+    walletAddress,
+    liquidityPoolTokenAddress
+  );
+
+  const tokenTotalSupply = Number(formatEther((tokenTotalSupplyData ?? 0n) as bigint));
+  const liquidityPoolTokenBalance = Number(
+    formatEther((liquidityPoolTokenBalanceData ?? 0n) as bigint)
+  );
+
   const tokenAddresses = (poolTokensData as PoolBalance)?.[0];
   const balances = (poolTokensData as PoolBalance)?.[1];
-  const {
-    data: symbols,
-    isLoading: tokenSymbolLoading,
-    isError: tokenSymbolError,
-    isSuccess: tokenSymbolSuccess,
-  } = useTokenSymbol(tokenAddresses ?? []);
+  const { data: symbols } = useTokenSymbol(tokenAddresses ?? []);
 
   const compositions: Composition[] | undefined = balances?.map((balance, idx) => {
     return {
+      tokenAddress: tokenAddresses?.[idx] ?? '0x',
       name: symbols?.[idx] ?? '',
       weight: Number(formatEther((weightData as Array<bigint>)[idx])) * 100,
       balance: Number(formatEther(balance)),
@@ -88,9 +86,8 @@ export const usePoolBalance = (poolAddress?: Address) => {
   return {
     poolInfo,
     compositions,
-    isLoading: weightDataIsLoading || poolTokensIsLoading || tokenSymbolLoading,
-    isError: weightDataIsError || poolTokenIsError || tokenSymbolError,
-    isSuccess: weightDataIsSuccess && poolTokenIsSuucess && tokenSymbolSuccess,
+    tokenTotalSupply,
+    liquidityPoolTokenBalance,
   };
 };
 
@@ -100,7 +97,7 @@ export const usePoolTotalLpTokens = (poolAddress?: Address) => {
   )?.[0];
   const liquidityPoolTokenAddress = poolName ? TOKEN_ADDRESS[poolName] : undefined;
 
-  const { data, isLoading, isSuccess, isError } = useContractRead({
+  const { data } = useContractRead({
     address: liquidityPoolTokenAddress,
     abi: TOKEN_ABI,
     functionName: 'totalSupply',
@@ -109,8 +106,5 @@ export const usePoolTotalLpTokens = (poolAddress?: Address) => {
 
   return {
     data: data as bigint,
-    isLoading,
-    isSuccess,
-    isError,
   };
 };

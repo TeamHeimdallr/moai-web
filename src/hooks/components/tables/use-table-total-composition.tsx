@@ -6,22 +6,37 @@ import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balan
 import { TableHeader } from '~/components/tables';
 import { TableColumn } from '~/components/tables/columns';
 import { TableColumnTokenAddress } from '~/components/tables/columns/column-token-address';
+import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
+import { useSelectedLiquidityPoolCompositionTabStore } from '~/states/pages/selected-liquidity-pool-composition-tab';
 import { PoolCompositionData, PoolCompositionTable } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-export const useTableTotalComposition = (id: Address) => {
-  const { compositions } = usePoolBalance(id);
+export const useTableTotalComposition = (poolAddress: Address) => {
+  const { selected: selectedTab } = useSelectedLiquidityPoolCompositionTabStore();
+  const { address } = useConnectWallet();
+
+  const isMyComposition = selectedTab === 'my-composition';
+
+  const { compositions, tokenTotalSupply, liquidityPoolTokenBalance } = usePoolBalance(
+    poolAddress,
+    address
+  );
+
   const totalBalance = compositions?.reduce((acc, cur) => acc + cur.balance, 0);
+  const poolShareRatio = tokenTotalSupply === 0 ? 0 : liquidityPoolTokenBalance / tokenTotalSupply;
+
   const poolData: PoolCompositionData[] = compositions?.map(composition => {
-    const { name, balance, price, weight } = composition;
+    const { tokenAddress, name, balance: compositoinBalance, price, weight } = composition;
+    const balance = isMyComposition ? compositoinBalance * poolShareRatio : compositoinBalance;
+
     return {
-      tokenAddress: '0x',
+      tokenAddress,
       token: name as TOKEN,
       weight,
       balance,
       value: balance * price,
-      currentWeight: (balance / totalBalance) * 100,
+      currentWeight: (compositoinBalance / totalBalance) * 100,
     };
   });
 
