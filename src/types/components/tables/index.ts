@@ -64,14 +64,14 @@ export interface PoolCompositionTable {
   currentWeight: ReactNode;
 }
 export interface LiquidityProvisionData {
-  id: number;
-  action: { key: 'add' | 'withdraw'; label: string };
+  id: string;
+  action: { key: 'deposit' | 'withdraw'; label: string };
   tokens: TokenInfo[];
   value: number;
-  time: string;
+  time: number;
 }
 export interface LiquidityProvisionTable {
-  id: number;
+  id: string;
   action: ReactNode;
   tokens: ReactNode;
   value: ReactNode;

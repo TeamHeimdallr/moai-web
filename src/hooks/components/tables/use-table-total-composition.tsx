@@ -1,5 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode } from 'react';
+import { Address } from 'viem';
 
 import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import { TableHeader } from '~/components/tables';
@@ -9,10 +10,10 @@ import { PoolCompositionData, PoolCompositionTable } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-export const useTableTotalComposition = (id: string) => {
+export const useTableTotalComposition = (id: Address) => {
   const { compositions } = usePoolBalance(id);
-  const totalBalance = compositions.reduce((acc, cur) => acc + cur.balance, 0);
-  const poolData: PoolCompositionData[] = compositions.map(composition => {
+  const totalBalance = compositions?.reduce((acc, cur) => acc + cur.balance, 0);
+  const poolData: PoolCompositionData[] = compositions?.map(composition => {
     const { name, balance, price, weight } = composition;
     return {
       tokenAddress: '0x',

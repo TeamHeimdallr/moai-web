@@ -11,7 +11,6 @@ import { Entries } from '~/types/helpers';
 import { formatNumber } from '~/utils/number';
 
 import { useTokenSymbol } from '../token/symbol';
-import { useGetLiquidityPoolProvisions } from './get-liquidity-pool-provisions';
 
 export const usePoolBalance = (poolAddress?: Address) => {
   const {
@@ -54,7 +53,7 @@ export const usePoolBalance = (poolAddress?: Address) => {
     isSuccess: tokenSymbolSuccess,
   } = useTokenSymbol(tokenAddresses ?? []);
 
-  const compositions: Composition[] = balances?.map((balance, idx) => {
+  const compositions: Composition[] | undefined = balances?.map((balance, idx) => {
     return {
       name: symbols?.[idx] ?? '',
       weight: Number(formatEther((weightData as Array<bigint>)[idx])) * 100,
@@ -71,13 +70,11 @@ export const usePoolBalance = (poolAddress?: Address) => {
       ?.slice(0, -1) ?? '';
 
   // TODO : fix here using get logs
-  const { data } = useGetLiquidityPoolProvisions({ poolAddress });
-
   const volume = 386;
   const apr = totalValue === 0 ? 0 : ((volume * 0.003 * 365) / totalValue) * 100;
 
   const poolInfo: PoolInfo = {
-    id: poolAddress ?? '',
+    id: poolAddress ?? '0x',
     tokenAddress: liquidityPoolTokenAddress ?? '',
     compositions,
     value: '$' + formatNumber(totalValue, 2),
@@ -97,7 +94,7 @@ export const usePoolBalance = (poolAddress?: Address) => {
   };
 };
 
-export const usePoolTotalLpTokens = (poolAddress?: string) => {
+export const usePoolTotalLpTokens = (poolAddress?: Address) => {
   const poolName = (Object.entries(POOL_ID) as Entries<typeof POOL_ID>).find(
     ([_key, value]) => value === poolAddress
   )?.[0];

@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
-import { useAccount } from 'wagmi';
+import { isAddress } from 'viem';
+import { Address, useAccount } from 'wagmi';
 
 import {
   usePoolBalance,
@@ -26,11 +27,11 @@ const PoolDetailMainPage = () => {
   const { address } = useAccount();
   const tokenAddress = id === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
 
-  useRequirePrarams([id], () => navigate(-1));
-  const { poolInfo, compositions } = usePoolBalance(id);
+  useRequirePrarams([!!id, isAddress(id as Address)], () => navigate(-1));
+  const { poolInfo, compositions } = usePoolBalance(id as Address);
 
   const { value: lpTokenBalance } = useTokenBalances(address, tokenAddress);
-  const { data: totalLpTokenBalance } = usePoolTotalLpTokens(id);
+  const { data: totalLpTokenBalance } = usePoolTotalLpTokens(id as Address);
   const { myCompositions } = getPoolMyInfoById({
     id: id ?? '',
     lpTokenBalance,

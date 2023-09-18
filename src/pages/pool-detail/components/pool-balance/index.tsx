@@ -18,7 +18,7 @@ export const PoolBalance = ({ compositions, pool }: Props) => {
     compositions?.reduce((acc, cur) => acc + cur.balance * cur.price, 0) ?? 0;
 
   const tokenInfos = compositions?.map(token => {
-    const weight = pool.compositions.find(pool => pool.name === token.name)?.weight;
+    const weight = pool?.compositions?.find(pool => pool.name === token.name)?.weight;
     const value = token.balance * token.price;
     return {
       title: weight + '% ' + token.name,

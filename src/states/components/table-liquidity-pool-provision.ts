@@ -5,19 +5,19 @@ import { SortingState } from '~/types/components';
 
 import { logger } from '../middleware/logger';
 
-export interface TableLiquidityPoolState {
+export interface TableLiquidityPoolProvisionState {
   sorting: SortingState | undefined;
 
   setSorting: (sortingState: SortingState) => void;
   resetSorting: () => void;
 }
 
-export const useTableLiquidityPoolStore = create<TableLiquidityPoolState>()(
+export const useTableLiquidityPoolProvisionStore = create<TableLiquidityPoolProvisionState>()(
   immer(
     logger(set => ({
-      name: 'table-liquidity-store',
+      name: 'table-liquidity-pool-provision-store',
 
-      sorting: { key: 'POOL_VALUE', order: 'desc' },
+      sorting: { key: 'TIME', order: 'desc' },
       setSorting: (sortingState: SortingState) => set({ sorting: sortingState }),
       resetSorting: () => set({ sorting: undefined }),
     }))

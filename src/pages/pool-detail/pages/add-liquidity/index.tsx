@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
+import { Address, isAddress } from 'viem';
 
 import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import { COLOR } from '~/assets/colors';
@@ -22,9 +23,9 @@ const PoolDetailAddLiquidityPage = () => {
 
   const { id } = useParams();
 
-  useRequirePrarams([id], () => navigate(-1));
+  useRequirePrarams([!!id, isAddress(id as Address)], () => navigate(-1));
 
-  const { compositions } = usePoolBalance(id);
+  const { compositions } = usePoolBalance(id as Address);
   const { balancesMap } = useBalancesAll();
 
   const tokens: TokenInfo[] = compositions?.map(token => {

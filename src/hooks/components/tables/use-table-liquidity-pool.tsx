@@ -9,13 +9,13 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
-import { useTableLiquidityStore } from '~/states/components/table-liquidity-pool';
+import { useTableLiquidityPoolStore } from '~/states/components/table-liquidity-pool';
 import { LiquidityPoolTable } from '~/types/components';
 import { formatNumber } from '~/utils/number';
 import { sumPoolValues } from '~/utils/token';
 
 export const useTableLiquidityPool = () => {
-  const { sorting, setSorting } = useTableLiquidityStore();
+  const { sorting, setSorting } = useTableLiquidityPoolStore();
   const data = useGetLiquidityPoolLists();
 
   const sortedData = data?.sort((a, b) => {

@@ -3,7 +3,7 @@ import { Address } from 'viem';
 export interface GetLiquidityPoolProvisionsToken {
   address: Address;
   symbol: string;
-  amount: string;
+  amount: number;
 }
 
 export interface GetLiquidityPoolProvisions {

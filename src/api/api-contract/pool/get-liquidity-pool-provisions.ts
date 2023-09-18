@@ -72,7 +72,7 @@ const getFormattedLiquidityPoolProvisions = async ({
     tokenAddresses?.map((address, idx) => ({
       address,
       symbol: tokenSymbols?.[idx],
-      amount: formatEther(deltas?.[idx] ?? 0n),
+      amount: Number(formatEther(deltas?.[idx] ?? 0n)),
     })) ?? [];
 
   const blockInfo = await client.getBlock({ blockHash });
@@ -96,7 +96,6 @@ interface UseGetLiquidityPoolProvisionsProps {
 }
 export const useGetLiquidityPoolProvisions = ({
   poolAddress,
-  my,
   options,
 }: UseGetLiquidityPoolProvisionsProps) => {
   const client = usePublicClient();
@@ -104,7 +103,7 @@ export const useGetLiquidityPoolProvisions = ({
 
   const { data: liquidityPoolProvisionsData } = useQuery(
     [...QUERY_KEYS.LIQUIIDITY_POOL.GET_PROVISIONS, poolAddress],
-    () => getLiquidityPoolProvisions({ client, poolAddress, my }),
+    () => getLiquidityPoolProvisions({ client, poolAddress }),
     {
       keepPreviousData: true,
       enabled: !!poolAddress && !!client,
@@ -116,7 +115,7 @@ export const useGetLiquidityPoolProvisions = ({
 
   const queries =
     liquidityPoolProvisionsData?.map(data => ({
-      queryKey: [...QUERY_KEYS.LIQUIIDITY_POOL.GET_PROVISIONS, 'formatted', poolAddress ?? ''],
+      queryKey: [...QUERY_KEYS.LIQUIIDITY_POOL.GET_PROVISIONS, 'formatted', data.blockHash],
       queryFn: () =>
         getFormattedLiquidityPoolProvisions({
           client,

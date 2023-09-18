@@ -1,3 +1,5 @@
+import { Address } from 'viem';
+
 export interface TokenInfo {
   name: string;
   balance: number;
@@ -17,5 +19,5 @@ export interface PoolInfo {
   apr: string;
   fees: string;
   name: string;
-  id: string;
+  id: Address;
 }
