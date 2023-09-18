@@ -4,6 +4,7 @@ import { TOKEN_ABI } from '~/abi/token';
 
 export const useTokenInfos = (addresses: string[]) => {
   const [tokenA, tokenB, tokenC] = addresses;
+
   const {
     data: tokenAData,
     fetchStatus: tokenAFetchStatus,

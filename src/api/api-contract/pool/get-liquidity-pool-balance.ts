@@ -7,51 +7,54 @@ import { VAULT_ABI } from '~/abi/vault';
 import { CONTRACT_ADDRESS, POOL_ID, TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
 import { Composition, PoolInfo } from '~/types/components';
 import { PoolBalance, TOKEN } from '~/types/contracts';
+import { Entries } from '~/types/helpers';
 import { formatNumber } from '~/utils/number';
 
 import { useTokenInfos } from '../token/token';
 
-export const usePoolBalance = (poolId?: string) => {
+export const usePoolBalance = (poolAddress?: string) => {
   const {
     data: poolTokensData,
-    fetchStatus: poolTokensFetchStatus,
-    status: poolTokensStatus,
+    isLoading: poolTokensIsLoading,
     isSuccess: poolTokenIsSuucess,
     isError: poolTokenIsError,
   } = useContractRead({
     address: CONTRACT_ADDRESS.VAULT,
     abi: VAULT_ABI,
     functionName: 'getPoolTokens',
-    args: [poolId],
-    enabled: !!poolId,
-  });
-
-  const poolAddress = poolId === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
-
-  const {
-    data: weightData,
-    fetchStatus: weightDataFetchStatus,
-    status: weightDataStatus,
-    isSuccess: weightDataIsSuccess,
-    isError: weightDataIsError,
-  } = useContractRead({
-    address: poolAddress,
-    abi: LIQUIDITY_POOL_ABI,
-    functionName: 'getNormalizedWeights',
+    args: [poolAddress],
     enabled: !!poolAddress,
   });
 
-  const [tokenAddresses, balances] = poolTokensData as PoolBalance;
+  const poolName = (Object.entries(POOL_ID) as Entries<typeof POOL_ID>).find(
+    ([_key, value]) => value === poolAddress
+  )?.[0];
+  const liquidityPoolTokenAddress = poolName ? TOKEN_ADDRESS[poolName] : undefined;
+
+  const {
+    data: weightData,
+    isLoading: weightDataIsLoading,
+    isSuccess: weightDataIsSuccess,
+    isError: weightDataIsError,
+  } = useContractRead({
+    address: liquidityPoolTokenAddress,
+    abi: LIQUIDITY_POOL_ABI,
+    functionName: 'getNormalizedWeights',
+    enabled: !!liquidityPoolTokenAddress,
+  });
+
+  const tokenAddresses = (poolTokensData as PoolBalance)?.[0];
+  const balances = (poolTokensData as PoolBalance)?.[1];
   const {
     data: tokensData,
     isLoading: tokenInfoIsLoading,
     isError: tokenInfoIsError,
     isSuccess: tokenInfoIsSuccess,
-  } = useTokenInfos(tokenAddresses);
+  } = useTokenInfos(tokenAddresses ?? []);
 
   const compositions: Composition[] = tokensData
-    .filter(token => token !== undefined)
-    .map((token, idx) => {
+    ?.filter(token => token !== undefined)
+    ?.map((token, idx) => {
       return {
         name: token as string,
         weight: Number(formatEther((weightData as Array<bigint>)[idx])) * 100,
@@ -60,37 +63,31 @@ export const usePoolBalance = (poolId?: string) => {
       };
     });
 
-  const totalValue = compositions.reduce((acc, cur) => acc + cur.balance * cur.price, 0);
-
-  const lpTokenName = compositions.reduce(
-    (acc, cur) => acc + cur.weight.toString() + cur.name + '-',
-    ''
-  );
+  const totalValue = compositions?.reduce((acc, cur) => acc + cur.balance * cur.price, 0) ?? 0;
+  const liquidityPoolTokenName =
+    compositions
+      ?.reduce((acc, cur) => acc + cur.weight.toString() + cur.name + '-', '')
+      ?.slice(0, -1) ?? '';
 
   // TODO : fix here using get logs
   const volume = 386;
 
   const poolInfo: PoolInfo = {
-    id: poolId ?? '',
-    tokenAddress: poolAddress,
+    id: poolAddress ?? '',
+    tokenAddress: liquidityPoolTokenAddress ?? '',
     compositions,
     value: formatNumber(totalValue, 2),
 
     volume: '$' + formatNumber(volume, 2),
     apr: formatNumber(((volume * 0.003 * 365) / totalValue) * 100, 2) + '%',
     fees: '$' + formatNumber(volume * 0.003, 2),
-    name: lpTokenName.slice(0, -1),
+    name: liquidityPoolTokenName,
   };
 
   return {
     poolInfo,
     compositions,
-    isLoading:
-      tokenInfoIsLoading ||
-      poolTokensFetchStatus === 'fetching' ||
-      weightDataFetchStatus === 'fetching' ||
-      poolTokensStatus === 'loading' ||
-      weightDataStatus === 'loading',
+    isLoading: tokenInfoIsLoading || weightDataIsLoading || poolTokensIsLoading,
     isError: weightDataIsError || poolTokenIsError || tokenInfoIsError,
     isSuccess: weightDataIsSuccess && poolTokenIsSuucess && tokenInfoIsSuccess,
   };
