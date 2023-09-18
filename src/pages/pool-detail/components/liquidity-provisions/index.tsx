@@ -1,8 +1,10 @@
+import { useEffect } from 'react';
 import tw from 'twin.macro';
 
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
 import { useTableTotalProvision } from '~/hooks/components/tables/use-table-total-provision';
+import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { useSelectedLiquidityPoolProvisionTabStore } from '~/states/pages/selected-liquidity-pool-provision-tab';
 import { LiquidityProvisionTable, PoolInfo } from '~/types/components';
 
@@ -10,14 +12,22 @@ interface Props {
   pool: PoolInfo;
 }
 export const LiquidityProvisions = ({ pool }: Props) => {
-  const tabs = [
-    { key: 'total-provision', name: 'All liquidity provision' },
-    { key: 'my-provision', name: 'My liquidity' },
-  ];
+  const { address } = useConnectWallet();
+  const tabs = address
+    ? [
+        { key: 'total-provision', name: 'All liquidity provision' },
+        { key: 'my-provision', name: 'My liquidity' },
+      ]
+    : [{ key: 'total-provision', name: 'All liquidity provision' }];
+
   const { selected: selectedTab, select: selectTab } = useSelectedLiquidityPoolProvisionTabStore();
 
-  const my = selectedTab === 'my-provision';
-  const { data, columns } = useTableTotalProvision(pool.id, my);
+  const { data, columns } = useTableTotalProvision(pool.id);
+
+  useEffect(() => {
+    if (!address) selectTab('total-provision');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address]);
 
   return (
     <Wrapper>

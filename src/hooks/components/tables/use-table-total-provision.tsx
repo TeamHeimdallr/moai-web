@@ -13,13 +13,18 @@ import { TableColumnTokenPair } from '~/components/tables/columns/column-token-p
 import { SCANNER_URL, TOKEN_USD_MAPPER } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { useTableLiquidityPoolProvisionStore } from '~/states/components/table-liquidity-pool-provision';
+import { useSelectedLiquidityPoolProvisionTabStore } from '~/states/pages/selected-liquidity-pool-provision-tab';
 import { LiquidityProvisionData, LiquidityProvisionTable } from '~/types/components';
 import { formatNumber } from '~/utils/number';
 import { elapsedTime } from '~/utils/time';
 
-export const useTableTotalProvision = (poolAddress: Address, my?: boolean) => {
+export const useTableTotalProvision = (poolAddress: Address) => {
   const { address } = useConnectWallet();
   const { sorting, setSorting } = useTableLiquidityPoolProvisionStore();
+  const { selected: selectedTab } = useSelectedLiquidityPoolProvisionTabStore();
+
+  const isMyProvision = selectedTab === 'my-provision';
+
   const { data } = useGetLiquidityPoolProvisions({ poolAddress });
 
   const poolData = data?.map(d => {
@@ -54,7 +59,7 @@ export const useTableTotalProvision = (poolAddress: Address, my?: boolean) => {
   });
 
   const filteredData =
-    my && address
+    isMyProvision && address
       ? sortedData?.filter(d => isAddressEqual(d.liquidityProvider, address))
       : sortedData;
 
