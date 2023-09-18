@@ -14,7 +14,7 @@ import { TokenList } from '~/components/token-list';
 import { SCANNER_URL, TOKEN_ADDRESS, TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { usePopup } from '~/hooks/pages/use-popup';
-import { useSlippageStore } from '~/states/components/slippage';
+import { useSlippageStore } from '~/states/data/slippage';
 import { POPUP_ID } from '~/types/components';
 import { SwapKind } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';

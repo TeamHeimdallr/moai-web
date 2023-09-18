@@ -32,5 +32,5 @@ export const CHAIN_MANTLE: ChainInfo = {
   POOL_ID,
   CONTRACT_ADDRESS,
   TOKEN_ADDRESS,
-  SCANNER_URL: '',
+  SCANNER_URL,
 };

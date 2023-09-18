@@ -69,6 +69,8 @@ export interface LiquidityProvisionData {
   tokens: TokenInfo[];
   value: number;
   time: number;
+  liquidityProvider: Address;
+  txHash: Address;
 }
 export interface LiquidityProvisionTable {
   id: string;

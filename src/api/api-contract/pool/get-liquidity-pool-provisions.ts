@@ -1,5 +1,5 @@
 import { useQueries, useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { Address, formatEther, isAddressEqual, PublicClient } from 'viem';
+import { Address, formatEther, PublicClient } from 'viem';
 import { usePublicClient } from 'wagmi';
 
 import { QUERY_KEYS } from '~/api/utils/query-keys';
@@ -52,15 +52,15 @@ interface GetFormattedLiquidityPoolProvisionsProps {
       protocolFeeAmounts?: readonly bigint[] | undefined;
     };
     blockHash: Address;
+    txHash: Address;
   };
   address?: Address;
 }
 const getFormattedLiquidityPoolProvisions = async ({
   client,
-  address,
   data,
 }: GetFormattedLiquidityPoolProvisionsProps) => {
-  const { args, blockHash } = data;
+  const { args, blockHash, txHash } = data;
   const { deltas, liquidityProvider, poolId, tokens: tokenAddresses } = args;
 
   const type = deltas?.every(delta => delta > 0) ? 'deposit' : 'withdraw';
@@ -78,14 +78,13 @@ const getFormattedLiquidityPoolProvisions = async ({
   const blockInfo = await client.getBlock({ blockHash });
   const timestamp = Number(blockInfo?.timestamp ?? Date.now() / 1000) * 1000;
 
-  const my = liquidityProvider && address && isAddressEqual(liquidityProvider, address);
-
   return {
     type,
     poolId: poolId ?? '0x',
     tokens,
     timestamp,
-    my,
+    liquidityProvider,
+    txHash,
   } as GetLiquidityPoolProvisions;
 };
 
@@ -120,7 +119,7 @@ export const useGetLiquidityPoolProvisions = ({
         getFormattedLiquidityPoolProvisions({
           client,
           address,
-          data: { args: data.args, blockHash: data.blockHash },
+          data: { args: data.args, blockHash: data.blockHash, txHash: data.transactionHash },
         }),
       staleTime: Infinity,
     })) ?? [];

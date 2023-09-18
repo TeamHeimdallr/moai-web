@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode } from 'react';
-import { Address } from 'viem';
+import { Address, isAddressEqual } from 'viem';
 
 import { useGetLiquidityPoolProvisions } from '~/api/api-contract/pool/get-liquidity-pool-provisions';
 import { COLOR } from '~/assets/colors';
@@ -10,13 +10,15 @@ import { TableColumn } from '~/components/tables/columns';
 import { TableColumnIcon } from '~/components/tables/columns/column-icon';
 import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenPair } from '~/components/tables/columns/column-token-pair';
-import { TOKEN_USD_MAPPER } from '~/constants';
+import { SCANNER_URL, TOKEN_USD_MAPPER } from '~/constants';
+import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { useTableLiquidityPoolProvisionStore } from '~/states/components/table-liquidity-pool-provision';
 import { LiquidityProvisionData, LiquidityProvisionTable } from '~/types/components';
 import { formatNumber } from '~/utils/number';
 import { elapsedTime } from '~/utils/time';
 
-export const useTableTotalProvision = (poolAddress: Address) => {
+export const useTableTotalProvision = (poolAddress: Address, my?: boolean) => {
+  const { address } = useConnectWallet();
   const { sorting, setSorting } = useTableLiquidityPoolProvisionStore();
   const { data } = useGetLiquidityPoolProvisions({ poolAddress });
 
@@ -31,8 +33,9 @@ export const useTableTotalProvision = (poolAddress: Address) => {
         value: (t?.amount ?? 0) * (TOKEN_USD_MAPPER[t?.symbol] ?? 0),
       })) ?? [];
     const value = tokens?.reduce((acc, cur) => acc + cur.value, 0);
-    // const time = elapsedTime(d?.timestamp ?? Date.now());
     const time = d?.timestamp ?? Date.now();
+    const liquidityProvider = d?.liquidityProvider ?? '0x';
+    const txHash = d?.txHash ?? '0x';
 
     return {
       id,
@@ -40,6 +43,8 @@ export const useTableTotalProvision = (poolAddress: Address) => {
       tokens,
       value,
       time,
+      liquidityProvider,
+      txHash,
     } as LiquidityProvisionData;
   });
 
@@ -48,7 +53,12 @@ export const useTableTotalProvision = (poolAddress: Address) => {
     return 0;
   });
 
-  const tableData: LiquidityProvisionTable[] = sortedData?.map(d => ({
+  const filteredData =
+    my && address
+      ? sortedData?.filter(d => isAddressEqual(d.liquidityProvider, address))
+      : sortedData;
+
+  const tableData: LiquidityProvisionTable[] = filteredData?.map(d => ({
     id: d.id,
     action: (
       <TableColumnIcon
@@ -65,7 +75,14 @@ export const useTableTotalProvision = (poolAddress: Address) => {
     ),
     tokens: <TableColumnTokenPair tokens={d.tokens} />,
     value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
-    time: <TableColumnLink token={`${elapsedTime(d.time)}`} align="flex-end" width={160} />,
+    time: (
+      <TableColumnLink
+        token={`${elapsedTime(d.time)}`}
+        align="flex-end"
+        width={160}
+        link={`${SCANNER_URL}/tx/${d.txHash}`}
+      />
+    ),
   }));
 
   const columns: ColumnDef<LiquidityProvisionTable, ReactNode>[] = [

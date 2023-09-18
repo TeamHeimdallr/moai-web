@@ -11,5 +11,6 @@ export interface GetLiquidityPoolProvisions {
   poolId: Address;
   tokens: GetLiquidityPoolProvisionsToken[];
   timestamp: number;
-  my: boolean;
+  liquidityProvider: Address;
+  txHash: Address;
 }
