@@ -69,7 +69,7 @@ export const usePoolBalance = (poolAddress?: string) => {
     id: poolAddress ?? '',
     tokenAddress: liquidityPoolTokenAddress ?? '',
     compositions,
-    value: formatNumber(totalValue, 2),
+    value: '$' + formatNumber(totalValue, 2),
 
     volume: '$' + formatNumber(volume, 2),
     apr: formatNumber(((volume * 0.003 * 365) / totalValue) * 100, 2) + '%',
@@ -86,19 +86,22 @@ export const usePoolBalance = (poolAddress?: string) => {
   };
 };
 
-export const usePoolTotalLpTokens = (poolId?: string) => {
-  const tokenAddress = poolId === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
+export const usePoolTotalLpTokens = (poolAddress?: string) => {
+  const poolName = (Object.entries(POOL_ID) as Entries<typeof POOL_ID>).find(
+    ([_key, value]) => value === poolAddress
+  )?.[0];
+  const liquidityPoolTokenAddress = poolName ? TOKEN_ADDRESS[poolName] : undefined;
 
-  const { data, fetchStatus, status, isSuccess, isError } = useContractRead({
-    address: tokenAddress,
+  const { data, isLoading, isSuccess, isError } = useContractRead({
+    address: liquidityPoolTokenAddress,
     abi: TOKEN_ABI,
     functionName: 'totalSupply',
-    enabled: !!poolId,
+    enabled: !!poolAddress && !!liquidityPoolTokenAddress,
   });
 
   return {
     data: data as bigint,
-    isLoading: fetchStatus === 'fetching' && status === 'loading',
+    isLoading,
     isSuccess,
     isError,
   };
