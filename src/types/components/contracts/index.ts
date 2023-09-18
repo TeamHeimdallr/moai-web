@@ -6,6 +6,7 @@ export interface TokenInfo {
   value: number;
 }
 export interface Composition {
+  tokenAddress: Address;
   name: string;
   weight: number;
   balance: number;
