@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export const useRequirePrarams = (params: (string | undefined)[], callback: () => void) => {
+export const useRequirePrarams = (params: boolean[], callback: () => void) => {
   const hasParams = params.every(param => param !== undefined);
 
   useEffect(() => {

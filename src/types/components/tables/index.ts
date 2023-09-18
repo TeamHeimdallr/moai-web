@@ -24,7 +24,7 @@ export interface LiquidityPoolTable {
   apr: ReactNode;
 }
 
-export interface MyLiquidityData {
+export interface MyLiquidityPoolData {
   id: string;
   assets: TOKEN[];
   composition: Record<TOKEN, number>;
@@ -33,7 +33,7 @@ export interface MyLiquidityData {
   apr: number;
   isNew: boolean;
 }
-export interface MyLiquidityTable {
+export interface MyLiquidityPoolTable {
   id: string;
   assets: ReactNode;
   composition: ReactNode;
@@ -64,14 +64,16 @@ export interface PoolCompositionTable {
   currentWeight: ReactNode;
 }
 export interface LiquidityProvisionData {
-  id: number;
-  action: { key: 'add' | 'withdraw'; label: string };
+  id: string;
+  action: { key: 'deposit' | 'withdraw'; label: string };
   tokens: TokenInfo[];
   value: number;
-  time: string;
+  time: number;
+  liquidityProvider: Address;
+  txHash: Address;
 }
 export interface LiquidityProvisionTable {
-  id: number;
+  id: string;
   action: ReactNode;
   tokens: ReactNode;
   value: ReactNode;

@@ -1,13 +1,9 @@
-import { css } from '@emotion/react';
-import styled from '@emotion/styled';
 import { useRef, useState } from 'react';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
-import { COLOR } from '~/assets/colors';
-import { IconDown } from '~/assets/icons';
 import { CHAIN_IMAGE_MAPPER, CHAIN_SELECT_LIST } from '~/constants';
-import { useSelectedNetworkStore } from '~/states/components/selected-network';
+import { useSelectedNetworkStore } from '~/states/data/selected-network';
 import { TOOLTIP_ID } from '~/types/components';
 
 import { ButtonDropdown } from '../buttons/dropdown';

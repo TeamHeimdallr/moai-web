@@ -37,7 +37,11 @@ export const useSwapData = () => {
 
   const toValue = fromValue ? Number((Number(fromValue) * swapRatio).toFixed(6)) : undefined;
   const validToSwap =
-    fromValue && Number(fromValue) > 0 && fromValue <= fromTokenBalance && toValue && toValue > 0;
+    fromValue &&
+    Number(fromValue) > 0 &&
+    Number(fromValue) <= fromTokenBalance &&
+    toValue &&
+    toValue > 0;
 
   const poolId =
     (fromToken === TOKEN.MOAI && toToken === TOKEN.WETH) ||

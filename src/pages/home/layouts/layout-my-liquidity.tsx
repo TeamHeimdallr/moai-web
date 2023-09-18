@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 import { Table } from '~/components/tables';
 import { CURRENT_CHAIN } from '~/constants';
 import { useTableMyLiquidity } from '~/hooks/components/tables/use-table-my-liquidity';
-import { MyLiquidityTable } from '~/types/components';
+import { MyLiquidityPoolTable } from '~/types/components';
 
 export const MyLiquidityLayout = () => {
   const { data, columns } = useTableMyLiquidity();
@@ -19,7 +19,7 @@ export const MyLiquidityLayout = () => {
       <TitleWrapper>
         <Title>My liquidity in Moai pools</Title>
       </TitleWrapper>
-      <Table<MyLiquidityTable>
+      <Table<MyLiquidityPoolTable>
         data={data}
         columns={columns}
         emptyText={`You have no unsktaked liquidity on ${CURRENT_CHAIN}`}

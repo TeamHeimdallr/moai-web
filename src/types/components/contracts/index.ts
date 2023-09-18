@@ -1,4 +1,4 @@
-import { TOKEN } from '~/types/contracts';
+import { Address } from 'viem';
 
 export interface TokenInfo {
   name: string;
@@ -6,7 +6,7 @@ export interface TokenInfo {
   value: number;
 }
 export interface Composition {
-  name: TOKEN;
+  name: string;
   weight: number;
   balance: number;
   price: number;
@@ -18,7 +18,6 @@ export interface PoolInfo {
   volume: string;
   apr: string;
   fees: string;
-  lpTokens: number;
   name: string;
-  id: string;
+  id: Address;
 }

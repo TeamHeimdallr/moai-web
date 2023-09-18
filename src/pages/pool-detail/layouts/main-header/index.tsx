@@ -5,20 +5,22 @@ import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
 import { POOL_ID, SCANNER_URL, TOKEN_ADDRESS } from '~/constants';
 import { PoolInfo } from '~/types/components';
+import { TOKEN } from '~/types/contracts';
 
 interface Props {
   pool: PoolInfo;
 }
 export const MainHeader = ({ pool }: Props) => {
   const tokenAddress = pool.id === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
+
   return (
     <HeaderWrapper>
       <Title>Weighted Pool</Title>
       <TokenWrapper>
-        {pool.compositions.map(composition => (
+        {pool?.compositions?.map(composition => (
           <Token
-            key={composition.name}
-            token={composition.name}
+            key={`${composition.weight}-${composition.name}`}
+            token={composition.name as TOKEN}
             percentage={composition.weight}
             type="small"
           />

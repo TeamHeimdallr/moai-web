@@ -1,6 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode, useMemo } from 'react';
 
+import { useGetMyLiquidityPoolLists } from '~/api/api-contract/pool/get-liquidity-pool-lists';
 import {
   TableHeaderAssets,
   TableHeaderComposition,
@@ -8,33 +9,15 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
-import { POOL_ID } from '~/constants';
 import { useTableMyLiquidityStore } from '~/states/components/table-my-liquidity';
-import { MyLiquidityData, MyLiquidityTable } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
+import { MyLiquidityPoolTable } from '~/types/components';
 import { formatNumber } from '~/utils/number';
 import { sumPoolValues } from '~/utils/token';
 
 export const useTableMyLiquidity = () => {
   const { sorting, setSorting } = useTableMyLiquidityStore();
 
-  const data: MyLiquidityData[] = [
-    {
-      id: POOL_ID.POOL_A,
-      assets: [TOKEN.MOAI, TOKEN.WETH],
-      composition: {
-        [TOKEN.MOAI]: 80,
-        [TOKEN.WETH]: 20,
-      } as Record<TOKEN, number>,
-      pool: {
-        [TOKEN.MOAI]: 7077.75,
-        [TOKEN.WETH]: 147,
-      } as Record<TOKEN, number>,
-      balance: 693194,
-      apr: 6.79,
-      isNew: false,
-    },
-  ];
+  const data = useGetMyLiquidityPoolLists();
 
   const sortedData = data?.sort((a, b) => {
     if (sorting?.key === 'POOL_VALUE')
@@ -46,7 +29,7 @@ export const useTableMyLiquidity = () => {
     return 0;
   });
 
-  const tableData = useMemo<MyLiquidityTable[]>(
+  const tableData = useMemo<MyLiquidityPoolTable[]>(
     () =>
       sortedData?.map(d => ({
         id: d.id,
@@ -67,7 +50,7 @@ export const useTableMyLiquidity = () => {
     [sortedData]
   );
 
-  const columns = useMemo<ColumnDef<MyLiquidityTable, ReactNode>[]>(
+  const columns = useMemo<ColumnDef<MyLiquidityPoolTable, ReactNode>[]>(
     () => [
       {
         cell: row => row.renderValue(),

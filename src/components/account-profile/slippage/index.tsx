@@ -1,6 +1,6 @@
 import tw, { styled } from 'twin.macro';
 
-import { useSlippageStore } from '~/states/components/slippage';
+import { useSlippageStore } from '~/states/data/slippage';
 
 interface Props {
   shadow?: boolean;

@@ -1,9 +1,10 @@
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
-import { Address, parseEther } from 'viem';
+import { Address, isAddress, parseEther } from 'viem';
 
-import { useAddLiquidity } from '~/api/api-contract/add-liquiditiy';
+import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
+import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
@@ -16,8 +17,8 @@ import {
   TOKEN_IMAGE_MAPPER,
   TOKEN_USD_MAPPER,
 } from '~/constants';
-import { pools } from '~/data';
 import { usePopup } from '~/hooks/pages/use-popup';
+import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { POPUP_ID } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
@@ -33,8 +34,13 @@ interface Props {
 }
 
 export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
+  const navigate = useNavigate();
   const { id } = useParams();
-  const { name: lpName } = pools.find(p => p.id === id)!;
+
+  useRequirePrarams([!!id, isAddress(id as Address)], () => navigate(-1));
+
+  const { poolInfo } = usePoolBalance(id as Address);
+  const { name: lpName } = poolInfo;
 
   const prepareRequestData = () => {
     return {

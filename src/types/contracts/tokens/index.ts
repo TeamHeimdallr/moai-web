@@ -5,6 +5,10 @@ export enum TOKEN {
   USDT = 'USDT',
   WETH = 'WETH',
   MOAI = 'MOAI',
+  ROOT = 'ROOT',
+  XRP = 'XRP',
+  SYLO = 'SYLO',
+  ASTO = 'ASTO',
 }
 
 export interface TokenInfo {
@@ -23,7 +27,7 @@ export interface TokenBalanceInfo {
 }
 
 export interface TokenBalanceInfoAll {
-  balancesMap?: Record<TOKEN, TokenBalanceInfo>;
+  balancesMap?: Record<string, TokenBalanceInfo>;
   balancesArray?: TokenBalanceInfo[];
 }
 

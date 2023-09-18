@@ -3,6 +3,7 @@ import tw from 'twin.macro';
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
 import { useTableTotalProvision } from '~/hooks/components/tables/use-table-total-provision';
+import { useSelectedLiquidityProvisionTabStore } from '~/states/pages/selected-liquidity-provision-tab';
 import { LiquidityProvisionTable, PoolInfo } from '~/types/components';
 
 interface Props {
@@ -13,12 +14,15 @@ export const LiquidityProvisions = ({ pool }: Props) => {
     { key: 'total-provision', name: 'All liquidity provision' },
     { key: 'my-provision', name: 'My liquidity' },
   ];
-  const { data, columns } = useTableTotalProvision(pool.id);
+  const { selected: selectedTab, select: selectTab } = useSelectedLiquidityProvisionTabStore();
+
+  const my = selectedTab === 'my-provision';
+  const { data, columns } = useTableTotalProvision(pool.id, my);
 
   return (
     <Wrapper>
       <Title>Liquidity Provision</Title>
-      <Tab tabs={tabs} selectedTab={'total-provision'} />
+      <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />
       <Table<LiquidityProvisionTable> data={data} columns={columns} />
     </Wrapper>
   );

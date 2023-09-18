@@ -1,23 +1,34 @@
-import { ChainROOT, ChainXRPL, TokenMOAI, TokenUSDC, TokenUSDT, TokenWETH } from '~/assets/images';
+import {
+  ChainROOT,
+  ChainXRPL,
+  TokenMOAI,
+  TokenROOT,
+  TokenUSDC,
+  TokenUSDT,
+  TokenWETH,
+  TokenXRPL,
+} from '~/assets/images';
 import { ChainSelect, GnbMenu } from '~/types/components/gnb';
-import { TOKEN } from '~/types/contracts';
 
 import { CHAIN_ID as ROOT_CHAIN_ID } from './constant-chain-root';
 import { CHAIN_ID as XRPL_CHAIN_ID } from './constant-chain-xrpl';
 
-export const TOKEN_IMAGE_MAPPER: Record<TOKEN, string> = {
+export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   USDC: TokenUSDC,
   USDT: TokenUSDT,
   WETH: TokenWETH,
   MOAI: TokenMOAI,
+  ROOT: TokenROOT,
+  XRP: TokenXRPL,
 };
 
-// TODO: static token usd
-export const TOKEN_USD_MAPPER: Record<TOKEN, number> = {
+export const TOKEN_USD_MAPPER: Record<string, number> = {
   USDC: 1,
   USDT: 1,
   WETH: 1718.39,
   MOAI: 142.23,
+  ROOT: 0.0141,
+  XRP: 0.5,
 };
 
 export const CHAIN_IMAGE_MAPPER: Record<number, string> = {

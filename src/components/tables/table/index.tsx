@@ -41,8 +41,8 @@ export const Table = <T extends object>({
   return (
     <StyledTable>
       <Header>
-        {table.getHeaderGroups().map(headerGroup => (
-          <HeaderInnerWrapper key={headerGroup.id}>
+        {table.getHeaderGroups().map((headerGroup, i) => (
+          <HeaderInnerWrapper key={headerGroup.id + i}>
             {headerGroup.headers.map(header => (
               <Fragment key={header.id}>
                 {header.isPlaceholder
@@ -58,14 +58,14 @@ export const Table = <T extends object>({
         <EmptyText>{emptyText ?? 'Empty table'}</EmptyText>
       ) : (
         <Body>
-          {table.getRowModel().rows.map(row => (
+          {table.getRowModel().rows.map((row, i) => (
             <BodyInnerWrapper
-              key={row.id}
+              key={row.id + i}
               rounded={!hasMore && !isLoading}
               onClick={() => handleRowClick?.(row.getValue('id'))}
             >
-              {row.getVisibleCells().map(cell => (
-                <Fragment key={cell.id}>
+              {row.getVisibleCells().map((cell, i) => (
+                <Fragment key={cell.id + i}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </Fragment>
               ))}

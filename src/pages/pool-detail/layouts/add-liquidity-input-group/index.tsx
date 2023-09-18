@@ -110,9 +110,10 @@ export const AddLiquidityInput = ({ tokenList }: Props) => {
       <ButtonPrimaryLarge text="Preview" onClick={popupOpen} />
       {popupOpened && (
         <AddLiquidityPopup
-          tokenList={tokenList.map((token, idx) => {
-            return { name: token.name as TOKEN, amount: getInputValue(idx) };
-          })}
+          tokenList={tokenList?.map((token, idx) => ({
+            name: token.name as TOKEN,
+            amount: getInputValue(idx),
+          }))}
           totalValue={totalValue}
           priceImpact={0.13}
         />

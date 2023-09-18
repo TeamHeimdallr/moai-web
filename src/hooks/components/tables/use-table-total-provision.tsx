@@ -1,6 +1,8 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode } from 'react';
+import { Address, isAddressEqual } from 'viem';
 
+import { useGetLiquidityPoolProvisions } from '~/api/api-contract/pool/get-liquidity-pool-provisions';
 import { COLOR } from '~/assets/colors';
 import { IconMinus, IconPlus } from '~/assets/icons';
 import { TableHeader, TableHeaderSortable } from '~/components/tables';
@@ -8,72 +10,64 @@ import { TableColumn } from '~/components/tables/columns';
 import { TableColumnIcon } from '~/components/tables/columns/column-icon';
 import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenPair } from '~/components/tables/columns/column-token-pair';
-import { POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
+import { SCANNER_URL, TOKEN_USD_MAPPER } from '~/constants';
+import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
+import { useTableLiquidityPoolProvisionStore } from '~/states/components/table-liquidity-pool-provision';
 import { LiquidityProvisionData, LiquidityProvisionTable } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
+import { elapsedTime } from '~/utils/time';
 
-export const useTableTotalProvision = (id: string) => {
-  // TODO: connect api
-  const poolAData: LiquidityProvisionData[] = [
-    {
-      id: 0,
-      action: { key: 'add', label: 'Add tokens' },
-      tokens: [
-        { name: TOKEN.MOAI, balance: 162.87, value: 162.87 * TOKEN_USD_MAPPER[TOKEN.MOAI] },
-        { name: TOKEN.WETH, balance: 3.37, value: 3.37 * TOKEN_USD_MAPPER[TOKEN.WETH] },
-      ],
-      value: 28955,
-      time: '2 months',
-    },
-    {
-      id: 1,
-      action: { key: 'withdraw', label: 'Withdraw' },
-      tokens: [
-        { name: TOKEN.MOAI, balance: 1024, value: 1024 * TOKEN_USD_MAPPER[TOKEN.MOAI] },
-        { name: TOKEN.WETH, balance: 21.19, value: 21.19 * TOKEN_USD_MAPPER[TOKEN.WETH] },
-      ],
-      value: 182054,
-      time: '10 days',
-    },
-  ];
+export const useTableTotalProvision = (poolAddress: Address, my?: boolean) => {
+  const { address } = useConnectWallet();
+  const { sorting, setSorting } = useTableLiquidityPoolProvisionStore();
+  const { data } = useGetLiquidityPoolProvisions({ poolAddress });
 
-  const poolBData: LiquidityProvisionData[] = [
-    {
-      id: 0,
-      action: { key: 'add', label: 'Add tokens' },
-      tokens: [
-        { name: TOKEN.WETH, balance: 0.13, value: 0.13 * TOKEN_USD_MAPPER[TOKEN.WETH] },
-        { name: TOKEN.USDC, balance: 105.9, value: 105.9 * TOKEN_USD_MAPPER[TOKEN.USDC] },
-        { name: TOKEN.USDT, balance: 105.89, value: 105.89 * TOKEN_USD_MAPPER[TOKEN.USDT] },
-      ],
-      value: 423.604,
-      time: '2 months',
-    },
-    {
-      id: 1,
-      action: { key: 'add', label: 'Add tokens' },
-      tokens: [
-        { name: TOKEN.WETH, balance: 0.62, value: 0.62 * TOKEN_USD_MAPPER[TOKEN.WETH] },
-        { name: TOKEN.USDT, balance: 505.09, value: 505.09 * TOKEN_USD_MAPPER[TOKEN.USDC] },
-        { name: TOKEN.USDC, balance: 505.09, value: 505.09 * TOKEN_USD_MAPPER[TOKEN.USDC] },
-      ],
-      value: 2020.362,
-      time: '2 months',
-    },
-  ];
-  const data = id === POOL_ID.POOL_A ? poolAData : poolBData;
+  const poolData = data?.map(d => {
+    const id = d?.poolId ?? '0x';
+    const label = d?.type === 'deposit' ? 'Add tokens' : d?.type === 'withdraw' ? 'Withdraw' : '';
+    const action = { key: d?.type ?? '', label };
+    const tokens =
+      d?.tokens?.map(t => ({
+        name: t?.symbol,
+        balance: t?.amount ?? 0,
+        value: (t?.amount ?? 0) * (TOKEN_USD_MAPPER[t?.symbol] ?? 0),
+      })) ?? [];
+    const value = tokens?.reduce((acc, cur) => acc + cur.value, 0);
+    const time = d?.timestamp ?? Date.now();
+    const liquidityProvider = d?.liquidityProvider ?? '0x';
+    const txHash = d?.txHash ?? '0x';
 
-  const tableData: LiquidityProvisionTable[] = data?.map(d => ({
+    return {
+      id,
+      action,
+      tokens,
+      value,
+      time,
+      liquidityProvider,
+      txHash,
+    } as LiquidityProvisionData;
+  });
+
+  const sortedData = poolData?.sort((a, b) => {
+    if (sorting?.key === 'TIME') return sorting.order === 'asc' ? a.time - b.time : b.time - a.time;
+    return 0;
+  });
+
+  const filteredData =
+    my && address
+      ? sortedData?.filter(d => isAddressEqual(d.liquidityProvider, address))
+      : sortedData;
+
+  const tableData: LiquidityProvisionTable[] = filteredData?.map(d => ({
     id: d.id,
     action: (
       <TableColumnIcon
         text={d.action.label}
         icon={
-          d.action.key === 'add' ? (
-            <IconPlus width={20} height={20} fill={COLOR.RED[50]} />
+          d.action.key === 'deposit' ? (
+            <IconPlus width={20} height={20} fill={COLOR.GREEN[50]} />
           ) : (
-            <IconMinus width={20} height={20} fill={COLOR.GREEN[50]} />
+            <IconMinus width={20} height={20} fill={COLOR.RED[50]} />
           )
         }
         width={160}
@@ -81,7 +75,14 @@ export const useTableTotalProvision = (id: string) => {
     ),
     tokens: <TableColumnTokenPair tokens={d.tokens} />,
     value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
-    time: <TableColumnLink token={`${d.time} ago`} align="flex-end" width={160} />,
+    time: (
+      <TableColumnLink
+        token={`${elapsedTime(d.time)}`}
+        align="flex-end"
+        width={160}
+        link={`${SCANNER_URL}/tx/${d.txHash}`}
+      />
+    ),
   }));
 
   const columns: ColumnDef<LiquidityProvisionTable, ReactNode>[] = [
@@ -106,7 +107,12 @@ export const useTableTotalProvision = (id: string) => {
     },
     {
       header: () => (
-        <TableHeaderSortable sortKey="TIME" label="Time" sorting={{ key: 'TIME', order: 'desc' }} />
+        <TableHeaderSortable
+          sortKey="TIME"
+          label="Time"
+          sorting={sorting}
+          setSorting={setSorting}
+        />
       ),
       cell: row => row.renderValue(),
       accessorKey: 'time',

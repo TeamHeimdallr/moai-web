@@ -3,7 +3,7 @@ import { useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
 import { parseEther } from 'viem';
 
-import { useSwap } from '~/api/api-contract/swap';
+import { useSwap } from '~/api/api-contract/swap/swap';
 import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonChipSmall } from '~/components/buttons/chip';
@@ -14,7 +14,7 @@ import { TokenList } from '~/components/token-list';
 import { SCANNER_URL, TOKEN_ADDRESS, TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { usePopup } from '~/hooks/pages/use-popup';
-import { useSlippageStore } from '~/states/components/slippage';
+import { useSlippageStore } from '~/states/data/slippage';
 import { POPUP_ID } from '~/types/components';
 import { SwapKind } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';

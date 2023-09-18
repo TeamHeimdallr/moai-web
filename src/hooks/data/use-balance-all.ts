@@ -15,6 +15,7 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
     token: TOKEN_ADDRESS[TOKEN.MOAI],
     enabled,
   });
+
   const { data: usdcData } = useBalance({
     address,
     token: TOKEN_ADDRESS[TOKEN.USDC],
@@ -59,6 +60,7 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
     valueUSD: Number(formatEther(wethData.value)) * (TOKEN_USD_MAPPER[wethData.symbol] ?? 0),
     symbol: wethData.symbol,
   };
+
   const balancesMap = {
     [TOKEN.MOAI]: moai,
     [TOKEN.USDC]: usdc,
