@@ -19,7 +19,7 @@ interface ReactTableProps<T extends object> {
 }
 
 export const Table = <T extends object>({
-  data,
+  data = [],
   columns,
 
   emptyText,

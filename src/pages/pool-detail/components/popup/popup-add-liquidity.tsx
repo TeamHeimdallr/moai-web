@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
@@ -5,12 +6,15 @@ import { Address, isAddress, parseEther } from 'viem';
 
 import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
 import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
+import { useTokenApprove } from '~/api/api-contract/token/approve';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
+import { Stepper } from '~/components/stepper';
 import { TokenList } from '~/components/token-list';
 import {
+  CONTRACT_ADDRESS,
   POOL_ID,
   SCANNER_URL,
   TOKEN_ADDRESS,
@@ -34,6 +38,54 @@ interface Props {
 }
 
 export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
+  const {
+    allow: allowToken1,
+    allowance: allowance1,
+    isLoading: allowLoading1,
+  } = useTokenApprove({
+    enabled: tokenList.length > 0,
+    amount: tokenList[0].amount,
+    allowanceMin: tokenList[0].amount,
+    spender: CONTRACT_ADDRESS.VAULT,
+    tokenAddress: TOKEN_ADDRESS[tokenList[0].name],
+  });
+
+  const {
+    allow: allowToken2,
+    allowance: allowance2,
+    isLoading: allowLoading2,
+  } = useTokenApprove({
+    enabled: tokenList.length > 1,
+    amount: tokenList[1]?.amount,
+    allowanceMin: tokenList[1]?.amount,
+    spender: CONTRACT_ADDRESS.VAULT,
+    tokenAddress: TOKEN_ADDRESS[tokenList[1]?.name],
+  });
+
+  const {
+    allow: allowToken3,
+    allowance: allowance3,
+    isLoading: allowLoading3,
+  } = useTokenApprove({
+    enabled: tokenList.length > 2,
+    amount: tokenList[2]?.amount,
+    allowanceMin: tokenList[2]?.amount,
+    spender: CONTRACT_ADDRESS.VAULT,
+    tokenAddress: TOKEN_ADDRESS[tokenList[2]?.name],
+  });
+
+  const step = useMemo(() => {
+    if (!allowance1) {
+      return 1;
+    } else if (!allowance2 && tokenList.length > 1) {
+      return 2;
+    } else if (!allowance3 && tokenList.length > 2) {
+      return 3;
+    } else {
+      return tokenList.length + 1;
+    }
+  }, [allowance1, allowance2, allowance3, tokenList.length]);
+
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -50,7 +102,12 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
   };
 
   const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useAddLiquidity({
-    enabled: !!id && totalValue > 0,
+    enabled:
+      !!id &&
+      totalValue > 0 &&
+      allowance1 &&
+      (allowance2 || tokenList.length < 2) &&
+      (allowance3 || tokenList.length < 3),
     poolId: id as Address,
     request: prepareRequestData(),
   });
@@ -75,7 +132,15 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
     if (isSuccess) {
       close();
     } else {
-      await writeAsync?.();
+      if (step === 1) {
+        await allowToken1?.();
+      } else if (step === 2 && tokenList.length > 1) {
+        await allowToken2?.();
+      } else if (step === 3 && tokenList.length > 2) {
+        await allowToken3?.();
+      } else {
+        await writeAsync?.();
+      }
     }
   };
 
@@ -97,7 +162,19 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
       button={
         <ButtonWrapper onClick={() => handleButton()}>
           <ButtonPrimaryLarge
-            text={isLoading ? 'Confirming' : isSuccess ? 'Return to pool page' : 'Add liquidity'}
+            text={
+              isLoading
+                ? 'Confirming'
+                : isSuccess
+                ? 'Return to pool page'
+                : step === 1
+                ? `Approve ${tokenList[0]?.name} for adding liquidity`
+                : step === 2 && tokenList.length > 1
+                ? `Approve ${tokenList[1]?.name} for adding liquidity`
+                : step === 3 && tokenList.length > 2
+                ? `Approve ${tokenList[2]?.name} for adding liquidity`
+                : 'Add liquidity'
+            }
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
           />
@@ -150,6 +227,20 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
             <SummaryText>{formatNumber(priceImpact, 2)}%</SummaryText>
           </Summary>
         </List>
+
+        <Stepper
+          totalSteps={tokenList.length + 1}
+          step={step}
+          isLoading={
+            step === 1
+              ? allowLoading1
+              : step === 2
+              ? allowLoading2
+              : step === 3
+              ? allowLoading3
+              : isLoading
+          }
+        />
 
         {isSuccess && (
           <Scanner onClick={() => handleLink()}>

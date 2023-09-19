@@ -8,7 +8,9 @@ import { IS_MAINNET } from '.';
 export const CHAIN_ID = IS_MAINNET ? 7672 : 7672;
 
 export const POOL_ID: Record<string, Address> = {
-  ROOT_XRP: IS_MAINNET ? '0x' : '0x',
+  ROOT_XRP: IS_MAINNET
+    ? '0x'
+    : '0x291af6e1b841cad6e3dcd66f2aa0790a007578ad000200000000000000000000',
 };
 
 export const CONTRACT_ADDRESS: Record<string, Address> = {
@@ -22,7 +24,7 @@ export const TOKEN_ADDRESS: Record<string, Address> = {
   [TOKEN.ASTO]: IS_MAINNET ? '0x' : '0xcCcCCccC00004464000000000000000000000000',
   [TOKEN.USDC]: IS_MAINNET ? '0x' : '0xcCcCCCCc00000864000000000000000000000000',
 
-  POOL_ROOT_XRP: IS_MAINNET ? '0x' : '0x7668298663e13a51146208f2c02d95c8ea3ae9c8',
+  POOL_ROOT_XRP: IS_MAINNET ? '0x' : '0x291af6e1b841cad6e3dcd66f2aa0790a007578ad',
 };
 
 export const SCANNER_URL = IS_MAINNET ? '' : 'https://explorer.rootnet.cloud/';
