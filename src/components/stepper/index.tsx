@@ -1,10 +1,9 @@
-import lottie from 'lottie-web/build/player/lottie_light';
-import { useEffect, useRef } from 'react';
-import tw, { styled } from 'twin.macro';
+import { keyframes } from '@emotion/react';
+import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconCheck } from '~/assets/icons';
-import LoadingLottie from '~/assets/lottie/loading-circle.json';
+import stepLoading from '~/assets/icons/icon-step-loading.png';
 
 interface StepperProps {
   totalSteps: number;
@@ -17,23 +16,6 @@ enum Progress {
   TODO = 2,
 }
 export const Stepper = ({ totalSteps, step, isLoading }: StepperProps) => {
-  const warpperRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!warpperRef.current || !isLoading) return;
-    lottie.loadAnimation({
-      container: warpperRef.current,
-      renderer: 'svg',
-      loop: true,
-      autoplay: true,
-      animationData: LoadingLottie,
-    });
-
-    return () => {
-      lottie.destroy();
-    };
-  }, [warpperRef, isLoading]);
-
   return (
     <Wrapper>
       {Array.from(Array(totalSteps)).map((_, i) => {
@@ -41,7 +23,7 @@ export const Stepper = ({ totalSteps, step, isLoading }: StepperProps) => {
           i + 1 === step ? Progress.CURRENT : i + 1 < step ? Progress.DONE : Progress.TODO;
         return (
           <Wrapper key={i}>
-            <Step progress={progress} key={i}>
+            <Step progress={progress} isLoading={isLoading} key={i}>
               {progress === Progress.DONE ? (
                 <IconWrapper>
                   <IconCheck width={24} height={24} fill={COLOR.GREEN[50]} />
@@ -49,7 +31,10 @@ export const Stepper = ({ totalSteps, step, isLoading }: StepperProps) => {
               ) : (
                 <>
                   {progress === Progress.CURRENT && isLoading ? (
-                    <LottieWrapper ref={warpperRef} />
+                    <IconAndText>
+                      <LoadingIcon src={stepLoading} width={32} height={32}></LoadingIcon>
+                      {(i + 1).toString()}
+                    </IconAndText>
                   ) : (
                     <>{(i + 1).toString()}</>
                   )}
@@ -64,18 +49,34 @@ export const Stepper = ({ totalSteps, step, isLoading }: StepperProps) => {
   );
 };
 
+const LoadingIcon = styled.img`
+  animation: ${() => css`
+    ${keyframes`
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  `} 2s linear infinite
+  `};
+  position: absolute;
+`;
+
 const Wrapper = tw.div`
   flex items-center flex-center
 `;
 
 interface StepProps {
   progress: number;
+  isLoading: boolean;
 }
-const Step = styled.div<StepProps>(({ progress }) => [
+const Step = styled.div<StepProps>(({ progress, isLoading }) => [
   tw`
     flex rounded-16 w-32 h-32 border-1 border-solid p-10 gap-10 border-primary-20 items-center justify-center font-m-16 text-neutral-80
   `,
   progress === Progress.CURRENT && tw`border-primary-50 text-primary-50`,
+  progress === Progress.CURRENT && isLoading && tw`border-none`,
   progress === Progress.DONE && tw`border-green-50`,
   progress === Progress.TODO && tw`border-primary-20 text-neutral-80`,
 ]);
@@ -88,6 +89,6 @@ const IconWrapper = tw.div`
   w-24 h-24 flex-center flex-shrink-0
 `;
 
-const LottieWrapper = tw.div`
-  flex w-full h-full flex-center
+const IconAndText = tw.div`
+  flex items-center justify-center relative
 `;
