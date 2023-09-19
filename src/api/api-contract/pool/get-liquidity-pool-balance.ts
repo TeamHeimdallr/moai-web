@@ -11,6 +11,7 @@ import { PoolBalance } from '~/types/contracts';
 import { Entries } from '~/types/helpers';
 import { formatNumber } from '~/utils/number';
 
+import { useGetSwapHistories } from '../swap/get-swap-histories';
 import { useTokenSymbol } from '../token/symbol';
 
 export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) => {
@@ -67,8 +68,16 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
       ?.reduce((acc, cur) => acc + cur.weight.toString() + cur.name + '-', '')
       ?.slice(0, -1) ?? '';
 
-  // TODO : fix here using get logs
-  const volume = 386;
+  const { data: swapHistories } = useGetSwapHistories({ poolAddress });
+
+  const volume = swapHistories?.reduce((acc, cur) => {
+    const value =
+      cur?.tokens?.reduce((tAcc, tCur) => {
+        const value = (tCur?.amount ?? 0) * (TOKEN_USD_MAPPER[tCur?.symbol] ?? 0);
+        return tAcc + value;
+      }, 0) ?? 0;
+    return acc + value;
+  }, 0);
   const apr = totalValue === 0 ? 0 : ((volume * 0.003 * 365) / totalValue) * 100;
 
   const poolInfo: PoolInfo = {
