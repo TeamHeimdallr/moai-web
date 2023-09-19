@@ -92,7 +92,7 @@ const SubTitle = styled.div<TextProps>(({ type }) => [
 ]);
 const TitleInnerWrapper = tw.div`flex gap-8`;
 const Description = styled.div<TextProps>(({ type }) => [
-  type === 'large' ? tw`font-r-16 leading-22` : tw`font-r-14`,
+  tw`font-r-14`,
   type === 'selectable' ? tw`text-neutral-90` : tw`text-neutral-60`,
 ]);
 

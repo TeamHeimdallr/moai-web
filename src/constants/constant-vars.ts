@@ -37,6 +37,16 @@ export const CHAIN_IMAGE_MAPPER: Record<number, string> = {
   [ROOT_CHAIN_ID]: ChainROOT,
 };
 
+export const TOKEN_DESCRIPTION_MAPPER: Record<string, string> = {
+  USDC: 'USD Coin',
+  USDT: 'Tether USDt',
+  WETH: 'WETH',
+  MOAI: 'MOAI Finance Token',
+  ROOT: 'The Root Network',
+  XRP: 'Ripple Ledger',
+  '80MOAI-20WETH': '80MOAI-20WETH',
+};
+
 export const GNB_MENU: GnbMenu[] = [
   {
     id: 'pool',
