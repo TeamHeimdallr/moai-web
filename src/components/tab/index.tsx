@@ -4,6 +4,7 @@ interface Props {
   tabs: {
     key: string;
     name: string;
+    disabled?: boolean;
   }[];
   gap?: number;
   type?: 'large' | 'medium';
@@ -14,16 +15,24 @@ interface Props {
 export const Tab = ({ tabs, gap = 24, type = 'medium', onClick, selectedTab }: Props) => {
   return (
     <Wrapper gap={gap}>
-      {tabs.map(tab => (
-        <Text
-          key={tab.key}
-          selected={tab.key === selectedTab}
-          onClick={() => onClick?.(tab.key)}
-          type={type}
-        >
-          {tab.name}
-        </Text>
-      ))}
+      {tabs.map(tab => {
+        const handleClick = () => {
+          if (tab.disabled) return;
+          onClick?.(tab.key);
+        };
+
+        return (
+          <Text
+            key={tab.key}
+            selected={tab.key === selectedTab}
+            disabled={tab.disabled}
+            onClick={handleClick}
+            type={type}
+          >
+            {tab.name}
+          </Text>
+        );
+      })}
     </Wrapper>
   );
 };
@@ -41,10 +50,12 @@ const Wrapper = styled.div<DivProps>(({ gap }) => [
 interface TextProps {
   selected?: boolean;
   type: string;
+  disabled?: boolean;
 }
 
-const Text = styled.div<TextProps>(({ selected, type }) => [
+const Text = styled.div<TextProps>(({ selected, type, disabled }) => [
   tw`clickable`,
   selected ? tw`text-primary-60` : tw`text-neutral-60 hover:text-primary-80`,
   type === 'large' ? tw`font-b-18` : tw`font-b-16`,
+  disabled && tw`text-neutral-60 non-clickable hover:text-neutral-60`,
 ]);

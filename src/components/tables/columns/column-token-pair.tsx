@@ -15,7 +15,7 @@ export const TableColumnTokenPair = ({ tokens, ...rest }: Props) => {
       {tokens.map(token => (
         <Token
           key={token.name}
-          title={token.balance.toString()}
+          title={`${Number(token.balance.toFixed(6))}`}
           token={token.name as TOKEN}
           image={true}
           type="small"

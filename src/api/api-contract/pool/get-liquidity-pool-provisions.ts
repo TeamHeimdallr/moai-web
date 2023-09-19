@@ -63,7 +63,7 @@ const getFormattedLiquidityPoolProvisions = async ({
   const { args, blockHash, txHash } = data;
   const { deltas, liquidityProvider, poolId, tokens: tokenAddresses } = args;
 
-  const type = deltas?.every(delta => delta > 0) ? 'deposit' : 'withdraw';
+  const type = deltas?.every(delta => delta >= 0) ? 'deposit' : 'withdraw';
 
   const tokenSymbolPromises = tokenAddresses?.map(address => getSymbol(client, address));
   const tokenSymbols = await Promise.all(tokenSymbolPromises ?? []);
@@ -72,7 +72,7 @@ const getFormattedLiquidityPoolProvisions = async ({
     tokenAddresses?.map((address, idx) => ({
       address,
       symbol: tokenSymbols?.[idx],
-      amount: Number(formatEther(deltas?.[idx] ?? 0n)),
+      amount: Math.abs(Number(formatEther(deltas?.[idx] ?? 0n))),
     })) ?? [];
 
   const blockInfo = await client.getBlock({ blockHash });

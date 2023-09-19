@@ -20,6 +20,7 @@ export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   MOAI: TokenMOAI,
   ROOT: TokenROOT,
   XRP: TokenXRPL,
+  '80MOAI-20WETH': TokenMOAI,
 };
 
 export const TOKEN_USD_MAPPER: Record<string, number> = {
@@ -34,6 +35,16 @@ export const TOKEN_USD_MAPPER: Record<string, number> = {
 export const CHAIN_IMAGE_MAPPER: Record<number, string> = {
   [XRPL_CHAIN_ID]: ChainXRPL,
   [ROOT_CHAIN_ID]: ChainROOT,
+};
+
+export const TOKEN_DESCRIPTION_MAPPER: Record<string, string> = {
+  USDC: 'USD Coin',
+  USDT: 'Tether USDt',
+  WETH: 'WETH',
+  MOAI: 'MOAI Finance Token',
+  ROOT: 'The Root Network',
+  XRP: 'Ripple Ledger',
+  '80MOAI-20WETH': '80MOAI-20WETH',
 };
 
 export const GNB_MENU: GnbMenu[] = [

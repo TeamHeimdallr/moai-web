@@ -14,30 +14,21 @@ import { CHAIN_ID, CONTRACT_ADDRESS } from '~/constants';
 
 interface Props {
   enabled?: boolean;
+
   poolId: Address;
-  request: {
-    tokens: Address[];
-    amountsIn: bigint[];
-  };
+  tokens: Address[];
+  amount: bigint;
 }
-export const useAddLiquidity = ({ enabled, poolId, request }: Props) => {
+export const useWithdrawLiquidity = ({ enabled, poolId, tokens, amount }: Props) => {
   const { isConnected, address: walletAddress } = useAccount();
+
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
   const publicClient = usePublicClient();
 
-  const sortedTokens = request.tokens.slice().sort((a, b) => a.localeCompare(b));
-  const sortedIndex = sortedTokens.map(token => request.tokens.findIndex(t => t === token));
-  const sortedAmountsIn = sortedIndex.map(index => request.amountsIn[index]);
-
-  const {
-    isLoading: prepareLoading,
-    status: prepareStatus,
-    fetchStatus: prepareFetchStatus,
-    config,
-  } = usePrepareContractWrite({
+  const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: CONTRACT_ADDRESS.VAULT,
     abi: VAULT_ABI,
-    functionName: 'joinPool',
+    functionName: 'exitPool',
     chainId: CHAIN_ID,
 
     account: walletAddress,
@@ -45,23 +36,16 @@ export const useAddLiquidity = ({ enabled, poolId, request }: Props) => {
       poolId,
       walletAddress,
       walletAddress,
-      [
-        sortedTokens,
-        sortedAmountsIn,
-        WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
-        false,
-      ],
+      [tokens, tokens.map(() => 0n), WeightedPoolEncoder.exitExactBPTInForTokensOut(amount), false],
     ],
-    enabled: enabled && isConnected,
+    enabled: enabled && isConnected && amount > 0,
   });
 
   const { data, writeAsync } = useContractWrite(config);
 
   const {
     isLoading,
-    status,
     isSuccess,
-    fetchStatus,
     data: txData,
   } = useWaitForTransaction({
     hash: data?.hash,
@@ -81,13 +65,7 @@ export const useAddLiquidity = ({ enabled, poolId, request }: Props) => {
   }, [txData]);
 
   return {
-    isLoading:
-      prepareLoading ||
-      prepareFetchStatus === 'fetching' ||
-      prepareStatus === 'loading' ||
-      isLoading ||
-      fetchStatus === 'fetching' ||
-      status === 'loading',
+    isLoading: prepareLoading || isLoading,
     isSuccess,
     txData,
     writeAsync,

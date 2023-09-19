@@ -43,7 +43,13 @@ export const PoolBalance = ({ compositions, pool }: Props) => {
             text="Add liquidity"
             onClick={() => navigate(`/pools/${id}/liquidity`)}
           />
-          {totalPoolBalance > 0 && <ButtonPrimaryLarge buttonType="outlined" text="Withdraw" />}
+          {totalPoolBalance > 0 && (
+            <ButtonPrimaryLarge
+              buttonType="outlined"
+              text="Withdraw"
+              onClick={() => navigate(`/pools/${id}/withdraw`)}
+            />
+          )}
         </ButtonWrapper>
       </Footer>
     </Wrapper>
