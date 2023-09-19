@@ -24,7 +24,7 @@ export const TOKEN_ADDRESS: Record<string, Address> = {
   [TOKEN.ASTO]: IS_MAINNET ? '0x' : '0xcCcCCccC00004464000000000000000000000000',
   [TOKEN.USDC]: IS_MAINNET ? '0x' : '0xcCcCCCCc00000864000000000000000000000000',
 
-  POOL_ROOT_XRP: IS_MAINNET ? '0x' : '0x291af6e1b841cad6e3dcd66f2aa0790a007578ad',
+  ROOT_XRP: IS_MAINNET ? '0x' : '0x291af6e1b841cad6e3dcd66f2aa0790a007578ad',
 };
 
 export const SCANNER_URL = IS_MAINNET ? '' : 'https://explorer.rootnet.cloud/';

@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
 import { CURRENT_CHAIN } from '~/constants';
-import { useTableMyLiquidity } from '~/hooks/components/tables/use-table-my-liquidity';
+import { useTableMyLiquidity } from '~/hooks/components/tables/use-table-my-liquidity-pool';
 import { MyLiquidityPoolTable } from '~/types/components';
 
 export const MyLiquidityLayout = () => {

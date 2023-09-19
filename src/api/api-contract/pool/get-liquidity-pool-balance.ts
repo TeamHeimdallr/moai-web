@@ -55,7 +55,7 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
     return {
       tokenAddress: tokenAddresses?.[idx] ?? '0x',
       name: symbols?.[idx] ?? '',
-      weight: Number(formatEther((weightData as Array<bigint>)[idx])) * 100,
+      weight: Number(formatEther((weightData as Array<bigint>)?.[idx] ?? 0)) * 100,
       balance: Number(formatEther(balance)),
       price: TOKEN_USD_MAPPER[symbols?.[idx]],
     };

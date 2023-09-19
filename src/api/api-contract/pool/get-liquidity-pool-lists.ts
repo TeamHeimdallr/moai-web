@@ -1,22 +1,49 @@
-import { CHAIN_ID } from '~/constants';
-import { CHAIN_ID as CHAIN_ID_LINEA } from '~/constants/constant-chain-linea';
-import { CHAIN_ID as CHAIN_ID_MANTLE } from '~/constants/constant-chain-mantle';
-import { CHAIN_ID as CHAIN_ID_ROOT } from '~/constants/constant-chain-root';
+import { CHAIN } from '~/constants';
+import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
+import { LiquidityPoolData } from '~/types/components';
 
-import { liquidityPoolLists, myLiquidityPoolLists } from './data/liquidity-pool-list';
+import { liquidityPoolIds } from './data/liquidity-pool-list';
+import { usePoolBalance } from './get-liquidity-pool-balance';
 
 export const useGetLiquidityPoolLists = () => {
-  if (CHAIN_ID === CHAIN_ID_MANTLE || CHAIN_ID === CHAIN_ID_LINEA)
-    return liquidityPoolLists.mantle_linea;
-  if (CHAIN_ID === CHAIN_ID_ROOT) return liquidityPoolLists.root;
+  const poolIds = liquidityPoolIds[CHAIN];
+  // TODO
+  const poolId = poolIds?.[0] ?? [];
 
-  return liquidityPoolLists.mantle_linea;
+  const { address } = useConnectWallet();
+  const { poolInfo, compositions, tokenTotalSupply, liquidityPoolTokenBalance } = usePoolBalance(
+    poolId.id,
+    address
+  );
+  const id = poolId.id;
+  const assets = compositions?.map(composition => composition.name) ?? [];
+  const composition =
+    compositions?.reduce((acc, cur) => {
+      const { weight } = cur;
+      acc[cur.name] = weight;
+
+      return acc;
+    }, {}) ?? {};
+  const poolValue = poolInfo?.valueRaw ?? 0;
+  const volume = poolInfo?.volumeRaw ?? 0;
+  const apr = poolInfo?.aprRaw ?? 0;
+
+  const liquidityTokenPrice = tokenTotalSupply ? poolValue / tokenTotalSupply : 0;
+  const balance = liquidityPoolTokenBalance * liquidityTokenPrice; // my balance
+
+  return [
+    {
+      id,
+      assets,
+      composition,
+      poolValue,
+      volume,
+      apr,
+      balance,
+    },
+  ] as LiquidityPoolData[];
 };
 
 export const useGetMyLiquidityPoolLists = () => {
-  if (CHAIN_ID === CHAIN_ID_MANTLE || CHAIN_ID === CHAIN_ID_LINEA)
-    return myLiquidityPoolLists.mantle_linea;
-  if (CHAIN_ID === CHAIN_ID_ROOT) return myLiquidityPoolLists.root;
-
-  return myLiquidityPoolLists.mantle_linea;
+  return [];
 };

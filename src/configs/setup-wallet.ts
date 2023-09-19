@@ -9,14 +9,16 @@ import { theRootNetwork } from './setup-network';
 export const chains = IS_MAINNET ? [mantle, linea] : [mantleTestnet, lineaTestnet, theRootNetwork];
 export const projectId = WALLETCONNECT_PROJECT_ID;
 
-const { publicClient } = configureChains([...chains], [w3mProvider({ projectId })], {
-  batch: { multicall: true },
-});
+const { publicClient, webSocketPublicClient } = configureChains(
+  [...chains],
+  [w3mProvider({ projectId })]
+);
 
 export const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: w3mConnectors({ projectId, chains }),
   publicClient,
+  webSocketPublicClient,
 });
 
 export const ethereumClient = new EthereumClient(wagmiConfig, chains);
