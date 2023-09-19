@@ -20,6 +20,7 @@ export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   MOAI: TokenMOAI,
   ROOT: TokenROOT,
   XRP: TokenXRPL,
+  '80MOAI-20WETH': TokenMOAI,
 };
 
 export const TOKEN_USD_MAPPER: Record<string, number> = {

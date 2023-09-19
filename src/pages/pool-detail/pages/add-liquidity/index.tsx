@@ -3,10 +3,10 @@ import tw, { css, styled } from 'twin.macro';
 import { Address, isAddress } from 'viem';
 
 import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
-import { COLOR } from '~/assets/colors';
 import { IconBack } from '~/assets/icons';
 import { BalanceInfo } from '~/components/balance-info';
 import { SwitchNetwork } from '~/components/banner/switch-network';
+import { ButtonIconLarge } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 import { CHAIN_ID } from '~/constants';
@@ -49,9 +49,7 @@ const PoolDetailAddLiquidityPage = () => {
         <InnerWrapper>
           <ContentWrapper>
             <Header>
-              <IconWrapper onClick={() => navigate(-1)}>
-                <IconBack fill={COLOR.NEUTRAL[60]} />
-              </IconWrapper>
+              <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
               <Title>Add liquidity</Title>
             </Header>
 
@@ -75,7 +73,7 @@ const GnbWrapper = tw.div`
   w-full h-80 flex-center
 `;
 
-const Header = tw.div`flex items-center gap-12 py-40 font-b-24 text-neutral-100`;
+const Header = tw.div`flex items-center gap-12 font-b-24 text-neutral-100`;
 
 const InnerWrapper = tw.div`
   flex flex-col gap-40 pt-40 pb-120
@@ -98,6 +96,5 @@ const Title = tw.div`
 const LiquidityWrapper = tw.div`
   flex gap-40 items-start
 `;
-const IconWrapper = tw.div`flex-center clickable`;
 
 export default PoolDetailAddLiquidityPage;

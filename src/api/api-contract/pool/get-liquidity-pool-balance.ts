@@ -85,10 +85,13 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
     tokenAddress: liquidityPoolTokenAddress ?? '',
     compositions,
     value: '$' + formatNumber(totalValue, 2),
-
-    volume: '$' + formatNumber(volume, 2),
+    valueRaw: totalValue,
+    volume: formatNumber(volume, 2),
+    volumeRaw: volume,
     apr: formatNumber(apr, 2) + '%',
+    aprRaw: apr,
     fees: '$' + formatNumber(volume * 0.003, 2),
+    feesRaw: volume * 0.003,
     name: liquidityPoolTokenName,
   };
 

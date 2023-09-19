@@ -18,7 +18,8 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   handleChange?: (value?: number) => void;
 
   token?: ReactNode;
-  tokenName?: TOKEN;
+  tokenName?: string;
+  tokenUSD?: number;
   handleTokenClick?: () => void;
 
   value?: number | string;
@@ -41,6 +42,7 @@ interface FormState {
 export const InputNumber = ({
   token,
   tokenName,
+  tokenUSD: defaultTokenUSD,
   balance,
   placeholder = '0',
   schema,
@@ -65,7 +67,8 @@ export const InputNumber = ({
   const numValue = Number(value) || 0;
   const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
-  const tokenUSD = (handledValue || 0) * TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI];
+  const tokenUSD =
+    defaultTokenUSD ?? (handledValue || 0) * TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI];
   // TODO: get balance from wallet
   const currentBalance = balance || 0;
 
@@ -120,7 +123,7 @@ export const InputNumber = ({
             <BalanceOuterWrapper>
               <BalanceWrapper>
                 <BalanceLabel>Balance</BalanceLabel>
-                <BalanceValue>{formatNumber(currentBalance ?? 0, 2)}</BalanceValue>
+                <BalanceValue>{formatNumber(currentBalance ?? 0, 2, 'floor')}</BalanceValue>
                 {maxButton && (
                   <ButtonPrimarySmall
                     text="Max"
@@ -128,7 +131,7 @@ export const InputNumber = ({
                     style={{ width: 'auto' }}
                   />
                 )}
-                <TokenUSDValue>${formatNumber(tokenUSD ?? 0, 2)}</TokenUSDValue>
+                <TokenUSDValue>${formatNumber(tokenUSD ?? 0, 2, 'floor')}</TokenUSDValue>
               </BalanceWrapper>
               {slider && (
                 <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>
@@ -140,7 +143,7 @@ export const InputNumber = ({
                     min={0}
                     max={currentBalance || 100}
                     value={handledValue || 0}
-                    step={0.01}
+                    step={0.00001}
                     onChange={onValueChange}
                     renderThumb={({ key, ...props }) => (
                       <div className={sliderActive ? 'thumb' : ''} key={key} {...props} />

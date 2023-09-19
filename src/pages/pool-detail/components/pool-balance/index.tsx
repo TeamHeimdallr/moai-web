@@ -28,6 +28,15 @@ export const PoolBalance = ({ compositions, pool }: Props) => {
     };
   });
 
+  // const { writeAsync } = useWithdrawLiquidity({
+  //   poolId: '0x7e6acf4545f676d250f856a8b10f67f6244c1912000200000000000000000001',
+  //   tokens: [
+  //     '0xaf5F3781678a0Bd4258cB4e9885b26E6629b7930',
+  //     '0xd1A5c7Dd009e578bf4aC8f9392D1fFdbC27B86BB',
+  //   ],
+  //   amount: parseEther('1'),
+  // });
+
   return (
     <Wrapper>
       <Header>
@@ -43,7 +52,13 @@ export const PoolBalance = ({ compositions, pool }: Props) => {
             text="Add liquidity"
             onClick={() => navigate(`/pools/${id}/liquidity`)}
           />
-          {totalPoolBalance > 0 && <ButtonPrimaryLarge buttonType="outlined" text="Withdraw" />}
+          {totalPoolBalance > 0 && (
+            <ButtonPrimaryLarge
+              buttonType="outlined"
+              text="Withdraw"
+              onClick={() => navigate(`/pools/${id}/withdraw`)}
+            />
+          )}
         </ButtonWrapper>
       </Footer>
     </Wrapper>
