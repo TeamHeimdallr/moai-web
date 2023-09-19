@@ -4,7 +4,9 @@ export const QUERY_KEYS = {
   },
   LIQUIIDITY_POOL: {
     GET_LISTS: ['get', 'liquidity-pool', 'pool-lists'],
-
     GET_PROVISIONS: ['get', 'liquidity-pool', 'pool-provisions'],
+  },
+  SWAP: {
+    GET_HISTORIES: ['get', 'swap', 'histories'],
   },
 };

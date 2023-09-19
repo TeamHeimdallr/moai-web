@@ -7,10 +7,11 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
   width?: number | 'full';
   align?: 'flex-start' | 'center' | 'flex-end';
+  isAddress?: boolean;
 }
-export const TableColumnIcon = ({ text, icon, width, align, ...rest }: Props) => {
+export const TableColumnIcon = ({ text, icon, width, align, isAddress, ...rest }: Props) => {
   return (
-    <Wrapper width={width} align={align} {...rest}>
+    <Wrapper width={width} align={align} isAddress={isAddress} {...rest}>
       <IconWrapper>{icon}</IconWrapper>
       <TextWrapper>{text}</TextWrapper>
     </Wrapper>
@@ -20,8 +21,9 @@ export const TableColumnIcon = ({ text, icon, width, align, ...rest }: Props) =>
 interface WrapperProps {
   width?: number | 'full';
   align?: 'flex-start' | 'center' | 'flex-end';
+  isAddress?: boolean;
 }
-const Wrapper = styled.div<WrapperProps>(({ width, align }) => [
+const Wrapper = styled.div<WrapperProps>(({ width, align, isAddress }) => [
   tw`flex items-center justify-start flex-shrink-0 gap-12 font-r-16 text-neutral-100`,
 
   width === 'full' && tw`flex-1 w-full`,
@@ -34,6 +36,7 @@ const Wrapper = styled.div<WrapperProps>(({ width, align }) => [
     css`
       justify-content: ${align};
     `,
+  isAddress && tw`address`,
 ]);
 
 const IconWrapper = tw.div`

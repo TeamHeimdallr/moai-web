@@ -1,78 +1,73 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { Address } from 'viem';
 
+import { useGetSwapHistories } from '~/api/api-contract/swap/get-swap-histories';
 import { TableHeader, TableHeaderSortable } from '~/components/tables';
 import { TableColumn } from '~/components/tables/columns';
 import { TableColumnIcon } from '~/components/tables/columns/column-icon';
 import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenSwap } from '~/components/tables/columns/column-token-swap';
-import { POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
+import { SCANNER_URL, TOKEN_USD_MAPPER } from '~/constants';
+import { useTableSwapHistoriesStore } from '~/states/components/table-swap-histories';
 import { SwapData, SwapTable } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 import { truncateAddress } from '~/utils/string';
+import { elapsedTime } from '~/utils/time';
 
-export const useTableSwap = (id: string) => {
-  // TODO: connect api
-  const poolAData: SwapData[] = [
-    {
-      id: 0,
-      trader: '0x64c3baab47c8f78dd78abc',
-      tradeDetail: [
-        { name: TOKEN.MOAI, balance: 84.0, value: 84.0 * TOKEN_USD_MAPPER[TOKEN.MOAI] },
-        { name: TOKEN.WETH, balance: 6.95, value: 6.95 * TOKEN_USD_MAPPER[TOKEN.WETH] },
-      ],
-      value: 11947.32,
-      time: '2 months',
-    },
-    {
-      id: 1,
-      trader: '0xb47c8f764c378abcbaa8dd',
-      tradeDetail: [
-        { name: TOKEN.MOAI, balance: 1.25, value: 1.25 * TOKEN_USD_MAPPER[TOKEN.MOAI] },
-        { name: TOKEN.WETH, balance: 0.1, value: 0.1 * TOKEN_USD_MAPPER[TOKEN.WETH] },
-      ],
-      value: 177.78,
-      time: '2 months',
-    },
-  ];
-  const poolBData: SwapData[] = [
-    {
-      id: 0,
-      trader: '0x64c3baab47c8f78dd78abc',
-      tradeDetail: [
-        { name: TOKEN.WETH, balance: 0.1, value: 0.1 * TOKEN_USD_MAPPER[TOKEN.WETH] },
-        { name: TOKEN.USDC, balance: 162.93, value: 162.93 * TOKEN_USD_MAPPER[TOKEN.USDC] },
-      ],
-      value: 162.93,
-      time: '2 months',
-    },
-    {
-      id: 1,
-      trader: '0xb47c8f764c378abcbaa8dd',
-      tradeDetail: [
-        { name: TOKEN.USDT, balance: 10, value: 10 * TOKEN_USD_MAPPER[TOKEN.USDT] },
-        { name: TOKEN.WETH, balance: 0.0061, value: 0.0061 * TOKEN_USD_MAPPER[TOKEN.WETH] },
-      ],
-      value: 10,
-      time: '2 months',
-    },
-  ];
-  const data = id === POOL_ID.POOL_A ? poolAData : poolBData;
+export const useTableSwap = (poolAddress: Address) => {
+  const { sorting, setSorting } = useTableSwapHistoriesStore();
+  const { data } = useGetSwapHistories({ poolAddress });
 
-  const tableData: SwapTable[] = data?.map(d => ({
-    id: d.id,
+  const swapData = data?.map(d => {
+    const poolId = d?.poolId ?? '0x';
+    const tradeDetail =
+      d?.tokens?.map(t => ({
+        name: t?.symbol,
+        balance: t?.amount ?? 0,
+        value: (t?.amount ?? 0) * (TOKEN_USD_MAPPER[t?.symbol] ?? 0),
+      })) ?? [];
+    const value = tradeDetail?.reduce((acc, cur) => acc + cur.value, 0) ?? 0;
+    const time = d?.time ?? Date.now();
+    const trader = d?.trader ?? '0x';
+    const txHash = d?.txHash ?? '0x';
+
+    return {
+      poolId,
+      trader,
+      tradeDetail,
+      value,
+      time,
+      txHash,
+    } as SwapData;
+  });
+
+  const sortedData = swapData?.sort((a, b) => {
+    if (sorting?.key === 'TIME') return sorting.order === 'asc' ? a.time - b.time : b.time - a.time;
+    return 0;
+  });
+
+  const tableData: SwapTable[] = sortedData?.map(d => ({
+    poolId: d.poolId,
     trader: (
       <TableColumnIcon
         width={160}
-        text={truncateAddress(d.trader as `0x${string}`, 4)}
+        text={truncateAddress(d.trader, 4)}
         icon={<Jazzicon diameter={24} seed={jsNumberForAddress(d.trader ?? '0x')} />}
+        isAddress
       />
     ),
     tradeDetail: <TableColumnTokenSwap tokens={d.tradeDetail} />,
     value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
-    time: <TableColumnLink token={`${d.time} ago`} align="flex-end" width={160} />,
+    time: (
+      <TableColumnLink
+        token={`${elapsedTime(d.time)}`}
+        align="flex-end"
+        width={160}
+        link={`${SCANNER_URL}/tx/${d.txHash}`}
+      />
+    ),
   }));
 
   const columns: ColumnDef<SwapTable, ReactNode>[] = [
@@ -97,7 +92,12 @@ export const useTableSwap = (id: string) => {
     },
     {
       header: () => (
-        <TableHeaderSortable sortKey="TIME" label="Time" sorting={{ key: 'TIME', order: 'desc' }} />
+        <TableHeaderSortable
+          sortKey="TIME"
+          label="Time"
+          sorting={sorting}
+          setSorting={setSorting}
+        />
       ),
       cell: row => row.renderValue(),
       accessorKey: 'time',

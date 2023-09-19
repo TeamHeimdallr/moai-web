@@ -81,14 +81,16 @@ export interface LiquidityProvisionTable {
 }
 
 export interface SwapData {
-  id: number;
-  trader: string;
+  poolId: string;
+  trader: Address;
   tradeDetail: TokenInfo[];
   value: number;
-  time: string;
+  time: number;
+  txHash: Address;
 }
+
 export interface SwapTable {
-  id: number;
+  poolId: string;
   trader: ReactNode;
   tradeDetail: ReactNode;
   value: ReactNode;
