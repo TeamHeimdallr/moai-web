@@ -12,7 +12,6 @@ import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/component
 import { useTableLiquidityPoolStore } from '~/states/components/table-liquidity-pool';
 import { LiquidityPoolTable } from '~/types/components';
 import { formatNumber } from '~/utils/number';
-import { sumPoolValues } from '~/utils/token';
 
 export const useTableLiquidityPool = () => {
   const { sorting, setSorting } = useTableLiquidityPoolStore();
@@ -20,9 +19,7 @@ export const useTableLiquidityPool = () => {
 
   const sortedData = data?.sort((a, b) => {
     if (sorting?.key === 'POOL_VALUE')
-      return sorting.order === 'asc'
-        ? sumPoolValues(a.pool) - sumPoolValues(b.pool)
-        : sumPoolValues(b.pool) - sumPoolValues(a.pool);
+      return sorting.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;
     if (sorting?.key === 'VOLUME')
       return sorting.order === 'asc' ? a.volume - b.volume : b.volume - a.volume;
     return 0;
@@ -35,11 +32,7 @@ export const useTableLiquidityPool = () => {
         assets: <TableColumnTokenIcon tokens={d.assets} />,
         composition: <TableColumnToken tokens={d.composition} isNew={d.isNew} />,
         poolValue: (
-          <TableColumn
-            value={`$${formatNumber(sumPoolValues(d.pool), 2)}`}
-            width={160}
-            align="flex-end"
-          />
+          <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} width={160} align="flex-end" />
         ),
         volume: (
           <TableColumn value={`$${formatNumber(d.volume, 2)}`} width={160} align="flex-end" />

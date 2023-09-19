@@ -17,14 +17,16 @@ export const getSymbol = async (client: PublicClient, address: Address) => {
   return symbol as string;
 };
 
-export const useTokenSymbol = (addresses: Address[]) => {
+export const useTokenSymbol = (addresses: Address[], enabled?: boolean) => {
   const client = usePublicClient();
 
   const getSymbolQuries = addresses.map(address => ({
     queryKey: [...QUERY_KEYS.TOKEN.GET_SYMBOLS, address],
     queryFn: () => getSymbol(client, address),
     staleTime: Infinity,
+    enabled,
   }));
+
   const quries = useQueries({ queries: getSymbolQuries });
 
   return {

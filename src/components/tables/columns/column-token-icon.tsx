@@ -14,7 +14,7 @@ export const TableColumnTokenIcon = ({ tokens, width, ...rest }: Props) => {
     <Wrapper width={width} {...rest}>
       {tokens.map((token, idx) => (
         <Asset
-          key={token}
+          key={token + idx}
           title={token as string}
           src={TOKEN_IMAGE_MAPPER[token]}
           idx={idx}
@@ -42,7 +42,7 @@ interface AssetProps {
   total: number;
 }
 const Asset = styled.img<AssetProps>(({ idx, total }) => [
-  tw`absolute flex w-24 h-24 border-solid rounded-full border-1 border-neutral-0 top-4`,
+  tw`absolute flex w-24 h-24 border-solid rounded-full border-1 border-neutral-0 top-4 bg-neutral-0`,
   css`
     z-index: ${total - idx};
     left: ${idx * 20}px;

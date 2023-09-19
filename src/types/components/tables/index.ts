@@ -5,18 +5,25 @@ import { TOKEN } from '~/types/contracts';
 
 import { TokenInfo } from '..';
 
-export interface LiquidityPoolData {
-  id: string;
+export interface LiquidityPoolIds {
+  id: Address;
   assets: TOKEN[];
   composition: Record<TOKEN, number>;
-  pool: Record<TOKEN, number>;
+  isNew: boolean;
+}
+export interface LiquidityPoolData {
+  id: Address;
+  assets: TOKEN[];
+  composition: Record<TOKEN, number>;
+  poolValue: number; // total value
   volume: number;
   apr: number;
+  balance: number;
   isNew: boolean;
 }
 
 export interface LiquidityPoolTable {
-  id: string;
+  id: Address;
   assets: ReactNode;
   composition: ReactNode;
   poolValue: ReactNode;
@@ -25,7 +32,7 @@ export interface LiquidityPoolTable {
 }
 
 export interface MyLiquidityPoolData {
-  id: string;
+  id: Address;
   assets: TOKEN[];
   composition: Record<TOKEN, number>;
   pool: Record<TOKEN, number>;
@@ -34,7 +41,7 @@ export interface MyLiquidityPoolData {
   isNew: boolean;
 }
 export interface MyLiquidityPoolTable {
-  id: string;
+  id: Address;
   assets: ReactNode;
   composition: ReactNode;
   balance: ReactNode;

@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode, useMemo } from 'react';
 
-import { useGetMyLiquidityPoolLists } from '~/api/api-contract/pool/get-liquidity-pool-lists';
+import { useGetLiquidityPoolLists } from '~/api/api-contract/pool/get-liquidity-pool-lists';
 import {
   TableHeaderAssets,
   TableHeaderComposition,
@@ -12,20 +12,16 @@ import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/component
 import { useTableMyLiquidityStore } from '~/states/components/table-my-liquidity';
 import { MyLiquidityPoolTable } from '~/types/components';
 import { formatNumber } from '~/utils/number';
-import { sumPoolValues } from '~/utils/token';
 
 export const useTableMyLiquidity = () => {
   const { sorting, setSorting } = useTableMyLiquidityStore();
-
-  const data = useGetMyLiquidityPoolLists();
+  const data = useGetLiquidityPoolLists();
 
   const sortedData = data?.sort((a, b) => {
     if (sorting?.key === 'POOL_VALUE')
-      return sorting.order === 'asc'
-        ? sumPoolValues(a.pool) - sumPoolValues(b.pool)
-        : sumPoolValues(b.pool) - sumPoolValues(a.pool);
+      return sorting.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;
     if (sorting?.key === 'VOLUME')
-      return sorting.order === 'asc' ? a.balance - b.balance : b.balance - a.balance;
+      return sorting.order === 'asc' ? a.volume - b.volume : b.volume - a.volume;
     return 0;
   });
 
@@ -39,11 +35,7 @@ export const useTableMyLiquidity = () => {
           <TableColumn value={`$${formatNumber(d.balance, 2)}`} width={160} align="flex-end" />
         ),
         poolValue: (
-          <TableColumn
-            value={`$${formatNumber(sumPoolValues(d.pool), 2)}`}
-            width={160}
-            align="flex-end"
-          />
+          <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} width={160} align="flex-end" />
         ),
         apr: <TableColumn value={`${d.apr}%`} width={160} align="flex-end" />,
       })),

@@ -32,7 +32,7 @@ export const useTokenBalances = (
   token?: Address,
   decimals?: number
 ): Balance => {
-  const enabled = isAddress(address ?? '0x') && isAddress(token ?? '0x');
+  const enabled = !!address && !!token && isAddress(address ?? '0x') && isAddress(token ?? '0x');
 
   const { data } = useBalance({
     address: address ?? '0x',
