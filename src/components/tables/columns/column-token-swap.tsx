@@ -17,7 +17,7 @@ export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
     <Wrapper {...rest}>
       <Token
         key={tokenA.name}
-        title={tokenA.balance.toFixed(6)}
+        title={`${Number(tokenA.balance.toFixed(6))}`}
         token={tokenA.name as TOKEN}
         image={true}
         type="small"
@@ -27,7 +27,7 @@ export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
       </IconWrapper>
       <Token
         key={tokenB.name}
-        title={tokenB.balance.toFixed(6)}
+        title={`${Number(tokenB.balance.toFixed(6))}`}
         token={tokenB.name as TOKEN}
         image={true}
         type="small"

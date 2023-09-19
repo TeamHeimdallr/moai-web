@@ -72,7 +72,7 @@ const getFormattedLiquidityPoolProvisions = async ({
     tokenAddresses?.map((address, idx) => ({
       address,
       symbol: tokenSymbols?.[idx],
-      amount: Number(formatEther(deltas?.[idx] ?? 0n)),
+      amount: Math.abs(Number(formatEther(deltas?.[idx] ?? 0n))),
     })) ?? [];
 
   const blockInfo = await client.getBlock({ blockHash });

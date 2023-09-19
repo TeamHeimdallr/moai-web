@@ -9,15 +9,14 @@ import { InputNumber } from '~/components/inputs/number';
 import { Tab } from '~/components/tab';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
-import { TOKEN_DESCRIPTION_MAPPER, TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
+import { TOKEN_DESCRIPTION_MAPPER, TOKEN_IMAGE_MAPPER } from '~/constants';
 import { useOnClickOutside } from '~/hooks/pages/use-onclick-outside';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { useWithdrawLiquidityInputTabStore } from '~/states/components/withdraw-liquidity-input-tab';
 import { Composition, HOOK_FORM_KEY, PoolInfo, POPUP_ID } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
 
-import { AddLiquidityPopup } from '../../components/popup/popup-add-liquidity';
+import { WithdrawLiquidityPopup } from '../../components/popup/popup-withdraw-liquidity';
 
 interface Props {
   poolInfo: PoolInfo;
@@ -50,9 +49,6 @@ export const WithdrawLiquidityInput = ({
 
   useOnClickOutside([ref, iconRef], () => settingOpen(false));
 
-  const handleMax = () => {
-    // TODO
-  };
   const schema = yup.object({
     [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
       .number()
@@ -86,6 +82,7 @@ export const WithdrawLiquidityInput = ({
             balance={liquidityPoolTokenBalance}
             value={withdrawAmount}
             handleChange={val => setWithdrawAmount(val)}
+            maxButton
             slider
             sliderActive
           />
@@ -114,7 +111,16 @@ export const WithdrawLiquidityInput = ({
         </PriceImpaceWrapper>
       </InnerWrapper>
       <ButtonPrimaryLarge text="Preview" onClick={popupOpen} />
-      {/* {popupOpened && ()} */}
+      {popupOpened && (
+        <WithdrawLiquidityPopup
+          poolInfo={poolInfo}
+          compositions={compositions}
+          withdrawAmount={withdrawAmount ?? 0}
+          liquidityPoolTokenBalance={liquidityPoolTokenBalance}
+          tokenUSD={tokenUSD}
+          priceImpact={priceImpact}
+        />
+      )}
     </Wrapper>
   );
 };
