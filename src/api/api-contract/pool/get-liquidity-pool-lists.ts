@@ -6,15 +6,19 @@ import { liquidityPoolIds } from './data/liquidity-pool-list';
 import { usePoolBalance } from './get-liquidity-pool-balance';
 
 export const useGetLiquidityPoolLists = () => {
+  const { address } = useConnectWallet();
+
   const poolIds = liquidityPoolIds[CHAIN];
   // TODO
   const poolId = poolIds?.[0] ?? [];
 
-  const { address } = useConnectWallet();
   const { poolInfo, compositions, tokenTotalSupply, liquidityPoolTokenBalance } = usePoolBalance(
     poolId.id,
     address
   );
+
+  if (!poolId || !compositions) return [];
+
   const id = poolId.id;
   const assets = compositions?.map(composition => composition.name) ?? [];
   const composition =

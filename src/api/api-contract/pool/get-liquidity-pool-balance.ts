@@ -4,7 +4,7 @@ import { useContractRead } from 'wagmi';
 import { LIQUIDITY_POOL_ABI } from '~/abi/liquidity-pool';
 import { TOKEN_ABI } from '~/abi/token';
 import { VAULT_ABI } from '~/abi/vault';
-import { CONTRACT_ADDRESS, POOL_ID, TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
+import { CHAIN, CONTRACT_ADDRESS, POOL_ID, TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
 import { useTokenBalances } from '~/hooks/data/use-balance';
 import { Composition, PoolInfo } from '~/types/components';
 import { PoolBalance } from '~/types/contracts';
@@ -15,12 +15,16 @@ import { useGetSwapHistories } from '../swap/get-swap-histories';
 import { useTokenSymbol } from '../token/symbol';
 
 export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) => {
+  // disable fetching when chain is root, wallet is not connected,
+  // because root network cannot read contract without connect wallet
+  const disableRead = !walletAddress && CHAIN === 'root';
+
   const { data: poolTokensData } = useContractRead({
     address: CONTRACT_ADDRESS.VAULT,
     abi: VAULT_ABI,
     functionName: 'getPoolTokens',
     args: [poolAddress],
-    enabled: !!poolAddress,
+    enabled: !!poolAddress && !disableRead,
   });
 
   const poolName = (Object.entries(POOL_ID) as Entries<typeof POOL_ID>).find(
@@ -32,11 +36,11 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
     address: liquidityPoolTokenAddress,
     abi: LIQUIDITY_POOL_ABI,
     functionName: 'getNormalizedWeights',
-    enabled: !!liquidityPoolTokenAddress,
+    enabled: !!liquidityPoolTokenAddress && !disableRead,
     staleTime: Infinity,
   });
 
-  const { data: tokenTotalSupplyData } = usePoolTotalLpTokens(poolAddress);
+  const { data: tokenTotalSupplyData } = usePoolTotalLpTokens(poolAddress, !disableRead);
   const { rawValue: liquidityPoolTokenBalanceData } = useTokenBalances(
     walletAddress,
     liquidityPoolTokenAddress
@@ -49,7 +53,7 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
 
   const tokenAddresses = (poolTokensData as PoolBalance)?.[0];
   const balances = (poolTokensData as PoolBalance)?.[1];
-  const { data: symbols } = useTokenSymbol(tokenAddresses ?? []);
+  const { data: symbols } = useTokenSymbol(tokenAddresses ?? [], !disableRead);
 
   const compositions: Composition[] | undefined = balances?.map((balance, idx) => {
     return {
@@ -68,7 +72,10 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
       ?.reduce((acc, cur) => acc + cur.weight.toString() + cur.name + '-', '')
       ?.slice(0, -1) ?? '';
 
-  const { data: swapHistories } = useGetSwapHistories({ poolAddress });
+  const { data: swapHistories } = useGetSwapHistories({
+    poolAddress,
+    options: { enabled: !disableRead },
+  });
 
   const volume = swapHistories?.reduce((acc, cur) => {
     const value =
@@ -103,7 +110,7 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
   };
 };
 
-export const usePoolTotalLpTokens = (poolAddress?: Address) => {
+export const usePoolTotalLpTokens = (poolAddress?: Address, enabled?: boolean) => {
   const poolName = (Object.entries(POOL_ID) as Entries<typeof POOL_ID>).find(
     ([_key, value]) => value === poolAddress
   )?.[0];
@@ -113,7 +120,7 @@ export const usePoolTotalLpTokens = (poolAddress?: Address) => {
     address: liquidityPoolTokenAddress,
     abi: TOKEN_ABI,
     functionName: 'totalSupply',
-    enabled: !!poolAddress && !!liquidityPoolTokenAddress,
+    enabled: enabled && !!poolAddress && !!liquidityPoolTokenAddress,
   });
 
   return {
