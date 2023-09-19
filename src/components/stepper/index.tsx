@@ -40,8 +40,8 @@ export const Stepper = ({ totalSteps, step, isLoading }: StepperProps) => {
         const progress =
           i + 1 === step ? Progress.CURRENT : i + 1 < step ? Progress.DONE : Progress.TODO;
         return (
-          <>
-            <Step progress={progress} isLoading={isLoading} key={i}>
+          <Wrapper key={i}>
+            <Step progress={progress} key={i}>
               {progress === Progress.DONE ? (
                 <IconWrapper>
                   <IconCheck width={24} height={24} fill={COLOR.GREEN[50]} />
@@ -57,7 +57,7 @@ export const Stepper = ({ totalSteps, step, isLoading }: StepperProps) => {
               )}
             </Step>
             {i !== totalSteps - 1 && <Divider key={`divider-${i}`} />}
-          </>
+          </Wrapper>
         );
       })}
     </Wrapper>
@@ -65,7 +65,7 @@ export const Stepper = ({ totalSteps, step, isLoading }: StepperProps) => {
 };
 
 const Wrapper = tw.div`
-  flex items-center
+  flex items-center flex-center
 `;
 
 interface StepProps {
