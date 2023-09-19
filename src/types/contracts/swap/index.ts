@@ -1,3 +1,5 @@
+import { Address } from 'viem';
+
 export interface SwapFundManagement {
   sender: string; // 지갑주소
   fromInternalBalance: boolean; // false
@@ -33,3 +35,17 @@ export type SwapSingleSwapInput = [
   bigint, // 18
   string, // 0x 하드코딩
 ];
+
+export interface getSwapHistoriesTokens {
+  address: Address;
+  symbol: string;
+  amount: number;
+}
+
+export interface GetSwapHistories {
+  poolId: Address;
+  trader: Address;
+  tokens: getSwapHistoriesTokens[];
+  time: number;
+  txHash: Address;
+}

@@ -11,11 +11,13 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
   const [tokenA, tokenB] = tokens;
+
+  if (!tokenA || !tokenB) return <></>;
   return (
     <Wrapper {...rest}>
       <Token
         key={tokenA.name}
-        title={tokenA.balance.toString()}
+        title={tokenA.balance.toFixed(6)}
         token={tokenA.name as TOKEN}
         image={true}
         type="small"
@@ -25,7 +27,7 @@ export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
       </IconWrapper>
       <Token
         key={tokenB.name}
-        title={tokenB.balance.toString()}
+        title={tokenB.balance.toFixed(6)}
         token={tokenB.name as TOKEN}
         image={true}
         type="small"

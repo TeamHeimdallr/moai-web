@@ -1,11 +1,13 @@
 import { useQueries } from '@tanstack/react-query';
-import { Address, PublicClient } from 'viem';
+import { Address, isAddress, PublicClient } from 'viem';
 import { usePublicClient } from 'wagmi';
 
 import { TOKEN_ABI } from '~/abi/token';
 import { QUERY_KEYS } from '~/api/utils/query-keys';
 
 export const getSymbol = async (client: PublicClient, address: Address) => {
+  if (!isAddress(address) || address === '0x') return '';
+
   const symbol = await client.readContract({
     address,
     abi: TOKEN_ABI,
