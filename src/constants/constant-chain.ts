@@ -1,4 +1,5 @@
 import { CHAIN } from '.';
+import { CHAIN_EVM_SIDECHAIN } from './constant-chain-evm-sidechain';
 import { CHAIN_LINEA } from './constant-chain-linea';
 import { CHAIN_MANTLE } from './constant-chain-mantle';
 import { CHAIN_ROOT } from './constant-chain-root';
@@ -9,6 +10,7 @@ const integrated = {
   mantle: CHAIN_MANTLE,
   root: CHAIN_ROOT,
   xrpl: CHAIN_XRPL,
+  evmSidechain: CHAIN_EVM_SIDECHAIN,
 };
 
 const selected = integrated?.[CHAIN as keyof typeof integrated] ?? integrated.xrpl;
