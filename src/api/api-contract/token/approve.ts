@@ -33,7 +33,7 @@ export const useTokenApprove = ({
 
   const { isConnected, address: walletAddress } = useAccount();
 
-  useContractRead({
+  const { refetch } = useContractRead({
     address: tokenAddress,
     abi: TOKEN_ABI,
     functionName: 'allowance',
@@ -42,7 +42,7 @@ export const useTokenApprove = ({
 
     onSuccess: (data: string) => {
       return setAllowance(
-        BigInt(data || 0) > parseUnits((allowanceMin || 0)?.toString(), decimals)
+        BigInt(data || 0) >= parseUnits((allowanceMin || 0)?.toString(), decimals)
       );
     },
     onError: () => setAllowance(false),
@@ -70,6 +70,7 @@ export const useTokenApprove = ({
     allowance: isConnected && allowance,
     isLoading,
     isSuccess,
+    refetch,
 
     allow: writeAsync,
   };

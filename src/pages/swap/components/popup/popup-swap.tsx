@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
 import { parseUnits } from 'viem';
 
@@ -47,6 +47,8 @@ export const PopupSwap = () => {
     allow: allowToken,
     allowance: allowance,
     isLoading: allowLoading,
+    isSuccess: allowSuccess,
+    refetch: refetchAllowance,
   } = useTokenApprove({
     enabled: !!fromToken,
     amount: Number(fromValue ?? 0),
@@ -67,6 +69,12 @@ export const PopupSwap = () => {
     fundManagement: [address ?? '0x', false, address ?? '0x', false],
     enabled: allowance,
   });
+
+  useEffect(() => {
+    if (allowSuccess) {
+      refetchAllowance();
+    }
+  }, [allowSuccess, refetchAllowance]);
 
   // const timestamp = txData
   const handleLink = () => {

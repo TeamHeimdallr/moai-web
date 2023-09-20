@@ -9,18 +9,24 @@ interface StepperProps {
   totalSteps: number;
   step: number;
   isLoading: boolean;
+  isDone?: boolean;
 }
 enum Progress {
   CURRENT = 0,
   DONE = 1,
   TODO = 2,
 }
-export const Stepper = ({ totalSteps, step, isLoading }: StepperProps) => {
+export const Stepper = ({ totalSteps, step, isLoading, isDone = false }: StepperProps) => {
   return (
     <Wrapper>
       {Array.from(Array(totalSteps)).map((_, i) => {
-        const progress =
-          i + 1 === step ? Progress.CURRENT : i + 1 < step ? Progress.DONE : Progress.TODO;
+        const progress = isDone
+          ? Progress.DONE
+          : i + 1 === step
+          ? Progress.CURRENT
+          : i + 1 < step
+          ? Progress.DONE
+          : Progress.TODO;
         return (
           <Wrapper key={i}>
             <Step progress={progress} isLoading={isLoading} key={i}>
