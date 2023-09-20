@@ -1,15 +1,22 @@
+import { formatUnits } from 'viem';
 import * as yup from 'yup';
 
-import { CHAIN, POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
+import { usePoolTokens } from '~/api/api-contract/pool/get-liquidity-pool-balance';
+import { CHAIN, POOL_ID, TOKEN_ADDRESS } from '~/constants';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';
-import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { HOOK_FORM_KEY } from '~/types/components';
 
 import { useSwapStore } from '../states/swap';
 
 export const useSwapData = () => {
+  const isRoot = CHAIN === 'root';
+  const decimals = isRoot ? 6 : 18;
+
   const { balancesMap } = useBalancesAll();
-  const rootPrice = useGetRootPrice();
+
+  const poolId = CHAIN === 'root' ? POOL_ID.ROOT_XRP : POOL_ID.POOL_A;
+
+  const { data: poolReserve } = usePoolTokens(poolId, true);
 
   const {
     fromToken,
@@ -23,6 +30,16 @@ export const useSwapData = () => {
     resetAll,
   } = useSwapStore();
 
+  // TODO: 3 pool case
+  const fromReserve =
+    poolReserve?.[0]?.[0] === TOKEN_ADDRESS[fromToken]
+      ? Number(formatUnits(poolReserve?.[1]?.[0], decimals))
+      : Number(formatUnits(poolReserve?.[1]?.[1], decimals));
+  const toReserve =
+    poolReserve?.[0]?.[0] === TOKEN_ADDRESS[toToken]
+      ? Number(formatUnits(poolReserve?.[1]?.[0], decimals))
+      : Number(formatUnits(poolReserve?.[1]?.[1], decimals));
+
   const fromTokenBalance = balancesMap?.[fromToken]?.value ?? 0;
   const toTokenBalance = balancesMap?.[toToken]?.value ?? 0;
 
@@ -33,21 +50,19 @@ export const useSwapData = () => {
       .max(fromTokenBalance, 'Exceeds wallet balance'),
   });
 
-  const swapRatio =
-    fromToken && toToken
-      ? (fromToken == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[fromToken]) /
-        (toToken == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[toToken])
-      : 0;
+  const fee = 0.003;
+  const toValue = fromValue
+    ? toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee)))
+    : undefined;
 
-  const toValue = fromValue ? Number((Number(fromValue) * swapRatio).toFixed(6)) : undefined;
+  const swapRatio = (toValue ?? 0) / Number(fromValue);
+
   const validToSwap =
     fromValue &&
     Number(fromValue) > 0 &&
     Number(fromValue) <= fromTokenBalance &&
     toValue &&
     toValue > 0;
-
-  const poolId = CHAIN === 'root' ? POOL_ID.ROOT_XRP : POOL_ID.POOL_A;
 
   return {
     fromToken,
