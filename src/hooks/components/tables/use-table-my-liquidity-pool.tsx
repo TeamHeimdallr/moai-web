@@ -17,6 +17,8 @@ export const useTableMyLiquidity = () => {
   const { sorting, setSorting } = useTableMyLiquidityStore();
   const data = useGetLiquidityPoolLists();
 
+  const empty = data.every(d => d.balance === 0);
+
   const sortedData = data?.sort((a, b) => {
     if (sorting?.key === 'POOL_VALUE')
       return sorting.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;
@@ -95,5 +97,6 @@ export const useTableMyLiquidity = () => {
   return {
     columns,
     data: tableData,
+    empty,
   };
 };

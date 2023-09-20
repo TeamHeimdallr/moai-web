@@ -4,16 +4,19 @@ import tw from 'twin.macro';
 import { Table } from '~/components/tables';
 import { CURRENT_CHAIN } from '~/constants';
 import { useTableMyLiquidity } from '~/hooks/components/tables/use-table-my-liquidity-pool';
+import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { MyLiquidityPoolTable } from '~/types/components';
 
 export const MyLiquidityLayout = () => {
-  const { data, columns } = useTableMyLiquidity();
+  const { address } = useConnectWallet();
+  const { data, columns, empty } = useTableMyLiquidity();
   const navigate = useNavigate();
 
   const handleRowClick = (id?: string) => {
     navigate(`/pools/${id}`);
   };
 
+  if (!address || empty) return <></>;
   return (
     <Wrapper>
       <TitleWrapper>

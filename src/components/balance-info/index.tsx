@@ -19,7 +19,7 @@ export const BalanceInfo = ({ tokens }: Props) => {
       image: TOKEN_IMAGE_MAPPER[token.name],
     };
   });
-  const totalBalance = tokens.reduce((acc, cur) => acc + cur.value, 0);
+  const totalBalance = tokens?.reduce((acc, cur) => acc + cur.value, 0) ?? 0;
   return (
     <Wrapper>
       <Banner>
@@ -28,7 +28,7 @@ export const BalanceInfo = ({ tokens }: Props) => {
       </Banner>
       <Divider />
       <TokenLists>
-        {tokenInfos?.map(token => <TokenList key={token.title} {...token} />)}
+        {tokenInfos?.map((token, i) => <TokenList key={token.title + i} {...token} />)}
       </TokenLists>
     </Wrapper>
   );

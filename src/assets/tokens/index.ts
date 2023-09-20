@@ -1,11 +1,11 @@
 import tokenMOAI from '~/assets/images/token-moai.png';
-import tokenUSDC from '~/assets/images/token-usdc.png';
-import tokenUSDT from '~/assets/images/token-usdt.png';
 import tokenWETH from '~/assets/images/token-weth.png';
-import { CHAIN_ID, TOKEN_ADDRESS } from '~/constants';
+import { CHAIN, CHAIN_ID, TOKEN_ADDRESS } from '~/constants';
 import { TokenInfo } from '~/types/contracts';
 
-export const tokenInfos: TokenInfo[] = [
+import { TokenROOT, TokenXRPL } from '../images';
+
+const tokenInfosMantleLinea: TokenInfo[] = [
   {
     chainId: CHAIN_ID,
     address: TOKEN_ADDRESS.MOAI,
@@ -22,21 +22,24 @@ export const tokenInfos: TokenInfo[] = [
     decimals: 18,
     logoURI: tokenWETH,
   },
+];
+const tokenInfosRoot: TokenInfo[] = [
   {
     chainId: CHAIN_ID,
-    address: TOKEN_ADDRESS.USDC,
-    name: 'USD Coin (PoS)',
-    symbol: 'USDC',
+    address: TOKEN_ADDRESS.ROOT,
+    name: 'ROOT',
+    symbol: 'ROOT',
     decimals: 6,
-    logoURI: tokenUSDC,
+    logoURI: TokenROOT,
   },
-
   {
     chainId: CHAIN_ID,
-    address: TOKEN_ADDRESS.USDT,
-    name: '(PoS) Tether USD',
-    symbol: 'USDT',
+    address: TOKEN_ADDRESS.XRP,
+    name: 'XRP',
+    symbol: 'XRP',
     decimals: 6,
-    logoURI: tokenUSDT,
+    logoURI: TokenXRPL,
   },
 ];
+
+export const tokenInfos = CHAIN === 'root' ? tokenInfosRoot : tokenInfosMantleLinea;
