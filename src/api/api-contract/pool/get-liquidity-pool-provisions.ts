@@ -1,9 +1,9 @@
 import { useQueries, useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { Address, formatEther, PublicClient } from 'viem';
+import { Address, formatUnits, PublicClient } from 'viem';
 import { usePublicClient } from 'wagmi';
 
 import { QUERY_KEYS } from '~/api/utils/query-keys';
-import { CONTRACT_ADDRESS } from '~/constants';
+import { CHAIN, CONTRACT_ADDRESS } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { GetLiquidityPoolProvisions } from '~/types/contracts/liquidity-pool';
 
@@ -20,8 +20,8 @@ const getLiquidityPoolProvisions = async ({
   poolAddress,
   my,
   provider,
-}: GetLiquidityPoolProvisionsProps) =>
-  await client.getLogs({
+}: GetLiquidityPoolProvisionsProps) => {
+  const res = await client.getLogs({
     address: CONTRACT_ADDRESS.VAULT,
     event: {
       type: 'event',
@@ -38,9 +38,12 @@ const getLiquidityPoolProvisions = async ({
       poolId: poolAddress,
       liquidityProvider: my && !!provider ? provider : undefined,
     },
-    fromBlock: 0n,
+    fromBlock: 7692000n,
+    // toBlock: 7699500n,
   });
 
+  return res;
+};
 interface GetFormattedLiquidityPoolProvisionsProps {
   client: PublicClient;
   data: {
@@ -60,6 +63,9 @@ const getFormattedLiquidityPoolProvisions = async ({
   client,
   data,
 }: GetFormattedLiquidityPoolProvisionsProps) => {
+  const isRoot = CHAIN === 'root';
+  const decimals = isRoot ? 6 : 18;
+
   const { args, blockHash, txHash } = data;
   const { deltas, liquidityProvider, poolId, tokens: tokenAddresses } = args;
 
@@ -72,7 +78,7 @@ const getFormattedLiquidityPoolProvisions = async ({
     tokenAddresses?.map((address, idx) => ({
       address,
       symbol: tokenSymbols?.[idx],
-      amount: Math.abs(Number(formatEther(deltas?.[idx] ?? 0n))),
+      amount: Math.abs(Number(formatUnits(deltas?.[idx] ?? 0n, decimals))),
     })) ?? [];
 
   const blockInfo = await client.getBlock({ blockHash });

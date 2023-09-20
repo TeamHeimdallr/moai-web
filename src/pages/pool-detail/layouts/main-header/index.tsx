@@ -17,9 +17,9 @@ export const MainHeader = ({ pool }: Props) => {
     <HeaderWrapper>
       <Title>Weighted Pool</Title>
       <TokenWrapper>
-        {pool?.compositions?.map(composition => (
+        {pool?.compositions?.map((composition, i) => (
           <Token
-            key={`${composition.weight}-${composition.name}`}
+            key={`${composition.weight}-${composition.name}-${i}`}
             token={composition.name as TOKEN}
             percentage={composition.weight}
             type="small"

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
-import { Address, isAddress, parseEther } from 'viem';
+import { Address, isAddress, parseUnits } from 'viem';
 
 import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
 import { usePoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
@@ -14,6 +14,7 @@ import { Popup } from '~/components/popup';
 import { Stepper } from '~/components/stepper';
 import { TokenList } from '~/components/token-list';
 import {
+  CHAIN,
   CONTRACT_ADDRESS,
   POOL_ID,
   SCANNER_URL,
@@ -38,6 +39,9 @@ interface Props {
 }
 
 export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
+  const isRoot = CHAIN === 'root';
+  const decimals = isRoot ? 6 : 18;
+
   const {
     allow: allowToken1,
     allowance: allowance1,
@@ -97,7 +101,7 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
   const prepareRequestData = () => {
     return {
       tokens: tokenList.map(t => TOKEN_ADDRESS[t.name]),
-      amountsIn: tokenList.map(t => parseEther(t.amount.toString())),
+      amountsIn: tokenList.map(t => parseUnits(t.amount.toString(), decimals)),
     };
   };
 

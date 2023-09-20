@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { parseEther } from 'viem';
+import { parseUnits } from 'viem';
 import {
   useAccount,
   useContractRead,
@@ -9,7 +9,7 @@ import {
 } from 'wagmi';
 
 import { TOKEN_ABI } from '~/abi/token';
-import { CHAIN_ID } from '~/constants';
+import { CHAIN, CHAIN_ID } from '~/constants';
 
 interface Props {
   enabled?: boolean;
@@ -26,6 +26,9 @@ export const useTokenApprove = ({
   spender,
   tokenAddress,
 }: Props) => {
+  const isRoot = CHAIN === 'root';
+  const decimals = isRoot ? 6 : 18;
+
   const [allowance, setAllowance] = useState(false);
 
   const { isConnected, address: walletAddress } = useAccount();
@@ -38,7 +41,9 @@ export const useTokenApprove = ({
     enabled: enabled && !!walletAddress && !!spender,
 
     onSuccess: (data: string) => {
-      return setAllowance(BigInt(data || 0) > parseEther((allowanceMin || 0)?.toString()));
+      return setAllowance(
+        BigInt(data || 0) > parseUnits((allowanceMin || 0)?.toString(), decimals)
+      );
     },
     onError: () => setAllowance(false),
   });
@@ -50,7 +55,7 @@ export const useTokenApprove = ({
     chainId: CHAIN_ID,
 
     account: walletAddress,
-    args: [spender, `${parseEther(`${amount || 0}`)}`],
+    args: [spender, `${parseUnits(`${amount || 0}`, decimals)}`],
     enabled: true,
   });
 

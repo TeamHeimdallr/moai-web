@@ -1,9 +1,9 @@
 import { useQueries, useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { Address, formatEther, PublicClient } from 'viem';
+import { Address, formatUnits, PublicClient } from 'viem';
 import { usePublicClient } from 'wagmi';
 
 import { QUERY_KEYS } from '~/api/utils/query-keys';
-import { CONTRACT_ADDRESS } from '~/constants';
+import { CHAIN, CONTRACT_ADDRESS } from '~/constants';
 import { GetSwapHistories } from '~/types/contracts';
 
 import { getSymbol } from '../token/symbol';
@@ -47,6 +47,9 @@ interface GetFormattedSwapHistoriesProps {
   };
 }
 const getFormattedSwapHistories = async ({ client, data }: GetFormattedSwapHistoriesProps) => {
+  const isRoot = CHAIN === 'root';
+  const decimals = isRoot ? 6 : 18;
+
   const { args, blockHash, txHash } = data;
   const { poolId, tokenIn, tokenOut, amountIn, amountOut } = args;
 
@@ -59,7 +62,7 @@ const getFormattedSwapHistories = async ({ client, data }: GetFormattedSwapHisto
     [tokenIn, tokenOut]?.map((address, idx) => ({
       address,
       symbol: tokenSymbols?.[idx],
-      amount: Number(formatEther([amountIn, amountOut]?.[idx] ?? 0n)),
+      amount: Number(formatUnits([amountIn, amountOut]?.[idx] ?? 0n, decimals)),
     })) ?? [];
 
   const blockInfo = await client.getBlock({ blockHash });

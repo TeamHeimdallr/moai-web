@@ -18,7 +18,6 @@ export const PopupSwapSelectTokenFrom = () => {
   const { fromToken, setFromToken } = useSwapData();
   const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_FROM);
 
-  console.log(tokenInfos);
   return (
     <Popup
       id={POPUP_ID.SWAP_SELECT_TOKEN_FROM}
