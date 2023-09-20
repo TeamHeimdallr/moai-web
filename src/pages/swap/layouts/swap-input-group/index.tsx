@@ -23,6 +23,9 @@ export const SwapInputs = () => {
     toToken,
     toValue,
 
+    setFromToken,
+    setToToken,
+
     setFromValue,
     resetFromValue,
 
@@ -30,7 +33,6 @@ export const SwapInputs = () => {
     toTokenBalance,
 
     fromSchema,
-
     swapRatio,
     validToSwap,
   } = useSwapData();
@@ -42,6 +44,11 @@ export const SwapInputs = () => {
     POPUP_ID.SWAP_SELECT_TOKEN_TO
   );
   const { opened: swapPopupOpened, open: openSwapPopup } = usePopup(POPUP_ID.SWAP);
+
+  const arrowClick = () => {
+    setFromToken(toToken);
+    setToToken(fromToken);
+  };
 
   useEffect(
     () => resetFromValue(),
@@ -64,7 +71,7 @@ export const SwapInputs = () => {
               handleChange={setFromValue}
               handleTokenClick={openSelectTokenFromPopup}
             />
-            <IconWrapper>
+            <IconWrapper onClick={() => arrowClick()}>
               <SwapArrowDown />
             </IconWrapper>
             <InputNumber
@@ -100,7 +107,7 @@ const InputInnerWrapper = tw.div`
 `;
 
 const IconWrapper = tw.div`
-  absolute absolute-center-x bottom-100 z-1
+  absolute absolute-center-x bottom-100 z-1 clickable
 `;
 
 const InputLabel = tw.div`

@@ -55,7 +55,10 @@ export const useSwapData = () => {
     ? toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee)))
     : undefined;
 
-  const swapRatio = (toValue ?? 0) / Number(fromValue);
+  const swapRatio =
+    fromValue == 0 || toValue == 0
+      ? toReserve - toReserve * (fromReserve / (fromReserve + (1 - fee)))
+      : (toValue ?? 0) / Number(fromValue == 0 ? 0.0001 : fromValue);
 
   const validToSwap =
     fromValue &&
