@@ -133,3 +133,17 @@ export const usePoolTotalLpTokens = (poolAddress?: Address, enabled?: boolean) =
     data: data as bigint,
   };
 };
+
+export const usePoolTokens = (poolAddress?: Address, enabled?: boolean) => {
+  const { data: poolTokensData } = useContractRead({
+    address: CONTRACT_ADDRESS.VAULT,
+    abi: VAULT_ABI,
+    functionName: 'getPoolTokens',
+    args: [poolAddress],
+    enabled: !!poolAddress && enabled,
+  });
+
+  return {
+    data: poolTokensData,
+  };
+};

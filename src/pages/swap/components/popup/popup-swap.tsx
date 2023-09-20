@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
-import { parseEther } from 'viem';
+import { parseUnits } from 'viem';
 
 import { useSwap } from '~/api/api-contract/swap/swap';
 import { COLOR } from '~/assets/colors';
@@ -11,7 +11,13 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
-import { SCANNER_URL, TOKEN_ADDRESS, TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
+import {
+  CHAIN,
+  SCANNER_URL,
+  TOKEN_ADDRESS,
+  TOKEN_IMAGE_MAPPER,
+  TOKEN_USD_MAPPER,
+} from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
 import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { usePopup } from '~/hooks/pages/use-popup';
@@ -30,6 +36,8 @@ export const PopupSwap = () => {
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippageId } = useSlippageStore();
   const rootPrice = useGetRootPrice();
+  const isRoot = CHAIN === 'root';
+  const decimals = isRoot ? 6 : 18;
 
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
 
@@ -39,7 +47,7 @@ export const PopupSwap = () => {
       SwapKind.GivenIn,
       TOKEN_ADDRESS[fromToken],
       TOKEN_ADDRESS[toToken],
-      parseEther(`${fromValue ?? 0}`),
+      parseUnits(`${fromValue ?? 0}`, decimals),
       '0x',
     ],
     fundManagement: [address ?? '0x', false, address ?? '0x', false],
