@@ -4,6 +4,7 @@ import tw, { css, styled } from 'twin.macro';
 import { parseUnits } from 'viem';
 
 import { useSwap } from '~/api/api-contract/swap/swap';
+import { useTokenApprove } from '~/api/api-contract/token/approve';
 import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonChipSmall } from '~/components/buttons/chip';
@@ -13,6 +14,7 @@ import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 import {
   CHAIN,
+  CONTRACT_ADDRESS,
   SCANNER_URL,
   TOKEN_ADDRESS,
   TOKEN_IMAGE_MAPPER,
@@ -41,6 +43,18 @@ export const PopupSwap = () => {
 
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
 
+  const {
+    allow: allowToken,
+    allowance: allowance,
+    isLoading: allowLoading,
+  } = useTokenApprove({
+    enabled: !!fromToken,
+    amount: Number(fromValue ?? 0),
+    allowanceMin: Number(fromValue ?? 0),
+    spender: CONTRACT_ADDRESS.VAULT,
+    tokenAddress: TOKEN_ADDRESS[fromToken],
+  });
+
   const { data, blockTimestamp, isLoading, isSuccess, error, swap } = useSwap({
     singleSwap: [
       poolId,
@@ -51,6 +65,7 @@ export const PopupSwap = () => {
       '0x',
     ],
     fundManagement: [address ?? '0x', false, address ?? '0x', false],
+    enabled: allowance,
   });
 
   // const timestamp = txData
@@ -100,12 +115,18 @@ export const PopupSwap = () => {
         onClick={handleSuccess}
       />
     </PrimaryButtonWrapper>
-  ) : (
+  ) : allowance ? (
     <ButtonPrimaryLarge
       text="Confirm swap"
       isLoading={isLoading}
       onClick={swap}
       disabled={!!error}
+    />
+  ) : (
+    <ButtonPrimaryLarge
+      text={`Approve ${fromToken} for swapping`}
+      isLoading={allowLoading}
+      onClick={allowToken}
     />
   );
 
