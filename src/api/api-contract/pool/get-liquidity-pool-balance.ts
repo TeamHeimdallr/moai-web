@@ -1,4 +1,4 @@
-import { Address, formatEther } from 'viem';
+import { Address, formatEther, formatUnits } from 'viem';
 import { useContractRead } from 'wagmi';
 
 import { LIQUIDITY_POOL_ABI } from '~/abi/liquidity-pool';
@@ -18,6 +18,8 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
   // disable fetching when chain is root, wallet is not connected,
   // because root network cannot read contract without connect wallet
   const disableRead = !walletAddress && CHAIN === 'root';
+  const isXRP = CHAIN === 'root' || CHAIN === 'xrpl';
+  const tokenUnit = isXRP ? 6 : 18;
 
   const { data: poolTokensData } = useContractRead({
     address: CONTRACT_ADDRESS.VAULT,
@@ -53,14 +55,14 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
 
   const tokenAddresses = (poolTokensData as PoolBalance)?.[0];
   const balances = (poolTokensData as PoolBalance)?.[1];
-  const { data: symbols } = useTokenSymbol(tokenAddresses ?? [], !disableRead);
+  const { data: symbols } = useTokenSymbol(tokenAddresses ?? []);
 
   const compositions: Composition[] | undefined = balances?.map((balance, idx) => {
     return {
       tokenAddress: tokenAddresses?.[idx] ?? '0x',
       name: symbols?.[idx] ?? '',
       weight: Number(formatEther((weightData as Array<bigint>)?.[idx] ?? 0)) * 100,
-      balance: Number(formatEther(balance)),
+      balance: Number(formatUnits(balance, tokenUnit)),
       price: TOKEN_USD_MAPPER[symbols?.[idx]],
     };
   });

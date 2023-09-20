@@ -18,6 +18,7 @@ export const PopupSwapSelectTokenFrom = () => {
   const { fromToken, setFromToken } = useSwapData();
   const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_FROM);
 
+  console.log(tokenInfos);
   return (
     <Popup
       id={POPUP_ID.SWAP_SELECT_TOKEN_FROM}
@@ -25,7 +26,7 @@ export const PopupSwapSelectTokenFrom = () => {
       style={{ backgroundColor: COLOR.NEUTRAL[10] }}
     >
       <Wrapper>
-        {tokenInfos.map(token => {
+        {tokenInfos?.map(token => {
           const balance = balancesMap?.[token.symbol as TOKEN];
           if (!balance) return <></>;
 

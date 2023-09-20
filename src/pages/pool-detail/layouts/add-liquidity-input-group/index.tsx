@@ -54,11 +54,12 @@ export const AddLiquidityInput = ({ tokenList }: Props) => {
     else if (idx === 2) setInputValue3(value ?? 0);
   };
 
-  const totalValue = tokenList.reduce((sum, token, idx) => {
-    const inputValue = getInputValue(idx) || 0;
-    const tokenValue = TOKEN_USD_MAPPER[token.name] || 0;
-    return sum + inputValue * tokenValue;
-  }, 0);
+  const totalValue =
+    tokenList?.reduce((sum, token, idx) => {
+      const inputValue = getInputValue(idx) || 0;
+      const tokenValue = TOKEN_USD_MAPPER[token.name] || 0;
+      return sum + inputValue * tokenValue;
+    }, 0) ?? 0;
 
   return (
     <Wrapper>

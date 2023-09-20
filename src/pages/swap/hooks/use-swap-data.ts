@@ -3,7 +3,6 @@ import * as yup from 'yup';
 import { POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { HOOK_FORM_KEY } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
 
 import { useSwapStore } from '../states/swap';
 
@@ -43,11 +42,7 @@ export const useSwapData = () => {
     toValue &&
     toValue > 0;
 
-  const poolId =
-    (fromToken === TOKEN.MOAI && toToken === TOKEN.WETH) ||
-    (toToken === TOKEN.MOAI && fromToken === TOKEN.WETH)
-      ? POOL_ID.POOL_A
-      : POOL_ID.POOL_B;
+  const poolId = POOL_ID.POOL_A;
 
   return {
     fromToken,
