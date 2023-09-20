@@ -14,7 +14,7 @@ import { useSwapData } from '../../hooks/use-swap-data';
 
 export const PopupSwapSelectTokenTo = () => {
   const { balancesMap } = useBalancesAll();
-  const { toToken, setToToken } = useSwapData();
+  const { toToken, setToToken, setFromToken } = useSwapData();
   const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_TO);
 
   return (
@@ -24,7 +24,7 @@ export const PopupSwapSelectTokenTo = () => {
       style={{ backgroundColor: COLOR.NEUTRAL[10] }}
     >
       <Wrapper>
-        {tokenInfos.map(token => {
+        {tokenInfos.map((token, idx) => {
           const balance = balancesMap?.[token.symbol as TOKEN];
           if (!balance) return <></>;
 
@@ -34,6 +34,7 @@ export const PopupSwapSelectTokenTo = () => {
 
           const handleClick = () => {
             setToToken(token.symbol);
+            setFromToken(tokenInfos[idx === 0 ? 1 : 0]?.symbol);
             close();
           };
 
