@@ -22,6 +22,7 @@ import {
   TOKEN_IMAGE_MAPPER,
   TOKEN_USD_MAPPER,
 } from '~/constants';
+import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { POPUP_ID } from '~/types/components';
@@ -41,6 +42,7 @@ interface Props {
 export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props) => {
   const isRoot = CHAIN === 'root';
   const decimals = isRoot ? 6 : 18;
+  const rootPrice = useGetRootPrice();
 
   const {
     allow: allowToken1,
@@ -194,7 +196,10 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
                 type="large"
                 title={`${amount}`}
                 subTitle={`${name}`}
-                description={`$${formatNumber(amount * TOKEN_USD_MAPPER[name], 2)}`}
+                description={`$${formatNumber(
+                  amount * (name == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[name]),
+                  2
+                )}`}
                 image={TOKEN_IMAGE_MAPPER[name]}
                 leftAlign={true}
               />

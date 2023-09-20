@@ -5,11 +5,13 @@ import { CHAIN, TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
 import { TOKEN, TokenBalanceInfoAll } from '~/types/contracts';
 
 import { useConnectWallet } from './use-connect-wallet';
+import { useGetRootPrice } from './use-root-price';
 
 export const useBalancesAll = (): TokenBalanceInfoAll => {
   const { address } = useConnectWallet();
   const enableMantleLinea = (CHAIN === 'mantle' || CHAIN === 'linea') && isAddress(address ?? '0x');
   const enableRoot = CHAIN === 'root' && isAddress(address ?? '0x');
+  const rootPrice = useGetRootPrice();
 
   const { data: moaiData } = useBalance({
     address,
@@ -86,8 +88,7 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
   const root = {
     value: Number(formatUnits(rootData?.value ?? 0n, rootData?.decimals ?? 6)),
     valueUSD:
-      Number(formatUnits(rootData?.value ?? 0n, rootData?.decimals ?? 6)) *
-      (TOKEN_USD_MAPPER[rootData?.symbol ?? ''] ?? 0),
+      Number(formatUnits(rootData?.value ?? 0n, rootData?.decimals ?? 6)) * (rootPrice ?? 0),
     symbol: rootData?.symbol ?? '',
   };
   const xrp = {

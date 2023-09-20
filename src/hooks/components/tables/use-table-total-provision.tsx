@@ -12,6 +12,7 @@ import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenPair } from '~/components/tables/columns/column-token-pair';
 import { SCANNER_URL, TOKEN_USD_MAPPER } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
+import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { useTableLiquidityPoolProvisionStore } from '~/states/components/table-liquidity-pool-provision';
 import { useSelectedLiquidityPoolProvisionTabStore } from '~/states/pages/selected-liquidity-pool-provision-tab';
 import { LiquidityProvisionData, LiquidityProvisionTable } from '~/types/components';
@@ -22,6 +23,7 @@ export const useTableTotalProvision = (poolAddress: Address) => {
   const { address } = useConnectWallet();
   const { sorting, setSorting } = useTableLiquidityPoolProvisionStore();
   const { selected: selectedTab } = useSelectedLiquidityPoolProvisionTabStore();
+  const rootPrice = useGetRootPrice();
 
   const isMyProvision = selectedTab === 'my-provision';
 
@@ -35,7 +37,8 @@ export const useTableTotalProvision = (poolAddress: Address) => {
       d?.tokens?.map(t => ({
         name: t?.symbol,
         balance: t?.amount ?? 0,
-        value: (t?.amount ?? 0) * (TOKEN_USD_MAPPER[t?.symbol] ?? 0),
+        value:
+          (t?.amount ?? 0) * (t?.symbol == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[t?.symbol] ?? 0),
       })) ?? [];
     const value = tokens?.reduce((acc, cur) => acc + cur.value, 0);
     const time = d?.timestamp ?? Date.now();

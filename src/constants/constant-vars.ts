@@ -1,3 +1,4 @@
+import { getRootPrice } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import {
   ChainROOT,
   ChainXRPL,
@@ -28,7 +29,7 @@ export const TOKEN_USD_MAPPER: Record<string, number> = {
   USDT: 1,
   WETH: 1718.39,
   MOAI: 142.23,
-  ROOT: 0.0141,
+  ROOT: 0.5,
   XRP: 0.5,
 };
 

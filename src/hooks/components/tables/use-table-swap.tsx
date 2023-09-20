@@ -10,6 +10,7 @@ import { TableColumnIcon } from '~/components/tables/columns/column-icon';
 import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenSwap } from '~/components/tables/columns/column-token-swap';
 import { SCANNER_URL, TOKEN_USD_MAPPER } from '~/constants';
+import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { useTableSwapHistoriesStore } from '~/states/components/table-swap-histories';
 import { SwapData, SwapTable } from '~/types/components';
 import { formatNumber } from '~/utils/number';
@@ -19,6 +20,7 @@ import { elapsedTime } from '~/utils/time';
 export const useTableSwap = (poolAddress: Address) => {
   const { sorting, setSorting } = useTableSwapHistoriesStore();
   const { data } = useGetSwapHistories({ poolAddress });
+  const rootPrice = useGetRootPrice();
 
   const swapData = data?.map(d => {
     const poolId = d?.poolId ?? '0x';
@@ -26,7 +28,8 @@ export const useTableSwap = (poolAddress: Address) => {
       d?.tokens?.map(t => ({
         name: t?.symbol,
         balance: t?.amount ?? 0,
-        value: (t?.amount ?? 0) * (TOKEN_USD_MAPPER[t?.symbol] ?? 0),
+        value:
+          (t?.amount ?? 0) * (t?.symbol == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[t?.symbol] ?? 0),
       })) ?? [];
     const value = tradeDetail?.reduce((acc, cur) => acc + cur.value, 0) ?? 0;
     const time = d?.time ?? Date.now();

@@ -13,6 +13,7 @@ import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 import { SCANNER_URL, TOKEN_ADDRESS, TOKEN_IMAGE_MAPPER, TOKEN_USD_MAPPER } from '~/constants';
 import { useConnectWallet } from '~/hooks/data/use-connect-wallet';
+import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { useSlippageStore } from '~/states/data/slippage';
 import { POPUP_ID } from '~/types/components';
@@ -28,6 +29,7 @@ export const PopupSwap = () => {
   const { fromToken, fromValue, toToken, toValue, swapRatio, poolId, resetAll } = useSwapData();
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippageId } = useSlippageStore();
+  const rootPrice = useGetRootPrice();
 
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
 
@@ -50,8 +52,9 @@ export const PopupSwap = () => {
 
   const numFromValue = Number(fromValue) || 0;
   const effectivePrice = `1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`;
-  const fromUSDValue = numFromValue * TOKEN_USD_MAPPER[fromToken];
-  const toUSDValue = numFromValue * TOKEN_USD_MAPPER[fromToken];
+  const fromUSDValue =
+    numFromValue * (fromToken == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[fromToken]);
+  const toUSDValue = numFromValue * (toToken == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[toToken]);
 
   const currentValue = selectedDetailInfo === 'TOKEN' ? numFromValue : fromUSDValue;
   const currentUnit = selectedDetailInfo === 'TOKEN' ? fromToken : 'USD';
@@ -197,7 +200,7 @@ const DetailInfoTextWrapper = tw.div`
 `;
 
 const DetailInfoText = tw.div`
-  font-r-14 text-neutral-100 
+  font-r-14 text-neutral-100
 `;
 
 const DetailInfoSubtext = tw.div`

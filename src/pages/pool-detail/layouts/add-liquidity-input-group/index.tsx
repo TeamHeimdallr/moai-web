@@ -8,6 +8,7 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { InputNumber } from '~/components/inputs/number';
 import { Token } from '~/components/token';
 import { TOKEN_USD_MAPPER } from '~/constants';
+import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { useOnClickOutside } from '~/hooks/pages/use-onclick-outside';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { HOOK_FORM_KEY, POPUP_ID, TokenInfo } from '~/types/components';
@@ -22,6 +23,7 @@ interface Props {
 export const AddLiquidityInput = ({ tokenList }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
+  const rootPrice = useGetRootPrice();
 
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
 
@@ -57,7 +59,7 @@ export const AddLiquidityInput = ({ tokenList }: Props) => {
   const totalValue =
     tokenList?.reduce((sum, token, idx) => {
       const inputValue = getInputValue(idx) || 0;
-      const tokenValue = TOKEN_USD_MAPPER[token.name] || 0;
+      const tokenValue = (token.name == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[token.name]) || 0;
       return sum + inputValue * tokenValue;
     }, 0) ?? 0;
 
