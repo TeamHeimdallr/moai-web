@@ -39,7 +39,7 @@ export const useTableMyLiquidity = () => {
         poolValue: (
           <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} width={160} align="flex-end" />
         ),
-        apr: <TableColumn value={`${d.apr}%`} width={160} align="flex-end" />,
+        apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} width={160} align="flex-end" />,
       })),
     [sortedData]
   );
