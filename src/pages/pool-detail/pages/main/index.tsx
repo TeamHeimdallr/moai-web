@@ -10,7 +10,7 @@ import {
 import { SwitchNetwork } from '~/components/banner/switch-network';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
-import { CHAIN_ID, POOL_ID, TOKEN_ADDRESS } from '~/constants';
+import { CHAIN, CHAIN_ID, TOKEN_ADDRESS } from '~/constants';
 import { useTokenBalances } from '~/hooks/data/use-balance';
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { useSwitchNetwork } from '~/hooks/pages/use-switch-network';
@@ -25,7 +25,8 @@ const PoolDetailMainPage = () => {
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
   const { id } = useParams();
   const { address } = useAccount();
-  const tokenAddress = id === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
+
+  const tokenAddress = CHAIN === 'root' ? TOKEN_ADDRESS.ROOT_XRP : TOKEN_ADDRESS.POOL_A;
 
   useRequirePrarams([!!id, isAddress(id as Address)], () => navigate(-1));
   const { poolInfo, compositions } = usePoolBalance(id as Address);

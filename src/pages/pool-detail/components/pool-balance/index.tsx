@@ -31,7 +31,7 @@ export const PoolBalance = ({ compositions, pool }: Props) => {
   return (
     <Wrapper>
       <Header>
-        My pool balance <Balance>${formatNumber(totalPoolBalance, 2)}</Balance>
+        My pool balance <Balance>${formatNumber(totalPoolBalance || 0, 2)}</Balance>
       </Header>
       <Divider />
       <TokenLists>
