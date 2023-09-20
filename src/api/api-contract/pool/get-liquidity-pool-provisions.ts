@@ -21,6 +21,7 @@ const getLiquidityPoolProvisions = async ({
   my,
   provider,
 }: GetLiquidityPoolProvisionsProps) => {
+  const block = await client.getBlockNumber();
   const res = await client.getLogs({
     address: CONTRACT_ADDRESS.VAULT,
     event: {
@@ -38,8 +39,7 @@ const getLiquidityPoolProvisions = async ({
       poolId: poolAddress,
       liquidityProvider: my && !!provider ? provider : undefined,
     },
-    fromBlock: 7692000n,
-    // toBlock: 7699500n,
+    fromBlock: block - 10000n,
   });
 
   return res;

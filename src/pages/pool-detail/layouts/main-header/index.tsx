@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 import { IconLink } from '~/assets/icons';
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
-import { POOL_ID, SCANNER_URL, TOKEN_ADDRESS } from '~/constants';
+import { CHAIN, SCANNER_URL, TOKEN_ADDRESS } from '~/constants';
 import { PoolInfo } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 
@@ -11,11 +11,11 @@ interface Props {
   pool: PoolInfo;
 }
 export const MainHeader = ({ pool }: Props) => {
-  const tokenAddress = pool.id === POOL_ID.POOL_A ? TOKEN_ADDRESS.POOL_A : TOKEN_ADDRESS.POOL_B;
+  const tokenAddress = CHAIN === 'root' ? TOKEN_ADDRESS.ROOT_XRP : TOKEN_ADDRESS.POOL_A;
 
   return (
     <HeaderWrapper>
-      <Title>Weighted Pool</Title>
+      <Title>{CHAIN === 'root' ? 'ROOT-XRP Pool' : 'Weighted Pool'}</Title>
       <TokenWrapper>
         {pool?.compositions?.map((composition, i) => (
           <Token

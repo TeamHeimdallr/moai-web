@@ -12,8 +12,9 @@ interface GetSwapHistoriesProps {
   client: PublicClient;
   poolAddress?: Address;
 }
-const getSwapHistories = async ({ client, poolAddress }: GetSwapHistoriesProps) =>
-  await client.getLogs({
+const getSwapHistories = async ({ client, poolAddress }: GetSwapHistoriesProps) => {
+  const block = await client.getBlockNumber();
+  const res = await client.getLogs({
     address: CONTRACT_ADDRESS.VAULT,
     event: {
       type: 'event',
@@ -29,8 +30,11 @@ const getSwapHistories = async ({ client, poolAddress }: GetSwapHistoriesProps) 
     args: {
       poolId: poolAddress,
     },
-    fromBlock: 0n,
+    fromBlock: block - 10000n,
   });
+
+  return res;
+};
 
 interface GetFormattedSwapHistoriesProps {
   client: PublicClient;

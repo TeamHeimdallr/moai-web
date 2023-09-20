@@ -1,6 +1,6 @@
-import { formatUnits } from 'viem';
+import { formatEther } from 'viem';
 
-import { CHAIN, TOKEN_USD_MAPPER } from '~/constants';
+import { TOKEN_USD_MAPPER } from '~/constants';
 import { Composition } from '~/types/components/contracts';
 import { TOKEN } from '~/types/contracts';
 import { Entries } from '~/types/helpers';
@@ -25,13 +25,10 @@ export const getPoolMyInfoById = ({
   totalLpTokenBalance,
   compositions,
 }: GetPoolInfoById) => {
-  const isRoot = CHAIN === 'root';
-  const decimals = isRoot ? 6 : 18;
-
   const myCompositions = compositions?.map(composition => {
     const balance =
       (Number(composition.balance) * Number(lpTokenBalance)) /
-      Number(formatUnits(totalLpTokenBalance as bigint, decimals));
+      Number(formatEther(totalLpTokenBalance as bigint));
     return {
       ...composition,
       balance,
