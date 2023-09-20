@@ -6,6 +6,7 @@ import { TOKEN_ABI } from '~/abi/token';
 import { VAULT_ABI } from '~/abi/vault';
 import { CHAIN, CONTRACT_ADDRESS, POOL_ID, TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/constants';
 import { useTokenBalances } from '~/hooks/data/use-balance';
+import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { Composition, PoolInfo } from '~/types/components';
 import { PoolBalance } from '~/types/contracts';
 import { Entries } from '~/types/helpers';
@@ -17,6 +18,7 @@ import { useTokenSymbol } from '../token/symbol';
 export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) => {
   // disable fetching when chain is root, wallet is not connected,
   // because root network cannot read contract without connect wallet
+  const rootPrice = useGetRootPrice();
   const disableRead = !walletAddress && CHAIN === 'root';
   const isXRP = CHAIN === 'root' || CHAIN === 'xrpl';
   const tokenUnit = isXRP ? 6 : 18;
@@ -63,7 +65,7 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
       name: symbols?.[idx] ?? '',
       weight: Number(formatEther((weightData as Array<bigint>)?.[idx] ?? 0)) * 100,
       balance: Number(formatUnits(balance, tokenUnit)),
-      price: TOKEN_USD_MAPPER[symbols?.[idx]],
+      price: symbols?.[idx] == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[symbols?.[idx]],
     };
   });
 
@@ -82,7 +84,9 @@ export const usePoolBalance = (poolAddress?: Address, walletAddress?: Address) =
   const volume = swapHistories?.reduce((acc, cur) => {
     const value =
       cur?.tokens?.reduce((tAcc, tCur) => {
-        const value = (tCur?.amount ?? 0) * (TOKEN_USD_MAPPER[tCur?.symbol] ?? 0);
+        const value =
+          (tCur?.amount ?? 0) *
+          (tCur?.symbol == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[tCur?.symbol] ?? 0);
         return tAcc + value;
       }, 0) ?? 0;
     return acc + value;

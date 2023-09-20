@@ -2,12 +2,14 @@ import * as yup from 'yup';
 
 import { CHAIN, POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';
+import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { HOOK_FORM_KEY } from '~/types/components';
 
 import { useSwapStore } from '../states/swap';
 
 export const useSwapData = () => {
   const { balancesMap } = useBalancesAll();
+  const rootPrice = useGetRootPrice();
 
   const {
     fromToken,
@@ -32,7 +34,10 @@ export const useSwapData = () => {
   });
 
   const swapRatio =
-    fromToken && toToken ? TOKEN_USD_MAPPER[fromToken] / TOKEN_USD_MAPPER[toToken] : 0;
+    fromToken && toToken
+      ? (fromToken == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[fromToken]) /
+        (toToken == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[toToken])
+      : 0;
 
   const toValue = fromValue ? Number((Number(fromValue) * swapRatio).toFixed(6)) : undefined;
   const validToSwap =

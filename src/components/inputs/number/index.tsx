@@ -8,6 +8,7 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
 import { TOKEN_USD_MAPPER } from '~/constants';
+import { useGetRootPrice } from '~/hooks/data/use-root-price';
 import { HOOK_FORM_KEY } from '~/types/components';
 import { TOKEN } from '~/types/contracts';
 import { formatNumber } from '~/utils/number';
@@ -56,6 +57,7 @@ export const InputNumber = ({
   ...rest
 }: Props) => {
   const [focused, setFocus] = useState(false);
+  const rootPrice = useGetRootPrice();
 
   const { control, formState } = useForm<FormState>({
     mode: 'onChange',
@@ -68,7 +70,9 @@ export const InputNumber = ({
   const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
   const tokenUSD =
-    defaultTokenUSD ?? (handledValue || 0) * TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI];
+    defaultTokenUSD ??
+    (handledValue || 0) *
+      (tokenName == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI]);
   // TODO: get balance from wallet
   const currentBalance = balance || 0;
 
