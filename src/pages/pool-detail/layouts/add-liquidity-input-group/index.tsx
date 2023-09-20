@@ -167,17 +167,17 @@ const Header = tw.div`
   flex justify-between items-center gap-10 w-full relative
 `;
 
-const SlippageWrapper = tw.div`
-  absolute top-40 right-0
-`;
+// const SlippageWrapper = tw.div`
+//   absolute top-40 right-0
+// `;
 
 const InnerWrapper = tw.div`
   flex flex-col gap-16
 `;
 
-const IconWrapper = tw.div`
-  clickable w-32 h-32 items-center justify-center flex relative
-`;
+// const IconWrapper = tw.div`
+//   clickable w-32 h-32 items-center justify-center flex relative
+// `;
 
 const Title = tw.div`
   text-neutral-100 font-b-16
