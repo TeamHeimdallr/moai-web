@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
@@ -48,6 +48,8 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
     allow: allowToken1,
     allowance: allowance1,
     isLoading: allowLoading1,
+    isSuccess: allowSuccess1,
+    refetch: refetchAllowance1,
   } = useTokenApprove({
     enabled: tokenList.length > 0,
     amount: tokenList[0].amount,
@@ -60,6 +62,8 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
     allow: allowToken2,
     allowance: allowance2,
     isLoading: allowLoading2,
+    isSuccess: allowSuccess2,
+    refetch: refetchAllowance2,
   } = useTokenApprove({
     enabled: tokenList.length > 1,
     amount: tokenList[1]?.amount,
@@ -72,6 +76,8 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
     allow: allowToken3,
     allowance: allowance3,
     isLoading: allowLoading3,
+    isSuccess: allowSuccess3,
+    refetch: refetchAllowance3,
   } = useTokenApprove({
     enabled: tokenList.length > 2,
     amount: tokenList[2]?.amount,
@@ -79,18 +85,6 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
     spender: CONTRACT_ADDRESS.VAULT,
     tokenAddress: TOKEN_ADDRESS[tokenList[2]?.name],
   });
-
-  const step = useMemo(() => {
-    if (!allowance1) {
-      return 1;
-    } else if (!allowance2 && tokenList.length > 1) {
-      return 2;
-    } else if (!allowance3 && tokenList.length > 2) {
-      return 3;
-    } else {
-      return tokenList.length + 1;
-    }
-  }, [allowance1, allowance2, allowance3, tokenList.length]);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -117,6 +111,21 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
     poolId: id as Address,
     request: prepareRequestData(),
   });
+
+  const step = useMemo(() => {
+    if (isSuccess) {
+      return tokenList.length + 1;
+    }
+    if (!allowance1) {
+      return 1;
+    } else if (!allowance2 && tokenList.length > 1) {
+      return 2;
+    } else if (!allowance3 && tokenList.length > 2) {
+      return 3;
+    } else {
+      return tokenList.length + 1;
+    }
+  }, [allowance1, allowance2, allowance3, tokenList.length, isSuccess]);
 
   const txDate = new Date(blockTimestamp ?? 0);
 
@@ -149,6 +158,25 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
       }
     }
   };
+
+  useEffect(() => {
+    if (allowSuccess1) {
+      refetchAllowance1();
+    }
+    if (allowSuccess2) {
+      refetchAllowance2();
+    }
+    if (allowSuccess3) {
+      refetchAllowance3();
+    }
+  }, [
+    allowSuccess1,
+    allowSuccess2,
+    allowSuccess3,
+    refetchAllowance1,
+    refetchAllowance2,
+    refetchAllowance3,
+  ]);
 
   const handleLink = () => {
     window.open(`${SCANNER_URL}/tx/${txData?.transactionHash}`);
@@ -243,12 +271,13 @@ export const AddLiquidityPopup = ({ tokenList, totalValue, priceImpact }: Props)
           isLoading={
             step === 1
               ? allowLoading1
-              : step === 2
+              : step === 2 && tokenList.length > 1
               ? allowLoading2
-              : step === 3
+              : step === 3 && tokenList.length > 2
               ? allowLoading3
               : isLoading
           }
+          isDone={isSuccess}
         />
 
         {isSuccess && (
