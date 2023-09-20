@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-import { POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
+import { CHAIN, POOL_ID, TOKEN_USD_MAPPER } from '~/constants';
 import { useBalancesAll } from '~/hooks/data/use-balance-all';
 import { HOOK_FORM_KEY } from '~/types/components';
 
@@ -42,7 +42,7 @@ export const useSwapData = () => {
     toValue &&
     toValue > 0;
 
-  const poolId = POOL_ID.POOL_A;
+  const poolId = CHAIN === 'root' ? POOL_ID.ROOT_XRP : POOL_ID.POOL_A;
 
   return {
     fromToken,
