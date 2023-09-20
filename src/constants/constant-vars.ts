@@ -1,4 +1,3 @@
-import { getRootPrice } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import {
   ChainROOT,
   ChainXRPL,
