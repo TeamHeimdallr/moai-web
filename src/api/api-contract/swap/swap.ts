@@ -16,26 +16,28 @@ interface Props {
   fundManagement: SwapFundManagementInput;
   limit?: number;
   deadline?: number;
+  enabled?: boolean;
 }
 export const useSwap = ({
   singleSwap,
   fundManagement,
   limit = 10,
   deadline = 2000000000,
+  enabled = true,
 }: Props) => {
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const publicClient = usePublicClient();
   const { address } = useConnectWallet();
 
-  const enabled = !!singleSwap && !!fundManagement && !!address;
+  const isEnabled = !!singleSwap && !!fundManagement && !!address && enabled;
 
   const { config, error } = usePrepareContractWrite({
     address: CONTRACT_ADDRESS.VAULT,
     abi: VAULT_ABI,
     functionName: 'swap',
     args: [singleSwap, fundManagement, limit, deadline],
-    enabled,
+    enabled: isEnabled,
   });
 
   const { data, writeAsync } = useContractWrite(config);
