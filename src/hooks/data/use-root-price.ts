@@ -14,6 +14,6 @@ export const useGetRootPrice = () => {
 
   if (data === undefined) return 0;
   return Number(
-    (TOKEN_USD_MAPPER['XRP'] * Number(data?.[1]?.[0] ?? 0)) / Number(data?.[1]?.[1] ?? 1)
+    (TOKEN_USD_MAPPER['XRP'] * Number(data?.[1]?.[1] ?? 0)) / Number(data?.[1]?.[0] ?? 1)
   );
 };
