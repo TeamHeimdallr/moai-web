@@ -27,7 +27,7 @@ export const MainHeader = ({ pool }: Props) => {
         ))}
         <ButtonIconMedium
           icon={<IconLink />}
-          onClick={() => window.open(`${SCANNER_URL}/address/${tokenAddress}`)}
+          onClick={() => window.open(`${SCANNER_URL}/address/${tokenAddress}?tab=erc20_transfers`)}
         />
       </TokenWrapper>
       <Text>
