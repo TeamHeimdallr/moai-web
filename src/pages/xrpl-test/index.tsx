@@ -1,3 +1,4 @@
+import { getAddress, isInstalled, submitTransaction } from '@gemwallet/api';
 import { useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
@@ -9,8 +10,8 @@ import { InputTextField } from '~/components/inputs/textfield';
 
 const XrplTestPage = () => {
   const [xrpValue, setXrpValue] = useState(0);
-  const [rootValue, setRootValue] = useState(0);
-  const { checkAmmExist } = useGetAmmInfo({
+  const [moaiValue, setMoaiValue] = useState(0);
+  const { checkAmmExist, ammInfo, getFee } = useGetAmmInfo({
     asset1: {
       currency: 'XRP',
     },
@@ -20,9 +21,41 @@ const XrplTestPage = () => {
     },
   });
 
-  const handleProvideLP = async () => {
+  const handleCreateLP = async () => {
     const result = await checkAmmExist();
-    console.log('result', result);
+    const fee = await getFee();
+    console.log('result', result, ammInfo);
+
+    if (!result) {
+      isInstalled().then(response => {
+        if (response.result.isInstalled) {
+          getAddress().then(response => {
+            const address = response.result?.address;
+            console.log('address', address);
+
+            const transaction = {
+              TransactionType: 'AMMCreate',
+              Account: address,
+              Amount: ((xrpValue ?? 0) * 1e6).toString(),
+              Amount2: {
+                currency: 'MOI',
+                issuer: 'rPEQacsbfGADDHb6wShzTZ2ajByQFPdY3E',
+                value: (moaiValue ?? 0).toString(),
+              },
+              TradingFee: 500, // 0.5%
+              Fee: fee,
+            };
+            submitTransaction({ transaction }) // ignore warning
+              .then(response => {
+                console.log('Transaction hash: ', response.result?.hash);
+              })
+              .catch(error => {
+                console.error('Transaction submission failed', error);
+              });
+          });
+        }
+      });
+    }
   };
 
   return (
@@ -40,23 +73,23 @@ const XrplTestPage = () => {
             <ButtonWrapper>
               <InputWrapper>
                 <InputInnerWrapper>
-                  <InputTitle>XRPL</InputTitle>
+                  <InputTitle>XRP</InputTitle>
                   <InputTextField
                     value={xrpValue}
                     onChange={e => setXrpValue(Number(e.target.value))}
                   ></InputTextField>
                 </InputInnerWrapper>
                 <InputInnerWrapper>
-                  <InputTitle>ROOT</InputTitle>
+                  <InputTitle>MOAI</InputTitle>
                   <InputTextField
-                    value={rootValue}
-                    onChange={e => setRootValue(Number(e.target.value))}
+                    value={moaiValue}
+                    onChange={e => setMoaiValue(Number(e.target.value))}
                   ></InputTextField>
                 </InputInnerWrapper>
               </InputWrapper>
               <ButtonPrimaryMedium
-                text="Provide LP"
-                onClick={() => handleProvideLP()}
+                text="Create LP"
+                onClick={() => handleCreateLP()}
               ></ButtonPrimaryMedium>
             </ButtonWrapper>
 

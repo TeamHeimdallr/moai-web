@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { BaseResponse, dropsToXrp } from 'xrpl';
+
 import { useXrplStore } from '~/states/data/xrpl';
 
 interface GetAmmInfoProp {
@@ -12,6 +15,8 @@ interface GetAmmInfoProp {
 }
 export const useGetAmmInfo = ({ asset1, asset2 }: GetAmmInfoProp) => {
   const { client } = useXrplStore();
+  const [ammInfo, setAmmInfo] = useState<BaseResponse>();
+  const [fee, setFee] = useState<string>('0');
 
   const request = {
     command: 'amm_info',
@@ -25,7 +30,7 @@ export const useGetAmmInfo = ({ asset1, asset2 }: GetAmmInfoProp) => {
 
     try {
       const info = await client.request(request);
-      console.log(info);
+      setAmmInfo(info);
       return true;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -38,7 +43,18 @@ export const useGetAmmInfo = ({ asset1, asset2 }: GetAmmInfoProp) => {
     }
   };
 
+  const getFee = async () => {
+    const ss = await client.request({ command: 'server_state' });
+    const amm_fee_drops = ss.result.state.validated_ledger?.reserve_inc.toString();
+    const fee = dropsToXrp(Number(amm_fee_drops ?? '0') * 1e6);
+    setFee(fee);
+    return fee;
+  };
+
   return {
     checkAmmExist,
+    ammInfo,
+    getFee,
+    fee,
   };
 };
