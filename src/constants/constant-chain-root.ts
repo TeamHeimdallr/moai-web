@@ -27,7 +27,7 @@ export const TOKEN_ADDRESS: Record<string, Address> = {
   ROOT_XRP: IS_MAINNET ? '0x' : '0x291af6e1b841cad6e3dcd66f2aa0790a007578ad',
 };
 
-export const SCANNER_URL = IS_MAINNET ? '' : 'https://explorer.rootnet.cloud/';
+export const SCANNER_URL = IS_MAINNET ? '' : 'https://explorer.rootnet.cloud';
 
 export const CHAIN_ROOT: ChainInfo = {
   CHAIN_ID,
