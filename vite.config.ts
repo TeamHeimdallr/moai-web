@@ -4,6 +4,8 @@ import { compression } from 'vite-plugin-compression2';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { resolve } from 'path';
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
+import polyfillNode from 'rollup-plugin-node-polyfills';
 
 export default defineConfig({
   server: {
@@ -11,7 +13,29 @@ export default defineConfig({
   },
 
   resolve: {
-    alias: [{ find: '~', replacement: resolve(__dirname, 'src') }],
+    alias: [
+      { find: '~', replacement: resolve(__dirname, 'src') },
+      { find: 'events', replacement: 'events' },
+      { find: 'crypto', replacement: 'crypto-browserify' },
+      { find: 'stream', replacement: 'stream-browserify' },
+      { find: 'http', replacement: 'stream-http' },
+      { find: 'https', replacement: 'https-browserify' },
+      { find: 'ws', replacement: 'xrpl/dist/npm/client/WSWrapper' },
+    ],
+  },
+
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+      plugins: [
+        NodeGlobalsPolyfillPlugin({
+          process: true,
+          buffer: true,
+        }),
+      ],
+    },
   },
 
   build: {
@@ -21,6 +45,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 700,
     rollupOptions: {
       treeshake: 'safest',
+      plugins: [polyfillNode()],
     },
   },
 

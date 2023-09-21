@@ -21,3 +21,6 @@ export const CHAIN = import.meta.env.VITE_CHAIN_ENV;
  * @description WEB3 관련 KEY / RPC PROVIDER ENDPOINT
  */
 export const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+
+export const XRPL_JSON_RPC_TEST_NET = import.meta.env.VITE_XRPL_JSON_RPC_TEST_NET;
+export const XRPL_WSS_TEST_NET = import.meta.env.VITE_XRPL_WSS_TEST_NET;

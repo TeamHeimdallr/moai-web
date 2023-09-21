@@ -1,46 +1,28 @@
 import { useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
-import * as xrpl from 'xrpl';
 
+import { useGetAmmInfo } from '~/api/xrpl/get-amm';
 import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 import { InputTextField } from '~/components/inputs/textfield';
-import { useXrplStore } from '~/states/data/xrpl';
 
 const XrplTestPage = () => {
   const [xrpValue, setXrpValue] = useState(0);
   const [rootValue, setRootValue] = useState(0);
-  const { client } = useXrplStore();
-
-  const amm_info_request = {
-    command: 'amm_info',
-    asset: {
+  const { checkAmmExist } = useGetAmmInfo({
+    asset1: {
       currency: 'XRP',
     },
     asset2: {
       currency: 'MOI',
       issuer: 'rPEQacsbfGADDHb6wShzTZ2ajByQFPdY3E',
     },
-    ledger_index: 'validated',
-  };
+  });
 
   const handleProvideLP = async () => {
-    // await client.connect();
-
-    try {
-      const amm_info_result = await client.request(amm_info_request);
-      console.log(amm_info_result);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      if (err.data.error === 'actNotFound') {
-        console.log(`No AMM exists yet for the pair`);
-      } else {
-        throw err;
-      }
-    }
-
-    console.log('handleProvideLP');
+    const result = await checkAmmExist();
+    console.log('result', result);
   };
 
   return (
