@@ -6,7 +6,6 @@ import { Address } from 'wagmi';
 import { Footer } from '~/components/footer';
 
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
-import { useSwitchNetwork } from '~/moai-evm/hooks/pages/use-switch-network';
 
 import { useLiquidityPoolBalance } from '~/moai-evm/api/api-contract/pool/get-liquidity-pool-balance';
 
@@ -15,6 +14,8 @@ import { CHAIN_ID } from '~/moai-evm/constants';
 import { SwitchNetwork } from '~/moai-evm/components/banner/switch-network';
 import { Gnb } from '~/moai-evm/components/gnb';
 import { TokenInfo } from '~/moai-evm/types/components';
+
+import { useSwitchNetwork } from '~/moai-evm/hooks/pages/use-switch-network';
 
 import { MainHeader } from '../../layouts/main-header';
 import { MainLeft } from '../../layouts/main-left';

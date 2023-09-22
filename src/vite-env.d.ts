@@ -1,11 +1,11 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-svgr/client" />
 
-import 'twin.macro';
-
 import { css as cssImport } from '@emotion/react';
 import { CSSInterpolation } from '@emotion/serialize';
 import styledImport from '@emotion/styled';
+
+import 'twin.macro';
 
 declare module 'twin.macro' {
   // The styled and css imports

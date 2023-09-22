@@ -1,5 +1,5 @@
-import type { Meta } from '@storybook/react';
 import { useState } from 'react';
+import type { Meta } from '@storybook/react';
 import tw from 'twin.macro';
 
 import { Tab } from '.';

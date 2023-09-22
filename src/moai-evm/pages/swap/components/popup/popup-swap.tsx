@@ -16,6 +16,7 @@ import { usePopup } from '~/hooks/pages/use-popup';
 import { formatNumber } from '~/utils/number';
 import { DATE_FORMATTER } from '~/utils/time';
 import { useSlippageStore } from '~/states/data/slippage';
+import { POPUP_ID } from '~/types';
 
 import { useSwap } from '~/moai-evm/api/api-contract/swap/swap';
 import { useTokenApprove } from '~/moai-evm/api/api-contract/token/approve';
@@ -28,8 +29,6 @@ import {
   TOKEN_IMAGE_MAPPER,
   TOKEN_USD_MAPPER,
 } from '~/moai-evm/constants';
-
-import { POPUP_ID } from '~/types';
 
 import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
 import { SwapKind } from '~/moai-evm/types/contracts';

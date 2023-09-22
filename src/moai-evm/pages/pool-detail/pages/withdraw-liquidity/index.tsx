@@ -8,7 +8,6 @@ import { ButtonIconLarge } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
 
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
-import { useSwitchNetwork } from '~/moai-evm/hooks/pages/use-switch-network';
 
 import { useLiquidityPoolBalance } from '~/moai-evm/api/api-contract/pool/get-liquidity-pool-balance';
 
@@ -16,6 +15,8 @@ import { CHAIN_ID } from '~/moai-evm/constants';
 
 import { SwitchNetwork } from '~/moai-evm/components/banner/switch-network';
 import { Gnb } from '~/moai-evm/components/gnb';
+
+import { useSwitchNetwork } from '~/moai-evm/hooks/pages/use-switch-network';
 
 import { WithdrawLiquidityInput } from '../../layouts/withdraw-liquidity-input';
 

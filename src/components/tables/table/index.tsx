@@ -1,6 +1,6 @@
+import { Fragment, ReactNode } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { Fragment, ReactNode } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';

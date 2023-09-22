@@ -1,6 +1,6 @@
+import { BrowserRouter } from 'react-router-dom';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Web3Modal } from '@web3modal/react';
-import { BrowserRouter } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 import { WagmiConfig } from 'wagmi';
 

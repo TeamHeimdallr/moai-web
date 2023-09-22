@@ -1,5 +1,5 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiConfig } from 'wagmi';
 
 import { ethereumClient, projectId, wagmiConfig } from '~/configs/setup-evm-wallet';

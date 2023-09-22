@@ -7,10 +7,9 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/pages/use-popup';
 import { formatNumber } from '~/utils/number';
+import { POPUP_ID } from '~/types';
 
 import { tokenInfos } from '~/moai-evm/data/token-info';
-
-import { POPUP_ID } from '~/types';
 
 import { useBalancesAll } from '~/moai-evm/hooks/data/use-balance-all';
 

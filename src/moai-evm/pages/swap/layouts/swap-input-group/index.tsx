@@ -9,7 +9,6 @@ import { Token } from '~/components/token';
 
 import { usePopup } from '~/hooks/pages/use-popup';
 import { formatNumber } from '~/utils/number';
-
 import { POPUP_ID } from '~/types';
 
 import { TOKEN } from '~/moai-evm/types/contracts';
