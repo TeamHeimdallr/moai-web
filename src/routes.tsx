@@ -8,6 +8,7 @@ import { CHAIN_MANTLE } from './constants/constant-chain-mantle';
 import { CHAIN_ROOT } from './constants/constant-chain-root';
 import { CHAIN_XRPL } from './constants/constant-chain-xrpl';
 
+const XrplTestPage = lazy(() => import('./pages/xrpl-test'));
 const HomePage = lazy(() => import('./pages/home'));
 const PoolDetailPage = lazy(() => import('./pages/pool-detail'));
 const SwapPage = lazy(() => import('./pages/swap'));
@@ -17,6 +18,7 @@ const DefaultRountes = () => {
     <ReactRoutes>
       <Route path="/" element={<HomePage />} />
       <Route path="/swap" element={<SwapPage />} />
+      <Route path="/xrpl-test" element={<XrplTestPage />} />
       <Route path="/pools/*" element={<PoolDetailPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </ReactRoutes>
