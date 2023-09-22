@@ -3,24 +3,18 @@ import tw from 'twin.macro';
 
 import { BadgeNew } from '~/components/badges/new';
 import { Token } from '~/components/token';
-import { TOKEN } from '~/types/contracts';
-import { Entries } from '~/types/helpers';
+
+import { Entries } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  tokens: Record<TOKEN, number>;
+  tokens: Record<string, number>;
   isNew?: boolean;
 }
 export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
   return (
     <Wrapper {...rest}>
-      {(Object.entries(tokens) as Entries<Record<TOKEN, number>>).map(([token, percentage]) => (
-        <Token
-          key={token}
-          token={token as TOKEN}
-          percentage={percentage}
-          image={false}
-          type="small"
-        />
+      {(Object.entries(tokens) as Entries<Record<string, number>>).map(([token, percentage]) => (
+        <Token key={token} token={token} percentage={percentage} image={false} type="small" />
       ))}
       {isNew && <BadgeNew />}
     </Wrapper>

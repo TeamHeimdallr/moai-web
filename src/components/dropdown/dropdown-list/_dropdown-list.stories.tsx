@@ -16,7 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Normal: Story = {
   args: {
-    id: 1,
+    id: '1',
 
     image: TokenROOT,
     imageAlt: 'Root',
@@ -28,7 +28,7 @@ export const Normal: Story = {
 
 export const Selected: Story = {
   args: {
-    id: 1,
+    id: '1',
 
     image: TokenROOT,
     imageAlt: 'Root',
@@ -43,7 +43,7 @@ export const Selected: Story = {
 
 export const Disabled: Story = {
   args: {
-    id: 1,
+    id: '1',
 
     image: TokenROOT,
     imageAlt: 'Root',

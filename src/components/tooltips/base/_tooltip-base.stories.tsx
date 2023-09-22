@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
-import { TOOLTIP_ID } from '~/types/components';
+
+import { TOOLTIP_ID } from '~/types';
 
 import { Tooltip } from '.';
 

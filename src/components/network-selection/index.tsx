@@ -3,8 +3,9 @@ import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
 import { CHAIN_IMAGE_MAPPER, CHAIN_SELECT_LIST } from '~/constants';
+
 import { useSelectedNetworkStore } from '~/states/data/selected-network';
-import { TOOLTIP_ID } from '~/types/components';
+import { TOOLTIP_ID } from '~/types';
 
 import { ButtonDropdown } from '../buttons/dropdown';
 import { DropdownList } from '../dropdown/dropdown-list';
@@ -21,11 +22,11 @@ export const NetworkSelection = () => {
   useOnClickOutside(ref, () => open(false));
 
   const selectedNetworkInfo =
-    CHAIN_SELECT_LIST.find(chain => chain.id === selectedNetwork) ?? CHAIN_SELECT_LIST[0];
-  const { id, text } = selectedNetworkInfo;
+    CHAIN_SELECT_LIST.find(chain => chain.name === selectedNetwork) ?? CHAIN_SELECT_LIST[0];
+  const { name, text } = selectedNetworkInfo;
 
-  const handleSelect = (id: number) => {
-    selectNetwork(id);
+  const handleSelect = (name: string) => {
+    selectNetwork(name);
     open(false);
   };
 
@@ -33,7 +34,7 @@ export const NetworkSelection = () => {
     <>
       <Wrapper ref={ref}>
         <ButtonDropdown
-          image={CHAIN_IMAGE_MAPPER[id]}
+          image={CHAIN_IMAGE_MAPPER[name.toUpperCase()]}
           imageAlt={text}
           imageTitle={text}
           text={text}
@@ -46,15 +47,15 @@ export const NetworkSelection = () => {
             <Title>Network Selection</Title>
             <Divider />
             <ListWrapper>
-              {CHAIN_SELECT_LIST.map(chain => (
+              {CHAIN_SELECT_LIST.map((chain, i) => (
                 <DropdownList
-                  key={`${chain.text}-${chain.id}`}
-                  id={chain.id}
+                  key={`${chain.text}-${chain.name}-${i}`}
+                  id={chain.name}
                   text={chain.text}
-                  image={CHAIN_IMAGE_MAPPER[chain.id]}
+                  image={CHAIN_IMAGE_MAPPER[chain.name]}
                   imageAlt={chain.text}
                   imageTitle={chain.text}
-                  selected={chain.id === selectedNetwork}
+                  selected={chain.name === selectedNetwork}
                   handleSelect={handleSelect}
                   disabled={chain.disabled}
                   data-tooltip-id={chain.commingSoon ? TOOLTIP_ID.COMMING_SOON : undefined}

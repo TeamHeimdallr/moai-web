@@ -1,11 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as yup from 'yup';
 
 import { IconDown } from '~/assets/icons';
+
 import { Token } from '~/components/token';
-import { HOOK_FORM_KEY } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
 
 import { InputNumber } from '.';
 
@@ -30,7 +29,7 @@ const Template = () => {
 
   const balance = 1234.12;
   const schema = yup.object({
-    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
+    ['NUMBER_INPUT_VALUE']: yup
       .number()
       .min(0)
       .max(balance || 0, 'Exceeds wallet balance'),
@@ -40,7 +39,7 @@ const Template = () => {
     <InputNumber
       schema={schema}
       handleChange={setInputValue}
-      token={<Token token={TOKEN.MOAI} icon={<IconDown />} />}
+      token={<Token token={'MOAI'} icon={<IconDown />} />}
       handleTokenClick={() => console.log('token clicked')}
       maxButton
       slider
@@ -51,14 +50,14 @@ const Template = () => {
 
 export const SelectableToken: Story = {
   args: {
-    token: <Token token={TOKEN.MOAI} icon={<IconDown />} />,
+    token: <Token token={'MOAI'} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
   },
 };
 
 export const Slider: Story = {
   args: {
-    token: <Token token={TOKEN.MOAI} icon={<IconDown />} />,
+    token: <Token token={'MOAI'} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
     slider: true,
   },
@@ -66,7 +65,7 @@ export const Slider: Story = {
 
 export const SliderActive: Story = {
   args: {
-    token: <Token token={TOKEN.MOAI} icon={<IconDown />} />,
+    token: <Token token={'MOAI'} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
     slider: true,
     sliderActive: true,

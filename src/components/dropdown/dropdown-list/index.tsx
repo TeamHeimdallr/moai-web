@@ -9,10 +9,10 @@ interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'id'> {
   imageTitle?: string;
   imageAlt?: string;
 
-  id: number;
+  id: string;
   text: string;
 
-  handleSelect?: (id: number) => void;
+  handleSelect?: (id: string) => void;
   selected?: boolean;
 
   disabled?: boolean;

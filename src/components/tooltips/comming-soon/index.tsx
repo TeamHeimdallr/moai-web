@@ -1,6 +1,6 @@
 import { ITooltip } from 'react-tooltip';
 
-import { TOOLTIP_ID } from '~/types/components';
+import { TOOLTIP_ID } from '~/types';
 
 import { Tooltip } from '../base';
 

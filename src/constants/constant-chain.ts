@@ -1,23 +1,17 @@
-import { CHAIN } from '.';
-import { CHAIN_EVM_SIDECHAIN } from './constant-chain-evm-sidechain';
-import { CHAIN_LINEA } from './constant-chain-linea';
-import { CHAIN_MANTLE } from './constant-chain-mantle';
-import { CHAIN_ROOT } from './constant-chain-root';
-import { CHAIN_XRPL } from './constant-chain-xrpl';
+import { ChainLinea, ChainMantle, ChainROOT, ChainXRPL } from '~/assets/images';
 
-const integrated = {
-  linea: CHAIN_LINEA,
-  mantle: CHAIN_MANTLE,
-  root: CHAIN_ROOT,
-  xrpl: CHAIN_XRPL,
-  evmSidechain: CHAIN_EVM_SIDECHAIN,
+import { ChainSelectList } from '~/types';
+
+export const CHAIN_IMAGE_MAPPER: Record<string, string> = {
+  MANTLE: ChainMantle,
+  LINEA: ChainLinea,
+  ROOT: ChainROOT,
+  XRPL: ChainXRPL,
 };
 
-const selected = integrated?.[CHAIN as keyof typeof integrated] ?? integrated.xrpl;
-
-export const CHAIN_ID = selected.CHAIN_ID;
-export const POOL_ID = selected.POOL_ID;
-export const CONTRACT_ADDRESS = selected.CONTRACT_ADDRESS;
-export const TOKEN_ADDRESS = selected.TOKEN_ADDRESS;
-export const SCANNER_URL = selected.SCANNER_URL;
-export const CURRENT_CHAIN = CHAIN;
+export const CHAIN_SELECT_LIST: ChainSelectList[] = [
+  { name: 'mantle', text: 'Mantle' },
+  { name: 'linea', text: 'Linea' },
+  { name: 'root', text: 'The Root Network', show: true },
+  { name: 'xrpl', text: 'XRPL', show: true, disabled: true, commingSoon: true },
+];

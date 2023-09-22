@@ -1,4 +1,6 @@
 import BgMain from './bg-main.png';
+import ChainLinea from './chain-linea.png';
+import ChainMantle from './chain-mantle.png';
 import ChainROOT from './chain-root.png';
 import ChainXRPL from './chain-xrpl.png';
 import TokenMOAI from './token-moai.png';
@@ -10,6 +12,8 @@ import TokenXRPL from './token-xrpl.png';
 
 export {
   BgMain,
+  ChainLinea,
+  ChainMantle,
   ChainROOT,
   ChainXRPL,
   TokenMOAI,

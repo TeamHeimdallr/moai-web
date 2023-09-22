@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { TOKEN } from '~/types/contracts';
-
 import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '.';
 
 const meta = {
@@ -23,12 +21,10 @@ export const Normal: Story = {
 export const _TableColumnToken: Story = {
   render: () => (
     <TableColumnToken
-      tokens={
-        {
-          [TOKEN.USDC]: 20,
-          [TOKEN.USDT]: 80,
-        } as Record<TOKEN, number>
-      }
+      tokens={{
+        ['USDC']: 20,
+        ['USDT']: 80,
+      }}
     />
   ),
   args: {
@@ -37,7 +33,7 @@ export const _TableColumnToken: Story = {
 };
 
 export const _TableColumnTokenIcon: Story = {
-  render: () => <TableColumnTokenIcon tokens={[TOKEN.USDC, TOKEN.USDT]} />,
+  render: () => <TableColumnTokenIcon tokens={['USDC', 'USDT']} />,
   args: {
     value: '$123,123,123.12',
   },

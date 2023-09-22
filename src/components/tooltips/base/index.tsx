@@ -1,10 +1,11 @@
-import { css } from '@emotion/react';
 import { ReactNode } from 'react';
 import { ITooltip, Tooltip as ReactTooltip } from 'react-tooltip';
+import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { TOOLTIP_ID } from '~/types/components';
+
+import { TOOLTIP_ID } from '~/types';
 
 interface Props extends ITooltip {
   id: TOOLTIP_ID;
