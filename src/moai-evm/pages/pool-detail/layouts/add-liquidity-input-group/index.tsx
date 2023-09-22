@@ -28,6 +28,7 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
 
   const priceImpact = 0.13; // TODO
+
   const [inputValue1, setInputValue1] = useState<number>(0);
   const [inputValue2, setInputValue2] = useState<number>(0);
 

@@ -56,13 +56,12 @@ export const InputNumber = ({
 }: Props) => {
   const [focused, setFocus] = useState(false);
 
-  const { control, setValue, formState } = useForm<FormState>({
+  const { control, setValue } = useForm<FormState>({
     mode: 'onChange',
     reValidateMode: 'onChange',
     resolver: schema && yupResolver(schema),
   });
 
-  const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
   const numValue = Number(value) || 0;
   const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
@@ -76,11 +75,11 @@ export const InputNumber = ({
   }, [handledValue, focus]);
 
   useEffect(() => {
-    setValue(HOOK_FORM_KEY.NUMBER_INPUT_VALUE, Number(value || 0), {
+    setValue(HOOK_FORM_KEY.NUMBER_INPUT_VALUE, handledValue, {
       shouldValidate: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }, [handledValue]);
 
   const CustomInput = useCallback(({ ...rest }: Props) => <Input {...rest} />, []);
   return (
@@ -88,9 +87,10 @@ export const InputNumber = ({
       name={HOOK_FORM_KEY.NUMBER_INPUT_VALUE}
       control={control}
       render={formProps => {
-        const { field } = formProps;
+        const { field, formState } = formProps;
         const { onChange, onBlur, name } = field;
 
+        const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
         const onValueChange = (handledValue?: number) => {
           onChange(handledValue);
           handleChange?.(handledValue);
@@ -111,10 +111,7 @@ export const InputNumber = ({
                   thousandSeparator
                   maxLength={16}
                   value={handledValue || ''}
-                  onValueChange={values => {
-                    console.log(values);
-                    onValueChange(values.floatValue);
-                  }}
+                  onValueChange={values => onValueChange(values.floatValue)}
                   customInput={CustomInput}
                   onFocus={() => {
                     if (focus) setFocus(true);
