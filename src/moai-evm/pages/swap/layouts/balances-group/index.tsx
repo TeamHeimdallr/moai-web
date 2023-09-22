@@ -66,7 +66,7 @@ const HeaderLabel = tw.div`
   flex font-m-16 text-neutral-100 flex-shrink-0
 `;
 const HeaderText = tw.div`
-  flex font-r-16 text-neutral-100 flex-1 text-end truncate
+  flex font-r-16 text-neutral-100 flex-1 justify-end truncate
 `;
 
 const Divider = tw.div`

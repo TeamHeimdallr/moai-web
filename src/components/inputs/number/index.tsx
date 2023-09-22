@@ -77,8 +77,6 @@ export const InputNumber = ({
 
   useEffect(() => {
     setValue(HOOK_FORM_KEY.NUMBER_INPUT_VALUE, Number(value || 0), {
-      shouldDirty: true,
-      shouldTouch: true,
       shouldValidate: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,7 +111,10 @@ export const InputNumber = ({
                   thousandSeparator
                   maxLength={16}
                   value={handledValue || ''}
-                  onValueChange={values => onValueChange(values.floatValue)}
+                  onValueChange={values => {
+                    console.log(values);
+                    onValueChange(values.floatValue);
+                  }}
                   customInput={CustomInput}
                   onFocus={() => {
                     if (focus) setFocus(true);

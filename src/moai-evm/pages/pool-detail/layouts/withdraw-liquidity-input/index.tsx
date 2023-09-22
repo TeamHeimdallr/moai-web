@@ -1,8 +1,6 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import tw from 'twin.macro';
 import * as yup from 'yup';
-
-import { IconSetting } from '~/assets/icons';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { InputNumber } from '~/components/inputs/number';
@@ -10,7 +8,6 @@ import { Tab } from '~/components/tab';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
-import { useOnClickOutside } from '~/hooks/pages/use-onclick-outside';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { formatNumber } from '~/utils/number';
 import { useWithdrawLiquidityInputTabStore } from '~/states/components/withdraw-liquidity-input-tab';
@@ -19,7 +16,6 @@ import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { TOKEN_DESCRIPTION_MAPPER, TOKEN_IMAGE_MAPPER } from '~/moai-evm/constants';
 
-import { Slippage } from '~/moai-evm/components/account-profile';
 import { PoolInfo } from '~/moai-evm/types/components';
 
 import { WithdrawLiquidityPopup } from '../../components/popup/popup-withdraw-liquidity';
@@ -34,8 +30,8 @@ export const WithdrawLiquidityInput = ({
   tokenTotalSupply,
   liquidityPoolTokenBalance,
 }: Props) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const iconRef = useRef<HTMLDivElement>(null);
+  // const ref = useRef<HTMLDivElement>(null);
+  // const iconRef = useRef<HTMLDivElement>(null);
 
   const [withdrawInputValue, setWithdrawInputValue] = useState<number>();
 
@@ -48,10 +44,10 @@ export const WithdrawLiquidityInput = ({
 
   const priceImpact = 0.13; // TODO
 
-  const [settingOpened, settingOpen] = useState(false);
-  const toggle = () => settingOpen(prev => !prev);
+  // const [settingOpened, settingOpen] = useState(false);
+  // const toggle = () => settingOpen(prev => !prev);
 
-  useOnClickOutside([ref, iconRef], () => settingOpen(false));
+  // useOnClickOutside([ref, iconRef], () => settingOpen(false));
 
   const { compositions } = poolInfo;
   const schema = yup.object({
@@ -67,14 +63,14 @@ export const WithdrawLiquidityInput = ({
     <Wrapper>
       <Header>
         <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />
-        <IconWrapper onClick={toggle} ref={iconRef}>
+        {/* <IconWrapper onClick={toggle} ref={iconRef}>
           <IconSetting fill={settingOpened ? '#F5FF83' : '#9296AD'} width={20} height={20} />
         </IconWrapper>
         {settingOpened && (
           <SlippageWrapper ref={ref}>
             <Slippage shadow />
           </SlippageWrapper>
-        )}
+        )} */}
       </Header>
       <InnerWrapper>
         <ContentWrapper>

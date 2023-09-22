@@ -33,7 +33,9 @@ export const SwapInputs = () => {
     resetFromValue,
 
     fromTokenBalance,
+    fromTokenPrice,
     toTokenBalance,
+    toTokenPrice,
 
     fromSchema,
     swapRatio,
@@ -67,6 +69,7 @@ export const SwapInputs = () => {
             <InputNumber
               token={<Token token={fromToken as TOKEN} icon={<IconDown />} />}
               balance={fromTokenBalance}
+              tokenValue={fromTokenPrice * (Number(fromValue) || 0)}
               schema={fromSchema}
               value={fromValue}
               maxButton
@@ -80,6 +83,7 @@ export const SwapInputs = () => {
             <InputNumber
               disabled
               token={<Token token={toToken as TOKEN} icon={<IconDown />} />}
+              tokenValue={toTokenPrice * (Number(toValue) || 0)}
               balance={toTokenBalance}
               value={toValue}
               focus={false}

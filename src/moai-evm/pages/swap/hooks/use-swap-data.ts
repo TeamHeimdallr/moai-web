@@ -1,11 +1,12 @@
 import { formatUnits } from 'viem';
 import * as yup from 'yup';
 
+import { formatFloat } from '~/utils/number';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { usePoolTokens } from '~/moai-evm/api/api-contract/pool/get-liquidity-pool-balance';
 
-import { POOL_ID, TOKEN_ADDRESS, TOKEN_DECIAML } from '~/moai-evm/constants';
+import { POOL_ID, TOKEN_ADDRESS, TOKEN_DECIAML, TOKEN_USD_MAPPER } from '~/moai-evm/constants';
 
 import { useBalancesAll } from '~/moai-evm/hooks/data/use-balance-all';
 
@@ -41,8 +42,11 @@ export const useSwapData = () => {
       ? Number(formatUnits(poolBalances?.[1]?.[0] ?? 0n, TOKEN_DECIAML))
       : Number(formatUnits(poolBalances?.[1]?.[1] ?? 0n, TOKEN_DECIAML));
 
-  const fromTokenBalance = balancesMap?.[fromToken]?.value ?? 0;
-  const toTokenBalance = balancesMap?.[toToken]?.value ?? 0;
+  const fromTokenBalance = balancesMap?.[fromToken]?.balance ?? 0;
+  const toTokenBalance = balancesMap?.[toToken]?.balance ?? 0;
+
+  const fromTokenPrice = TOKEN_USD_MAPPER[fromToken] ?? 0;
+  const toTokenPrice = TOKEN_USD_MAPPER[toToken] ?? 0;
 
   const fromSchema = yup.object({
     [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
@@ -53,7 +57,12 @@ export const useSwapData = () => {
 
   const fee = 0.003;
   const toValue = fromValue
-    ? toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee)))
+    ? Number(
+        formatFloat(
+          toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee))),
+          8
+        )
+      )
     : undefined;
 
   const swapRatio =
@@ -81,7 +90,9 @@ export const useSwapData = () => {
     resetAll,
 
     fromTokenBalance,
+    fromTokenPrice,
     toTokenBalance,
+    toTokenPrice,
 
     fromSchema,
 
