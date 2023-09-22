@@ -21,3 +21,6 @@ export const CHAIN_XRPL: ChainInfo = {
   TOKEN_ADDRESS,
   SCANNER_URL,
 };
+
+export const XRPL_JSON_RPC_TEST_NET = 'https://amm.devnet.rippletest.net:51234/';
+export const XRPL_WSS_TEST_NET = 'wss://amm.devnet.rippletest.net:51233/';
