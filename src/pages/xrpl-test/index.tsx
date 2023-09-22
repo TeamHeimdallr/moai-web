@@ -1,6 +1,7 @@
 import { getAddress, isInstalled, submitTransaction } from '@gemwallet/api';
 import { useState } from 'react';
 import tw, { css, styled } from 'twin.macro';
+import { PaymentFlags } from 'xrpl';
 
 import { useGetAmmInfo } from '~/api/xrpl/get-amm';
 import { ButtonPrimaryMedium } from '~/components/buttons/primary';
@@ -20,6 +21,8 @@ const XrplTestPage = () => {
 
   const [xrpToValue, setXrpToValue] = useState(0);
   const [moaiToValue, setMoaiToValue] = useState(0);
+
+  // const ammAccount = 'r3k73UkdrvPxCHaw9nwG2CzQ2W5esgZXCv';
 
   const { checkAmmExist, ammInfo, getFee } = useGetAmmInfo({
     asset1: {
@@ -110,7 +113,7 @@ const XrplTestPage = () => {
     }
   };
 
-  const handleSwapXRP = async () => {
+  const handleSwapForXRP = async () => {
     const result = await checkAmmExist();
 
     if (result) {
@@ -119,18 +122,17 @@ const XrplTestPage = () => {
           getAddress().then(response => {
             const address = response.result?.address;
             console.log('address', address);
-
             const transaction = {
-              TransactionType: 'OfferCreate',
+              TransactionType: 'Payment',
               Account: address,
-              Flags: 0,
-              TakerGets: {
+              Amount: ((xrpToValue ?? 0) * 1e6).toString(),
+              Destination: address,
+              SendMax: {
                 currency: 'MOI',
                 issuer: 'rPEQacsbfGADDHb6wShzTZ2ajByQFPdY3E',
-                value: (moaiToValue ?? 0).toString(),
+                value: (moaiFromValue ?? 0).toString(),
               },
-              TakerPays: ((xrpFromValue ?? 0) * 1e6).toString(),
-              Fee: '20',
+              Flag: PaymentFlags.tfPartialPayment,
             };
             submitTransaction({ transaction }) // ignore warning
               .then(response => {
@@ -145,7 +147,7 @@ const XrplTestPage = () => {
     }
   };
 
-  const handleSwapMOAI = async () => {
+  const handleSwapForMOAI = async () => {
     const result = await checkAmmExist();
 
     if (result) {
@@ -154,18 +156,17 @@ const XrplTestPage = () => {
           getAddress().then(response => {
             const address = response.result?.address;
             console.log('address', address);
-
             const transaction = {
-              TransactionType: 'OfferCreate',
+              TransactionType: 'Payment',
               Account: address,
-              Flags: 0,
-              TakerGets: ((xrpToValue ?? 0) * 1e6).toString(),
-              TakerPays: {
+              Amount: {
                 currency: 'MOI',
                 issuer: 'rPEQacsbfGADDHb6wShzTZ2ajByQFPdY3E',
-                value: (moaiFromValue ?? 0).toString(),
+                value: (moaiToValue ?? 0).toString(),
               },
-              Fee: '20',
+              Destination: address,
+              SendMax: ((xrpFromValue ?? 0) * 1e6).toString(),
+              Flag: PaymentFlags.tfPartialPayment,
             };
             submitTransaction({ transaction }) // ignore warning
               .then(response => {
@@ -247,46 +248,46 @@ const XrplTestPage = () => {
             <ButtonWrapper>
               <InputWrapper>
                 <InputInnerWrapper>
-                  <InputTitle>From XRP</InputTitle>
+                  <InputTitle>원하는 XRP 개수</InputTitle>
                   <InputTextField
-                    value={xrpFromValue}
-                    onChange={e => setXrpFromValue(Number(e.target.value))}
+                    value={xrpToValue}
+                    onChange={e => setXrpToValue(Number(e.target.value))}
                   ></InputTextField>
                 </InputInnerWrapper>
                 <InputInnerWrapper>
-                  <InputTitle>To MOAI</InputTitle>
+                  <InputTitle>최대 지출 가능한 MOAI (sendMax)</InputTitle>
                   <InputTextField
-                    value={moaiToValue}
-                    onChange={e => setMoaiToValue(Number(e.target.value))}
+                    value={moaiFromValue}
+                    onChange={e => setMoaiFromValue(Number(e.target.value))}
                   ></InputTextField>
                 </InputInnerWrapper>
               </InputWrapper>
               <ButtonPrimaryMedium
-                text="Swap XRP to MOAI"
-                onClick={() => handleSwapXRP()}
+                text="Swap From MOAI to XRP"
+                onClick={() => handleSwapForXRP()}
               ></ButtonPrimaryMedium>
             </ButtonWrapper>
 
             <ButtonWrapper>
               <InputWrapper>
                 <InputInnerWrapper>
-                  <InputTitle>From MOAI</InputTitle>
+                  <InputTitle>원하는 MOAI 개수</InputTitle>
                   <InputTextField
-                    value={moaiFromValue}
-                    onChange={e => setMoaiFromValue(Number(e.target.value))}
+                    value={moaiToValue}
+                    onChange={e => setMoaiToValue(Number(e.target.value))}
                   ></InputTextField>
                 </InputInnerWrapper>
                 <InputInnerWrapper>
-                  <InputTitle>To XRP</InputTitle>
+                  <InputTitle>최대 지출 가능한 XRP (sendMax)</InputTitle>
                   <InputTextField
-                    value={xrpToValue}
-                    onChange={e => setXrpToValue(Number(e.target.value))}
+                    value={xrpFromValue}
+                    onChange={e => setXrpFromValue(Number(e.target.value))}
                   ></InputTextField>
                 </InputInnerWrapper>
               </InputWrapper>
               <ButtonPrimaryMedium
-                text="Swap MAOI to XRP"
-                onClick={() => handleSwapMOAI()}
+                text="Swap From XRP to MOAI"
+                onClick={() => handleSwapForMOAI()}
               ></ButtonPrimaryMedium>
             </ButtonWrapper>
           </ContentWrapper>
