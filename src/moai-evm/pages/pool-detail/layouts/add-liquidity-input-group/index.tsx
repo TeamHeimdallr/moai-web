@@ -7,8 +7,9 @@ import { InputNumber } from '~/components/inputs/number';
 import { Token } from '~/components/token';
 
 import { usePopup } from '~/hooks/pages/use-popup';
-import { formatNumber } from '~/utils/number';
+import { formatFloat, formatNumber } from '~/utils/number';
 import { POPUP_ID } from '~/types';
+import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { PoolInfo, TokenInfo } from '~/moai-evm/types/components';
 
@@ -61,8 +62,10 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
 
   const handleChange = (token: TokenInfo, value: number | undefined, idx: number) => {
     const remainTokenPrice = tokens.filter(t => t.name !== token.name)?.[0]?.price ?? 0;
-    const currentTokenTotalValue = token?.value ?? 0;
-    const exceptedRemainToken = remainTokenPrice ? currentTokenTotalValue / remainTokenPrice : 0;
+    const currentTokenTotalValue = Number(formatFloat((value || 0) * (token?.price || 0), 4));
+    const exceptedRemainToken = remainTokenPrice
+      ? Number(formatFloat(currentTokenTotalValue / remainTokenPrice, 4))
+      : 0;
 
     if (idx === 0) {
       setInputValue1(value ?? 0);
@@ -115,17 +118,19 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
         {tokens &&
           tokens.map((token, idx) => {
             const schema = yup.object({
-              NUMBER_INPUT_VALUE: yup
+              [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
                 .number()
                 .min(0)
                 .max(token.balance || 0, 'Exceeds wallet balance'),
             });
+            const tokenValue = (token?.price || 0) * (getInputValue(token?.name) || 0);
             return (
               <InputNumber
-                key={idx}
+                key={token.name + idx}
                 schema={schema}
                 token={<Token token={token.name as TOKEN} />}
                 tokenName={token.name as TOKEN}
+                tokenValue={tokenValue}
                 balance={token.balance}
                 value={getInputValue(token.name)}
                 handleChange={val => handleChange(token, val, idx)}

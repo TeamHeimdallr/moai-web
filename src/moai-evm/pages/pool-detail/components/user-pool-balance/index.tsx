@@ -9,6 +9,8 @@ import { formatNumber } from '~/utils/number';
 import { TOKEN_IMAGE_MAPPER } from '~/moai-evm/constants';
 
 import { PoolInfo, TokenInfo } from '~/moai-evm/types/components';
+
+import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
 interface Props {
   pool: PoolInfo;
   userPoolBalances: TokenInfo[];
@@ -16,6 +18,7 @@ interface Props {
 
 export const UserPoolBalance = ({ userPoolBalances, pool }: Props) => {
   const { id: poolId } = useParams();
+  const { address } = useConnectWallet();
   const navigate = useNavigate();
 
   const totalBalance = userPoolBalances.reduce((acc, cur) => acc + cur.value, 0) ?? 0;
@@ -31,6 +34,16 @@ export const UserPoolBalance = ({ userPoolBalances, pool }: Props) => {
     };
   });
 
+  const handleAddLiquidity = () => {
+    if (!address) return;
+    navigate(`/pools/${poolId}/liquidity`);
+  };
+
+  const handleWithdrawLiquidity = () => {
+    if (!address) return;
+    navigate(`/pools/${poolId}/withdraw`);
+  };
+
   return (
     <Wrapper>
       <Header>
@@ -44,13 +57,15 @@ export const UserPoolBalance = ({ userPoolBalances, pool }: Props) => {
         <ButtonWrapper>
           <ButtonPrimaryLarge
             text="Add liquidity"
-            onClick={() => navigate(`/pools/${poolId}/liquidity`)}
+            onClick={handleAddLiquidity}
+            disabled={!address}
           />
           {totalBalance > 0 && (
             <ButtonPrimaryLarge
               buttonType="outlined"
               text="Withdraw"
-              onClick={() => navigate(`/pools/${poolId}/withdraw`)}
+              disabled={!address}
+              onClick={handleWithdrawLiquidity}
             />
           )}
         </ButtonWrapper>

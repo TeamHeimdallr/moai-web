@@ -36,7 +36,9 @@ export const useLiquidityPoolBalance = (poolId?: Address) => {
 
   const { data: poolTokensData } = usePoolTokens(poolId);
   const { data: liquidityPoolTokenTotalSupplyData } = useLiquidityPoolTokenTotalSupply(poolId);
-  const { data: weightData } = usePoolTokenNormalizedWeights();
+
+  const liquidityPoolTokenAddress = getLiquidityPoolTokenAddress(poolId);
+  const { data: weightData } = usePoolTokenNormalizedWeights(liquidityPoolTokenAddress);
 
   const poolTokenAddresses = (poolTokensData as PoolBalance)?.[0];
   const poolTokenBalances = (poolTokensData as PoolBalance)?.[1];
@@ -85,7 +87,6 @@ export const useLiquidityPoolBalance = (poolId?: Address) => {
     formatUnits(liquidityPoolTokenTotalSupplyData ?? 0n, TOKEN_DECIAML)
   );
 
-  const liquidityPoolTokenAddress = getLiquidityPoolTokenAddress(poolId);
   const { rawValue: liquidityPoolTokenBalanceData } = useERC20TokenBalances(
     walletAddress,
     liquidityPoolTokenAddress

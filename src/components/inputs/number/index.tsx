@@ -10,6 +10,7 @@ import { COLOR } from '~/assets/colors';
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
 
 import { formatNumber } from '~/utils/number';
+import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 type OmitType = 'type' | 'onChange' | 'onBlur';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
@@ -35,7 +36,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
 }
 
 interface FormState {
-  ['NUMBER_INPUT_VALUE']?: number;
+  [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?: number;
 }
 
 export const InputNumber = ({
@@ -55,17 +56,17 @@ export const InputNumber = ({
 }: Props) => {
   const [focused, setFocus] = useState(false);
 
-  const { control, formState } = useForm<FormState>({
+  const { control, setValue, formState } = useForm<FormState>({
     mode: 'onChange',
     reValidateMode: 'onChange',
     resolver: schema && yupResolver(schema),
   });
 
-  const errorMessage = formState?.errors?.['NUMBER_INPUT_VALUE']?.message ?? '';
+  const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
   const numValue = Number(value) || 0;
   const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
-  const tokenUSD = defaultTokenValue ?? 0;
+  const tokenValue = defaultTokenValue ?? 0;
   const currentBalance = balance || 0;
 
   useEffect(() => {
@@ -74,10 +75,19 @@ export const InputNumber = ({
     else setFocus(handledValue > 0);
   }, [handledValue, focus]);
 
+  useEffect(() => {
+    setValue(HOOK_FORM_KEY.NUMBER_INPUT_VALUE, Number(value || 0), {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
   const CustomInput = useCallback(({ ...rest }: Props) => <Input {...rest} />, []);
   return (
     <Controller
-      name={'NUMBER_INPUT_VALUE'}
+      name={HOOK_FORM_KEY.NUMBER_INPUT_VALUE}
       control={control}
       render={formProps => {
         const { field } = formProps;
@@ -127,7 +137,7 @@ export const InputNumber = ({
                     style={{ width: 'auto' }}
                   />
                 )}
-                <TokenUSDValue>${formatNumber(tokenUSD ?? 0, 2, 'floor')}</TokenUSDValue>
+                <TokenUSDValue>${formatNumber(tokenValue ?? 0, 2, 'floor')}</TokenUSDValue>
               </BalanceWrapper>
               {slider && (
                 <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>

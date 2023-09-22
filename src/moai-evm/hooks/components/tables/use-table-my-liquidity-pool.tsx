@@ -37,7 +37,7 @@ export const useTableMyLiquidity = () => {
         const tokens = d.compositions.reduce((acc, cur) => {
           acc[cur.name as TOKEN] = cur.weight;
           return acc;
-        }, {}) as Record<TOKEN, number>;
+        }, {});
 
         return {
           id: d.id,
@@ -69,7 +69,7 @@ export const useTableMyLiquidity = () => {
       {
         header: () => <TableHeaderComposition />,
         cell: row => row.renderValue(),
-        accessorKey: 'composition',
+        accessorKey: 'compositions',
       },
       {
         header: () => (

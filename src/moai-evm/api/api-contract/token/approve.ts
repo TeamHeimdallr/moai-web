@@ -40,6 +40,7 @@ export const useTokenApprove = ({
     functionName: 'allowance',
     args: [walletAddress, spender],
     enabled: enabled && !!walletAddress && !!spender,
+    staleTime: Infinity,
 
     onSuccess: (data: string) => {
       return setAllowance(

@@ -6,6 +6,8 @@ import { IconDown } from '~/assets/icons';
 
 import { Token } from '~/components/token';
 
+import { HOOK_FORM_KEY } from '~/types/components/inputs';
+
 import { InputNumber } from '.';
 
 const meta = {
@@ -29,7 +31,7 @@ const Template = () => {
 
   const balance = 1234.12;
   const schema = yup.object({
-    ['NUMBER_INPUT_VALUE']: yup
+    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
       .number()
       .min(0)
       .max(balance || 0, 'Exceeds wallet balance'),

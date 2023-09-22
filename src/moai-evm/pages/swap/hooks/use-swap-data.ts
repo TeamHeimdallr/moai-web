@@ -1,21 +1,21 @@
 import { formatUnits } from 'viem';
 import * as yup from 'yup';
 
+import { HOOK_FORM_KEY } from '~/types/components/inputs';
+
 import { usePoolTokens } from '~/moai-evm/api/api-contract/pool/get-liquidity-pool-balance';
 
-import { CHAIN, POOL_ID, TOKEN_ADDRESS } from '~/moai-evm/constants';
+import { POOL_ID, TOKEN_ADDRESS, TOKEN_DECIAML } from '~/moai-evm/constants';
 
 import { useBalancesAll } from '~/moai-evm/hooks/data/use-balance-all';
 
 import { useSwapStore } from '../states/swap';
 
 export const useSwapData = () => {
-  const isRoot = CHAIN === 'root';
-  const decimals = isRoot ? 6 : 18;
-
   const { balancesMap } = useBalancesAll();
 
-  const poolId = CHAIN === 'root' ? POOL_ID.ROOT_XRP : POOL_ID.POOL_A;
+  // TODO:
+  const poolId = POOL_ID.MOAI_WETH;
 
   const { data: poolBalances } = usePoolTokens(poolId);
 
@@ -34,18 +34,21 @@ export const useSwapData = () => {
   // TODO: 3 pool case
   const fromReserve =
     (poolBalances?.[0]?.[0] ?? '0x0') === TOKEN_ADDRESS[fromToken]
-      ? Number(formatUnits(poolBalances?.[1]?.[0] ?? 0n, decimals))
-      : Number(formatUnits(poolBalances?.[1]?.[1] ?? 0n, decimals));
+      ? Number(formatUnits(poolBalances?.[1]?.[0] ?? 0n, TOKEN_DECIAML))
+      : Number(formatUnits(poolBalances?.[1]?.[1] ?? 0n, TOKEN_DECIAML));
   const toReserve =
     (poolBalances?.[0]?.[0] ?? '0x0') === TOKEN_ADDRESS[toToken]
-      ? Number(formatUnits(poolBalances?.[1]?.[0] ?? 0n, decimals))
-      : Number(formatUnits(poolBalances?.[1]?.[1] ?? 0n, decimals));
+      ? Number(formatUnits(poolBalances?.[1]?.[0] ?? 0n, TOKEN_DECIAML))
+      : Number(formatUnits(poolBalances?.[1]?.[1] ?? 0n, TOKEN_DECIAML));
 
   const fromTokenBalance = balancesMap?.[fromToken]?.value ?? 0;
   const toTokenBalance = balancesMap?.[toToken]?.value ?? 0;
 
   const fromSchema = yup.object({
-    ['NUMBER_INPUT_VALUE']: yup.number().min(0).max(fromTokenBalance, 'Exceeds wallet balance'),
+    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
+      .number()
+      .min(0)
+      .max(fromTokenBalance, 'Exceeds wallet balance'),
   });
 
   const fee = 0.003;

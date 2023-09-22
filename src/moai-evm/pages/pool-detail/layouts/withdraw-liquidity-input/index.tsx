@@ -15,6 +15,7 @@ import { usePopup } from '~/hooks/pages/use-popup';
 import { formatNumber } from '~/utils/number';
 import { useWithdrawLiquidityInputTabStore } from '~/states/components/withdraw-liquidity-input-tab';
 import { POPUP_ID } from '~/types';
+import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { TOKEN_DESCRIPTION_MAPPER, TOKEN_IMAGE_MAPPER } from '~/moai-evm/constants';
 
@@ -54,7 +55,7 @@ export const WithdrawLiquidityInput = ({
 
   const { compositions } = poolInfo;
   const schema = yup.object({
-    ['NUMBER_INPUT_VALUE']: yup
+    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
       .number()
       .min(0)
       .max(liquidityPoolTokenBalance || 0, 'Exceeds token balance'),

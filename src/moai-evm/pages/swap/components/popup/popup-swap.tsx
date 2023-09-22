@@ -38,7 +38,9 @@ import { SwapArrowDown } from '../arrow-down';
 
 export const PopupSwap = () => {
   const { address } = useConnectWallet();
+
   const { fromToken, fromValue, toToken, toValue, swapRatio, poolId, resetAll } = useSwapData();
+
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippageId } = useSlippageStore();
 

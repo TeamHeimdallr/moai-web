@@ -212,7 +212,7 @@ export const AddLiquidityPopup = ({
             subTitle={`${liquidityTokenName}`}
             description={`$${formatNumber(totalValue)}`}
             image={
-              <Jazzicon diameter={36} seed={jsNumberForAddress(TOKEN_ADDRESS.POOL_A ?? '0x0')} />
+              <Jazzicon diameter={36} seed={jsNumberForAddress(TOKEN_ADDRESS.MOAI_WETH ?? '0x0')} />
             }
             leftAlign={true}
           />
