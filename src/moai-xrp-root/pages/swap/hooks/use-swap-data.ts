@@ -9,17 +9,21 @@ import { usePoolTokens } from '~/moai-xrp-root/api/api-contract/pool/get-liquidi
 import { POOL_ID, TOKEN_ADDRESS, TOKEN_DECIAML } from '~/moai-xrp-root/constants';
 
 import { useBalancesAll } from '~/moai-xrp-root/hooks/data/use-balance-all';
+import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
 import { useGetRootNetworkTokenPrice } from '~/moai-xrp-root/hooks/data/use-root-network-token-price';
 
 import { useSwapStore } from '../states/swap';
 
 export const useSwapData = () => {
+  const { address } = useConnectWallet();
+
   const { balancesMap } = useBalancesAll();
+  const enabled = !!address;
 
   // TODO:
   const poolId = POOL_ID.ROOT_XRP;
 
-  const { data: poolBalances } = usePoolTokens(poolId);
+  const { data: poolBalances } = usePoolTokens(poolId, { enabled });
   const { getTokenPrice } = useGetRootNetworkTokenPrice();
 
   const {

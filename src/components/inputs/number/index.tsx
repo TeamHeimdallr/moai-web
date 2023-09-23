@@ -56,12 +56,13 @@ export const InputNumber = ({
 }: Props) => {
   const [focused, setFocus] = useState(false);
 
-  const { control, setValue } = useForm<FormState>({
+  const { control, setValue, formState } = useForm<FormState>({
     mode: 'onChange',
     reValidateMode: 'onChange',
     resolver: schema && yupResolver(schema),
   });
 
+  const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
   const numValue = Number(value) || 0;
   const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
@@ -75,11 +76,13 @@ export const InputNumber = ({
   }, [handledValue, focus]);
 
   useEffect(() => {
-    setValue(HOOK_FORM_KEY.NUMBER_INPUT_VALUE, handledValue, {
+    setValue(HOOK_FORM_KEY.NUMBER_INPUT_VALUE, Number(value || 0), {
+      shouldDirty: true,
+      shouldTouch: true,
       shouldValidate: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handledValue]);
+  }, [value]);
 
   const CustomInput = useCallback(({ ...rest }: Props) => <Input {...rest} />, []);
   return (
@@ -87,10 +90,9 @@ export const InputNumber = ({
       name={HOOK_FORM_KEY.NUMBER_INPUT_VALUE}
       control={control}
       render={formProps => {
-        const { field, formState } = formProps;
+        const { field } = formProps;
         const { onChange, onBlur, name } = field;
 
-        const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
         const onValueChange = (handledValue?: number) => {
           onChange(handledValue);
           handleChange?.(handledValue);

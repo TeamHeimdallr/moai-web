@@ -49,14 +49,14 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
 
     const remainToken = tokens.filter(t => t.name !== criteria.name)?.[0];
     const remainTokenPrice = remainToken?.price ?? 0;
-    const exceptedRemainToken = remainTokenPrice ? (criteria?.value ?? 0) / remainTokenPrice : 0;
+    const expectedRemainToken = remainTokenPrice ? (criteria?.value ?? 0) / remainTokenPrice : 0;
 
     if (criteria.name === tokens[0]?.name) {
       setInputValue1(criteria.balance);
-      setInputValue2(exceptedRemainToken);
+      setInputValue2(expectedRemainToken);
     }
     if (criteria.name === tokens[1]?.name) {
-      setInputValue1(exceptedRemainToken);
+      setInputValue1(expectedRemainToken);
       setInputValue2(criteria.balance);
     }
   };
@@ -64,16 +64,16 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
   const handleChange = (token: TokenInfo, value: number | undefined, idx: number) => {
     const remainTokenPrice = tokens.filter(t => t.name !== token.name)?.[0]?.price ?? 0;
     const currentTokenTotalValue = Number(formatFloat((value || 0) * (token?.price || 0), 4));
-    const exceptedRemainToken = remainTokenPrice
+    const expectedRemainToken = remainTokenPrice
       ? Number(formatFloat(currentTokenTotalValue / remainTokenPrice, 4))
       : 0;
 
     if (idx === 0) {
       setInputValue1(value ?? 0);
-      setInputValue2(exceptedRemainToken ?? 0);
+      setInputValue2(expectedRemainToken ?? 0);
     }
     if (idx === 1) {
-      setInputValue1(exceptedRemainToken ?? 0);
+      setInputValue1(expectedRemainToken ?? 0);
       setInputValue2(value ?? 0);
     }
   };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import tw from 'twin.macro';
 import * as yup from 'yup';
 
@@ -92,9 +92,8 @@ export const WithdrawLiquidityInput = ({
           <SubTitle>You receive</SubTitle>
           <TokenListWrapper>
             {compositions.map(({ tokenAddress, name, weight }, i) => (
-              <>
+              <Fragment key={tokenAddress + i}>
                 <TokenList
-                  key={tokenAddress}
                   type="large"
                   title={`${name} ${weight}%`}
                   description={`${TOKEN_DESCRIPTION_MAPPER[name]}`}
@@ -102,7 +101,7 @@ export const WithdrawLiquidityInput = ({
                   leftAlign={true}
                 />
                 {i !== compositions.length - 1 && <Divider />}
-              </>
+              </Fragment>
             ))}
           </TokenListWrapper>
         </ContentWrapper>
