@@ -12,7 +12,7 @@ import { TOKEN } from '~/moai-evm/types/contracts';
 import { AddLiquidityPopup } from './popup-add-liquidity';
 
 const meta = {
-  title: 'Pages/Detail/AddLiquidity/AddLiquidityPopup',
+  title: 'Pages-evm/Detail/AddLiquidity/AddLiquidityPopup',
   component: Popup,
   tags: ['autodocs'],
 } satisfies Meta<typeof Popup>;

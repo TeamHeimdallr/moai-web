@@ -1,12 +1,12 @@
 export const QUERY_KEYS = {
   TOKEN: {
-    GET_SYMBOLS: ['get', 'token', 'symbols'],
+    GET_SYMBOLS: ['evm', 'get', 'token', 'symbols'],
   },
   LIQUIIDITY_POOL: {
-    GET_LISTS: ['get', 'liquidity-pool', 'pool-lists'],
-    GET_PROVISIONS: ['get', 'liquidity-pool', 'pool-provisions'],
+    GET_LISTS: ['evm', 'get', 'liquidity-pool', 'pool-lists'],
+    GET_PROVISIONS: ['evm', 'get', 'liquidity-pool', 'pool-provisions'],
   },
   SWAP: {
-    GET_HISTORIES: ['get', 'swap', 'histories'],
+    GET_HISTORIES: ['evm', 'get', 'swap', 'histories'],
   },
 };

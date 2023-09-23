@@ -1,12 +1,15 @@
-import { TokenMOAI, TokenWETH } from '~/assets/images';
+import { TokenMOAI, TokenROOT, TokenWETH, TokenXRP } from '~/assets/images';
 
 import { GnbMenu } from '~/types';
 
 export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   MOAI: TokenMOAI,
   WETH: TokenWETH,
+  ROOT: TokenROOT,
+  XRP: TokenXRP,
 
   '80MOAI-20WETH': TokenMOAI,
+  '50ROOT-50XRP': TokenROOT,
 };
 
 export const GNB_MENU: GnbMenu[] = [

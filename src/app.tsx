@@ -10,7 +10,7 @@ import { CHAIN } from './constants';
 const Web3Provider = lazy(() => import('~/hocs/hoc-web3-provider'));
 
 const MoaiEVM = lazy(() => import('./moai-evm'));
-// const MoaiXRPRoot = lazy(() => import('./moai-xrp-root'));
+const MoaiXRPRoot = lazy(() => import('./moai-xrp-root'));
 
 const RouteWrapper = tw.main`relative w-full h-full`;
 const App = () => {
@@ -23,7 +23,7 @@ const App = () => {
           <AsyncBoundary>
             <RouteWrapper>
               {(CHAIN === 'mantle' || CHAIN === 'linea') && <MoaiEVM />}
-              {/* {CHAIN === 'root' && <MoaiXRPRoot />} */}
+              {CHAIN === 'root' && <MoaiXRPRoot />}
               <ToastContainer />
             </RouteWrapper>
           </AsyncBoundary>

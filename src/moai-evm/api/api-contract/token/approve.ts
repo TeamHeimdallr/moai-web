@@ -10,7 +10,7 @@ import {
 
 import { TOKEN_ABI } from '~/moai-evm/abi/token';
 
-import { CHAIN, CHAIN_ID } from '~/moai-evm/constants';
+import { CHAIN_ID, TOKEN_DECIAML } from '~/moai-evm/constants';
 
 interface Props {
   enabled?: boolean;
@@ -27,9 +27,6 @@ export const useTokenApprove = ({
   spender,
   tokenAddress,
 }: Props) => {
-  const isRoot = CHAIN === 'root';
-  const decimals = isRoot ? 6 : 18;
-
   const [allowance, setAllowance] = useState(false);
 
   const { isConnected, address: walletAddress } = useAccount();
@@ -44,7 +41,7 @@ export const useTokenApprove = ({
 
     onSuccess: (data: string) => {
       return setAllowance(
-        BigInt(data || 0) >= parseUnits((allowanceMin || 0)?.toString(), decimals)
+        BigInt(data || 0) >= parseUnits((allowanceMin || 0)?.toString(), TOKEN_DECIAML)
       );
     },
     onError: () => setAllowance(false),
@@ -57,8 +54,7 @@ export const useTokenApprove = ({
     chainId: CHAIN_ID,
 
     account: walletAddress,
-    args: [spender, `${parseUnits(`${amount || 0}`, decimals)}`],
-    enabled: true,
+    args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIAML)}`],
   });
 
   const { data, writeAsync } = useContractWrite(config);

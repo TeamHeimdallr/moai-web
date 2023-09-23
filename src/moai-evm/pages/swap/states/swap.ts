@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-import { CHAIN } from '~/constants';
-
 import { logger } from '~/states/middleware/logger';
 
 export interface SwapState {
@@ -18,8 +16,8 @@ export interface SwapState {
   resetAll: () => void;
 }
 
-const defaultFrom = CHAIN === 'root' ? 'ROOT' : 'MOAI';
-const defaultTo = CHAIN === 'root' ? 'XRP' : 'WETH';
+const defaultFrom = 'MOAI';
+const defaultTo = 'WETH';
 export const useSwapStore = create<SwapState>()(
   immer(
     logger(set => ({

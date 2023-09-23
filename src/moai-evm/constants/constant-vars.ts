@@ -1,6 +1,7 @@
 import { TokenMOAI, TokenWETH } from '~/assets/images';
 
 import { GnbMenu } from '~/types';
+
 export const TOKEN_DECIAML = 18;
 export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   MOAI: TokenMOAI,

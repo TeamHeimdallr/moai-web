@@ -10,14 +10,14 @@ import { POPUP_ID } from '~/types';
 import { WithdrawLiquidityPopup } from './popup-withdraw-liquidity';
 
 const meta = {
-  title: 'Pages/Detail/AddLiquidity/AddLiquidityPopup',
+  title: 'Pages-evm/Detail/AddLiquidity/AddLiquidityPopup',
   component: Popup,
   tags: ['autodocs'],
 } satisfies Meta<typeof Popup>;
 
 export default meta;
 
-export const _AddLiquidityPopup = () => {
+export const _WithdrawLiquidityPopup = () => {
   const { opened, open } = usePopup(POPUP_ID.ADD_LP);
 
   return (
