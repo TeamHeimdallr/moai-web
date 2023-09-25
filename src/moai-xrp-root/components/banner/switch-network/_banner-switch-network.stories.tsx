@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { SwitchNetwork } from '.';
 
 const meta = {
-  title: 'Components/Banner/SwitchNetwork',
+  title: 'Components/Banner/SwitchNetworkRoot',
   component: SwitchNetwork,
   tags: ['autodocs'],
   argTypes: {},

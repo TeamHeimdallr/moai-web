@@ -18,7 +18,7 @@ const tokens: TokenInfo[] = [
   { name: 'XRP', balance: 2.73857, price: 123, value: 3.1212 },
 ];
 
-export const _MyBalanceInfo: Story = {
+export const _MyBalanceInfoLedger: Story = {
   render: () => (
     <Wrapper>
       <BalanceInfo tokens={tokens} />

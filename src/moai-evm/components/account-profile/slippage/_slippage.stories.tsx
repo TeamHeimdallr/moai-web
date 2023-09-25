@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Slippage } from '.';
 
 const meta = {
-  title: 'Components/AccountProfile/Slippage',
+  title: 'Components/AccountProfile/SlippageEvm',
   component: Slippage,
   tags: ['autodocs'],
   argTypes: {},

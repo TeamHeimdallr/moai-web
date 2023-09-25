@@ -6,7 +6,7 @@ import { wagmiConfig } from '~/configs/setup-evm-wallet';
 import { AccountProfile } from '.';
 
 const meta = {
-  title: 'Components/AccountProfile/AccountProfile',
+  title: 'Components/AccountProfile/AccountProfileLedger',
   component: AccountProfile,
   tags: ['autodocs'],
   argTypes: {},

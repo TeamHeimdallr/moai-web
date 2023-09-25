@@ -9,7 +9,7 @@ import { ethereumClient, projectId, wagmiConfig } from '~/configs/setup-evm-wall
 import { Gnb } from '.';
 
 const meta = {
-  title: 'Components/Gnb/Gnb',
+  title: 'Components/Gnb/GnbEvm',
   component: Gnb,
   tags: ['autodocs'],
   argTypes: {},

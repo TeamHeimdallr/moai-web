@@ -2,7 +2,7 @@ import type { Meta } from '@storybook/react';
 import tw from 'twin.macro';
 
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
-import { Popup } from '~/components/popup';
+
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
 
@@ -17,7 +17,7 @@ const meta = {
 export default meta;
 
 export const _SelectWalletPopup = () => {
-  const { opened, open } = usePopup(POPUP_ID.WALLET);
+  const { opened, open } = usePopup(POPUP_ID.SAMPLE);
 
   return (
     <Wrapper>
