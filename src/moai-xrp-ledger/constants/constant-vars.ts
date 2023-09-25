@@ -1,26 +1,25 @@
-import { TokenMOAI, TokenROOT, TokenXRP } from '~/assets/images';
+import { TokenMOAI, TokenXRP } from '~/assets/images';
 
 import { GnbMenu } from '~/types';
+
+import { CHAIN, IS_MAINNET } from '.';
 
 export const TOKEN_DECIAML = 6;
 export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   MOAI: TokenMOAI,
-  ROOT: TokenROOT,
   XRP: TokenXRP,
-  '50ROOT-50XRP': TokenROOT,
+  '50MOAI-50XRP': TokenXRP,
 };
 
 export const TOKEN_USD_MAPPER: Record<string, number> = {
   MOAI: 10.23,
-  ROOT: 0,
   XRP: 0.5,
 };
 
 export const TOKEN_DESCRIPTION_MAPPER: Record<string, string> = {
   MOAI: 'MOAI Finance Token',
-  ROOT: 'The Root Network',
   XRP: 'XRP',
-  '50ROOT-40XRP': '50ROOT-50XRP LP Token',
+  '50MOAI-50XRP': '50MOAI-50XRP LP Token',
 };
 
 export const GNB_MENU: GnbMenu[] = [
@@ -49,3 +48,10 @@ export const GNB_MENU: GnbMenu[] = [
     commingSoon: true,
   },
 ];
+
+export const XRPL_JSON_RPC_TEST_NET = 'https://amm.devnet.rippletest.net:51234/';
+export const XRPL_WSS_TEST_NET = 'wss://amm.devnet.rippletest.net:51233/';
+
+export const SCANNER_URL = IS_MAINNET ? '' : 'https://explorer.rootnet.cloud';
+
+export const CURRENT_CHAIN = CHAIN;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BaseResponse, dropsToXrp } from 'xrpl';
 
-import { useXrplStore } from '~/states/data/xrpl';
+import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
 
 interface GetAmmInfoProp {
   asset1: {

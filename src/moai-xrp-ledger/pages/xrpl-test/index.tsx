@@ -3,11 +3,11 @@ import { getAddress, isInstalled, submitTransaction } from '@gemwallet/api';
 import tw, { css, styled } from 'twin.macro';
 import { PaymentFlags } from 'xrpl';
 
-import { useGetAmmInfo } from '~/api/xrpl/get-amm';
-
 import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Footer } from '~/components/footer';
 import { InputTextField } from '~/components/inputs/textfield';
+
+import { useGetAmmInfo } from '~/moai-xrp-ledger/api/api-contract/get-amm';
 
 import { Gnb } from '~/moai-xrp-ledger/components/gnb';
 
