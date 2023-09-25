@@ -8,7 +8,7 @@ import { ButtonIconLarge } from '~/components/buttons/icon';
 export const Footer = () => {
   // TODO: sns link
   const sns = [
-    { name: 'twitter', url: '#', icon: <IconTwitter /> },
+    { name: 'twitter', url: 'https://twitter.com/MoaiFinance', icon: <IconTwitter /> },
     { name: 'discord', url: '#', icon: <IconDiscord /> },
     { name: 'telegram', url: '#', icon: <IconTelegram /> },
   ];
