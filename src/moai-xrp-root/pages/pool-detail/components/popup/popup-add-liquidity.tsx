@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { Address, isAddress, parseUnits } from 'viem';
 
+import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
@@ -244,9 +245,9 @@ export const AddLiquidityPopup = ({
 
         {isSuccess && (
           <Scanner onClick={() => handleLink()}>
-            <IconTime width={20} height={20} fill="#6D728C" />
+            <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
             <ScannerText>{txDate.toString()}</ScannerText>
-            <IconLink width={20} height={20} fill="#6D728C" />
+            <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
         )}
       </Wrapper>
