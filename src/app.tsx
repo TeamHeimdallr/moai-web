@@ -2,7 +2,6 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { useConnectXrpl } from './api/xrpl/connect-wrpl';
 import { ToastContainer } from './components/toasts';
 import { AsyncBoundary } from './hocs/hoc-error-boundary';
 import { CHAIN } from './constants';
@@ -14,8 +13,6 @@ const MoaiXRPRoot = lazy(() => import('./moai-xrp-root'));
 
 const RouteWrapper = tw.main`relative w-full h-full`;
 const App = () => {
-  useConnectXrpl();
-
   return (
     <BrowserRouter>
       <Suspense fallback={<></>}>

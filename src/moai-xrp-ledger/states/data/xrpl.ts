@@ -4,7 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 
 import { logger } from '~/states/middleware/logger';
 
-import client from '~/moai-xrp-ledger/configs/setup-xrpl';
+import client from '~/configs/setup-xrpl-wallet';
 
 export interface XrplState {
   client: Client;

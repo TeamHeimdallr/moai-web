@@ -8,4 +8,6 @@ export enum POPUP_ID {
   SWAP_SELECT_TOKEN_TO = 'SWAP_SELECT_TOKEN_TO',
 
   SWAP = 'SWAP',
+
+  WALLET = 'WALLET',
 }
