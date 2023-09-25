@@ -22,22 +22,24 @@ export const useTableTotalComposition = (poolId: Address) => {
 
   const isMyComposition = selectedTab === 'my-composition';
 
-  const { poolInfo, liquidityPoolTokenBalance } = useLiquidityPoolBalance(poolId);
+  const {
+    poolInfo: { balance: poolBalance, tokenTotalSupply, compositions },
+    liquidityPoolTokenBalance,
+  } = useLiquidityPoolBalance(poolId);
 
-  const balance = poolInfo.balance;
-  const poolShareRatio =
-    poolInfo.tokenTotalSupply === 0 ? 0 : liquidityPoolTokenBalance / poolInfo.tokenTotalSupply;
+  const poolShareRatio = tokenTotalSupply === 0 ? 0 : liquidityPoolTokenBalance / tokenTotalSupply;
 
-  const poolData: PoolCompositionData[] = poolInfo?.compositions?.map(composition => {
-    const { tokenAddress, name, balance: compositoinBalance, price, weight } = composition;
-    const userBalance = isMyComposition ? compositoinBalance * poolShareRatio : compositoinBalance;
+  const poolData: PoolCompositionData[] = compositions?.map(composition => {
+    const { tokenAddress, name, balance: compositionBalance, price, weight } = composition;
+    const userBalance = compositionBalance * poolShareRatio;
+    const balance = isMyComposition ? userBalance : compositionBalance;
 
     return {
       tokenAddress,
       token: name as TOKEN,
       weight,
-      value: userBalance * price,
-      currentWeight: (userBalance / balance) * 100,
+      value: balance * price,
+      currentWeight: (balance / poolBalance) * 100,
 
       userBalance,
     };
