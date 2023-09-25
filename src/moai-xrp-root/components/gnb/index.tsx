@@ -12,17 +12,17 @@ import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
+import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 import { useConnectGemWallet } from '~/moai-xrp-root/hooks/data/use-connect-gem-wallet';
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
 
 import { AccountProfile } from '../account-profile';
 
 export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isConnected, address: metamaskAddress } = useConnectWallet();
   const { open } = usePopup(POPUP_ID.WALLET);
   const { gemAddress } = useConnectGemWallet();
+  const { isConnected, address: metamaskAddress } = useConnectEvmWallet();
 
   return (
     <>

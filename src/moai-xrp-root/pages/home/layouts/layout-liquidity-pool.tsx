@@ -13,10 +13,10 @@ import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 import { useTableLiquidityPool } from '~/moai-xrp-root/hooks/components/tables/use-table-liquidity-pool';
 import { LiquidityPoolTable } from '~/moai-xrp-root/types/components';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 
 export const LiquidityPoolLayout = () => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const { data, columns } = useTableLiquidityPool();
   const navigate = useNavigate();
 

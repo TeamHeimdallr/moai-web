@@ -9,13 +9,13 @@ import { useSelectedLiquidityPoolProvisionTabStore } from '~/states/pages/select
 import { useTableTotalProvision } from '~/moai-xrp-root/hooks/components/tables/use-table-total-provision';
 import { LiquidityProvisionTable, PoolInfo } from '~/moai-xrp-root/types/components';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 
 interface Props {
   pool: PoolInfo;
 }
 export const LiquidityProvisions = ({ pool }: Props) => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const tabs = address
     ? [
         { key: 'total-provision', name: 'All liquidity provision' },

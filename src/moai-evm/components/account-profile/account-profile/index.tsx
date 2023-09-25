@@ -13,14 +13,14 @@ import { truncateAddress } from '~/utils/string';
 
 import { SCANNER_URL } from '~/moai-evm/constants';
 
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 
 import { Slippage } from '../slippage';
 
 export const AccountProfile = () => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { address, disconnect } = useConnectWallet();
+  const { address, disconnect } = useConnectEvmWallet();
   const { chain } = useNetwork();
 
   const [opened, open] = useState(false);

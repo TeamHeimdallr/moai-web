@@ -30,14 +30,14 @@ import {
   TOKEN_USD_MAPPER,
 } from '~/moai-evm/constants';
 
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 import { SwapKind } from '~/moai-evm/types/contracts';
 
 import { useSwapData } from '../../hooks/use-swap-data';
 import { SwapArrowDown } from '../arrow-down';
 
 export const PopupSwap = () => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
 
   const { fromToken, fromValue, toToken, toValue, swapRatio, poolId, resetAll } = useSwapData();
 

@@ -5,7 +5,7 @@ import { VAULT_ABI } from '~/moai-xrp-root/abi/vault';
 
 import { CONTRACT_ADDRESS, POOL_ID, TOKEN_USD_MAPPER } from '~/moai-xrp-root/constants';
 
-import { useConnectWallet } from './use-connect-wallet';
+import { useConnectEvmWallet } from './use-connect-evm-wallet';
 
 export const getRootNetworkTokenPrice = async (client?: PublicClient, name?: string) => {
   if (!client || !name) {
@@ -31,7 +31,7 @@ export const getRootNetworkTokenPrice = async (client?: PublicClient, name?: str
 };
 
 export const useGetRootNetworkTokenPrice = () => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
 
   const { data } = useContractRead({
     address: CONTRACT_ADDRESS.VAULT,

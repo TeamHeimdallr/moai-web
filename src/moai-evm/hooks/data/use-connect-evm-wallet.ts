@@ -7,19 +7,21 @@ import { chains } from '~/configs/setup-evm-wallet';
 
 import { CHAIN_ID } from '~/moai-xrp-root/constants';
 
-export const useConnectWallet = (chainId: number = CHAIN_ID) => {
+export const useConnectEvmWallet = (chainId: number = CHAIN_ID) => {
   const { address, isConnected, isConnecting } = useAccount();
 
-  const { connect, error, isLoading } = useConnect({
+  const { connect, data, error, isLoading } = useConnect({
     chainId,
     connector: new InjectedConnector({ chains }),
   });
+  const connectedChainId = data?.chain.id ?? 0;
 
   const { disconnect } = useDisconnect();
 
   return {
     connect,
     disconnect,
+    connectedChainId,
     isConnected,
     isConnecting: isConnecting || isLoading,
     isConnectError: error,

@@ -1,37 +1,26 @@
 import tw, { css, styled } from 'twin.macro';
+import { useConnect } from 'wagmi';
 
 import { Footer } from '~/components/footer';
 
-import { CHAIN_ID } from '~/moai-evm/constants';
+import { Gnb } from '~/moai-xrp-root/components/gnb';
 
-import { SwitchNetwork } from '~/moai-evm/components/banner/switch-network';
-import { Gnb } from '~/moai-evm/components/gnb';
-
-import { useSwitchNetwork } from '~/moai-evm/hooks/pages/use-switch-network';
-
-import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
-
-import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';
-import { MyLiquidityLayout } from './layouts/layout-my-liquidity';
 
 const HomePage = () => {
-  const { isConnected } = useConnectEvmWallet();
-  const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
+  const { data } = useConnect();
+  const currentChainId = data?.chain.id;
 
   return (
     <>
-      {needSwitchNetwork && <SwitchNetwork />}
+      {/* {needSwitchNetwork && <SwitchNetwork />} */}
       <Wrapper>
         <GnbWrapper>
           <Gnb />
         </GnbWrapper>
         <InnerWrapper>
           <MainLayout />
-          <ContentWrapper>
-            {isConnected && <MyLiquidityLayout />}
-            <LiquidityPoolLayout />
-          </ContentWrapper>
+          <ContentWrapper></ContentWrapper>
         </InnerWrapper>
         <Footer />
       </Wrapper>

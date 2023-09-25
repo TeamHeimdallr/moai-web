@@ -5,11 +5,11 @@ import { TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/moai-xrp-root/constants';
 
 import { TOKEN, TokenBalanceInfoAll } from '~/moai-xrp-root/types/contracts';
 
-import { useConnectWallet } from './use-connect-wallet';
+import { useConnectEvmWallet } from './use-connect-evm-wallet';
 import { useGetRootNetworkTokenPrice } from './use-root-network-token-price';
 
 export const useBalancesAll = (): TokenBalanceInfoAll => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const enabled = address && isAddress(address);
 
   const { rootPrice } = useGetRootNetworkTokenPrice();

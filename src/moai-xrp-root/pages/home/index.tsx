@@ -13,14 +13,14 @@ import { Gnb } from '~/moai-xrp-root/components/gnb';
 
 import { useSwitchNetwork } from '~/moai-xrp-root/hooks/pages/use-switch-network';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';
 import { MyLiquidityLayout } from './layouts/layout-my-liquidity';
 
 const HomePage = () => {
-  const { isConnected } = useConnectWallet();
+  const { isConnected } = useConnectEvmWallet();
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
   const { opened } = usePopup(POPUP_ID.WALLET);
 

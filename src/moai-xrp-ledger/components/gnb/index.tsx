@@ -12,14 +12,14 @@ import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
 import { TOOLTIP_ID } from '~/types';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 
 import { AccountProfile } from '../account-profile';
 
 export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isConnected } = useConnectWallet();
+  const { isConnected } = useConnectEvmWallet();
   const { isOpen, open } = useWeb3Modal();
 
   return (

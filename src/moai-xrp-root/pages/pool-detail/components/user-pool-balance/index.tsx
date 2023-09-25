@@ -10,7 +10,7 @@ import { formatNumber } from '~/utils/number';
 
 import { PoolInfo, TokenInfo } from '~/moai-xrp-root/types/components';
 
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 
 interface Props {
   pool: PoolInfo;
@@ -19,7 +19,7 @@ interface Props {
 
 export const UserPoolBalance = ({ userPoolBalances, pool }: Props) => {
   const { id: poolId } = useParams();
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const navigate = useNavigate();
 
   const totalBalance = userPoolBalances.reduce((acc, cur) => acc + cur.value, 0) ?? 0;

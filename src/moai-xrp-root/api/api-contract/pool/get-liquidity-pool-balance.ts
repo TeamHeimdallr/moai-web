@@ -12,7 +12,7 @@ import { CONTRACT_ADDRESS, POOL_ID, TOKEN_ADDRESS, TOKEN_DECIAML } from '~/moai-
 
 import { Composition, PoolInfo } from '~/moai-xrp-root/types/components';
 
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 import { useERC20TokenBalances } from '~/moai-xrp-root/hooks/data/use-balance';
 import { useGetRootNetworkTokenPrice } from '~/moai-xrp-root/hooks/data/use-root-network-token-price';
 import { PoolBalance } from '~/moai-xrp-root/types/contracts';
@@ -27,7 +27,7 @@ interface QueryOptions {
 // disable fetching when chain is root, wallet is not connected,
 // because root network cannot read contract without connect wallet
 export const useLiquidityPoolBalance = (poolId?: Address) => {
-  const { address: walletAddress } = useConnectWallet();
+  const { address: walletAddress } = useConnectEvmWallet();
   const enabled = !!walletAddress;
 
   const { getTokenPrice } = useGetRootNetworkTokenPrice();

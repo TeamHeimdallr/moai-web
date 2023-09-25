@@ -9,13 +9,13 @@ import { useSelectedLiquidityPoolCompositionTabStore } from '~/states/pages/sele
 import { useTableTotalComposition } from '~/moai-xrp-root/hooks/components/tables/use-table-total-composition';
 import { PoolCompositionTable, PoolInfo } from '~/moai-xrp-root/types/components';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 
 interface Props {
   pool: PoolInfo;
 }
 export const PoolCompositions = ({ pool }: Props) => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const tabs = address
     ? [
         { key: 'total-composition', name: 'Total composition' },

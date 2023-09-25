@@ -5,10 +5,10 @@ import { TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/moai-evm/constants';
 
 import { TOKEN, TokenBalanceInfoAll } from '~/moai-evm/types/contracts';
 
-import { useConnectWallet } from './use-connect-wallet';
+import { useConnectEvmWallet } from './use-connect-evm-wallet';
 
 export const useBalancesAll = (): TokenBalanceInfoAll => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const enabled = address && isAddress(address);
 
   const { data: moaiData } = useBalance({

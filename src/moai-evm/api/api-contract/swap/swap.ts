@@ -10,7 +10,7 @@ import { VAULT_ABI } from '~/moai-evm/abi/vault';
 
 import { CONTRACT_ADDRESS } from '~/moai-evm/constants';
 
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/moai-evm/types/contracts';
 
 interface Props {
@@ -30,7 +30,7 @@ export const useSwap = ({
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const publicClient = usePublicClient();
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
 
   const isEnabled = !!singleSwap && !!fundManagement && !!address && enabled;
 

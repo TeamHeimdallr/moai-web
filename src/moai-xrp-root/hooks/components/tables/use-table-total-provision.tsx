@@ -22,10 +22,10 @@ import { SCANNER_URL } from '~/moai-xrp-root/constants';
 
 import { LiquidityProvisionData, LiquidityProvisionTable } from '~/moai-xrp-root/types/components';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
+import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 
 export const useTableTotalProvision = (poolId: Address) => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const { data } = useGetLiquidityPoolProvisions({ poolId });
 
   const { selected: selectedTab } = useSelectedLiquidityPoolProvisionTabStore();
