@@ -2,8 +2,8 @@ import { HTMLAttributes, ReactNode } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
+
 import { TOKEN_IMAGE_MAPPER } from '~/constants';
-import { TOKEN } from '~/types/contracts';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
@@ -34,13 +34,7 @@ export const Token = ({
 }: Props) => {
   return (
     <Wrapper type={type} selected={selected} clickable={clickable} hasImage={!!image} {...rest}>
-      {image && (
-        <TokenImageWrapper
-          src={TOKEN_IMAGE_MAPPER[token] || TOKEN_IMAGE_MAPPER[TOKEN.MOAI]}
-          title={token}
-          type={type}
-        />
-      )}
+      {image && <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />}
       <TextWrapper>
         <TokenText>{title ? title : token}</TokenText>
         {percentage && <Percentage>{percentage}%</Percentage>}

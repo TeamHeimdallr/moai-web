@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { IconDown } from '~/assets/icons';
-import { TOKEN } from '~/types/contracts';
 
 import { Token } from '.';
 
@@ -19,41 +18,41 @@ type Story = StoryObj<typeof meta>;
 
 export const Normal: Story = {
   args: {
-    token: TOKEN.MOAI,
+    token: 'MOAI',
   },
 };
 
 export const NoImage: Story = {
   args: {
-    token: TOKEN.MOAI,
+    token: 'MOAI',
     image: false,
   },
 };
 
 export const Small: Story = {
   args: {
-    token: TOKEN.MOAI,
+    token: 'MOAI',
     type: 'small',
   },
 };
 
 export const Large: Story = {
   args: {
-    token: TOKEN.MOAI,
+    token: 'MOAI',
     type: 'large',
   },
 };
 
 export const WithRaio: Story = {
   args: {
-    token: TOKEN.MOAI,
+    token: 'MOAI',
     percentage: 80,
   },
 };
 
 export const Selected: Story = {
   args: {
-    token: TOKEN.MOAI,
+    token: 'MOAI',
     percentage: 80,
     selected: true,
   },
@@ -61,7 +60,7 @@ export const Selected: Story = {
 
 export const NonClickable: Story = {
   args: {
-    token: TOKEN.MOAI,
+    token: 'MOAI',
     percentage: 80,
     clickable: false,
   },
@@ -69,7 +68,7 @@ export const NonClickable: Story = {
 
 export const WithIcon: Story = {
   args: {
-    token: TOKEN.MOAI,
+    token: 'MOAI',
     icon: <IconDown />,
   },
 };

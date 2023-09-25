@@ -2,7 +2,7 @@ import { Client } from 'xrpl';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-import { XRPL_WSS_TEST_NET } from '~/constants';
+import { XRPL_WSS_TEST_NET } from '~/moai-xrp-ledger/constants';
 
 import { logger } from '../middleware/logger';
 

@@ -1,11 +1,12 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as yup from 'yup';
 
 import { IconDown } from '~/assets/icons';
+
 import { Token } from '~/components/token';
-import { HOOK_FORM_KEY } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
+
+import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { InputNumber } from '.';
 
@@ -40,7 +41,7 @@ const Template = () => {
     <InputNumber
       schema={schema}
       handleChange={setInputValue}
-      token={<Token token={TOKEN.MOAI} icon={<IconDown />} />}
+      token={<Token token={'MOAI'} icon={<IconDown />} />}
       handleTokenClick={() => console.log('token clicked')}
       maxButton
       slider
@@ -51,14 +52,14 @@ const Template = () => {
 
 export const SelectableToken: Story = {
   args: {
-    token: <Token token={TOKEN.MOAI} icon={<IconDown />} />,
+    token: <Token token={'MOAI'} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
   },
 };
 
 export const Slider: Story = {
   args: {
-    token: <Token token={TOKEN.MOAI} icon={<IconDown />} />,
+    token: <Token token={'MOAI'} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
     slider: true,
   },
@@ -66,7 +67,7 @@ export const Slider: Story = {
 
 export const SliderActive: Story = {
   args: {
-    token: <Token token={TOKEN.MOAI} icon={<IconDown />} />,
+    token: <Token token={'MOAI'} icon={<IconDown />} />,
     handleTokenClick: () => console.log('token clicked'),
     slider: true,
     sliderActive: true,

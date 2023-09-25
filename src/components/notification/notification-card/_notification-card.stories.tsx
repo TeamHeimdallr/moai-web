@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { SCANNER_URL } from '~/constants';
-
 import { NotificationCard } from '.';
 
 const meta = {
@@ -19,6 +17,6 @@ export const _Normal: Story = {
   args: {
     title: 'Add liquidity',
     description: '$0.10 in 20% MOAI, 80% USDC',
-    link: SCANNER_URL,
+    link: '',
   },
 };

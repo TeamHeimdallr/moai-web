@@ -1,7 +1,8 @@
-import '~/styles/index.css';
+import { createRoot } from 'react-dom/client';
+
 import '~/configs/polyfill-wallet';
 
-import { createRoot } from 'react-dom/client';
+import '~/styles/index.css';
 
 import('react-toastify/dist/ReactToastify.min.css');
 import('~/app').then(({ default: App }) =>

@@ -3,8 +3,9 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconArrowUp } from '~/assets/icons';
-import { SortingState } from '~/types/components';
+
 import { toggleSorting } from '~/utils/table';
+import { SortingState } from '~/types';
 
 interface TableHeaderSortableProps extends HTMLAttributes<HTMLDivElement> {
   label: string;

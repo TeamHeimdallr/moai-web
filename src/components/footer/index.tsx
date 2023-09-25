@@ -2,6 +2,7 @@ import tw from 'twin.macro';
 
 import { IconDiscord, IconTelegram, IconTwitter } from '~/assets/icons';
 import { ReactComponent as LogoText } from '~/assets/logos/logo-text.svg';
+
 import { ButtonIconLarge } from '~/components/buttons/icon';
 
 export const Footer = () => {

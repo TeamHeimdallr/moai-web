@@ -1,9 +1,9 @@
-import 'react-toastify/dist/ReactToastify.min.css';
-
-import type { Meta, StoryObj } from '@storybook/react';
 import { toast, ToastContainer } from 'react-toastify';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { ButtonPrimarySmall } from '../../buttons/primary';
+
+import 'react-toastify/dist/ReactToastify.min.css';
 
 const meta = {
   title: 'Components/Toasts/Toast',

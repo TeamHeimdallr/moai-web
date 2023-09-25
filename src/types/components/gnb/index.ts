@@ -6,9 +6,10 @@ export interface GnbMenu {
   commingSoon?: boolean;
 }
 
-export interface ChainSelect {
-  id: number;
+export interface ChainSelectList {
+  name: string;
   text: string;
+  show?: boolean;
   disabled?: boolean;
   commingSoon?: boolean;
 }

@@ -2,9 +2,10 @@ import { HTMLAttributes } from 'react';
 import tw from 'twin.macro';
 
 import { IconArrowNext } from '~/assets/icons';
+
 import { Token } from '~/components/token';
-import { TokenInfo } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
+
+import { TokenInfo } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: TokenInfo[];
@@ -18,7 +19,7 @@ export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
       <Token
         key={tokenA.name}
         title={`${Number(tokenA.balance.toFixed(6))}`}
-        token={tokenA.name as TOKEN}
+        token={tokenA.name}
         image={true}
         type="small"
       />
@@ -28,7 +29,7 @@ export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
       <Token
         key={tokenB.name}
         title={`${Number(tokenB.balance.toFixed(6))}`}
-        token={tokenB.name as TOKEN}
+        token={tokenB.name}
         image={true}
         type="small"
       />

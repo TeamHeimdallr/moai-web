@@ -21,7 +21,36 @@
   "ignorePatterns": ["**.config.js", "**.config.ts", "mockServiceWorker.js"],
   "plugins": ["simple-import-sort"],
   "rules": {
-    "simple-import-sort/imports": "error",
+    "simple-import-sort/imports": [
+      "error",
+      {
+        "groups": [
+          ["^react", "^@?\\w"], // Packages. `react` related packages come first.
+
+          ["^~/api?\\w"],
+          ["^~/assets?\\w"],
+          ["^~/constants?\\w"],
+          ["^~/components?\\w"],
+          ["^~/pages?\\w"],
+          ["^~/hooks?\\w", "^~/utils?\\w", "^~/states?\\w", "^~/types?\\w"],
+
+          ["^~/?\\w"],
+          ["^\\u0000"],
+
+          ["^~/moai.*api?\\w"],
+          ["^~/moai.*assets?\\w"],
+          ["^~/moai.*constants?\\w"],
+          ["^~/moai.*components?\\w"],
+          ["^~/moai.*pages?\\w"],
+          ["^~/moai.*hooks?\\w", "^~/moai.*utils?\\w", "^~/moai.*states?\\w", "^~/moai.*types?\\w"],
+
+          ["^\\.\\.(?!/?$)", "^\\.\\./?$"], // Parent imports. Put `..` last.
+          ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"], // Other relative imports. Put same-folder imports and `.` last.
+
+          ["^.+\\.s?css$"] // Style imports.
+        ]
+      }
+    ],
     "simple-import-sort/exports": "error",
     "@typescript-eslint/no-unused-vars": [
       "warn",

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-import { SortingState } from '~/types/components';
+import { SortingState } from '~/types';
 
 import { logger } from '../middleware/logger';
 

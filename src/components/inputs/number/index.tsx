@@ -1,17 +1,16 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import { InputHTMLAttributes, ReactNode, useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
 import ReactSlider from 'react-slider';
+import { yupResolver } from '@hookform/resolvers/yup';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
+
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
-import { TOKEN_USD_MAPPER } from '~/constants';
-import { useGetRootPrice } from '~/hooks/data/use-root-price';
-import { HOOK_FORM_KEY } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
+
 import { formatNumber } from '~/utils/number';
+import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 type OmitType = 'type' | 'onChange' | 'onBlur';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
@@ -20,7 +19,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
 
   token?: ReactNode;
   tokenName?: string;
-  tokenUSD?: number;
+  tokenValue?: number;
   handleTokenClick?: () => void;
 
   value?: number | string;
@@ -42,8 +41,7 @@ interface FormState {
 
 export const InputNumber = ({
   token,
-  tokenName,
-  tokenUSD: defaultTokenUSD,
+  tokenValue: defaultTokenValue,
   balance,
   placeholder = '0',
   schema,
@@ -57,9 +55,8 @@ export const InputNumber = ({
   ...rest
 }: Props) => {
   const [focused, setFocus] = useState(false);
-  const rootPrice = useGetRootPrice();
 
-  const { control, formState } = useForm<FormState>({
+  const { control, setValue, formState } = useForm<FormState>({
     mode: 'onChange',
     reValidateMode: 'onChange',
     resolver: schema && yupResolver(schema),
@@ -69,11 +66,7 @@ export const InputNumber = ({
   const numValue = Number(value) || 0;
   const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
-  const tokenUSD =
-    defaultTokenUSD ??
-    (handledValue || 0) *
-      (tokenName == 'ROOT' ? rootPrice : TOKEN_USD_MAPPER[tokenName ?? TOKEN.MOAI]);
-  // TODO: get balance from wallet
+  const tokenValue = defaultTokenValue ?? 0;
   const currentBalance = balance || 0;
 
   useEffect(() => {
@@ -81,6 +74,15 @@ export const InputNumber = ({
     if (!handledValue) setFocus(false);
     else setFocus(handledValue > 0);
   }, [handledValue, focus]);
+
+  useEffect(() => {
+    setValue(HOOK_FORM_KEY.NUMBER_INPUT_VALUE, Number(value || 0), {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   const CustomInput = useCallback(({ ...rest }: Props) => <Input {...rest} />, []);
   return (
@@ -135,7 +137,7 @@ export const InputNumber = ({
                     style={{ width: 'auto' }}
                   />
                 )}
-                <TokenUSDValue>${formatNumber(tokenUSD ?? 0, 2, 'floor')}</TokenUSDValue>
+                <TokenUSDValue>${formatNumber(tokenValue ?? 0, 2, 'floor')}</TokenUSDValue>
               </BalanceWrapper>
               {slider && (
                 <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>

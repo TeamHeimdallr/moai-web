@@ -2,8 +2,8 @@ import { HTMLAttributes } from 'react';
 import tw from 'twin.macro';
 
 import { Token } from '~/components/token';
-import { TokenInfo } from '~/types/components';
-import { TOKEN } from '~/types/contracts';
+
+import { TokenInfo } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: TokenInfo[];
@@ -16,7 +16,7 @@ export const TableColumnTokenPair = ({ tokens, ...rest }: Props) => {
         <Token
           key={token.name}
           title={`${Number(token.balance.toFixed(6))}`}
-          token={token.name as TOKEN}
+          token={token.name}
           image={true}
           type="small"
         />

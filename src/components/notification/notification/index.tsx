@@ -1,11 +1,10 @@
+import { useRef, useState } from 'react';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useRef, useState } from 'react';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
 import { IconNoti } from '~/assets/icons';
-import { SCANNER_URL } from '~/constants';
 
 import { NotificationCard } from '../notification-card';
 
@@ -25,13 +24,13 @@ export const Notification = () => {
       id: '1',
       title: 'Add liquidity',
       description: '$0.10 in 20% MOAI, 80% USDC',
-      link: SCANNER_URL,
+      link: '',
     },
     {
       id: '2',
       title: 'Withdraw',
       description: '$0.10 in 20% MOAI, 80% USDC',
-      link: SCANNER_URL,
+      link: '',
     },
   ];
 

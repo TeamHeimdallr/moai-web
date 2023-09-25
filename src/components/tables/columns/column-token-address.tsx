@@ -3,21 +3,20 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconLink } from '~/assets/icons';
-import { SCANNER_URL, TOKEN_IMAGE_MAPPER } from '~/constants';
+
+import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
-  tokenAddress: string;
 
   width?: number | 'full';
   align?: 'flex-start' | 'center' | 'flex-end';
 }
-export const TableColumnTokenAddress = ({ token, tokenAddress, width, align, ...rest }: Props) => {
+export const TableColumnTokenAddress = ({ token, width, align, ...rest }: Props) => {
   const tokenImage = TOKEN_IMAGE_MAPPER[token];
-  const handleClick = () => window.open(`${SCANNER_URL}/address/${tokenAddress}`);
 
   return (
-    <Wrapper width={width} align={align} onClick={handleClick} {...rest}>
+    <Wrapper width={width} align={align} {...rest}>
       <LogoWraper src={tokenImage} title={token} />
       <TextWrapper>
         {token}

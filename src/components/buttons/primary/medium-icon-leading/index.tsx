@@ -1,5 +1,5 @@
-import lottie from 'lottie-web/build/player/lottie_light';
 import { ButtonHTMLAttributes, ReactNode, useEffect, useRef } from 'react';
+import lottie from 'lottie-web/build/player/lottie_light';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
