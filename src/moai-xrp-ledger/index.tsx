@@ -1,18 +1,19 @@
 import { lazy } from 'react';
-import { Route, Routes as ReactRoutes } from 'react-router-dom';
+import { Navigate, Route, Routes as ReactRoutes } from 'react-router-dom';
 
 import { useConnectXrpl } from './hooks/data/use-connect-xrpl';
 
-const TestPage = lazy(() => import('./pages/xrpl-test'));
+const HomePage = lazy(() => import('./pages/home'));
 
-const MoaiEVM = () => {
+const MoaiXrpl = () => {
   useConnectXrpl();
 
   return (
     <ReactRoutes>
-      <Route path="/" element={<TestPage />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </ReactRoutes>
   );
 };
 
-export default MoaiEVM;
+export default MoaiXrpl;
