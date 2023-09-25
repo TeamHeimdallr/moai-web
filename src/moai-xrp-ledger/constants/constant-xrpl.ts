@@ -22,3 +22,8 @@ export const AMM_POOL = {
 export const LIQUIDITY_TOKEN_NAME = {
   XRP_MOI: 'XRP-MOI',
 };
+
+export const ISSUER = {
+  MOI: 'rPEQacsbfGADDHb6wShzTZ2ajByQFPdY3E',
+  XRP_MOI: 'r3k73UkdrvPxCHaw9nwG2CzQ2W5esgZXCv',
+};

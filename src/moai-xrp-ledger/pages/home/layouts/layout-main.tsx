@@ -1,4 +1,3 @@
-import { useWeb3Modal } from '@web3modal/react';
 import tw, { styled } from 'twin.macro';
 
 import bgMain from '~/assets/images/bg-main.png';
@@ -9,13 +8,12 @@ import { formatNumber } from '~/utils/number';
 
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 
+import { useConnectXrplWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-xrpl-wallet';
 import { useBalancesAll } from '~/moai-xrp-root/hooks/data/use-balance-all';
-import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 import { TOKEN } from '~/moai-xrp-root/types/contracts';
 
 export const MainLayout = () => {
-  const { isOpen, open } = useWeb3Modal();
-  const { isConnected } = useConnectEvmWallet();
+  const { connect, isConnected } = useConnectXrplWallet();
 
   const { balancesMap } = useBalancesAll();
   const moaiBalance = balancesMap?.[TOKEN.MOAI];
@@ -34,8 +32,7 @@ export const MainLayout = () => {
             <ButtonPrimaryLarge
               text="Connect wallet"
               buttonType="outlined"
-              isLoading={isOpen}
-              onClick={open}
+              onClick={() => connect()}
             />
           </ButtonWrapper>
         </>

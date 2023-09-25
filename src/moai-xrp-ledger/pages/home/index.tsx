@@ -1,5 +1,4 @@
 import tw, { css, styled } from 'twin.macro';
-import { useConnect } from 'wagmi';
 
 import { Footer } from '~/components/footer';
 
@@ -8,12 +7,10 @@ import { Gnb } from '~/moai-xrp-root/components/gnb';
 import { MainLayout } from './layouts/layout-main';
 
 const HomePage = () => {
-  const { data } = useConnect();
-  const currentChainId = data?.chain.id;
+  // TODO: switch network & connect xrpl wallet
 
   return (
     <>
-      {/* {needSwitchNetwork && <SwitchNetwork />} */}
       <Wrapper>
         <GnbWrapper>
           <Gnb />
