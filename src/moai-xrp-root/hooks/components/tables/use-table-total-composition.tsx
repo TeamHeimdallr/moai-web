@@ -36,8 +36,8 @@ export const useTableTotalComposition = (poolId: Address) => {
       tokenAddress,
       token: name as TOKEN,
       weight,
-      value: balance * price,
-      currentWeight: (compositoinBalance / balance) * 100,
+      value: userBalance * price,
+      currentWeight: (userBalance / balance) * 100,
 
       userBalance,
     };
