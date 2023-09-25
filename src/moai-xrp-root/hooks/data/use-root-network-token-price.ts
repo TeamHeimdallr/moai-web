@@ -25,7 +25,9 @@ export const getRootNetworkTokenPrice = async (client?: PublicClient, name?: str
       )
     : 0;
 
-  return rootPrice;
+  const price = name?.toLowerCase() === 'root' ? rootPrice : TOKEN_USD_MAPPER[name ?? ''] ?? 0;
+
+  return price;
 };
 
 export const useGetRootNetworkTokenPrice = () => {

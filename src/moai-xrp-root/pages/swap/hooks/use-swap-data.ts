@@ -48,8 +48,8 @@ export const useSwapData = () => {
       ? Number(formatUnits(poolBalances?.[1]?.[0] ?? 0n, TOKEN_DECIAML))
       : Number(formatUnits(poolBalances?.[1]?.[1] ?? 0n, TOKEN_DECIAML));
 
-  const fromTokenBalance = balancesMap?.[fromToken]?.value ?? 0;
-  const toTokenBalance = balancesMap?.[toToken]?.value ?? 0;
+  const fromTokenBalance = balancesMap?.[fromToken]?.balance ?? 0;
+  const toTokenBalance = balancesMap?.[toToken]?.balance ?? 0;
 
   const fromTokenPrice = getTokenPrice(fromToken);
   const toTokenPrice = getTokenPrice(toToken);

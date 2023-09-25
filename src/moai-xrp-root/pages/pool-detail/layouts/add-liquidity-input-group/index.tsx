@@ -96,7 +96,7 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
   const totalValue =
     tokens?.reduce((sum, token) => {
       const inputValue = getInputValue(token.name) || 0;
-      const tokenValue = token?.value ?? 0;
+      const tokenValue = token?.price ?? 0;
 
       return sum + inputValue * tokenValue;
     }, 0) ?? 0;
@@ -155,7 +155,7 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
           poolInfo={poolInfo}
           tokenInputValues={tokenInputValues}
           totalValue={totalValue}
-          priceImpact={0.13}
+          priceImpact={priceImpact}
         />
       )}
     </Wrapper>

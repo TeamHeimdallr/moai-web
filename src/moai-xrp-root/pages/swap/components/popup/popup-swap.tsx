@@ -87,10 +87,11 @@ export const PopupSwap = () => {
   };
 
   const numFromValue = Number(fromValue) || 0;
+  const numToValue = Number(toValue) || 0;
   const effectivePrice = `1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`;
 
   const fromUSDValue = numFromValue * getTokenPrice(fromToken);
-  const toUSDValue = numFromValue * getTokenPrice(toToken);
+  const toUSDValue = numToValue * getTokenPrice(toToken);
 
   const currentValue = selectedDetailInfo === 'TOKEN' ? numFromValue : fromUSDValue;
   const currentUnit = selectedDetailInfo === 'TOKEN' ? fromToken : 'USD';
