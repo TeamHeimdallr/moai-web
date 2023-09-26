@@ -36,7 +36,7 @@ export type SwapSingleSwapInput = [
   string, // 0x0 하드코딩
 ];
 
-export interface getSwapHistoriesTokens {
+export interface GetSwapHistoriesTokens {
   name: string;
   balance: number;
   price: number;
@@ -46,7 +46,7 @@ export interface getSwapHistoriesTokens {
 export interface GetSwapHistories {
   poolId: Address;
   trader: Address;
-  tokens: getSwapHistoriesTokens[];
+  tokens: GetSwapHistoriesTokens[];
   time: number;
   txHash: Address;
 }

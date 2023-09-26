@@ -33,3 +33,19 @@ export interface PoolInfo {
   apr: number;
   fees: number;
 }
+
+export interface GetLiquidityPoolProvisionsToken {
+  name: string;
+  balance: number;
+  price: number;
+  value: number;
+}
+
+export interface GetLiquidityPoolProvisions {
+  type: 'deposit' | 'withdraw';
+  account: string;
+  tokens: GetLiquidityPoolProvisionsToken[];
+  liquidityProvider: string;
+  time: number;
+  txHash: string;
+}

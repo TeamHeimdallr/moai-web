@@ -1,143 +1,158 @@
-import { useQueries, useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { Address, formatUnits, PublicClient } from 'viem';
-import { usePublicClient } from 'wagmi';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useQuery } from '@tanstack/react-query';
+import { AccountTxRequest, dropsToXrp, TransactionMetadata } from 'xrpl';
 
-import { CONTRACT_ADDRESS, TOKEN_DECIAML } from '~/moai-xrp-root/constants';
+import { AMM, ISSUER, TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
-import { getRootNetworkTokenPrice } from '~/moai-xrp-root/hooks/data/use-root-network-token-price';
-import { QUERY_KEYS } from '~/moai-xrp-root/api/utils/query-keys';
-import { GetSwapHistories } from '~/moai-xrp-root/types/contracts';
+import { QUERY_KEYS } from '~/moai-xrp-ledger/api/utils/query-keys';
+import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
+import { GetSwapHistories, GetSwapHistoriesTokens } from '~/moai-xrp-ledger/types/contracts';
 
-import { getTokenSymbol } from '../token/symbol';
+import { useAmmInfo } from '../amm/get-amm-info';
 
-interface GetSwapHistoriesProps {
-  client: PublicClient;
-  poolId?: Address;
-}
-const getSwapHistories = async ({ client, poolId }: GetSwapHistoriesProps) => {
-  const block = await client.getBlockNumber();
-  const res = await client.getLogs({
-    address: CONTRACT_ADDRESS.VAULT,
-    event: {
-      type: 'event',
-      name: 'Swap',
-      inputs: [
-        { type: 'bytes32', name: 'poolId', indexed: true },
-        { type: 'address', name: 'tokenIn', indexed: true },
-        { type: 'address', name: 'tokenOut', indexed: true },
-        { type: 'uint256', name: 'amountIn', indexed: false },
-        { type: 'uint256', name: 'amountOut', indexed: false },
-      ],
-    },
-    args: { poolId: poolId },
-    fromBlock: block - 10000n,
+export const useGetSwapHistories = (account: string = ISSUER.XRP_MOI) => {
+  const { client } = useXrplStore();
+  const { moiPrice } = useAmmInfo(AMM.XRP_MOI); // TODO:
+
+  const request = {
+    command: 'account_tx',
+    account,
+    ledger_index_min: -1,
+    ledger_index_max: -1,
+    limit: 100,
+  } as AccountTxRequest;
+
+  const getTxs = async () => {
+    const info = await client.request(request);
+    return info;
+  };
+
+  const getTxTokens = (amount: string | Record<string, string>, meta: TransactionMetadata) => {
+    const { TransactionResult, AffectedNodes } = meta;
+
+    const defaultResult = [
+      { name: 'XRP', balance: 0, price: 0, value: 0 },
+      { name: 'MOI', balance: 0, price: 0, value: 0 },
+    ] as GetSwapHistoriesTokens[];
+
+    if (TransactionResult !== 'tesSUCCESS') return defaultResult;
+    if (AffectedNodes.length === 0) return defaultResult;
+
+    // xrp => moi
+    if (typeof amount === 'object') {
+      const affectedNode = AffectedNodes.find(node => {
+        const isAccountRoot = (node as any)?.ModifiedNode?.LedgerEntryType === 'AccountRoot';
+        const isAMM = !!(node as any)?.ModifiedNode?.FinalFields.AMMID;
+
+        return isAccountRoot && !isAMM;
+      });
+
+      const afterBalance = (affectedNode as any)?.ModifiedNode?.FinalFields?.Balance ?? 0;
+      const beforeBalance = (affectedNode as any)?.ModifiedNode?.PreviousFields?.Balance ?? 0;
+
+      const xrpBalance = Number(dropsToXrp(Math.abs(afterBalance - beforeBalance)));
+      const xrpPrice = TOKEN_USD_MAPPER.XRP;
+      const moiBalance = Number(amount.value);
+
+      const token1 = {
+        name: 'XRP',
+        balance: xrpBalance,
+        price: xrpPrice,
+        value: xrpBalance * xrpPrice,
+      };
+
+      const token2 = {
+        name: 'MOI',
+        balance: moiBalance,
+        price: moiPrice,
+        value: moiBalance * moiPrice,
+      };
+
+      return [token1, token2];
+    }
+
+    // moi => xrp
+    if (typeof amount === 'string') {
+      const affectedNode = AffectedNodes.find(
+        node => (node as any)?.ModifiedNode?.LedgerEntryType === 'RippleState'
+      )?.[0];
+
+      const afterBalance = (affectedNode as any)?.ModifiedNode?.FinalFields?.Balance?.value ?? 0;
+      const beforeBalance =
+        (affectedNode as any)?.ModifiedNode?.PreviousFields?.Balance?.value ?? 0;
+
+      const xrpBalance = Number(dropsToXrp(amount));
+      const xrpPrice = TOKEN_USD_MAPPER.XRP;
+      const moiBalance = Number(Math.abs(afterBalance - beforeBalance));
+
+      const token1 = {
+        name: 'XRP',
+        balance: xrpBalance,
+        price: xrpPrice,
+        value: xrpBalance * xrpPrice,
+      };
+
+      const token2 = {
+        name: 'MOI',
+        balance: moiBalance,
+        price: moiPrice,
+        value: moiBalance * moiPrice,
+      };
+
+      return [token1, token2];
+    }
+  };
+
+  const {
+    data: txDataRaw,
+    isLoading,
+    isSuccess,
+    isError,
+  } = useQuery([...QUERY_KEYS.AMM.GET_TRANSACTIONS, account], getTxs, {
+    staleTime: 3000,
   });
 
-  return res;
-};
-
-interface GetFormattedSwapHistoriesProps {
-  client: PublicClient;
-  data: {
-    args: {
-      poolId?: Address | undefined;
-      tokenIn?: Address | undefined;
-      tokenOut?: Address | undefined;
-      amountIn?: bigint | undefined;
-      amountOut?: bigint | undefined;
+  const txData = (txDataRaw?.result?.transactions ?? []).filter(
+    ({ tx }) => tx?.TransactionType === 'Payment'
+  );
+  if (txData.length === 0)
+    return {
+      data: [] as GetSwapHistories[],
+      isLoading,
+      isSuccess,
+      isError,
     };
-    blockHash: Address;
-    txHash: Address;
-  };
-}
-interface SwapTokenInfo {
-  address: Address;
-  name: string;
-  balance: number;
-  price: number;
-  value: number;
-}
-const getFormattedSwapHistories = async ({ client, data }: GetFormattedSwapHistoriesProps) => {
-  const { args, blockHash, txHash } = data;
-  const { poolId, tokenIn, tokenOut, amountIn, amountOut } = args;
 
-  const tokenSymbolPromises = [tokenIn, tokenOut]?.map(address =>
-    getTokenSymbol(client, address ?? '0x0')
-  );
-  const tokenSymbols = await Promise.all(tokenSymbolPromises);
+  const provisions = txData.map(({ tx, meta }) => {
+    const trader = tx?.Account ?? '';
+    const time = (tx?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
+    const txHash = tx?.hash ?? '';
+    const amount = (tx as any)?.Amount ?? '';
 
-  const tokens: SwapTokenInfo[] = [];
-
-  for (let i = 0; i < tokenSymbols.length; i++) {
-    const address = [tokenIn, tokenOut][i] ?? '0x0';
-    const name = tokenSymbols?.[i];
-    const balance = Number(formatUnits([amountIn, amountOut][i] ?? 0n, TOKEN_DECIAML));
-    const price = await getRootNetworkTokenPrice(client, name);
-    const value = price * balance;
-
-    tokens.push({
-      address,
-      name,
-      balance,
-      price,
-      value,
-    });
-  }
-
-  const blockInfo = await client.getBlock({ blockHash });
-  const transaction = await client.getTransaction({ hash: txHash });
-
-  const trader = transaction?.from ?? '0x0';
-  const time = Number(blockInfo?.timestamp ?? Date.now() / 1000) * 1000;
-
-  return {
-    poolId: poolId ?? '0x0',
-    tokens,
-    trader,
-    time,
-    txHash,
-  } as GetSwapHistories;
-};
-
-interface UseGetSwapHistoriesProps {
-  poolId?: Address;
-  options?: UseQueryOptions;
-}
-export const useGetSwapHistories = ({ poolId, options }: UseGetSwapHistoriesProps) => {
-  const client = usePublicClient();
-
-  const { data: swapHistoriesData } = useQuery(
-    [...QUERY_KEYS.SWAP.GET_HISTORIES, poolId],
-    () => getSwapHistories({ client, poolId }),
-    {
-      keepPreviousData: true,
-      enabled: !!poolId && !!client,
-      staleTime: Infinity,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...(options as any),
+    if (typeof meta === 'string') {
+      return {
+        account,
+        trader,
+        tokens: [] as GetSwapHistoriesTokens[],
+        time,
+        txHash,
+      };
     }
-  );
 
-  const queries =
-    swapHistoriesData?.map(data => ({
-      queryKey: [...QUERY_KEYS.SWAP.GET_HISTORIES, 'formatted', data.blockHash],
-      queryFn: () =>
-        getFormattedSwapHistories({
-          client,
-          data: {
-            args: data.args,
-            blockHash: data.blockHash,
-            txHash: data.transactionHash,
-          },
-        }),
-      staleTime: Infinity,
-    })) ?? [];
-  const data = useQueries({ queries });
+    const tokens = getTxTokens(amount, meta as TransactionMetadata);
+    return {
+      account,
+      trader,
+      tokens,
+      time,
+      txHash,
+    };
+  });
 
   return {
-    data: data.map(query => query.data),
-    isLoading: data.some(query => query.isLoading),
-    isError: data.some(query => query.isError),
-    isSuccess: data.every(query => query.isSuccess),
+    data: provisions,
+    isLoading,
+    isSuccess,
+    isError,
   };
 };

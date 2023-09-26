@@ -1,12 +1,14 @@
 import { formatNumber } from '~/utils/number';
 
-import { AMM } from '~/moai-xrp-ledger/constants';
+import { AMM, ISSUER } from '~/moai-xrp-ledger/constants';
 
 import { Composition, PoolInfo } from '~/moai-xrp-ledger/types/components';
 
+import { useLiquidityTokenBalances } from '~/moai-xrp-ledger/hooks/data/use-balance-all';
 import { Amm } from '~/moai-xrp-ledger/types/contracts';
 
 import { useAmmInfo } from '../amm/get-amm-info';
+import { useGetSwapHistories } from '../swap/get-swap-histories';
 
 export const useLiquidityPoolBalance = (amm: Amm = AMM.XRP_MOI) => {
   const { ammInfo } = useAmmInfo(amm);
@@ -15,8 +17,7 @@ export const useLiquidityPoolBalance = (amm: Amm = AMM.XRP_MOI) => {
 
   const poolTokens = [token1, token2];
 
-  // TODO:
-  // const { data: swapHistoriesData } = useGetSwapHistories({ poolId, options: { enabled } });
+  const { data: swapHistoriesData } = useGetSwapHistories(ISSUER.XRP_MOI);
 
   const compositions: Composition[] = poolTokens?.map(token => {
     const tokenIssuer = token.issuer ?? '';
@@ -39,20 +40,13 @@ export const useLiquidityPoolBalance = (amm: Amm = AMM.XRP_MOI) => {
   ];
 
   const poolTotalBalance = compositions?.reduce((acc, cur) => acc + cur.balance, 0) ?? 0;
-  const poolVolume = 0;
-  // TODO:
-  // const poolVolume = swapHistoriesData?.reduce((acc, cur) => {
-  //   const value = cur?.tokens?.reduce((tAcc, tCur) => tAcc + tCur.value, 0) ?? 0;
-  //   return acc + value;
-  // }, 0);
+  const poolVolume = swapHistoriesData?.reduce((acc, cur) => {
+    const value = cur?.tokens?.reduce((tAcc, tCur) => tAcc + tCur.value, 0) ?? 0;
+    return acc + value;
+  }, 0);
   const apr = poolTotalValue === 0 ? 0 : ((poolVolume * fee * 365) / poolTotalValue) * 100;
 
-  // TODO: user's lp token balance
-  // const { rawValue: liquidityPoolTokenBalanceData } = useERC20TokenBalances(
-  //   walletAddress,
-  //   liquidityPoolTokenAddress
-  // );
-  const liquidityPoolTokenBalance = 0;
+  const liquidityPoolTokenBalance = useLiquidityTokenBalances();
 
   const poolInfo: PoolInfo = {
     account: account ?? '',
