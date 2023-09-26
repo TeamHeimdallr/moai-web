@@ -1,4 +1,9 @@
 export const COLOR = {
+  CHAIN: {
+    ROOT: '#ffffff',
+    EVM: '#B7EEFF',
+    XRPL: '#BDB7FF',
+  },
   PRIMARY: {
     20: '#51565D',
     50: '#F5FF83',

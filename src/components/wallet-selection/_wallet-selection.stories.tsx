@@ -2,7 +2,7 @@ import type { Meta } from '@storybook/react';
 import tw from 'twin.macro';
 
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
-import { Popup } from '~/components/popup';
+
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
 

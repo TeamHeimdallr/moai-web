@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { IconNext } from '~/assets/icons';
+import { TOKEN } from '~/constants';
 
-import { ButtonPrimaryMediumIconTrailing } from '~/components/buttons/primary';
+import { FilterChip } from '~/components/filter-chip';
 import { Table } from '~/components/tables';
+import { Toggle } from '~/components/toggle';
 
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 
@@ -23,19 +25,33 @@ export const LiquidityPoolLayout = () => {
   };
 
   const emptyText = !address ? `Please connect wallet` : `No liquidity pools on ${CURRENT_CHAIN}`;
+  const tokens = [TOKEN.MOAI, TOKEN.XRP, TOKEN.ROOT, TOKEN.WETH];
+
+  // TODO : connect selecting all chian api
+  const [selectedAll, selectAll] = useState(true);
 
   return (
     <Wrapper>
       <TitleWrapper>
         <Title>Liquidity pools</Title>
-        <ButtonPrimaryMediumIconTrailing text="Create a pool" icon={<IconNext />} disabled />
+        <AllChainToggle>
+          All suported chains
+          <Toggle selected={selectedAll} onClick={() => selectAll(prev => !prev)} />
+        </AllChainToggle>
       </TitleWrapper>
-      <Table<LiquidityPoolTable>
-        data={data}
-        columns={columns}
-        emptyText={emptyText}
-        handleRowClick={handleRowClick}
-      />
+      <TableWrapper>
+        <BadgeWrapper>
+          {tokens.map(token => (
+            <FilterChip key={token} token={token} selected={false} />
+          ))}
+        </BadgeWrapper>
+        <Table<LiquidityPoolTable>
+          data={data}
+          columns={columns}
+          emptyText={emptyText}
+          handleRowClick={handleRowClick}
+        />
+      </TableWrapper>
     </Wrapper>
   );
 };
@@ -51,3 +67,6 @@ const TitleWrapper = tw.div`
 const Title = tw.div`
   font-b-24 text-neutral-100 flex-1
 `;
+const AllChainToggle = tw.div`flex gap-10 font-m-16 text-neutral-100`;
+const TableWrapper = tw.div`flex flex-col gap-24`;
+const BadgeWrapper = tw.div`flex gap-16`;

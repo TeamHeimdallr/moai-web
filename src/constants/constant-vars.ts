@@ -2,6 +2,15 @@ import { TokenMOAI, TokenROOT, TokenWETH, TokenXRP } from '~/assets/images';
 
 import { GnbMenu } from '~/types';
 
+export enum TOKEN {
+  MOAI = 'MOAI',
+  WETH = 'WETH',
+  ROOT = 'ROOT',
+  XRP = 'XRP',
+
+  MOI = 'MOI',
+}
+
 export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   MOAI: TokenMOAI,
   WETH: TokenWETH,

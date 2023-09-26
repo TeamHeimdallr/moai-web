@@ -28,6 +28,9 @@ export const useGetLiquidityPoolLists = () => {
   const volume = poolInfo.volume;
   const apr = poolInfo.apr;
 
+  // TODO : get chain of the pool
+  const chain = 'ROOT';
+
   const balance = liquidityPoolTokenBalance * liquidityPoolTokenPrice;
 
   if (!address) return [] as LiquidityPoolData[];
@@ -35,6 +38,7 @@ export const useGetLiquidityPoolLists = () => {
     {
       id,
       assets,
+      chain,
       compositions,
       poolValue,
       volume,
