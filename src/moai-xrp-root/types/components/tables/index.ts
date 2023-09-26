@@ -12,6 +12,7 @@ export interface LiquidityPoolIds {
 
 export interface LiquidityPoolData {
   id: Address;
+  chain: string;
   assets: TOKEN[];
   compositions: Composition[];
   poolValue: number;
@@ -23,6 +24,7 @@ export interface LiquidityPoolData {
 
 export interface LiquidityPoolTable {
   id: Address;
+  chain: ReactNode;
   assets: ReactNode;
   compositions: ReactNode;
   poolValue: ReactNode;
