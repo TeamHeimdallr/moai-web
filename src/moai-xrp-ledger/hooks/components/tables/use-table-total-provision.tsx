@@ -96,7 +96,7 @@ export const useTableTotalProvision = (account: string) => {
         token={`${elapsedTime(d.time)}`}
         align="flex-end"
         width={160}
-        link={`${SCANNER_URL}/tx/${d.txHash}`}
+        link={`${SCANNER_URL}/transactions/${d.txHash}`}
       />
     ),
   }));

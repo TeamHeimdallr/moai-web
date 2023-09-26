@@ -57,7 +57,6 @@ export interface PoolCompositionData {
   userBalance: number;
 }
 export interface PoolCompositionTable {
-  tokenIssuer: string;
   token: ReactNode;
   weight: ReactNode;
   balance: ReactNode;
@@ -82,7 +81,7 @@ export interface LiquidityProvisionTable {
 }
 
 export interface SwapData {
-  poolId: string;
+  account: string;
   trader: string;
   tradeDetail: TokenInfo[];
   value: number;
@@ -91,7 +90,7 @@ export interface SwapData {
 }
 
 export interface SwapTable {
-  poolId: string;
+  account: string;
   trader: ReactNode;
   tradeDetail: ReactNode;
   value: ReactNode;

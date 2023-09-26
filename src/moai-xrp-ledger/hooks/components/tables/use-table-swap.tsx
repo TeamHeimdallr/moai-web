@@ -14,17 +14,17 @@ import { truncateAddress } from '~/utils/string';
 import { elapsedTime } from '~/utils/time';
 import { useTableSwapHistoriesStore } from '~/states/components/table-swap-histories';
 
-import { useGetSwapHistories } from '~/moai-xrp-root/api/api-contract/swap/get-swap-histories';
+import { useGetSwapHistories } from '~/moai-xrp-ledger/api/api-contract/swap/get-swap-histories';
 
-import { SCANNER_URL } from '~/moai-xrp-root/constants';
+import { SCANNER_URL } from '~/moai-xrp-ledger/constants';
 
-import { SwapData, SwapTable } from '~/moai-xrp-root/types/components';
+import { SwapData, SwapTable } from '~/moai-xrp-ledger/types/components';
 
-export const useTableSwap = (poolId: Address) => {
-  const { data } = useGetSwapHistories({ poolId });
+export const useTableSwap = (account: string) => {
+  const { data } = useGetSwapHistories(account);
 
   const swapData = data?.map(d => {
-    const poolId = d?.poolId ?? '0x0';
+    const account = d?.account ?? '';
 
     const tradeDetail =
       d?.tokens?.map(t => ({
@@ -35,11 +35,11 @@ export const useTableSwap = (poolId: Address) => {
 
     const value = tradeDetail?.reduce((acc, cur) => acc + cur.value, 0) ?? 0;
     const time = d?.time ?? Date.now();
-    const trader = d?.trader ?? '0x0';
-    const txHash = d?.txHash ?? '0x0';
+    const trader = d?.trader ?? '';
+    const txHash = d?.txHash ?? '';
 
     return {
-      poolId,
+      account,
       trader,
       tradeDetail,
       value,
@@ -55,7 +55,7 @@ export const useTableSwap = (poolId: Address) => {
   });
 
   const tableData: SwapTable[] = sortedData?.map(d => ({
-    poolId: d.poolId,
+    account: d.account,
     trader: (
       <TableColumnIcon
         width={160}

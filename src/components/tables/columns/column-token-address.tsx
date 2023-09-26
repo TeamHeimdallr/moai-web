@@ -9,10 +9,11 @@ import { TOKEN_IMAGE_MAPPER } from '~/constants';
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
 
+  hideIcon?: boolean;
   width?: number | 'full';
   align?: 'flex-start' | 'center' | 'flex-end';
 }
-export const TableColumnTokenAddress = ({ token, width, align, ...rest }: Props) => {
+export const TableColumnTokenAddress = ({ token, width, align, hideIcon, ...rest }: Props) => {
   const tokenImage = TOKEN_IMAGE_MAPPER[token];
 
   return (
@@ -20,9 +21,11 @@ export const TableColumnTokenAddress = ({ token, width, align, ...rest }: Props)
       <LogoWraper src={tokenImage} title={token} />
       <TextWrapper>
         {token}
-        <IconWrapper>
-          <IconLink />
-        </IconWrapper>
+        {!hideIcon && (
+          <IconWrapper>
+            <IconLink />
+          </IconWrapper>
+        )}
       </TextWrapper>
     </Wrapper>
   );

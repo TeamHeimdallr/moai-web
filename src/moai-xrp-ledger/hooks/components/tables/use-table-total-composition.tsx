@@ -36,7 +36,7 @@ export const useTableTotalComposition = (poolId: string) => {
       token: name,
       weight,
       value: balance * price,
-      currentWeight: (balance / poolBalance) * 100,
+      currentWeight: poolBalance ? (balance / poolBalance) * 100 : 0,
 
       userBalance,
     };
@@ -48,7 +48,11 @@ export const useTableTotalComposition = (poolId: string) => {
       <TableColumnTokenAddress
         token={d.token}
         width={216}
-        onClick={() => window.open(`${SCANNER_URL}/token/${d.token}.${d.tokenIssuer}`)}
+        hideIcon={d.token === 'XRP'}
+        onClick={() => {
+          if (d.token === 'XRP') return;
+          window.open(`${SCANNER_URL}/token/${d.token}.${d.tokenIssuer}`);
+        }}
       />
     ),
     weight: <TableColumn value={`${d.weight.toFixed(2)}%`} width={120} align="flex-end" />,
@@ -62,10 +66,6 @@ export const useTableTotalComposition = (poolId: string) => {
   }));
 
   const columns: ColumnDef<PoolCompositionTable, ReactNode>[] = [
-    {
-      cell: row => row.renderValue(),
-      accessorKey: 'tokenIssuer',
-    },
     {
       header: () => <TableHeader label="Token" width={216} align="flex-start" />,
       cell: row => row.renderValue(),
