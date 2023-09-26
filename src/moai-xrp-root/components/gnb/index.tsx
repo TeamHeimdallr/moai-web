@@ -5,6 +5,7 @@ import logo from '~/assets/logos/logo-text.svg';
 
 import { GNB_MENU } from '~/constants';
 
+import { BothConnected } from '~/components/bothConnected';
 import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
@@ -12,6 +13,7 @@ import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
+import { useConnectGemWallet } from '~/moai-xrp-root/hooks/data/use-connect-gem-wallet';
 import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
 
 import { AccountProfile } from '../account-profile';
@@ -21,6 +23,8 @@ export const Gnb = () => {
   const location = useLocation();
   const { isConnected } = useConnectWallet();
   const { open } = usePopup(POPUP_ID.WALLET);
+  const { gemAddress } = useConnectGemWallet();
+  console.log(gemAddress, isConnected);
 
   return (
     <>
@@ -38,7 +42,9 @@ export const Gnb = () => {
               {text}
             </MenuWrapper>
           ))}
-          {isConnected ? (
+          {isConnected && gemAddress ? (
+            <BothConnected />
+          ) : isConnected || gemAddress ? (
             <ConnectedButton>
               <Notification />
               <AccountProfile />
