@@ -5,7 +5,6 @@ import logo from '~/assets/logos/logo-text.svg';
 
 import { GNB_MENU } from '~/constants';
 
-import { BothConnected } from '~/components/bothConnected';
 import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
@@ -21,10 +20,9 @@ import { AccountProfile } from '../account-profile';
 export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isConnected } = useConnectWallet();
+  const { isConnected, address: metamaskAddress } = useConnectWallet();
   const { open } = usePopup(POPUP_ID.WALLET);
   const { gemAddress } = useConnectGemWallet();
-  console.log(gemAddress, isConnected);
 
   return (
     <>
@@ -42,12 +40,14 @@ export const Gnb = () => {
               {text}
             </MenuWrapper>
           ))}
-          {isConnected && gemAddress ? (
-            <BothConnected />
-          ) : isConnected || gemAddress ? (
+          {isConnected || gemAddress ? (
             <ConnectedButton>
               <Notification />
-              <AccountProfile />
+              <AccountProfile
+                bothConnected={isConnected && !!gemAddress}
+                gemAddress={gemAddress}
+                metamaskAddress={metamaskAddress}
+              />
             </ConnectedButton>
           ) : (
             <ButtonPrimaryMedium

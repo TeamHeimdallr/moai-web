@@ -1,6 +1,4 @@
-import { Address } from 'viem';
-
-export const truncateAddress = (addr?: Address, limit = 4) => {
+export const truncateAddress = (addr?: string, limit = 4) => {
   if (!addr) return '';
 
   const zerox = addr.slice(0, 2) == '0x0' ? 2 : 0;

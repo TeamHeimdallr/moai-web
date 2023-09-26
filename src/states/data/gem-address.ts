@@ -6,6 +6,7 @@ import { logger } from '../middleware/logger';
 export interface GemAddressState {
   gemAddress: string;
   setGemAddress: (address: string) => void;
+  resetGemAddress: () => void;
 }
 
 export const useGemAddressStore = create<GemAddressState>()(
@@ -14,6 +15,7 @@ export const useGemAddressStore = create<GemAddressState>()(
       name: 'gem-address-store',
       gemAddress: '',
       setGemAddress: (address: string) => set({ gemAddress: address }),
+      resetGemAddress: () => set({ gemAddress: '' }),
     }))
   )
 );
