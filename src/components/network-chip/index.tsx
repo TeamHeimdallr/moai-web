@@ -17,12 +17,12 @@ export const NetworkChip = ({ network }: Props) => {
     ROOT: {
       name: 'Root Network',
       icon: IconNetworkRoot,
-      color: COLOR.CHAIN.ROOT.replace(/"/g, ''),
+      color: COLOR.CHAIN.ROOT,
     },
     EVM: {
       name: 'Evm Sidechain',
       icon: IconNetworkEvm,
-      color: COLOR.CHAIN.EVM.replace(/"/g, ''),
+      color: COLOR.CHAIN.EVM,
     },
   };
   return (
