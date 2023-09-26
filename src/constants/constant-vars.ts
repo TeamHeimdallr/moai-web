@@ -7,6 +7,8 @@ export enum TOKEN {
   WETH = 'WETH',
   ROOT = 'ROOT',
   XRP = 'XRP',
+
+  MOI = 'MOI',
 }
 
 export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
