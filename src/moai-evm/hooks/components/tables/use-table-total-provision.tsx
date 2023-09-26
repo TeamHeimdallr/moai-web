@@ -5,11 +5,14 @@ import { Address, isAddressEqual } from 'viem';
 import { COLOR } from '~/assets/colors';
 import { IconMinus, IconPlus } from '~/assets/icons';
 
-import { TableHeader, TableHeaderSortable } from '~/components/tables';
-import { TableColumn } from '~/components/tables/columns';
-import { TableColumnIcon } from '~/components/tables/columns/column-icon';
-import { TableColumnLink } from '~/components/tables/columns/column-link';
-import { TableColumnTokenPair } from '~/components/tables/columns/column-token-pair';
+import {
+  TableColumn,
+  TableColumnIcon,
+  TableColumnLink,
+  TableColumnTokenPair,
+  TableHeader,
+  TableHeaderSortable,
+} from '~/components/tables';
 
 import { formatNumber } from '~/utils/number';
 import { elapsedTime } from '~/utils/time';

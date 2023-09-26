@@ -1,20 +1,18 @@
 import { ReactNode } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { TableHeader } from '~/components/tables';
-import { TableColumn } from '~/components/tables/columns';
-import { TableColumnTokenAddress } from '~/components/tables/columns/column-token-address';
+import { TableColumn, TableColumnTokenAddress, TableHeader } from '~/components/tables';
 
 import { formatNumber } from '~/utils/number';
 import { useSelectedLiquidityPoolCompositionTabStore } from '~/states/pages/selected-liquidity-pool-composition-tab';
 
 import { useLiquidityPoolBalance } from '~/moai-xrp-ledger/api/api-contract/pool/get-liquidity-pool-balance';
 
-import { AMM, SCANNER_URL } from '~/moai-xrp-ledger/constants';
+import { AMM, ISSUER, SCANNER_URL } from '~/moai-xrp-ledger/constants';
 
 import { PoolCompositionData, PoolCompositionTable } from '~/moai-xrp-ledger/types/components';
 
-export const useTableTotalComposition = (poolId: string) => {
+export const useTableTotalComposition = (account: string = ISSUER.XRP_MOI) => {
   const { selected: selectedTab } = useSelectedLiquidityPoolCompositionTabStore();
 
   const isMyComposition = selectedTab === 'my-composition';
@@ -22,7 +20,7 @@ export const useTableTotalComposition = (poolId: string) => {
   const {
     poolInfo: { balance: poolBalance, tokenTotalSupply, compositions },
     liquidityPoolTokenBalance,
-  } = useLiquidityPoolBalance(AMM[poolId]);
+  } = useLiquidityPoolBalance(AMM[account]);
 
   const poolShareRatio = tokenTotalSupply === 0 ? 0 : liquidityPoolTokenBalance / tokenTotalSupply;
 

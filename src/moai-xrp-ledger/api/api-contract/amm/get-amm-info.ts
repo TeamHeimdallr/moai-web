@@ -27,7 +27,7 @@ export const useAmmInfo = (amm: Amm = AMM.XRP_MOI) => {
 
     const ammFeeDrops =
       serverState?.result?.state?.validated_ledger?.reserve_inc?.toString() ?? '0';
-    const fee = dropsToXrp(Number(ammFeeDrops) * 1e6);
+    const fee = dropsToXrp(Number(ammFeeDrops));
 
     return fee;
   };

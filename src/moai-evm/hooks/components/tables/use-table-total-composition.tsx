@@ -2,9 +2,7 @@ import { ReactNode } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Address } from 'viem';
 
-import { TableHeader } from '~/components/tables';
-import { TableColumn } from '~/components/tables/columns';
-import { TableColumnTokenAddress } from '~/components/tables/columns/column-token-address';
+import { TableColumn, TableColumnTokenAddress, TableHeader } from '~/components/tables';
 
 import { formatNumber } from '~/utils/number';
 import { useSelectedLiquidityPoolCompositionTabStore } from '~/states/pages/selected-liquidity-pool-composition-tab';

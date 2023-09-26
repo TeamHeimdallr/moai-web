@@ -5,8 +5,8 @@ import {
   TableHeaderAPR,
   TableHeaderAssets,
   TableHeaderComposition,
-} from './header-normal';
-import { TableHeaderSortable } from './header-sortable';
+  TableHeaderSortable,
+} from '.';
 
 const meta = {
   title: 'Components/Tables/TableHeader',

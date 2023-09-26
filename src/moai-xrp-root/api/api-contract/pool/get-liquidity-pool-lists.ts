@@ -1,3 +1,5 @@
+import { Address } from 'viem';
+
 import { CHAIN } from '~/constants';
 
 import { liquidityPools } from '~/moai-xrp-root/data/liquidity-pool-list';
@@ -17,8 +19,9 @@ export const useGetLiquidityPoolLists = () => {
   const poolId = pool.id;
 
   // TODO: update to server api
-  const { poolInfo, liquidityPoolTokenPrice, liquidityPoolTokenBalance } =
-    useLiquidityPoolBalance(poolId);
+  const { poolInfo, liquidityPoolTokenPrice, liquidityPoolTokenBalance } = useLiquidityPoolBalance(
+    poolId as Address
+  );
 
   const id = poolId;
   const isNew = pool.isNew;

@@ -3,14 +3,16 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { NetworkChip } from '~/components/network-chip';
 import {
+  TableColumn,
+  TableColumnBadge,
+  TableColumnToken,
+  TableColumnTokenIcon,
   TableHeader,
   TableHeaderAPR,
   TableHeaderAssets,
   TableHeaderComposition,
   TableHeaderSortable,
 } from '~/components/tables';
-import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
-import { TableColumnBadge } from '~/components/tables/columns/column-badge';
 
 import { formatNumber } from '~/utils/number';
 import { useTableLiquidityPoolStore } from '~/states/components/table-liquidity-pool';

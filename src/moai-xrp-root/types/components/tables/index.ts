@@ -1,11 +1,12 @@
 import { ReactNode } from 'react';
+import { Address } from 'viem';
 
 import { TOKEN } from '~/moai-xrp-root/types/contracts';
 
 import { Composition, TokenInfo } from '..';
 
 export interface LiquidityPoolIds {
-  id: string;
+  id: Address;
   isNew: boolean;
 }
 
@@ -32,7 +33,7 @@ export interface LiquidityPoolTable {
 }
 
 export interface MyLiquidityPoolData {
-  id: string;
+  id: Address;
   assets: TOKEN[];
   compositions: Record<TOKEN, number>;
   pool: Record<TOKEN, number>;
@@ -41,7 +42,7 @@ export interface MyLiquidityPoolData {
   isNew: boolean;
 }
 export interface MyLiquidityPoolTable {
-  id: string;
+  id: Address;
   assets: ReactNode;
   compositions: ReactNode;
   balance: ReactNode;
@@ -50,7 +51,7 @@ export interface MyLiquidityPoolTable {
 }
 
 export interface PoolCompositionData {
-  tokenstring: string;
+  tokenAddress: Address;
   token: TOKEN;
   weight: number;
   value: number;
@@ -59,7 +60,7 @@ export interface PoolCompositionData {
   userBalance: number;
 }
 export interface PoolCompositionTable {
-  tokenstring: string;
+  tokenAddress: string;
   token: ReactNode;
   weight: ReactNode;
   balance: ReactNode;
@@ -72,8 +73,8 @@ export interface LiquidityProvisionData {
   tokens: TokenInfo[];
   value: number;
   time: number;
-  liquidityProvider: string;
-  txHash: string;
+  liquidityProvider: Address;
+  txHash: Address;
 }
 export interface LiquidityProvisionTable {
   id: string;
@@ -85,11 +86,11 @@ export interface LiquidityProvisionTable {
 
 export interface SwapData {
   poolId: string;
-  trader: string;
+  trader: Address;
   tradeDetail: TokenInfo[];
   value: number;
   time: number;
-  txHash: string;
+  txHash: Address;
 }
 
 export interface SwapTable {
