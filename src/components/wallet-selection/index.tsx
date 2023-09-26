@@ -1,13 +1,17 @@
 import { getAddress, isInstalled } from '@gemwallet/api';
+import { useWeb3Modal } from '@web3modal/react';
 import tw from 'twin.macro';
 
 import { IconGem, IconMetamask } from '~/assets/icons';
+
 import { Popup } from '~/components/popup';
+
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
 
 export const SelectWalletPopup = () => {
   const { close } = usePopup(POPUP_ID.WALLET);
+  const { open } = useWeb3Modal();
 
   const wallets = [
     {
@@ -32,6 +36,7 @@ export const SelectWalletPopup = () => {
       description: 'Supports The root network and EVM Sidechain',
       icon: <IconMetamask />,
       onClick: () => {
+        open();
         close();
       },
     },

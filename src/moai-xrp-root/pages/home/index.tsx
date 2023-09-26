@@ -1,6 +1,10 @@
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
+import { SelectWalletPopup } from '~/components/wallet-selection';
+
+import { usePopup } from '~/hooks/pages/use-popup';
+import { POPUP_ID } from '~/types';
 
 import { CHAIN_ID } from '~/moai-xrp-root/constants';
 
@@ -18,6 +22,7 @@ import { MyLiquidityLayout } from './layouts/layout-my-liquidity';
 const HomePage = () => {
   const { isConnected } = useConnectWallet();
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
+  const { opened } = usePopup(POPUP_ID.WALLET);
 
   return (
     <>
@@ -35,6 +40,7 @@ const HomePage = () => {
         </InnerWrapper>
         <Footer />
       </Wrapper>
+      {opened && <SelectWalletPopup />}
     </>
   );
 };
