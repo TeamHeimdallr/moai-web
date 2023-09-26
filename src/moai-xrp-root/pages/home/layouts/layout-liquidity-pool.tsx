@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { TOKEN, TOKEN_IMAGE_MAPPER } from '~/constants';
+import { TOKEN } from '~/constants';
 
+import { FilterChip } from '~/components/filter-chip';
 import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
 
@@ -26,8 +27,8 @@ export const LiquidityPoolLayout = () => {
   const emptyText = !address ? `Please connect wallet` : `No liquidity pools on ${CURRENT_CHAIN}`;
   const tokens = [TOKEN.MOAI, TOKEN.XRP, TOKEN.ROOT, TOKEN.WETH];
 
-  // TODO : connect filter api
-  const [selected, select] = useState(true);
+  // TODO : connect selecting all chian api
+  const [selectedAll, selectAll] = useState(true);
 
   return (
     <Wrapper>
@@ -35,15 +36,13 @@ export const LiquidityPoolLayout = () => {
         <Title>Liquidity pools</Title>
         <AllChainToggle>
           All suported chains
-          <Toggle selected={selected} onClick={() => select(prev => !prev)} />
+          <Toggle selected={selectedAll} onClick={() => selectAll(prev => !prev)} />
         </AllChainToggle>
       </TitleWrapper>
       <TableWrapper>
         <BadgeWrapper>
           {tokens.map(token => (
-            <Badge key={token}>
-              <Image src={TOKEN_IMAGE_MAPPER[token]} /> {token}
-            </Badge>
+            <FilterChip key={token} token={token} selected={false} />
           ))}
         </BadgeWrapper>
         <Table<LiquidityPoolTable>
@@ -71,5 +70,3 @@ const Title = tw.div`
 const AllChainToggle = tw.div`flex gap-10 font-m-16 text-neutral-100`;
 const TableWrapper = tw.div`flex flex-col gap-24`;
 const BadgeWrapper = tw.div`flex gap-16`;
-const Badge = tw.div`flex gap-8 items-center font-r-16 text-neutral-80`;
-const Image = tw.img`w-20 h-20 rounded-10 bg-black`;
