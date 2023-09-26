@@ -13,12 +13,14 @@ export enum TOKEN {
 
 export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   MOAI: TokenMOAI,
+  MOI: TokenMOAI,
   WETH: TokenWETH,
   ROOT: TokenROOT,
   XRP: TokenXRP,
 
   '80MOAI-20WETH': TokenMOAI,
   '50ROOT-50XRP': TokenROOT,
+  '50XRP-50MOI': TokenXRP,
 };
 
 export const GNB_MENU: GnbMenu[] = [

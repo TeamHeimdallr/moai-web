@@ -1,36 +1,35 @@
-import { useEffect } from 'react';
-import { getAddress as gemGetAddress, isInstalled as gemIsInstalled } from '@gemwallet/api';
+import { getPublicKey, isInstalled as gemIsInstalled } from '@gemwallet/api';
 
 import { truncateXrplAddress } from '~/utils/string';
 
+import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
 import { useXrplWalletStore } from '~/moai-xrp-ledger/states/data/xrpl-wallet';
 
 export const useConnectXrplWallet = () => {
-  const { isInstalled, isConnected, address, setInfo, setIsInstalled } = useXrplWalletStore();
+  const { isConnected: isXrplConnected } = useXrplStore();
+  const { isInstalled, isConnected, address, setInfo } = useXrplWalletStore();
 
   const connect = async () => {
-    const address = (await gemGetAddress())?.result?.address || '';
-
-    setInfo({
-      isInstalled,
-      isConnected: !!address,
-      address,
-    });
-  };
-
-  const updateIsInstalled = async () => {
+    if (!isXrplConnected) return;
     const installed = (await gemIsInstalled())?.result?.isInstalled || false;
 
-    setIsInstalled(installed);
-  };
+    if (installed) {
+      const { publicKey, address } = (await getPublicKey())?.result || {
+        publicKey: '',
+        address: '',
+      };
 
-  useEffect(() => {
-    updateIsInstalled();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      setInfo({
+        isInstalled: installed,
+        isConnected: !!publicKey,
+        address,
+      });
+    }
+  };
 
   return {
     connect,
+    isInstalled,
     isConnected,
     address,
     truncatedAddress: truncateXrplAddress(address),

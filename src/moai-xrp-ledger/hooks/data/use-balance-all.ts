@@ -3,27 +3,25 @@ import { formatUnits } from 'viem';
 import { AccountInfoRequest, GatewayBalancesRequest } from 'xrpl';
 
 import { ISSUER } from '~/moai-xrp-ledger/constants';
-import { TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
 import { QUERY_KEYS } from '~/moai-xrp-ledger/api/utils/query-keys';
 import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
 import { TOKEN, TokenBalanceInfoAll } from '~/moai-xrp-ledger/types/contracts';
 
 import { useConnectXrplWallet } from './use-connect-xrpl-wallet';
-import { useGetXrplNetworkTokenPrice } from './use-xrpl-token-price';
 
-export const useBalancesAll = (): TokenBalanceInfoAll => {
+export const useBalancesAll = (address?: string): TokenBalanceInfoAll => {
   const { client } = useXrplStore();
-  const { address } = useConnectXrplWallet();
+  const { address: currentAddress } = useConnectXrplWallet();
 
-  const { xrpPrice } = useGetXrplNetworkTokenPrice();
+  const target = address ?? currentAddress ?? ISSUER.XRP_MOI;
 
   const xrpBalanceData = async () => {
     const res =
       (
         await client.request({
           command: 'account_info',
-          account: ISSUER.XRP_MOI,
+          account: target,
         } as AccountInfoRequest)
       )?.result?.account_data?.Balance || 0;
 
@@ -35,7 +33,7 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
       (
         await client.request({
           command: 'gateway_balances',
-          account: ISSUER.XRP_MOI,
+          account: target,
         } as GatewayBalancesRequest)
       )?.result?.assets?.[ISSUER.MOI]?.find(asset => asset?.currency === 'MOI')?.value || 0;
 
@@ -43,15 +41,15 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
   };
 
   const { data: xrpData } = useQuery(
-    [...QUERY_KEYS.TOKEN.GET_XRP_BALANCE, address],
+    [...QUERY_KEYS.TOKEN.GET_XRP_BALANCE, target],
     xrpBalanceData,
-    { enabled: !!address && !!client }
+    { enabled: !!target && !!client }
   );
 
   const { data: moiData } = useQuery(
-    [...QUERY_KEYS.TOKEN.GET_MOI_BALANCE, address],
+    [...QUERY_KEYS.TOKEN.GET_MOI_BALANCE, target],
     moiBalanceData,
-    { enabled: !!address && !!client }
+    { enabled: !!target && !!client }
   );
 
   const success = xrpData && moiData;
@@ -64,13 +62,11 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
 
   const xrp = {
     balance: xrpData ?? 0,
-    value: xrpPrice * (xrpData ?? 0),
     name: 'XRP',
   };
 
   const moi = {
     balance: moiData ?? 0,
-    value: TOKEN_USD_MAPPER.MOI * (moiData ?? 0),
     name: 'MOI',
   };
   const balancesMap = {

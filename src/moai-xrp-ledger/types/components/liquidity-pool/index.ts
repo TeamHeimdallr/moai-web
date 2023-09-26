@@ -1,5 +1,3 @@
-import { Address } from 'viem';
-
 export interface TokenInfo {
   name: string;
   balance: number;
@@ -9,16 +7,16 @@ export interface TokenInfo {
 
 export interface Composition extends TokenInfo {
   // pool token
-  tokenAddress: Address;
+  tokenIssuer?: string;
   weight: number;
 }
 
 export interface PoolInfo {
-  id: Address;
+  account: string;
 
   // lp token
   tokenName: string;
-  tokenAddress: Address;
+  tokenIssuer: string;
   tokenTotalSupply: number;
 
   compositions: Composition[];

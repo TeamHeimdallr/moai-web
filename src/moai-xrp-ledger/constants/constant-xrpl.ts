@@ -1,3 +1,5 @@
+import { Amm } from '../types/contracts';
+
 import { CHAIN, IS_MAINNET } from '.';
 
 export const XRPL_JSON_RPC_TEST_NET = 'https://amm.devnet.rippletest.net:51234/';
@@ -7,7 +9,11 @@ export const SCANNER_URL = IS_MAINNET ? '' : 'https://amm-devnet.xrpl.org/';
 
 export const CURRENT_CHAIN = CHAIN;
 
-export const AMM_POOL = {
+export const POOL_ID = {
+  XRP_MOI: 'XRP_MOI',
+};
+
+export const AMM: Record<string, Amm> = {
   XRP_MOI: {
     asset1: {
       currency: 'XRP',
@@ -20,7 +26,7 @@ export const AMM_POOL = {
 };
 
 export const LIQUIDITY_TOKEN_NAME = {
-  XRP_MOI: 'XRP-MOI',
+  XRP_MOI: '50XRP-50MOI',
 };
 
 export const ISSUER = {

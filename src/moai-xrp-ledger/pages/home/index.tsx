@@ -4,10 +4,15 @@ import { Footer } from '~/components/footer';
 
 import { Gnb } from '~/moai-xrp-root/components/gnb';
 
+import { useConnectXrplWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-xrpl-wallet';
+
+import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';
+import { MyLiquidityLayout } from './layouts/layout-my-liquidity';
 
 const HomePage = () => {
   // TODO: switch network & connect xrpl wallet
+  const { isConnected } = useConnectXrplWallet();
 
   return (
     <>
@@ -17,7 +22,10 @@ const HomePage = () => {
         </GnbWrapper>
         <InnerWrapper>
           <MainLayout />
-          <ContentWrapper></ContentWrapper>
+          <ContentWrapper>
+            {isConnected && <MyLiquidityLayout />}
+            <LiquidityPoolLayout />
+          </ContentWrapper>
         </InnerWrapper>
         <Footer />
       </Wrapper>

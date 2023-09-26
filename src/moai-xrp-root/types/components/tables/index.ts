@@ -1,17 +1,16 @@
 import { ReactNode } from 'react';
-import { Address } from 'viem';
 
 import { TOKEN } from '~/moai-xrp-root/types/contracts';
 
 import { Composition, TokenInfo } from '..';
 
 export interface LiquidityPoolIds {
-  id: Address;
+  id: string;
   isNew: boolean;
 }
 
 export interface LiquidityPoolData {
-  id: Address;
+  id: string;
   chain: string;
   assets: TOKEN[];
   compositions: Composition[];
@@ -23,7 +22,7 @@ export interface LiquidityPoolData {
 }
 
 export interface LiquidityPoolTable {
-  id: Address;
+  id: string;
   chain: ReactNode;
   assets: ReactNode;
   compositions: ReactNode;
@@ -33,7 +32,7 @@ export interface LiquidityPoolTable {
 }
 
 export interface MyLiquidityPoolData {
-  id: Address;
+  id: string;
   assets: TOKEN[];
   compositions: Record<TOKEN, number>;
   pool: Record<TOKEN, number>;
@@ -42,7 +41,7 @@ export interface MyLiquidityPoolData {
   isNew: boolean;
 }
 export interface MyLiquidityPoolTable {
-  id: Address;
+  id: string;
   assets: ReactNode;
   compositions: ReactNode;
   balance: ReactNode;
@@ -51,7 +50,7 @@ export interface MyLiquidityPoolTable {
 }
 
 export interface PoolCompositionData {
-  tokenAddress: Address;
+  tokenstring: string;
   token: TOKEN;
   weight: number;
   value: number;
@@ -60,7 +59,7 @@ export interface PoolCompositionData {
   userBalance: number;
 }
 export interface PoolCompositionTable {
-  tokenAddress: string;
+  tokenstring: string;
   token: ReactNode;
   weight: ReactNode;
   balance: ReactNode;
@@ -73,8 +72,8 @@ export interface LiquidityProvisionData {
   tokens: TokenInfo[];
   value: number;
   time: number;
-  liquidityProvider: Address;
-  txHash: Address;
+  liquidityProvider: string;
+  txHash: string;
 }
 export interface LiquidityProvisionTable {
   id: string;
@@ -86,11 +85,11 @@ export interface LiquidityProvisionTable {
 
 export interface SwapData {
   poolId: string;
-  trader: Address;
+  trader: string;
   tradeDetail: TokenInfo[];
   value: number;
   time: number;
-  txHash: Address;
+  txHash: string;
 }
 
 export interface SwapTable {

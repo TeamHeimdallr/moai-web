@@ -6,7 +6,7 @@ import { TOKEN } from '~/moai-xrp-root/types/contracts';
 import { Composition, TokenInfo } from '..';
 
 export interface LiquidityPoolIds {
-  id: Address;
+  id: string;
   isNew: boolean;
 }
 

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 import { logger } from '~/states/middleware/logger';
@@ -24,24 +25,27 @@ export interface XrplWalletState {
 
 export const useXrplWalletStore = create<XrplWalletState>()(
   immer(
-    logger(set => ({
-      name: 'xrpl-wallet-store',
-      isInstalled: false,
-      isConnected: false,
-      address: '',
+    persist(
+      logger(set => ({
+        name: 'xrpl-wallet-store',
+        isInstalled: false,
+        isConnected: false,
+        address: '',
 
-      setIsInstalled: (isInstalled: boolean) => set({ isInstalled }),
-      setIsConnected: (isConnected: boolean) => set({ isConnected }),
-      setAddress: (address: string) => set({ address }),
-      setInfo: ({
-        isInstalled,
-        isConnected,
-        address,
-      }: {
-        isInstalled: boolean;
-        isConnected: boolean;
-        address: string;
-      }) => set({ isInstalled, isConnected, address }),
-    }))
+        setIsInstalled: (isInstalled: boolean) => set({ isInstalled }),
+        setIsConnected: (isConnected: boolean) => set({ isConnected }),
+        setAddress: (address: string) => set({ address }),
+        setInfo: ({
+          isInstalled,
+          isConnected,
+          address,
+        }: {
+          isInstalled: boolean;
+          isConnected: boolean;
+          address: string;
+        }) => set({ isInstalled, isConnected, address }),
+      })),
+      { name: 'xrpl-wallet-store' }
+    )
   )
 );

@@ -7,7 +7,7 @@ import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Footer } from '~/components/footer';
 import { InputTextField } from '~/components/inputs/textfield';
 
-import { useGetAmmInfo } from '~/moai-xrp-ledger/api/api-contract/get-amm';
+import { useGetAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';
 
 import { Gnb } from '~/moai-xrp-ledger/components/gnb';
 
