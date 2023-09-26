@@ -17,7 +17,7 @@ const meta = {
 export default meta;
 
 export const _SelectWalletPopup = () => {
-  const { opened, open } = usePopup(POPUP_ID.SAMPLE);
+  const { opened, open } = usePopup(POPUP_ID.WALLET);
 
   return (
     <Wrapper>
