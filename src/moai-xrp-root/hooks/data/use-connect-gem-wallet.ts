@@ -18,6 +18,7 @@ export const useConnectGemWallet = () => {
   useEffect(() => {
     if (gemAddress) return;
     getGemAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { gemAddress, getGemAddress, setGemAddress };
