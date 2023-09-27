@@ -14,9 +14,9 @@ import { useWithdrawLiquidityInputTabStore } from '~/states/components/withdraw-
 import { POPUP_ID } from '~/types';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
-import { TOKEN_DESCRIPTION_MAPPER, TOKEN_IMAGE_MAPPER } from '~/moai-xrp-root/constants';
+import { TOKEN_DESCRIPTION_MAPPER, TOKEN_IMAGE_MAPPER } from '~/moai-xrp-ledger/constants';
 
-import { PoolInfo } from '~/moai-xrp-root/types/components';
+import { PoolInfo } from '~/moai-xrp-ledger/types/components';
 
 import { WithdrawLiquidityPopup } from '../../components/popup/popup-withdraw-liquidity';
 
@@ -91,8 +91,8 @@ export const WithdrawLiquidityInput = ({
         <ContentWrapper>
           <SubTitle>You receive</SubTitle>
           <TokenListWrapper>
-            {compositions.map(({ tokenAddress, name, weight }, i) => (
-              <Fragment key={tokenAddress + i}>
+            {compositions.map(({ tokenIssuer, name, weight }, i) => (
+              <Fragment key={tokenIssuer + name + i}>
                 <TokenList
                   type="large"
                   title={`${name} ${weight}%`}

@@ -7,7 +7,7 @@ import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Footer } from '~/components/footer';
 import { InputTextField } from '~/components/inputs/textfield';
 
-import { useGetAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';
+import { useAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';
 
 import { Gnb } from '~/moai-xrp-ledger/components/gnb';
 
@@ -26,7 +26,7 @@ const XrplTestPage = () => {
 
   // const ammAccount = 'r3k73UkdrvPxCHaw9nwG2CzQ2W5esgZXCv';
 
-  const { checkAmmExist, ammInfo, getFee } = useGetAmmInfo({
+  const { checkAmmExist, ammInfo, getFee } = useAmmInfo({
     asset1: {
       currency: 'XRP',
     },

@@ -7,8 +7,6 @@ import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 
 import { useLiquidityPoolBalance } from '~/moai-xrp-ledger/api/api-contract/pool/get-liquidity-pool-balance';
 
-import { AMM } from '~/moai-xrp-ledger/constants';
-
 import { Gnb } from '~/moai-xrp-ledger/components/gnb';
 import { TokenInfo } from '~/moai-xrp-ledger/types/components';
 
@@ -18,11 +16,11 @@ import { MainRight } from '../../layouts/main-right';
 
 const PoolDetailMainPage = () => {
   const navigate = useNavigate();
-  const { id: poolId } = useParams();
+  const { id: account } = useParams();
 
-  useRequirePrarams([!!poolId], () => navigate(-1));
+  useRequirePrarams([!!account], () => navigate(-1));
 
-  const { poolInfo, liquidityPoolTokenBalance } = useLiquidityPoolBalance(AMM[poolId as string]);
+  const { poolInfo, liquidityPoolTokenBalance } = useLiquidityPoolBalance(account as string);
   const { compositions, tokenTotalSupply } = poolInfo;
 
   const userPoolBalances: TokenInfo[] = compositions?.map(composition => {

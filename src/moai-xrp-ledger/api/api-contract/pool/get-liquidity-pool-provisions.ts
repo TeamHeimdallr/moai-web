@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { AccountTxRequest, dropsToXrp } from 'xrpl';
 
-import { AMM, ISSUER, TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
+import { TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
 import {
   GetLiquidityPoolProvisions,
@@ -13,9 +13,9 @@ import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
 
 import { useAmmInfo } from '../amm/get-amm-info';
 
-export const useGetLiquidityPoolProvisions = (account: string = ISSUER.XRP_MOI) => {
+export const useGetLiquidityPoolProvisions = (account: string) => {
   const { client, isConnected } = useXrplStore();
-  const { moiPrice } = useAmmInfo(AMM.XRP_MOI); // TODO:
+  const { moiPrice } = useAmmInfo(account);
 
   const request = {
     command: 'account_tx',

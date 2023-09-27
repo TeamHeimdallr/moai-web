@@ -8,7 +8,7 @@ import { useSelectedLiquidityPoolCompositionTabStore } from '~/states/pages/sele
 
 import { useLiquidityPoolBalance } from '~/moai-xrp-ledger/api/api-contract/pool/get-liquidity-pool-balance';
 
-import { AMM, ISSUER, SCANNER_URL } from '~/moai-xrp-ledger/constants';
+import { ISSUER, SCANNER_URL } from '~/moai-xrp-ledger/constants';
 
 import { PoolCompositionData, PoolCompositionTable } from '~/moai-xrp-ledger/types/components';
 
@@ -21,7 +21,7 @@ export const useTableTotalComposition = (account: string = ISSUER.XRP_MOI) => {
   const {
     poolInfo: { balance: poolBalance, tokenTotalSupply, compositions },
     liquidityPoolTokenBalance,
-  } = useLiquidityPoolBalance(AMM[account]);
+  } = useLiquidityPoolBalance(account);
 
   const poolShareRatio = tokenTotalSupply === 0 ? 0 : liquidityPoolTokenBalance / tokenTotalSupply;
 
@@ -37,7 +37,7 @@ export const useTableTotalComposition = (account: string = ISSUER.XRP_MOI) => {
       value: balance * price,
       currentWeight: poolBalance ? (balance / poolBalance) * 100 : 0,
 
-      userBalance,
+      balance,
     };
   });
 
@@ -55,9 +55,7 @@ export const useTableTotalComposition = (account: string = ISSUER.XRP_MOI) => {
       />
     ),
     weight: <TableColumn value={`${d.weight.toFixed(2)}%`} width={120} align="flex-end" />,
-    balance: (
-      <TableColumn value={`${formatNumber(d.userBalance, 2)}`} width={120} align="flex-end" />
-    ),
+    balance: <TableColumn value={`${formatNumber(d.balance, 2)}`} width={120} align="flex-end" />,
     value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
     currentWeight: (
       <TableColumn value={`${formatNumber(d.currentWeight, 2)}%`} width={120} align="flex-end" />

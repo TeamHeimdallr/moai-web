@@ -9,12 +9,8 @@ export const SCANNER_URL = IS_MAINNET ? '' : 'https://amm-devnet.xrpl.org';
 
 export const CURRENT_CHAIN = CHAIN;
 
-export const POOL_ID = {
-  XRP_MOI: 'XRP_MOI',
-};
-
 export const AMM: Record<string, Amm> = {
-  XRP_MOI: {
+  r3k73UkdrvPxCHaw9nwG2CzQ2W5esgZXCv: {
     asset1: {
       currency: 'XRP',
     },

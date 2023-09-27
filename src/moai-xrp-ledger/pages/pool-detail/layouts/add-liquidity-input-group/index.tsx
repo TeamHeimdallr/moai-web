@@ -11,9 +11,9 @@ import { formatFloat, formatNumber } from '~/utils/number';
 import { POPUP_ID, TokenInfo } from '~/types/components';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
-import { PoolInfo } from '~/moai-xrp-root/types/components';
+import { PoolInfo } from '~/moai-xrp-ledger/types/components';
 
-import { TOKEN } from '~/moai-xrp-root/types/contracts';
+import { TOKEN } from '~/moai-xrp-ledger/types/contracts';
 
 import { AddLiquidityPopup } from '../../components/popup/popup-add-liquidity';
 
@@ -33,8 +33,8 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
   const [inputValue2, setInputValue2] = useState<number>(0);
 
   const getInputValue = (token: string) => {
-    if (token === 'ROOT') return inputValue1;
-    if (token === 'XRP') return inputValue2;
+    if (token === 'XRP') return inputValue1;
+    if (token === 'MOI') return inputValue2;
     return 0;
   };
 

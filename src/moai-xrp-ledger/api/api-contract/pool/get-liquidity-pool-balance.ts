@@ -1,19 +1,18 @@
 import { formatNumber } from '~/utils/number';
 
-import { AMM, ISSUER } from '~/moai-xrp-ledger/constants';
+import { ISSUER } from '~/moai-xrp-ledger/constants';
 
 import { Composition, PoolInfo } from '~/moai-xrp-ledger/types/components';
 
 import { useLiquidityTokenBalances } from '~/moai-xrp-ledger/hooks/data/use-balance-all';
-import { Amm } from '~/moai-xrp-ledger/types/contracts';
 
 import { useAmmInfo } from '../amm/get-amm-info';
 import { useGetSwapHistories } from '../swap/get-swap-histories';
 
-export const useLiquidityPoolBalance = (amm: Amm = AMM.XRP_MOI) => {
-  const { ammInfo } = useAmmInfo(amm);
+export const useLiquidityPoolBalance = (account: string) => {
+  const { ammInfo } = useAmmInfo(account);
 
-  const { account, poolTotalValue, fee, token1, token2, liquidityPoolToken } = ammInfo;
+  const { poolTotalValue, fee, token1, token2, liquidityPoolToken } = ammInfo;
 
   const poolTokens = [token1, token2];
 

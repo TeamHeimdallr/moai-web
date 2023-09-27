@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { AccountTxRequest, dropsToXrp, TransactionMetadata } from 'xrpl';
 
-import { AMM, ISSUER, TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
+import { ISSUER, TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
 import { QUERY_KEYS } from '~/moai-xrp-ledger/api/utils/query-keys';
 import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
@@ -12,7 +12,7 @@ import { useAmmInfo } from '../amm/get-amm-info';
 
 export const useGetSwapHistories = (account: string = ISSUER.XRP_MOI) => {
   const { client, isConnected } = useXrplStore();
-  const { moiPrice } = useAmmInfo(AMM.XRP_MOI); // TODO:
+  const { moiPrice } = useAmmInfo(account); // TODO:
 
   const request = {
     command: 'account_tx',

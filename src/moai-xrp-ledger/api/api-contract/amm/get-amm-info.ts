@@ -5,15 +5,16 @@ import { AMM, TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
 import { QUERY_KEYS } from '~/moai-xrp-ledger/api/utils/query-keys';
 import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
-import { Amm, AmmResponse, FormattedAmmResponse } from '~/moai-xrp-ledger/types/contracts';
+import { AmmResponse, FormattedAmmResponse } from '~/moai-xrp-ledger/types/contracts';
 
-export const useAmmInfo = (amm: Amm = AMM.XRP_MOI) => {
+export const useAmmInfo = (account: string) => {
   const { client, isConnected } = useXrplStore();
+  const amm = AMM[account];
 
   const request = {
     command: 'amm_info',
-    asset: amm.asset1,
-    asset2: amm.asset2,
+    asset: amm?.asset1,
+    asset2: amm?.asset2,
     ledger_index: 'validated',
   } as BaseRequest;
 
@@ -33,14 +34,14 @@ export const useAmmInfo = (amm: Amm = AMM.XRP_MOI) => {
   };
 
   const { data: ammInfoRawData } = useQuery(
-    [...QUERY_KEYS.AMM.GET_AMM_INFO, amm.asset1.currency, amm.asset2.currency],
+    [...QUERY_KEYS.AMM.GET_AMM_INFO, amm?.asset1.currency, amm?.asset2.currency],
     getAmm,
-    { staleTime: 1000 * 60 * 5, enabled: isConnected }
+    { staleTime: 1000 * 60 * 5, enabled: isConnected && !!amm }
   );
   const { data: feeData } = useQuery(
-    [...QUERY_KEYS.AMM.GET_FEE, amm.asset1.currency, amm.asset2.currency],
+    [...QUERY_KEYS.AMM.GET_FEE, amm?.asset1.currency, amm?.asset2.currency],
     getFee,
-    { staleTime: 1000 * 60 * 5, enabled: isConnected }
+    { staleTime: 1000 * 60 * 5, enabled: isConnected && !!amm }
   );
 
   const fee = Number(feeData ?? '0');
