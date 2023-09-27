@@ -8,7 +8,7 @@ import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
 import { Amm, AmmResponse, FormattedAmmResponse } from '~/moai-xrp-ledger/types/contracts';
 
 export const useAmmInfo = (amm: Amm = AMM.XRP_MOI) => {
-  const { client } = useXrplStore();
+  const { client, isConnected } = useXrplStore();
 
   const request = {
     command: 'amm_info',
@@ -32,23 +32,23 @@ export const useAmmInfo = (amm: Amm = AMM.XRP_MOI) => {
     return fee;
   };
 
-  const { data: _ammInfoRaw } = useQuery(
+  const { data: ammInfoRawData } = useQuery(
     [...QUERY_KEYS.AMM.GET_AMM_INFO, amm.asset1.currency, amm.asset2.currency],
     getAmm,
-    { staleTime: 1000 * 60 * 5 }
+    { staleTime: 1000 * 60 * 5, enabled: isConnected }
   );
   const { data: feeData } = useQuery(
     [...QUERY_KEYS.AMM.GET_FEE, amm.asset1.currency, amm.asset2.currency],
     getFee,
-    { staleTime: 1000 * 60 * 5 }
+    { staleTime: 1000 * 60 * 5, enabled: isConnected }
   );
 
   const fee = Number(feeData ?? '0');
 
-  const ammInfoRaw = _ammInfoRaw?.result?.amm;
+  const ammInfoRaw = ammInfoRawData?.result?.amm;
   const ammExist = !!ammInfoRaw ?? false;
 
-  const xrpBalance = Number(ammInfoRaw?.amount ?? '0');
+  const xrpBalance = Number(dropsToXrp(ammInfoRaw?.amount ?? '0'));
   const moiBalance = Number(ammInfoRaw?.amount2.value ?? '0');
 
   const moiPrice = moiBalance ? TOKEN_USD_MAPPER.XRP * (xrpBalance / moiBalance) : 0;

@@ -5,6 +5,8 @@ import { IconLink } from '~/assets/icons';
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
 
+import { formatNumber } from '~/utils/number';
+
 import { SCANNER_URL } from '~/moai-xrp-ledger/constants';
 
 import { PoolInfo } from '~/moai-xrp-ledger/types/components';
@@ -35,7 +37,7 @@ export const MainHeader = ({ pool }: Props) => {
         />
       </TokenWrapper>
       <Text>
-        Dynamic swap fees : Currently <Fee>{fees}</Fee>%
+        Dynamic swap fees : Currently <Fee>{formatNumber(fees, 2)}</Fee>%
       </Text>
     </HeaderWrapper>
   );

@@ -17,6 +17,7 @@ export const useTableTotalComposition = (account: string = ISSUER.XRP_MOI) => {
 
   const isMyComposition = selectedTab === 'my-composition';
 
+  // TODO
   const {
     poolInfo: { balance: poolBalance, tokenTotalSupply, compositions },
     liquidityPoolTokenBalance,
@@ -41,7 +42,7 @@ export const useTableTotalComposition = (account: string = ISSUER.XRP_MOI) => {
   });
 
   const tableData: PoolCompositionTable[] = poolData?.map(d => ({
-    tokenIssuer: d.tokenIssuer,
+    issuer: d.tokenIssuer,
     token: (
       <TableColumnTokenAddress
         token={d.token}
@@ -64,6 +65,10 @@ export const useTableTotalComposition = (account: string = ISSUER.XRP_MOI) => {
   }));
 
   const columns: ColumnDef<PoolCompositionTable, ReactNode>[] = [
+    {
+      cell: row => row.renderValue(),
+      accessorKey: 'id',
+    },
     {
       header: () => <TableHeader label="Token" width={216} align="flex-start" />,
       cell: row => row.renderValue(),

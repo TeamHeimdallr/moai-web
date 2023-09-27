@@ -11,7 +11,7 @@ import { GetSwapHistories, GetSwapHistoriesTokens } from '~/moai-xrp-ledger/type
 import { useAmmInfo } from '../amm/get-amm-info';
 
 export const useGetSwapHistories = (account: string = ISSUER.XRP_MOI) => {
-  const { client } = useXrplStore();
+  const { client, isConnected } = useXrplStore();
   const { moiPrice } = useAmmInfo(AMM.XRP_MOI); // TODO:
 
   const request = {
@@ -110,6 +110,7 @@ export const useGetSwapHistories = (account: string = ISSUER.XRP_MOI) => {
     isError,
   } = useQuery([...QUERY_KEYS.AMM.GET_TRANSACTIONS, account], getTxs, {
     staleTime: 3000,
+    enabled: isConnected,
   });
 
   const txData = (txDataRaw?.result?.transactions ?? []).filter(

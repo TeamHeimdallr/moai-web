@@ -6,7 +6,7 @@ import { logger } from '~/states/middleware/logger';
 
 import client from '~/configs/setup-xrpl-wallet';
 
-export interface XrplState {
+interface XrplState {
   client: Client;
   isConnected: boolean;
   setConnection: (isConnected: boolean) => void;

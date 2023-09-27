@@ -11,7 +11,7 @@ import { TOKEN, TokenBalanceInfoAll } from '~/moai-xrp-ledger/types/contracts';
 import { useConnectXrplWallet } from './use-connect-xrpl-wallet';
 
 export const useBalancesAll = (address?: string): TokenBalanceInfoAll => {
-  const { client } = useXrplStore();
+  const { client, isConnected } = useXrplStore();
   const { address: currentAddress } = useConnectXrplWallet();
 
   const target = address ?? currentAddress;
@@ -43,13 +43,19 @@ export const useBalancesAll = (address?: string): TokenBalanceInfoAll => {
   const { data: xrpData } = useQuery(
     [...QUERY_KEYS.TOKEN.GET_XRP_BALANCE, target],
     xrpBalanceData,
-    { enabled: !!target && !!client }
+    {
+      staleTime: 1000 * 60 * 5,
+      enabled: !!target && !!client && isConnected,
+    }
   );
 
   const { data: moiData } = useQuery(
     [...QUERY_KEYS.TOKEN.GET_MOI_BALANCE, target],
     moiBalanceData,
-    { enabled: !!target && !!client }
+    {
+      staleTime: 1000 * 60 * 5,
+      enabled: !!target && !!client && isConnected,
+    }
   );
 
   const success = xrpData && moiData;
@@ -83,7 +89,7 @@ export const useBalancesAll = (address?: string): TokenBalanceInfoAll => {
 };
 
 export const useLiquidityTokenBalances = (address?: string): number => {
-  const { client } = useXrplStore();
+  const { client, isConnected } = useXrplStore();
   const { address: currentAddress } = useConnectXrplWallet();
 
   const target = address ?? currentAddress;
@@ -105,7 +111,10 @@ export const useLiquidityTokenBalances = (address?: string): number => {
   const { data: liquidityTokenBalanceData } = useQuery(
     [...QUERY_KEYS.TOKEN.GET_LIQUIDITY_TOKEN_BALANCE, target],
     getLiquidityTokenBalanceData,
-    { enabled: !!target && !!client }
+    {
+      staleTime: 1000 * 60 * 5,
+      enabled: !!target && !!client && isConnected,
+    }
   );
 
   return liquidityTokenBalanceData || 0;
