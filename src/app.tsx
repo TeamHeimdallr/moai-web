@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { ToastContainer } from './components/toasts';
@@ -12,7 +12,9 @@ const MoaiEVM = lazy(() => import('./moai-evm'));
 const MoaiXRPRoot = lazy(() => import('./moai-xrp-root'));
 const MoaiXRPLedger = lazy(() => import('./moai-xrp-ledger'));
 
-const RouteWrapper = tw.main`relative w-full h-full`;
+const HomePage = lazy(() => import('./pages/home'));
+
+const RouteWrapper = tw.main`relative w-full h-full min-w-1440`;
 const App = () => {
   return (
     <BrowserRouter>
@@ -20,7 +22,14 @@ const App = () => {
         <Web3Provider>
           <AsyncBoundary>
             <RouteWrapper>
-              {(CHAIN === 'mantle' || CHAIN === 'linea') && <MoaiEVM />}
+              {!CHAIN && (
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                </Routes>
+              )}
+
+              {CHAIN === 'mantle' && <MoaiEVM />}
+              {CHAIN === 'linea' && <MoaiEVM />}
               {CHAIN === 'root' && <MoaiXRPRoot />}
               {CHAIN === 'xrpl' && <MoaiXRPLedger />}
               <ToastContainer />
