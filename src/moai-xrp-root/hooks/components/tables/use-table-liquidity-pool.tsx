@@ -44,6 +44,8 @@ export const useTableLiquidityPool = () => {
 
         return {
           id: d.id,
+          'id-raw': d.id,
+          'chain-raw': 'xrpl',
           assets: <TableColumnTokenIcon tokens={d.assets} />,
           compositions: <TableColumnToken tokens={tokens} isNew={d.isNew} />,
           poolValue: (
@@ -60,6 +62,8 @@ export const useTableLiquidityPool = () => {
 
   const columns = useMemo<ColumnDef<LiquidityPoolTable, ReactNode>[]>(
     () => [
+      { accessorKey: 'id-raw' },
+      { accessorKey: 'chain-raw' },
       {
         cell: row => row.renderValue(),
         accessorKey: 'id',

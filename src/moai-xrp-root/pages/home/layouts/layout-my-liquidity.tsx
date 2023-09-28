@@ -15,7 +15,7 @@ export const MyLiquidityLayout = () => {
   const { data, columns, empty } = useTableMyLiquidity();
   const navigate = useNavigate();
 
-  const handleRowClick = (id?: string) => {
+  const handleRowClick = (_chain?: string, id?: string) => {
     navigate(`/pools/${id}`);
   };
 
