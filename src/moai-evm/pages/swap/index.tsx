@@ -1,11 +1,11 @@
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 
 import { CHAIN_ID } from '~/moai-evm/constants';
 
 import { SwitchNetwork } from '~/moai-evm/components/banner/switch-network';
-import { Gnb } from '~/moai-evm/components/gnb';
 
 import { useSwitchNetwork } from '~/moai-evm/hooks/pages/use-switch-network';
 

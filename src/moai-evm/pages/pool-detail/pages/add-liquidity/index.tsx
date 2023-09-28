@@ -6,6 +6,7 @@ import { IconBack } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 
@@ -15,7 +16,6 @@ import { CHAIN_ID, TOKEN_USD_MAPPER } from '~/moai-evm/constants';
 
 import { BalanceInfo } from '~/moai-evm/components/balance-info';
 import { SwitchNetwork } from '~/moai-evm/components/banner/switch-network';
-import { Gnb } from '~/moai-evm/components/gnb';
 import { TokenInfo } from '~/moai-evm/types/components';
 
 import { useSwitchNetwork } from '~/moai-evm/hooks/pages/use-switch-network';
