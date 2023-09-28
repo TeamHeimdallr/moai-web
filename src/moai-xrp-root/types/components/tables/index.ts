@@ -31,7 +31,7 @@ export interface LiquidityPoolTable {
 }
 
 export interface MyLiquidityPoolData {
-  id: Address;
+  id: string;
   assets: TOKEN[];
   compositions: Record<TOKEN, number>;
   pool: Record<TOKEN, number>;
@@ -40,7 +40,7 @@ export interface MyLiquidityPoolData {
   isNew: boolean;
 }
 export interface MyLiquidityPoolTable {
-  id: Address;
+  id: string;
   assets: ReactNode;
   compositions: ReactNode;
   balance: ReactNode;

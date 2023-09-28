@@ -4,12 +4,11 @@ import tw from 'twin.macro';
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
 
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
 import { useSelectedLiquidityPoolProvisionTabStore } from '~/states/pages/selected-liquidity-pool-provision-tab';
 
 import { useTableTotalProvision } from '~/moai-xrp-ledger/hooks/components/tables/use-table-total-provision';
 import { LiquidityProvisionTable, PoolInfo } from '~/moai-xrp-ledger/types/components';
-
-import { useConnectXrplWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-xrpl-wallet';
 
 interface Props {
   pool: PoolInfo;

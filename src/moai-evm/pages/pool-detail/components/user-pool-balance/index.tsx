@@ -4,13 +4,12 @@ import tw from 'twin.macro';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
 
 import { TOKEN_IMAGE_MAPPER } from '~/moai-evm/constants';
 
 import { PoolInfo, TokenInfo } from '~/moai-evm/types/components';
-
-import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 
 interface Props {
   pool: PoolInfo;

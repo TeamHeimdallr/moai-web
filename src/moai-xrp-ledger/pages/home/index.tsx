@@ -1,10 +1,9 @@
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 
-import { Gnb } from '~/moai-xrp-root/components/gnb';
-
-import { useConnectXrplWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-xrpl-wallet';
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';

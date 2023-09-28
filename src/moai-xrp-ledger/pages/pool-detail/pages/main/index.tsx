@@ -2,12 +2,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 
 import { useLiquidityPoolBalance } from '~/moai-xrp-ledger/api/api-contract/pool/get-liquidity-pool-balance';
 
-import { Gnb } from '~/moai-xrp-ledger/components/gnb';
 import { TokenInfo } from '~/moai-xrp-ledger/types/components';
 
 import { MainHeader } from '../../layouts/main-header';

@@ -13,6 +13,7 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
 import { elapsedTime } from '~/utils/time';
 import { useTableLiquidityPoolProvisionStore } from '~/states/components/table-liquidity-pool-provision';
@@ -26,8 +27,6 @@ import {
   LiquidityProvisionData,
   LiquidityProvisionTable,
 } from '~/moai-xrp-ledger/types/components';
-
-import { useConnectEvmWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-evm-wallet';
 
 export const useTableTotalProvision = (account: string) => {
   const { address } = useConnectEvmWallet();

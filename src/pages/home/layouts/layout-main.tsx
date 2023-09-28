@@ -5,12 +5,12 @@ import bgMain from '~/assets/images/bg-main.png';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
 
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 
 import { useBalancesAll } from '~/moai-xrp-root/hooks/data/use-balance-all';
-import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 import { TOKEN } from '~/moai-xrp-root/types/contracts';
 
 export const MainLayout = () => {

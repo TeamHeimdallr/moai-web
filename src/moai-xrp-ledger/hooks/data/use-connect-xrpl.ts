@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
+import { useXrplStore } from '~/states/data/xrpl';
 
 export const useConnectXrpl = () => {
   const { client, setConnection } = useXrplStore();

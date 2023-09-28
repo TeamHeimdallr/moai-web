@@ -5,6 +5,7 @@ import { IconBack } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { TokenInfo } from '~/types/components';
@@ -15,7 +16,6 @@ import { useLiquidityPoolBalance } from '~/moai-xrp-ledger/api/api-contract/pool
 import { TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
 import { BalanceInfo } from '~/moai-xrp-ledger/components/balance-info';
-import { Gnb } from '~/moai-xrp-ledger/components/gnb';
 
 import { useBalancesAll } from '~/moai-xrp-ledger/hooks/data/use-balance-all';
 

@@ -2,14 +2,14 @@ import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+
 import { CHAIN_ID } from '~/moai-evm/constants';
 
 import { SwitchNetwork } from '~/moai-evm/components/banner/switch-network';
 import { Gnb } from '~/moai-evm/components/gnb';
 
 import { useSwitchNetwork } from '~/moai-evm/hooks/pages/use-switch-network';
-
-import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';

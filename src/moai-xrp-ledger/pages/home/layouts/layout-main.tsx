@@ -4,11 +4,11 @@ import bgMain from '~/assets/images/bg-main.png';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
 import { formatNumber } from '~/utils/number';
 
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 
-import { useConnectXrplWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-xrpl-wallet';
 import { useBalancesAll } from '~/moai-xrp-root/hooks/data/use-balance-all';
 import { TOKEN } from '~/moai-xrp-root/types/contracts';
 

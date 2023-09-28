@@ -14,6 +14,7 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
 import { elapsedTime } from '~/utils/time';
 import { useTableLiquidityPoolProvisionStore } from '~/states/components/table-liquidity-pool-provision';
@@ -24,8 +25,6 @@ import { useGetLiquidityPoolProvisions } from '~/moai-evm/api/api-contract/pool/
 import { SCANNER_URL } from '~/moai-evm/constants';
 
 import { LiquidityProvisionData, LiquidityProvisionTable } from '~/moai-evm/types/components';
-
-import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 
 export const useTableTotalProvision = (poolId: Address) => {
   const { address } = useConnectEvmWallet();

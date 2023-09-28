@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useWeb3Modal } from '@web3modal/react';
 import tw, { css, styled } from 'twin.macro';
 
 import logo from '~/assets/logos/logo-text.svg';
@@ -10,17 +9,19 @@ import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
-import { TOOLTIP_ID } from '~/types';
-
-import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { usePopup } from '~/hooks/pages/use-popup';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { AccountProfile } from '../account-profile';
 
 export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isConnected } = useConnectEvmWallet();
-  const { isOpen, open } = useWeb3Modal();
+  const { open } = usePopup(POPUP_ID.WALLET);
+  const { isConnected: gemConnected, address: gemAddress } = useConnectXrplWallet();
+  const { isConnected: metamaskConnected, address: metamaskAddress } = useConnectEvmWallet();
 
   return (
     <>
@@ -38,16 +39,19 @@ export const Gnb = () => {
               {text}
             </MenuWrapper>
           ))}
-          {isConnected ? (
+          {metamaskConnected || gemConnected ? (
             <ConnectedButton>
               <Notification />
-              <AccountProfile />
+              <AccountProfile
+                bothConnected={metamaskConnected && gemConnected}
+                gemAddress={gemAddress}
+                metamaskAddress={metamaskAddress}
+              />
             </ConnectedButton>
           ) : (
             <ButtonPrimaryMedium
               style={{ padding: '9px 24px' }}
               text="Connect wallet"
-              isLoading={isOpen}
               onClick={open}
             />
           )}

@@ -2,9 +2,9 @@ import { submitTransaction } from '@gemwallet/api';
 import { useMutation } from 'wagmi';
 import { PaymentFlags, xrpToDrops } from 'xrpl';
 
-import { ISSUER } from '~/moai-xrp-ledger/constants';
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
 
-import { useConnectXrplWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-xrpl-wallet';
+import { ISSUER } from '~/moai-xrp-ledger/constants';
 
 import { QUERY_KEYS } from '../../utils/query-keys';
 import { useAmmInfo } from '../amm/get-amm-info';

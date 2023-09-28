@@ -9,7 +9,7 @@ import {
 } from '~/moai-xrp-ledger/types/components';
 
 import { QUERY_KEYS } from '~/moai-xrp-ledger/api/utils/query-keys';
-import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
+import { useXrplStore } from '~/states/data/xrpl';
 
 import { useAmmInfo } from '../amm/get-amm-info';
 

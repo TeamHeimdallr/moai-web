@@ -9,11 +9,10 @@ import { IconCopy, IconLink } from '~/assets/icons';
 
 import { ButtonIconSmall } from '~/components/buttons/icon';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { truncateAddress } from '~/utils/string';
 
 import { SCANNER_URL } from '~/moai-evm/constants';
-
-import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 
 import { Slippage } from '../slippage';
 

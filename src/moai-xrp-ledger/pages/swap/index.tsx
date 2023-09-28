@@ -1,8 +1,7 @@
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
-
-import { Gnb } from '~/moai-xrp-ledger/components/gnb';
+import { Gnb } from '~/components/gnb';
 
 import { Balances } from './layouts/balances-group';
 import { SwapInputs } from './layouts/swap-input-group';

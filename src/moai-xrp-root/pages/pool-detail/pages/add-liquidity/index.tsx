@@ -6,6 +6,7 @@ import { IconBack } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 import { TokenInfo } from '~/types/components';
@@ -16,7 +17,6 @@ import { CHAIN_ID } from '~/moai-xrp-root/constants';
 
 import { BalanceInfo } from '~/moai-xrp-root/components/balance-info';
 import { SwitchNetwork } from '~/moai-xrp-root/components/banner/switch-network';
-import { Gnb } from '~/moai-xrp-root/components/gnb';
 
 import { useSwitchNetwork } from '~/moai-xrp-root/hooks/pages/use-switch-network';
 

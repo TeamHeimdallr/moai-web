@@ -1,6 +1,7 @@
 import { Address, formatEther, formatUnits } from 'viem';
 import { useContractRead } from 'wagmi';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
 import { Entries } from '~/types';
 
@@ -19,7 +20,6 @@ import {
 import { Composition, PoolInfo } from '~/moai-evm/types/components';
 
 import { useERC20TokenBalances } from '~/moai-evm/hooks/data/use-balance';
-import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 import { PoolBalance } from '~/moai-evm/types/contracts';
 
 import { useGetSwapHistories } from '../swap/get-swap-histories';

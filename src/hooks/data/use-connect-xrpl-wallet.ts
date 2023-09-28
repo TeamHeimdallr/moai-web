@@ -1,9 +1,8 @@
 import { getPublicKey, isInstalled as gemIsInstalled } from '@gemwallet/api';
 
 import { truncateXrplAddress } from '~/utils/string';
-
-import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
-import { useXrplWalletStore } from '~/moai-xrp-ledger/states/data/xrpl-wallet';
+import { useXrplStore } from '~/states/data/xrpl';
+import { useXrplWalletStore } from '~/states/data/xrpl-wallet';
 
 export const useConnectXrplWallet = () => {
   const { isConnected: isXrplConnected } = useXrplStore();
@@ -27,8 +26,19 @@ export const useConnectXrplWallet = () => {
     }
   };
 
+  const disconnect = () => {
+    if (!isXrplConnected) return;
+
+    setInfo({
+      isInstalled: isInstalled,
+      isConnected: false,
+      address: '',
+    });
+  };
+
   return {
     connect,
+    disconnect,
     isInstalled,
     isConnected,
     address,

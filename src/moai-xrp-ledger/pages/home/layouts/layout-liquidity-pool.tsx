@@ -6,12 +6,12 @@ import { IconNext } from '~/assets/icons';
 import { ButtonPrimaryMediumIconTrailing } from '~/components/buttons/primary';
 import { Table } from '~/components/tables';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+
 import { CURRENT_CHAIN } from '~/moai-xrp-ledger/constants';
 
 import { useTableLiquidityPool } from '~/moai-xrp-ledger/hooks/components/tables/use-table-liquidity-pool';
 import { LiquidityPoolTable } from '~/moai-xrp-ledger/types/components';
-
-import { useConnectEvmWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-evm-wallet';
 
 export const LiquidityPoolLayout = () => {
   const { address } = useConnectEvmWallet();

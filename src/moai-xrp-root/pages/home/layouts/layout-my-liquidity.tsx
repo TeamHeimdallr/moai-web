@@ -3,12 +3,12 @@ import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 
 import { useTableMyLiquidity } from '~/moai-xrp-root/hooks/components/tables/use-table-my-liquidity-pool';
 import { MyLiquidityPoolTable } from '~/moai-xrp-root/types/components';
-
-import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 
 export const MyLiquidityLayout = () => {
   const { address } = useConnectEvmWallet();

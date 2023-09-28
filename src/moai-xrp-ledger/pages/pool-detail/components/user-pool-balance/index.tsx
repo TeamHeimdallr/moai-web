@@ -6,11 +6,10 @@ import { TOKEN_IMAGE_MAPPER } from '~/constants';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
 
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
 import { formatNumber } from '~/utils/number';
 
 import { PoolInfo, TokenInfo } from '~/moai-xrp-ledger/types/components';
-
-import { useConnectXrplWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-xrpl-wallet';
 
 interface Props {
   pool: PoolInfo;

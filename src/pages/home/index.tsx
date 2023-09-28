@@ -1,12 +1,11 @@
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 import { SelectWalletPopup } from '~/components/wallet-selection';
 
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types';
-
-import { Gnb } from '~/moai-xrp-root/components/gnb';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';

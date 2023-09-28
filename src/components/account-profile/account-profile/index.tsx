@@ -7,11 +7,13 @@ import { useDisconnect, useNetwork } from 'wagmi';
 
 import { IconCopy, IconLogout } from '~/assets/icons';
 
-import { BothConnected } from '~/components/bothConnected';
+import { CHAIN } from '~/constants';
+
+import { BothConnected } from '~/components/account-profile/both-connected';
 import { ButtonIconSmall } from '~/components/buttons/icon';
 
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
 import { truncateAddress } from '~/utils/string';
-import { useGemAddressStore } from '~/states/data/gem-address';
 
 import { Slippage } from '../slippage';
 
@@ -30,16 +32,20 @@ export const AccountProfile = ({ gemAddress, metamaskAddress, bothConnected }: P
 
   useOnClickOutside(ref, () => open(false));
 
-  const network =
-    chain &&
-    (chain.id === 7668
-      ? 'The Root Network - Mainnet'
-      : chain.id === 7672
-      ? 'The Root Network - Porcini Testnet'
-      : '');
+  const getNetworkName = () => {
+    if (!CHAIN) return '';
+
+    if (CHAIN === 'root') {
+      if (chain?.id === 7668) return 'The Root Network - Mainnet';
+      if (chain?.id === 7672) return 'The Root Network - Porcini Testnet';
+    }
+
+    if (CHAIN === 'xrpl') return 'The XRP Ledger';
+    if (CHAIN === 'xrp-evm') return 'Xrp Evm Sidechain';
+  };
 
   const { disconnect: disconnectMetamask } = useDisconnect();
-  const { resetGemAddress: disconnectGem } = useGemAddressStore();
+  const { disconnect: disconnectGemWallet } = useConnectXrplWallet();
 
   return (
     <Wrapper>
@@ -55,7 +61,7 @@ export const AccountProfile = ({ gemAddress, metamaskAddress, bothConnected }: P
               />
             </InnerWrapper>
             <ContentWrapper opened={opened}>
-              {truncateAddress((metamaskAddress || gemAddress) ?? '0x0', 3)}
+              {truncateAddress((metamaskAddress || gemAddress) ?? '0x0', 4)}
             </ContentWrapper>
           </AccountWrapper>
         )}
@@ -99,7 +105,10 @@ export const AccountProfile = ({ gemAddress, metamaskAddress, bothConnected }: P
                     <InnerWrapper>
                       {/* TODO: Copied! 문구 2초 노출 */}
                       <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(gemAddress ?? '')} />
-                      <ButtonIconSmall icon={<IconLogout />} onClick={() => disconnectGem()} />
+                      <ButtonIconSmall
+                        icon={<IconLogout />}
+                        onClick={() => disconnectGemWallet()}
+                      />
                     </InnerWrapper>
                   </AddressTextWrapper>
 
@@ -114,7 +123,7 @@ export const AccountProfile = ({ gemAddress, metamaskAddress, bothConnected }: P
               <Text>{'Network'}</Text>
               <CurrentNetwork>
                 <NetworkStatus />
-                {network && <NetworkText>{network}</NetworkText>}
+                {getNetworkName() && <NetworkText>{getNetworkName()}</NetworkText>}
               </CurrentNetwork>
             </NetworkWrapper>
           </Panel>

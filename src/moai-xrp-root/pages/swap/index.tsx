@@ -1,11 +1,11 @@
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 
 import { CHAIN_ID } from '~/moai-xrp-root/constants';
 
 import { SwitchNetwork } from '~/moai-xrp-root/components/banner/switch-network';
-import { Gnb } from '~/moai-xrp-root/components/gnb';
 
 import { useSwitchNetwork } from '~/moai-xrp-root/hooks/pages/use-switch-network';
 

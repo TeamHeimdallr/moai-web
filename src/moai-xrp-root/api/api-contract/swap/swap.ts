@@ -6,11 +6,12 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+
 import { VAULT_ABI } from '~/moai-xrp-root/abi/vault';
 
 import { CONTRACT_ADDRESS } from '~/moai-xrp-root/constants';
 
-import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/moai-xrp-root/types/contracts';
 
 interface Props {

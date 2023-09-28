@@ -2,11 +2,11 @@ import { Address } from 'viem';
 
 import { CHAIN } from '~/constants';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+
 import { liquidityPools } from '~/moai-xrp-root/data/liquidity-pool-list';
 
 import { LiquidityPoolData } from '~/moai-xrp-root/types/components';
-
-import { useConnectEvmWallet } from '~/moai-xrp-root/hooks/data/use-connect-evm-wallet';
 
 import { useLiquidityPoolBalance } from './get-liquidity-pool-balance';
 
@@ -31,9 +31,6 @@ export const useGetLiquidityPoolLists = () => {
   const volume = poolInfo.volume;
   const apr = poolInfo.apr;
 
-  // TODO : get chain of the pool
-  const chain = 'ROOT';
-
   const balance = liquidityPoolTokenBalance * liquidityPoolTokenPrice;
 
   if (!address) return [] as LiquidityPoolData[];
@@ -41,7 +38,6 @@ export const useGetLiquidityPoolLists = () => {
     {
       id,
       assets,
-      chain,
       compositions,
       poolValue,
       volume,

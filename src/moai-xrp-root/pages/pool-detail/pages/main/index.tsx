@@ -4,6 +4,7 @@ import { isAddress } from 'viem';
 import { Address } from 'wagmi';
 
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 
@@ -12,7 +13,6 @@ import { useLiquidityPoolBalance } from '~/moai-xrp-root/api/api-contract/pool/g
 import { CHAIN_ID } from '~/moai-xrp-root/constants';
 
 import { SwitchNetwork } from '~/moai-xrp-root/components/banner/switch-network';
-import { Gnb } from '~/moai-xrp-root/components/gnb';
 import { TokenInfo } from '~/moai-xrp-root/types/components';
 
 import { useSwitchNetwork } from '~/moai-xrp-root/hooks/pages/use-switch-network';

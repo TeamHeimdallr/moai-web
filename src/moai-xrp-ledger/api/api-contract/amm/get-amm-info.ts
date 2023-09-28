@@ -4,7 +4,7 @@ import { BaseRequest, dropsToXrp, ServerStateRequest } from 'xrpl';
 import { AMM, TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
 import { QUERY_KEYS } from '~/moai-xrp-ledger/api/utils/query-keys';
-import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
+import { useXrplStore } from '~/states/data/xrpl';
 import { AmmResponse, FormattedAmmResponse } from '~/moai-xrp-ledger/types/contracts';
 
 export const useAmmInfo = (account: string) => {

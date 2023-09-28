@@ -1,11 +1,11 @@
 import { PublicClient } from 'viem';
 import { useContractRead } from 'wagmi';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+
 import { VAULT_ABI } from '~/moai-xrp-root/abi/vault';
 
 import { CONTRACT_ADDRESS, POOL_ID, TOKEN_USD_MAPPER } from '~/moai-xrp-root/constants';
-
-import { useConnectEvmWallet } from './use-connect-evm-wallet';
 
 export const getRootNetworkTokenPrice = async (client?: PublicClient, name?: string) => {
   if (!client || !name) {

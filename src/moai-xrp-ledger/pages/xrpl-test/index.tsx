@@ -5,13 +5,12 @@ import { PaymentFlags } from 'xrpl';
 
 import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 import { InputTextField } from '~/components/inputs/textfield';
 
 import { useAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';
 
 import { ISSUER } from '~/moai-xrp-ledger/constants';
-
-import { Gnb } from '~/moai-xrp-ledger/components/gnb';
 
 const XrplTestPage = () => {
   const [xrpValue, setXrpValue] = useState(0);

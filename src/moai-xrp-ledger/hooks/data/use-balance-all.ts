@@ -2,15 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { formatUnits } from 'viem';
 import { AccountInfoRequest, GatewayBalancesRequest } from 'xrpl';
 
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { useXrplStore } from '~/states/data/xrpl';
+
 import { useAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';
 
 import { ISSUER, LIQUIDITY_TOKEN_CURRENCY, TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
 import { QUERY_KEYS } from '~/moai-xrp-ledger/api/utils/query-keys';
-import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
 import { TOKEN, TokenBalanceInfoAll } from '~/moai-xrp-ledger/types/contracts';
-
-import { useConnectXrplWallet } from './use-connect-xrpl-wallet';
 
 export const useBalancesAll = (address?: string): TokenBalanceInfoAll => {
   const { client, isConnected } = useXrplStore();

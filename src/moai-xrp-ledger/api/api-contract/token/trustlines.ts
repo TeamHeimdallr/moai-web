@@ -3,8 +3,8 @@ import { submitTransaction } from '@gemwallet/api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AccountLinesRequest } from 'xrpl';
 
-import { useConnectXrplWallet } from '~/moai-xrp-ledger/hooks/data/use-connect-xrpl-wallet';
-import { useXrplStore } from '~/moai-xrp-ledger/states/data/xrpl';
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { useXrplStore } from '~/states/data/xrpl';
 
 import { QUERY_KEYS } from '../../utils/query-keys';
 

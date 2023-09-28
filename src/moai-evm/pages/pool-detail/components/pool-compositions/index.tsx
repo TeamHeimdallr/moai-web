@@ -4,12 +4,11 @@ import tw from 'twin.macro';
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { useSelectedLiquidityPoolCompositionTabStore } from '~/states/pages/selected-liquidity-pool-composition-tab';
 
 import { useTableTotalComposition } from '~/moai-evm/hooks/components/tables/use-table-total-composition';
 import { PoolCompositionTable, PoolInfo } from '~/moai-evm/types/components';
-
-import { useConnectEvmWallet } from '~/moai-evm/hooks/data/use-connect-evm-wallet';
 
 interface Props {
   pool: PoolInfo;
