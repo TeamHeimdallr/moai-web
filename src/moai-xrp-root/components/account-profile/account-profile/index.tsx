@@ -3,34 +3,32 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import copy from 'copy-to-clipboard';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
-import { useNetwork } from 'wagmi';
+import { useDisconnect, useNetwork } from 'wagmi';
 
-import { IconCopy, IconLink } from '~/assets/icons';
+import { IconCopy, IconLogout } from '~/assets/icons';
 
+import { BothConnected } from '~/components/bothConnected';
 import { ButtonIconSmall } from '~/components/buttons/icon';
 
 import { truncateAddress } from '~/utils/string';
-
-import { SCANNER_URL } from '~/moai-xrp-root/constants';
-
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
+import { useGemAddressStore } from '~/states/data/gem-address';
 
 import { Slippage } from '../slippage';
 
-export const AccountProfile = () => {
-  const ref = useRef<HTMLDivElement>(null);
+interface Props {
+  gemAddress?: string;
+  metamaskAddress?: string;
+  bothConnected?: boolean;
+}
 
-  const { address, disconnect } = useConnectWallet();
+export const AccountProfile = ({ gemAddress, metamaskAddress, bothConnected }: Props) => {
+  const ref = useRef<HTMLDivElement>(null);
   const { chain } = useNetwork();
 
   const [opened, open] = useState(false);
   const toggle = () => open(!opened);
 
   useOnClickOutside(ref, () => open(false));
-
-  const handleLink = () => {
-    window.open(`${SCANNER_URL}/address/${address}`);
-  };
 
   const network =
     chain &&
@@ -40,32 +38,75 @@ export const AccountProfile = () => {
       ? 'The Root Network - Porcini Testnet'
       : '');
 
+  const { disconnect: disconnectMetamask } = useDisconnect();
+  const { resetGemAddress: disconnectGem } = useGemAddressStore();
+
   return (
-    <Wrapper ref={ref} opened={opened}>
-      <InnerWrapper>
-        <Jazzicon diameter={24} seed={jsNumberForAddress(address ?? '0x0')} />
-      </InnerWrapper>
-      <ContentWrapper onClick={toggle} opened={opened}>
-        {truncateAddress(address ?? '0x0', 3)}
-      </ContentWrapper>
+    <Wrapper>
+      <Banner ref={ref} opened={opened} onClick={toggle}>
+        {bothConnected ? (
+          <BothConnected />
+        ) : (
+          <AccountWrapper>
+            <InnerWrapper>
+              <Jazzicon
+                diameter={24}
+                seed={jsNumberForAddress((metamaskAddress || gemAddress) ?? '0x0')}
+              />
+            </InnerWrapper>
+            <ContentWrapper opened={opened}>
+              {truncateAddress((metamaskAddress || gemAddress) ?? '0x0', 3)}
+            </ContentWrapper>
+          </AccountWrapper>
+        )}
+      </Banner>
       {opened && (
         <DropdownWrapper>
           <Panel>
             <Title>
               <TitleText>{'Account'}</TitleText>
-              <Disconnect onClick={() => disconnect()}>{'Disconnect'}</Disconnect>
             </Title>
-            <AccountWrapper>
-              <InnerWrapper>
-                <Jazzicon diameter={40} seed={jsNumberForAddress(address ?? '0x0')} />
-              </InnerWrapper>
-              <AddressWrapper>
-                <MediumText>{truncateAddress(address ?? '0x0')}</MediumText>
-                {/* TODO: Copied! 문구 2초 노출 */}
-                <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(address ?? '')} />
-                <ButtonIconSmall icon={<IconLink />} onClick={handleLink} />
-              </AddressWrapper>
-            </AccountWrapper>
+            {metamaskAddress && (
+              <Account>
+                <InnerWrapper>
+                  <Jazzicon diameter={40} seed={jsNumberForAddress(metamaskAddress ?? '0x0')} />
+                </InnerWrapper>
+                <AddressWrapper>
+                  <AddressTextWrapper>
+                    <MediumText>{truncateAddress(metamaskAddress ?? '0x0')}</MediumText>
+                    <InnerWrapper>
+                      {/* TODO: Copied! 문구 2초 노출 */}
+                      <ButtonIconSmall
+                        icon={<IconCopy />}
+                        onClick={() => copy(metamaskAddress ?? '')}
+                      />
+                      <ButtonIconSmall icon={<IconLogout />} onClick={() => disconnectMetamask()} />
+                    </InnerWrapper>
+                  </AddressTextWrapper>
+
+                  <SmallText>Connected with Metamask</SmallText>
+                </AddressWrapper>
+              </Account>
+            )}
+            {gemAddress && (
+              <Account>
+                <InnerWrapper>
+                  <Jazzicon diameter={40} seed={jsNumberForAddress(gemAddress ?? '0x0')} />
+                </InnerWrapper>
+                <AddressWrapper>
+                  <AddressTextWrapper>
+                    <MediumText>{truncateAddress(gemAddress ?? '0x0')}</MediumText>
+                    <InnerWrapper>
+                      {/* TODO: Copied! 문구 2초 노출 */}
+                      <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(gemAddress ?? '')} />
+                      <ButtonIconSmall icon={<IconLogout />} onClick={() => disconnectGem()} />
+                    </InnerWrapper>
+                  </AddressTextWrapper>
+
+                  <SmallText>Connected with Gem Wallet</SmallText>
+                </AddressWrapper>
+              </Account>
+            )}
             <Divider />
             <Slippage />
             <Divider />
@@ -86,19 +127,19 @@ export const AccountProfile = () => {
 const InnerWrapper = tw.div`
   flex-center
 `;
-
+const Wrapper = tw.div`relative`;
 interface WrapperProps {
   opened?: boolean;
 }
-const Wrapper = styled.div<WrapperProps>(({ opened }) => [
-  tw`relative flex h-40 gap-6 pl-8 pr-16 select-none bg-neutral-10 rounded-10 py-9 w-145`,
+const Banner = styled.div<WrapperProps>(({ opened }) => [
+  tw`relative flex h-40 gap-6 select-none bg-neutral-10 rounded-10 clickable`,
   opened ? tw`text-neutral-0` : tw`hover:text-primary-80`,
-  opened ? tw`bg-primary-50` : tw`hover:bg-neutral-20`,
+  opened && tw`bg-neutral-20 hover:bg-neutral-20`,
 ]);
-
+const AccountWrapper = tw.div`flex-center w-136 gap-6 px-8 py-9`;
 const ContentWrapper = styled.div<WrapperProps>(({ opened }) => [
   tw`w-full h-full text-center truncate clickable text-neutral-100 font-m-14 address`,
-  opened ? tw`text-neutral-0` : tw`hover:text-primary-80`,
+  opened ? tw`text-primary-60` : tw`hover:text-primary-80 `,
 ]);
 
 const DropdownWrapper = tw.div`
@@ -117,20 +158,16 @@ const TitleText = tw.span`
   text-white font-b-18
 `;
 
-const Disconnect = tw.div`
-  bg-neutral-10 font-m-12 text-primary-60 gap-6 px-12 py-4 rounded-8 clickable
-`;
-
 const Divider = tw.div`
   w-full h-1 flex-shrink-0 bg-neutral-20
 `;
 
-const AccountWrapper = tw.div`
+const Account = tw.div`
   flex justify-between gap-16 px-16 py-12 w-full
 `;
 
 const AddressWrapper = tw.div`
-  gap-4 flex items-center
+  gap-1 flex flex-col justify-center
 `;
 
 const MediumText = tw.div`
@@ -156,3 +193,5 @@ const NetworkStatus = tw.div`
 const NetworkText = tw.div`
   text-neutral-80 font-r-12
 `;
+const SmallText = tw.div`font-r-11 text-neutral-60`;
+const AddressTextWrapper = tw.div`flex justify-between`;

@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useWeb3Modal } from '@web3modal/react';
 import tw, { css, styled } from 'twin.macro';
 
 import logo from '~/assets/logos/logo-text.svg';
@@ -10,8 +9,10 @@ import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
-import { TOOLTIP_ID } from '~/types';
+import { usePopup } from '~/hooks/pages/use-popup';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
+import { useConnectGemWallet } from '~/moai-xrp-root/hooks/data/use-connect-gem-wallet';
 import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
 
 import { AccountProfile } from '../account-profile';
@@ -19,8 +20,9 @@ import { AccountProfile } from '../account-profile';
 export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isConnected } = useConnectWallet();
-  const { isOpen, open } = useWeb3Modal();
+  const { isConnected, address: metamaskAddress } = useConnectWallet();
+  const { open } = usePopup(POPUP_ID.WALLET);
+  const { gemAddress } = useConnectGemWallet();
 
   return (
     <>
@@ -38,16 +40,19 @@ export const Gnb = () => {
               {text}
             </MenuWrapper>
           ))}
-          {isConnected ? (
+          {isConnected || gemAddress ? (
             <ConnectedButton>
               <Notification />
-              <AccountProfile />
+              <AccountProfile
+                bothConnected={isConnected && !!gemAddress}
+                gemAddress={gemAddress}
+                metamaskAddress={metamaskAddress}
+              />
             </ConnectedButton>
           ) : (
             <ButtonPrimaryMedium
               style={{ padding: '9px 24px' }}
               text="Connect wallet"
-              isLoading={isOpen}
               onClick={open}
             />
           )}
