@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { AccountTxRequest, dropsToXrp } from 'xrpl';
 
+import { useXrplStore } from '~/states/data/xrpl';
+
 import { TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
 import {
@@ -9,7 +11,6 @@ import {
 } from '~/moai-xrp-ledger/types/components';
 
 import { QUERY_KEYS } from '~/moai-xrp-ledger/api/utils/query-keys';
-import { useXrplStore } from '~/states/data/xrpl';
 
 import { useAmmInfo } from '../amm/get-amm-info';
 

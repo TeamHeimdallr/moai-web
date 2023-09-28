@@ -2,10 +2,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { AccountTxRequest, dropsToXrp, TransactionMetadata } from 'xrpl';
 
+import { useXrplStore } from '~/states/data/xrpl';
+
 import { ISSUER, TOKEN_USD_MAPPER } from '~/moai-xrp-ledger/constants';
 
 import { QUERY_KEYS } from '~/moai-xrp-ledger/api/utils/query-keys';
-import { useXrplStore } from '~/states/data/xrpl';
 import { GetSwapHistories, GetSwapHistoriesTokens } from '~/moai-xrp-ledger/types/contracts';
 
 import { useAmmInfo } from '../amm/get-amm-info';
