@@ -1,4 +1,3 @@
-import { getAddress, isInstalled } from '@gemwallet/api';
 import { useWeb3Modal } from '@web3modal/react';
 import tw from 'twin.macro';
 
@@ -6,11 +5,13 @@ import { IconGem, IconMetamask } from '~/assets/icons';
 
 import { Popup } from '~/components/popup';
 
+import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types/components';
 
 export const SelectWalletPopup = () => {
   const { close } = usePopup(POPUP_ID.WALLET);
+  const { isInstalled, connect: connectGemWallet } = useConnectXrplWallet();
   const { open } = useWeb3Modal();
 
   const wallets = [
@@ -19,15 +20,8 @@ export const SelectWalletPopup = () => {
       description: 'Supports XRPL network',
       icon: <IconGem />,
       onClick: () => {
-        isInstalled().then(response => {
-          if (response.result.isInstalled) {
-            getAddress().then(response => {
-              console.log(`Your address: ${response.result?.address}`);
-            });
-          } else {
-            console.log('Gem Wallet is not installed');
-          }
-        });
+        if (!isInstalled) return;
+        connectGemWallet();
         close();
       },
     },

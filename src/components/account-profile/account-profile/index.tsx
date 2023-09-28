@@ -1,17 +1,20 @@
 import { useRef, useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { useWeb3Modal } from '@web3modal/react';
 import copy from 'copy-to-clipboard';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
-import { useDisconnect, useNetwork } from 'wagmi';
+import { useNetwork } from 'wagmi';
 
-import { IconCopy, IconLogout } from '~/assets/icons';
+import { COLOR } from '~/assets/colors';
+import { IconCopy, IconGem, IconLogout, IconMetamask, IconNext } from '~/assets/icons';
 
 import { CHAIN } from '~/constants';
 
 import { BothConnected } from '~/components/account-profile/both-connected';
 import { ButtonIconSmall } from '~/components/buttons/icon';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
 import { truncateAddress } from '~/utils/string';
 
@@ -44,12 +47,14 @@ export const AccountProfile = ({ gemAddress, metamaskAddress, bothConnected }: P
     if (CHAIN === 'xrp-evm') return 'Xrp Evm Sidechain';
   };
 
-  const { disconnect: disconnectMetamask } = useDisconnect();
-  const { disconnect: disconnectGemWallet } = useConnectXrplWallet();
+  const { disconnect: disconnectMetamask } = useConnectEvmWallet();
+  const { open: connectEvmWallet } = useWeb3Modal();
+
+  const { connect: connectXrplWallet, disconnect: disconnectGemWallet } = useConnectXrplWallet();
 
   return (
-    <Wrapper>
-      <Banner ref={ref} opened={opened} onClick={toggle}>
+    <Wrapper ref={ref}>
+      <Banner opened={opened} onClick={toggle}>
         {bothConnected ? (
           <BothConnected />
         ) : (
@@ -72,7 +77,7 @@ export const AccountProfile = ({ gemAddress, metamaskAddress, bothConnected }: P
             <Title>
               <TitleText>{'Account'}</TitleText>
             </Title>
-            {metamaskAddress && (
+            {metamaskAddress ? (
               <Account>
                 <InnerWrapper>
                   <Jazzicon diameter={40} seed={jsNumberForAddress(metamaskAddress ?? '0x0')} />
@@ -93,8 +98,18 @@ export const AccountProfile = ({ gemAddress, metamaskAddress, bothConnected }: P
                   <SmallText>Connected with Metamask</SmallText>
                 </AddressWrapper>
               </Account>
+            ) : (
+              <AccountNotConnected onClick={connectEvmWallet}>
+                <NotConnectedLogo>
+                  <IconMetamask width={24} height={24} />
+                </NotConnectedLogo>
+                <ConnectText>Connect with Metamask</ConnectText>
+                <IconButton>
+                  <IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />
+                </IconButton>
+              </AccountNotConnected>
             )}
-            {gemAddress && (
+            {gemAddress ? (
               <Account>
                 <InnerWrapper>
                   <Jazzicon diameter={40} seed={jsNumberForAddress(gemAddress ?? '0x0')} />
@@ -115,6 +130,16 @@ export const AccountProfile = ({ gemAddress, metamaskAddress, bothConnected }: P
                   <SmallText>Connected with Gem Wallet</SmallText>
                 </AddressWrapper>
               </Account>
+            ) : (
+              <AccountNotConnected onClick={connectXrplWallet}>
+                <NotConnectedLogo>
+                  <IconGem width={24} height={24} />
+                </NotConnectedLogo>
+                <ConnectText>Connect with Gem Wallet</ConnectText>
+                <IconButton>
+                  <IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />
+                </IconButton>
+              </AccountNotConnected>
             )}
             <Divider />
             <Slippage />
@@ -172,7 +197,10 @@ const Divider = tw.div`
 `;
 
 const Account = tw.div`
-  flex justify-between gap-16 px-16 py-12 w-full
+  flex justify-between gap-16 px-16 py-12 w-full items-center
+`;
+const AccountNotConnected = tw.div`
+  flex justify-between gap-16 px-16 py-12 w-full items-center clickable
 `;
 
 const AddressWrapper = tw.div`
@@ -204,3 +232,15 @@ const NetworkText = tw.div`
 `;
 const SmallText = tw.div`font-r-11 text-neutral-60`;
 const AddressTextWrapper = tw.div`flex justify-between`;
+
+const NotConnectedLogo = tw.div`
+  rounded-full bg-neutral-20 w-40 h-40 flex-center flex-shrink-0
+`;
+
+const ConnectText = tw.div`
+  font-m-12 text-primary-60 flex-1
+`;
+
+const IconButton = tw.div`
+  p-4 clickable flex-center
+`;
