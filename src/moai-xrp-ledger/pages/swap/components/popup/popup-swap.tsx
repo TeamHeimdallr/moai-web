@@ -60,7 +60,7 @@ export const PopupSwap = () => {
     fromToken,
     fromValue: Number(fromValue),
     toToken,
-    toValue,
+    toValue: Number(toValue),
   });
 
   useEffect(() => {
