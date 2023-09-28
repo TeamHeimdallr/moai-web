@@ -9,6 +9,8 @@ import { InputTextField } from '~/components/inputs/textfield';
 
 import { useAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';
 
+import { ISSUER } from '~/moai-xrp-ledger/constants';
+
 import { Gnb } from '~/moai-xrp-ledger/components/gnb';
 
 const XrplTestPage = () => {
@@ -26,19 +28,11 @@ const XrplTestPage = () => {
 
   // const ammAccount = 'r3k73UkdrvPxCHaw9nwG2CzQ2W5esgZXCv';
 
-  const { checkAmmExist, ammInfo, getFee } = useAmmInfo({
-    asset1: {
-      currency: 'XRP',
-    },
-    asset2: {
-      currency: 'MOI',
-      issuer: 'rPEQacsbfGADDHb6wShzTZ2ajByQFPdY3E',
-    },
-  });
+  const { ammExist, ammInfo } = useAmmInfo(ISSUER.XRP_MOI);
+  const { fee } = ammInfo;
 
   const handleCreateLP = async () => {
-    const result = await checkAmmExist();
-    const fee = await getFee();
+    const result = !!ammExist;
     console.log('result', result, ammInfo);
 
     if (!result) {
@@ -75,9 +69,7 @@ const XrplTestPage = () => {
   };
 
   const handleProvideLP = async () => {
-    const result = await checkAmmExist();
-
-    if (result) {
+    if (ammExist) {
       isInstalled().then(response => {
         if (response.result.isInstalled) {
           getAddress().then(response => {
@@ -118,9 +110,7 @@ const XrplTestPage = () => {
   };
 
   const handleSwapForXRP = async () => {
-    const result = await checkAmmExist();
-
-    if (result) {
+    if (ammExist) {
       isInstalled().then(response => {
         if (response.result.isInstalled) {
           getAddress().then(response => {
@@ -153,9 +143,7 @@ const XrplTestPage = () => {
   };
 
   const handleSwapForMOAI = async () => {
-    const result = await checkAmmExist();
-
-    if (result) {
+    if (ammExist) {
       isInstalled().then(response => {
         if (response.result.isInstalled) {
           getAddress().then(response => {

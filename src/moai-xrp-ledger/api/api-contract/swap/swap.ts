@@ -33,7 +33,7 @@ export const useSwap = ({ account, fromToken, fromValue, toToken, toValue }: Pro
 
   const sendMax =
     fromToken === 'XRP'
-      ? { SendMax: fromValue.toString() }
+      ? { SendMax: xrpToDrops(fromValue.toString()) }
       : {
           SendMax: {
             currency: fromValue,
@@ -47,7 +47,7 @@ export const useSwap = ({ account, fromToken, fromValue, toToken, toValue }: Pro
     Account: address,
     ...amount,
     ...sendMax,
-    destination: address,
+    Destination: address,
     Flag: PaymentFlags.tfPartialPayment,
   };
 

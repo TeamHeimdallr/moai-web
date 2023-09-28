@@ -1,6 +1,5 @@
 import * as yup from 'yup';
 
-import { formatFloat } from '~/utils/number';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { useAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';
@@ -23,10 +22,13 @@ export const useSwapData = () => {
     fromToken,
     fromValue,
     toToken,
+    toValue,
 
     setFromToken,
     setFromValue,
     setToToken,
+    setToValue,
+
     resetFromValue,
     resetAll,
   } = useSwapStore();
@@ -47,37 +49,39 @@ export const useSwapData = () => {
       .max(fromTokenBalance, 'Exceeds wallet balance'),
   });
 
+  const toSchema = yup.object({
+    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
+      .number()
+      .min(0)
+      .max(toTokenBalance, 'Exceeds wallet balance'),
+  });
+
   const fee = 0.003; // TODO
-  const toValue = fromValue
-    ? Number(
-        formatFloat(
-          toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee))),
-          8
-        )
-      )
-    : 0;
 
   const swapRatio =
     fromValue == 0 || toValue == 0
       ? toReserve - toReserve * (fromReserve / (fromReserve + (1 - fee)))
-      : (toValue ?? 0) / Number(fromValue == 0 ? 0.0001 : fromValue);
+      : Number(toValue ?? 0) / Number(fromValue == 0 ? 0.0001 : fromValue);
 
   const validToSwap =
     fromValue &&
     Number(fromValue) > 0 &&
     Number(fromValue) <= fromTokenBalance &&
     toValue &&
-    toValue > 0;
+    Number(toValue ?? 0) > 0;
 
   return {
     fromToken,
     fromValue,
+
     toToken,
     toValue,
 
     setFromToken,
     setFromValue,
     setToToken,
+    setToValue,
+
     resetFromValue,
     resetAll,
 
@@ -87,6 +91,7 @@ export const useSwapData = () => {
     toTokenPrice,
 
     fromSchema,
+    toSchema,
 
     swapRatio,
     validToSwap,

@@ -30,7 +30,8 @@ export const SwapInputs = () => {
     setToToken,
 
     setFromValue,
-    resetFromValue,
+    setToValue,
+    resetAll,
 
     fromTokenBalance,
     fromTokenPrice,
@@ -38,6 +39,8 @@ export const SwapInputs = () => {
     toTokenPrice,
 
     fromSchema,
+    toSchema,
+
     swapRatio,
     validToSwap,
   } = useSwapData();
@@ -56,7 +59,7 @@ export const SwapInputs = () => {
   };
 
   useEffect(
-    () => resetFromValue(),
+    () => resetAll(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [fromToken, toToken]
   );
@@ -81,12 +84,14 @@ export const SwapInputs = () => {
               <SwapArrowDown />
             </IconWrapper>
             <InputNumber
-              disabled
               token={<Token token={toToken as TOKEN} icon={<IconDown />} />}
-              tokenValue={toTokenPrice * (Number(toValue) || 0)}
               balance={toTokenBalance}
+              tokenValue={toTokenPrice * (Number(toValue) || 0)}
+              schema={toSchema}
               value={toValue}
-              focus={false}
+              maxButton
+              slider
+              handleChange={setToValue}
               handleTokenClick={openSelectTokenToPopup}
             />
           </InputInnerWrapper>
@@ -114,7 +119,7 @@ const InputInnerWrapper = tw.div`
 `;
 
 const IconWrapper = tw.div`
-  absolute absolute-center-x bottom-100 z-1 clickable
+  absolute absolute-center-x bottom-118 z-1 clickable
 `;
 
 const InputLabel = tw.div`
