@@ -1,8 +1,8 @@
 import { TokenROOT, TokenXRP } from '~/assets/images';
 
-import { CHAIN_ID, TOKEN_ADDRESS } from '~/moai-evm/constants';
+import { CHAIN_ID, TOKEN_ADDRESS } from '~/moai-xrp-root/constants';
 
-import { TokenInfo } from '~/moai-evm/types/contracts';
+import { TokenInfo } from '~/moai-xrp-root/types/contracts';
 
 export const tokenInfos: TokenInfo[] = [
   {

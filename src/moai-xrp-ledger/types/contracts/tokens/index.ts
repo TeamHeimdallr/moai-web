@@ -11,6 +11,7 @@ export interface TokenInfo {
 
 export interface TokenBalanceInfo {
   balance: number;
+  value: number;
   name: string;
 }
 

@@ -2,8 +2,6 @@ import { CHAIN } from '~/constants';
 
 import { liquidityPools } from '~/moai-xrp-ledger/data/liquidity-pool-list';
 
-import { AMM } from '~/moai-xrp-ledger/constants';
-
 import { LiquidityPoolData } from '~/moai-xrp-ledger/types/components';
 
 import { useLiquidityPoolBalance } from './get-liquidity-pool-balance';
@@ -12,11 +10,9 @@ export const useGetLiquidityPoolLists = () => {
   const pools = liquidityPools[CHAIN];
   const pool = pools?.[0] ?? {};
 
-  const poolId = pool.id;
-
   // TODO: update to server api
   const { poolInfo, liquidityPoolTokenPrice, liquidityPoolTokenBalance } = useLiquidityPoolBalance(
-    AMM[poolId]
+    pool.id
   );
 
   const id = poolInfo.account;

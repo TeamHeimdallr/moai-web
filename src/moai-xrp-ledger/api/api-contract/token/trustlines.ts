@@ -11,7 +11,7 @@ import { QUERY_KEYS } from '../../utils/query-keys';
 interface Props {
   currency: string;
   issuer: string;
-  amount: number;
+  amount: string;
 }
 export const useTrustLines = ({ currency, issuer, amount }: Props) => {
   const { client, isConnected } = useXrplStore();
@@ -54,7 +54,7 @@ export const useTrustLines = ({ currency, issuer, amount }: Props) => {
   const { mutateAsync, ...rest } = useMutation(QUERY_KEYS.TOKEN.SET_TRUST_LINE, setTrustLines);
 
   return {
-    allowance: !!line && balance > amount,
+    allowance: !!line && balance > Number(amount),
     allow: mutateAsync,
     refetchTrustLines,
     ...rest,

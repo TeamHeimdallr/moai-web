@@ -62,7 +62,7 @@ export const AddLiquidityPopup = ({
   } = useTrustLines({
     currency: 'MOI',
     issuer: ISSUER.MOI,
-    amount: tokenInputValues[0]?.amount ?? 0,
+    amount: tokenInputValues[0]?.amount?.toString() ?? '0',
   });
 
   const navigate = useNavigate();

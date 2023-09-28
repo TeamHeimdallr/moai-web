@@ -13,5 +13,7 @@ export const QUERY_KEYS = {
     ADD_LIQUIDITY: ['mutate', 'xrp', 'ledger', 'amm', 'transactions'],
     WITHDRAW_LIQUIDITY: ['mutate', 'xrp', 'ledger', 'amm', 'transactions'],
   },
-  SWAP: {},
+  SWAP: {
+    SWAP: ['mutate', 'xrp', 'ledger', 'swap'],
+  },
 };
