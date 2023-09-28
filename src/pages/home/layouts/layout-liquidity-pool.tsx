@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import tw from 'twin.macro';
 
-import { BASE_URL_SUBROUTE, CHAIN, TOKEN } from '~/constants';
+import { BASE_URL_SUBROUTE, TOKEN } from '~/constants';
 
 import { FilterChip } from '~/components/filter-chip';
 import { Table } from '~/components/tables';
@@ -12,8 +12,8 @@ import { useTableLiquidityPool } from '../hooks/use-table-liquidity-pool';
 export const LiquidityPoolLayout = () => {
   const { data, columns } = useTableLiquidityPool();
 
-  const handleRowClick = (id?: string) => {
-    window.open(`${BASE_URL_SUBROUTE(CHAIN)}/pools/${id}`);
+  const handleRowClick = (chain: string, id: string) => {
+    window.open(`${BASE_URL_SUBROUTE(chain)}/pools/${id}`);
   };
 
   const tokens = [TOKEN.MOAI, TOKEN.XRP, TOKEN.ROOT, TOKEN.WETH];

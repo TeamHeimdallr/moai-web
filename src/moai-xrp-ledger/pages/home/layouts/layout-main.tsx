@@ -4,8 +4,11 @@ import bgMain from '~/assets/images/bg-main.png';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { usePopup } from '~/hooks/pages/use-popup';
 import { formatNumber } from '~/utils/number';
+import { POPUP_ID } from '~/types';
 
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 
@@ -13,7 +16,11 @@ import { useBalancesAll } from '~/moai-xrp-root/hooks/data/use-balance-all';
 import { TOKEN } from '~/moai-xrp-root/types/contracts';
 
 export const MainLayout = () => {
-  const { connect, isConnected } = useConnectXrplWallet();
+  const { open, opened } = usePopup(POPUP_ID.WALLET);
+
+  const { isConnected: isEvmConnected } = useConnectEvmWallet();
+  const { isConnected: isXrplConnected } = useConnectXrplWallet();
+  const isConnected = isEvmConnected || isXrplConnected;
 
   const { balancesMap } = useBalancesAll();
   const moaiBalance = balancesMap?.[TOKEN.MOAI];
@@ -32,7 +39,8 @@ export const MainLayout = () => {
             <ButtonPrimaryLarge
               text="Connect wallet"
               buttonType="outlined"
-              onClick={() => connect()}
+              isLoading={!!opened}
+              onClick={open}
             />
           </ButtonWrapper>
         </>

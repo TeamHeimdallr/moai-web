@@ -2,17 +2,11 @@ import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
-import { SelectWalletPopup } from '~/components/wallet-selection';
-
-import { usePopup } from '~/hooks/pages/use-popup';
-import { POPUP_ID } from '~/types';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';
 
 const HomePage = () => {
-  const { opened } = usePopup(POPUP_ID.WALLET);
-
   return (
     <>
       <Wrapper>
@@ -27,7 +21,6 @@ const HomePage = () => {
         </InnerWrapper>
         <Footer />
       </Wrapper>
-      {opened && <SelectWalletPopup />}
     </>
   );
 };

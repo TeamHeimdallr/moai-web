@@ -122,7 +122,8 @@ export const useTableLiquidityPool = () => {
         }, {});
 
         return {
-          id: d.id,
+          'id-raw': d.id,
+          'chain-raw': d.chain,
           chain: <TableColumnBadge value={<NetworkChip network={d.chain} />} width={216} />,
           assets: <TableColumnTokenIcon tokens={d.assets} />,
           compositions: <TableColumnToken tokens={tokens} />,
@@ -140,10 +141,8 @@ export const useTableLiquidityPool = () => {
 
   const columns = useMemo(
     () => [
-      {
-        cell: row => row.renderValue(),
-        accessorKey: 'id',
-      },
+      { accessorKey: 'id-raw' },
+      { accessorKey: 'chain-raw' },
       {
         header: () => <TableHeader width={216} label="Chain" />,
         cell: row => row.renderValue(),
