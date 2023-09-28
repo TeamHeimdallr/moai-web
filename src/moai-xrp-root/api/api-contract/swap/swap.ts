@@ -6,11 +6,12 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+
 import { VAULT_ABI } from '~/moai-xrp-root/abi/vault';
 
 import { CONTRACT_ADDRESS } from '~/moai-xrp-root/constants';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/moai-xrp-root/types/contracts';
 
 interface Props {
@@ -30,7 +31,7 @@ export const useSwap = ({
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const publicClient = usePublicClient();
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
 
   const isEnabled = !!singleSwap && !!fundManagement && !!address && enabled;
 

@@ -19,8 +19,9 @@
     "project": "./tsconfig.json"
   },
   "ignorePatterns": ["**.config.js", "**.config.ts", "mockServiceWorker.js"],
-  "plugins": ["simple-import-sort"],
+  "plugins": ["simple-import-sort", "react-refresh"],
   "rules": {
+    "react-refresh/only-export-components": "warn",
     "simple-import-sort/imports": [
       "error",
       {

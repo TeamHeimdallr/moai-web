@@ -1,2 +1,2 @@
-export * from './notification';
-export * from './toast';
+export { ToastNotification } from './notification';
+export { ToastContainer } from './toast';

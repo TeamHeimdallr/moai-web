@@ -5,7 +5,7 @@ const HomePage = lazy(() => import('./pages/home'));
 const PoolDetailPage = lazy(() => import('./pages/pool-detail'));
 const SwapPage = lazy(() => import('./pages/swap'));
 
-const MoaiEVM = () => {
+const MoaiRoot = () => {
   return (
     <ReactRoutes>
       <Route path="/" element={<HomePage />} />
@@ -16,4 +16,4 @@ const MoaiEVM = () => {
   );
 };
 
-export default MoaiEVM;
+export default MoaiRoot;

@@ -25,10 +25,12 @@ export const NetworkChip = ({ network }: Props) => {
       color: COLOR.CHAIN.EVM,
     },
   };
+
+  if (!networkMap[network]) return <></>;
   return (
-    <Wrapper color={networkMap[network].color}>
-      <IconWrapper>{networkMap[network].icon()} </IconWrapper>
-      <Network>{networkMap[network].name}</Network>
+    <Wrapper color={networkMap[network]?.color}>
+      <IconWrapper>{networkMap[network]?.icon()} </IconWrapper>
+      <Network>{networkMap[network]?.name}</Network>
     </Wrapper>
   );
 };

@@ -5,12 +5,16 @@ import { Address, isAddressEqual } from 'viem';
 import { COLOR } from '~/assets/colors';
 import { IconMinus, IconPlus } from '~/assets/icons';
 
-import { TableHeader, TableHeaderSortable } from '~/components/tables';
-import { TableColumn } from '~/components/tables/columns';
-import { TableColumnIcon } from '~/components/tables/columns/column-icon';
-import { TableColumnLink } from '~/components/tables/columns/column-link';
-import { TableColumnTokenPair } from '~/components/tables/columns/column-token-pair';
+import {
+  TableColumn,
+  TableColumnIcon,
+  TableColumnLink,
+  TableColumnTokenPair,
+  TableHeader,
+  TableHeaderSortable,
+} from '~/components/tables';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
 import { elapsedTime } from '~/utils/time';
 import { useTableLiquidityPoolProvisionStore } from '~/states/components/table-liquidity-pool-provision';
@@ -22,10 +26,8 @@ import { SCANNER_URL } from '~/moai-xrp-root/constants';
 
 import { LiquidityProvisionData, LiquidityProvisionTable } from '~/moai-xrp-root/types/components';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
-
 export const useTableTotalProvision = (poolId: Address) => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const { data } = useGetLiquidityPoolProvisions({ poolId });
 
   const { selected: selectedTab } = useSelectedLiquidityPoolProvisionTabStore();

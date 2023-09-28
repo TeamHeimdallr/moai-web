@@ -2,4 +2,4 @@
 
 export * from './constant-env';
 export * from './constant-vars';
-export * from './constant-chain';
+export * from './constant-xrpl';

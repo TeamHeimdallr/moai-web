@@ -4,18 +4,17 @@ import tw from 'twin.macro';
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { useSelectedLiquidityPoolProvisionTabStore } from '~/states/pages/selected-liquidity-pool-provision-tab';
 
 import { useTableTotalProvision } from '~/moai-evm/hooks/components/tables/use-table-total-provision';
 import { LiquidityProvisionTable, PoolInfo } from '~/moai-evm/types/components';
 
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
-
 interface Props {
   pool: PoolInfo;
 }
 export const LiquidityProvisions = ({ pool }: Props) => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const tabs = address
     ? [
         { key: 'total-provision', name: 'All liquidity provision' },

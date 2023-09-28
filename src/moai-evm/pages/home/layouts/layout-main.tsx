@@ -5,17 +5,17 @@ import bgMain from '~/assets/images/bg-main.png';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
 
 import { CURRENT_CHAIN } from '~/moai-evm/constants';
 
 import { useBalancesAll } from '~/moai-evm/hooks/data/use-balance-all';
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
 import { TOKEN } from '~/moai-evm/types/contracts';
 
 export const MainLayout = () => {
   const { isOpen, open } = useWeb3Modal();
-  const { isConnected } = useConnectWallet();
+  const { isConnected } = useConnectEvmWallet();
 
   const { balancesMap } = useBalancesAll();
   const moaiBalance = balancesMap?.[TOKEN.MOAI];

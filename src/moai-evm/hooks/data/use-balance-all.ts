@@ -1,14 +1,14 @@
 import { formatEther, isAddress } from 'viem';
 import { useBalance } from 'wagmi';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+
 import { TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/moai-evm/constants';
 
 import { TOKEN, TokenBalanceInfoAll } from '~/moai-evm/types/contracts';
 
-import { useConnectWallet } from './use-connect-wallet';
-
 export const useBalancesAll = (): TokenBalanceInfoAll => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const enabled = address && isAddress(address);
 
   const { data: moaiData } = useBalance({

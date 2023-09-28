@@ -1,15 +1,17 @@
+import { Address } from 'viem';
+
 import { CHAIN } from '~/constants';
+
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 
 import { liquidityPools } from '~/moai-xrp-root/data/liquidity-pool-list';
 
 import { LiquidityPoolData } from '~/moai-xrp-root/types/components';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
-
 import { useLiquidityPoolBalance } from './get-liquidity-pool-balance';
 
 export const useGetLiquidityPoolLists = () => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
 
   const pools = liquidityPools[CHAIN];
   const pool = pools?.[0] ?? {};
@@ -17,8 +19,9 @@ export const useGetLiquidityPoolLists = () => {
   const poolId = pool.id;
 
   // TODO: update to server api
-  const { poolInfo, liquidityPoolTokenPrice, liquidityPoolTokenBalance } =
-    useLiquidityPoolBalance(poolId);
+  const { poolInfo, liquidityPoolTokenPrice, liquidityPoolTokenBalance } = useLiquidityPoolBalance(
+    poolId as Address
+  );
 
   const id = poolId;
   const isNew = pool.isNew;
@@ -28,9 +31,6 @@ export const useGetLiquidityPoolLists = () => {
   const volume = poolInfo.volume;
   const apr = poolInfo.apr;
 
-  // TODO : get chain of the pool
-  const chain = 'ROOT';
-
   const balance = liquidityPoolTokenBalance * liquidityPoolTokenPrice;
 
   if (!address) return [] as LiquidityPoolData[];
@@ -38,7 +38,6 @@ export const useGetLiquidityPoolLists = () => {
     {
       id,
       assets,
-      chain,
       compositions,
       poolValue,
       volume,

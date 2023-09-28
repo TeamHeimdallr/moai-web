@@ -1,26 +1,25 @@
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 import { SelectWalletPopup } from '~/components/wallet-selection';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID } from '~/types';
 
 import { CHAIN_ID } from '~/moai-xrp-root/constants';
 
 import { SwitchNetwork } from '~/moai-xrp-root/components/banner/switch-network';
-import { Gnb } from '~/moai-xrp-root/components/gnb';
 
 import { useSwitchNetwork } from '~/moai-xrp-root/hooks/pages/use-switch-network';
-
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';
 import { MyLiquidityLayout } from './layouts/layout-my-liquidity';
 
 const HomePage = () => {
-  const { isConnected } = useConnectWallet();
+  const { isConnected } = useConnectEvmWallet();
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
   const { opened } = usePopup(POPUP_ID.WALLET);
 

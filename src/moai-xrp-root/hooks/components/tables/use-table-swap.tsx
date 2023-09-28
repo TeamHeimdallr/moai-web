@@ -3,11 +3,14 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { ColumnDef } from '@tanstack/react-table';
 import { Address } from 'viem';
 
-import { TableHeader, TableHeaderSortable } from '~/components/tables';
-import { TableColumn } from '~/components/tables/columns';
-import { TableColumnIcon } from '~/components/tables/columns/column-icon';
-import { TableColumnLink } from '~/components/tables/columns/column-link';
-import { TableColumnTokenSwap } from '~/components/tables/columns/column-token-swap';
+import {
+  TableColumn,
+  TableColumnIcon,
+  TableColumnLink,
+  TableColumnTokenSwap,
+  TableHeader,
+  TableHeaderSortable,
+} from '~/components/tables';
 
 import { formatNumber } from '~/utils/number';
 import { truncateAddress } from '~/utils/string';
@@ -59,7 +62,7 @@ export const useTableSwap = (poolId: Address) => {
     trader: (
       <TableColumnIcon
         width={160}
-        text={truncateAddress(d.trader, 4)}
+        text={truncateAddress(d.trader as Address, 4)}
         icon={<Jazzicon diameter={24} seed={jsNumberForAddress(d.trader ?? '0x0')} />}
         isAddress
       />

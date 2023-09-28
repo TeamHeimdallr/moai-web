@@ -8,15 +8,15 @@ import { FilterChip } from '~/components/filter-chip';
 import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 
 import { useTableLiquidityPool } from '~/moai-xrp-root/hooks/components/tables/use-table-liquidity-pool';
 import { LiquidityPoolTable } from '~/moai-xrp-root/types/components';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
-
 export const LiquidityPoolLayout = () => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
   const { data, columns } = useTableLiquidityPool();
   const navigate = useNavigate();
 

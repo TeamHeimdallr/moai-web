@@ -12,6 +12,7 @@ import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { formatNumber } from '~/utils/number';
 import { DATE_FORMATTER } from '~/utils/time';
@@ -30,14 +31,13 @@ import {
   TOKEN_USD_MAPPER,
 } from '~/moai-evm/constants';
 
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
 import { SwapKind } from '~/moai-evm/types/contracts';
 
 import { useSwapData } from '../../hooks/use-swap-data';
 import { SwapArrowDown } from '../arrow-down';
 
 export const PopupSwap = () => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
 
   const { fromToken, fromValue, toToken, toValue, swapRatio, poolId, resetAll } = useSwapData();
 

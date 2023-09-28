@@ -12,6 +12,7 @@ import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { usePopup } from '~/hooks/pages/use-popup';
 import { formatNumber } from '~/utils/number';
 import { DATE_FORMATTER } from '~/utils/time';
@@ -29,7 +30,6 @@ import {
   TOKEN_IMAGE_MAPPER,
 } from '~/moai-xrp-root/constants';
 
-import { useConnectWallet } from '~/moai-xrp-root/hooks/data/use-connect-wallet';
 import { useGetRootNetworkTokenPrice } from '~/moai-xrp-root/hooks/data/use-root-network-token-price';
 import { SwapKind } from '~/moai-xrp-root/types/contracts';
 
@@ -37,7 +37,7 @@ import { useSwapData } from '../../hooks/use-swap-data';
 import { SwapArrowDown } from '../arrow-down';
 
 export const PopupSwap = () => {
-  const { address } = useConnectWallet();
+  const { address } = useConnectEvmWallet();
 
   const { fromToken, fromValue, toToken, toValue, swapRatio, poolId, resetAll } = useSwapData();
 

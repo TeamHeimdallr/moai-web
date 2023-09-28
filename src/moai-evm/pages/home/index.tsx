@@ -1,22 +1,22 @@
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
+
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 
 import { CHAIN_ID } from '~/moai-evm/constants';
 
 import { SwitchNetwork } from '~/moai-evm/components/banner/switch-network';
-import { Gnb } from '~/moai-evm/components/gnb';
 
 import { useSwitchNetwork } from '~/moai-evm/hooks/pages/use-switch-network';
-
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';
 import { MyLiquidityLayout } from './layouts/layout-my-liquidity';
 
 const HomePage = () => {
-  const { isConnected } = useConnectWallet();
+  const { isConnected } = useConnectEvmWallet();
   const { needSwitchNetwork } = useSwitchNetwork(CHAIN_ID);
 
   return (

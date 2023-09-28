@@ -21,3 +21,22 @@ export const CHAIN = import.meta.env.VITE_CHAIN_ENV;
  * @description WEB3 관련 KEY / RPC PROVIDER ENDPOINT
  */
 export const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+
+export const BASE_URL = IS_PROD
+  ? 'https://moai-finance.xyz'
+  : IS_STAGING
+  ? 'https://staging.moai-finance.xyz'
+  : IS_DEV
+  ? 'https://dev.moai-finance.xyz'
+  : 'http://localhost:3000';
+
+export const BASE_URL_SUBROUTE = (chain?: string) =>
+  !chain
+    ? BASE_URL
+    : IS_PROD
+    ? `https://${chain}.moai-finance.xyz`
+    : IS_STAGING
+    ? `https://${chain}-staging.moai-finance.xyz`
+    : IS_DEV
+    ? `https://${chain}-dev.moai-finance.xyz`
+    : `http://${chain}.localhost:3000`;

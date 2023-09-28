@@ -2,12 +2,14 @@ import { ReactNode, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 
 import {
+  TableColumn,
+  TableColumnToken,
+  TableColumnTokenIcon,
   TableHeaderAPR,
   TableHeaderAssets,
   TableHeaderComposition,
   TableHeaderSortable,
 } from '~/components/tables';
-import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
 
 import { formatNumber } from '~/utils/number';
 import { useTableLiquidityPoolStore } from '~/states/components/table-liquidity-pool';

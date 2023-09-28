@@ -2,11 +2,11 @@ import { Client } from 'xrpl';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-import { XRPL_WSS_TEST_NET } from '~/moai-xrp-ledger/constants';
+import { logger } from '~/states/middleware/logger';
 
-import { logger } from '../middleware/logger';
+import client from '~/configs/setup-xrpl-wallet';
 
-export interface XrplState {
+interface XrplState {
   client: Client;
   isConnected: boolean;
   setConnection: (isConnected: boolean) => void;
@@ -16,7 +16,7 @@ export const useXrplStore = create<XrplState>()(
   immer(
     logger(set => ({
       name: 'xrpl-store',
-      client: new Client(XRPL_WSS_TEST_NET),
+      client,
       isConnected: false,
       setConnection: isConnected => set({ isConnected }),
     }))

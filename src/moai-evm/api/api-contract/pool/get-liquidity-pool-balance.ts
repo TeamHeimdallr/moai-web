@@ -1,6 +1,7 @@
 import { Address, formatEther, formatUnits } from 'viem';
 import { useContractRead } from 'wagmi';
 
+import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
 import { Entries } from '~/types';
 
@@ -19,7 +20,6 @@ import {
 import { Composition, PoolInfo } from '~/moai-evm/types/components';
 
 import { useERC20TokenBalances } from '~/moai-evm/hooks/data/use-balance';
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
 import { PoolBalance } from '~/moai-evm/types/contracts';
 
 import { useGetSwapHistories } from '../swap/get-swap-histories';
@@ -32,7 +32,7 @@ interface QueryOptions {
 // disable fetching when chain is root, wallet is not connected,
 // because root network cannot read contract without connect wallet
 export const useLiquidityPoolBalance = (poolId?: Address) => {
-  const { address: walletAddress } = useConnectWallet();
+  const { address: walletAddress } = useConnectEvmWallet();
 
   const { data: poolTokensData } = usePoolTokens(poolId);
   const { data: liquidityPoolTokenTotalSupplyData } = useLiquidityPoolTokenTotalSupply(poolId);

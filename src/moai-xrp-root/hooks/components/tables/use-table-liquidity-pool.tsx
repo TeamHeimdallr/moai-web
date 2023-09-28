@@ -1,16 +1,15 @@
 import { ReactNode, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { NetworkChip } from '~/components/network-chip';
 import {
-  TableHeader,
+  TableColumn,
+  TableColumnToken,
+  TableColumnTokenIcon,
   TableHeaderAPR,
   TableHeaderAssets,
   TableHeaderComposition,
   TableHeaderSortable,
 } from '~/components/tables';
-import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
-import { TableColumnBadge } from '~/components/tables/columns/column-badge';
 
 import { formatNumber } from '~/utils/number';
 import { useTableLiquidityPoolStore } from '~/states/components/table-liquidity-pool';
@@ -45,7 +44,6 @@ export const useTableLiquidityPool = () => {
 
         return {
           id: d.id,
-          chain: <TableColumnBadge value={<NetworkChip network={d.chain} />} width={216} />,
           assets: <TableColumnTokenIcon tokens={d.assets} />,
           compositions: <TableColumnToken tokens={tokens} isNew={d.isNew} />,
           poolValue: (
@@ -65,11 +63,6 @@ export const useTableLiquidityPool = () => {
       {
         cell: row => row.renderValue(),
         accessorKey: 'id',
-      },
-      {
-        header: () => <TableHeader width={216} label="Chain" />,
-        cell: row => row.renderValue(),
-        accessorKey: 'chain',
       },
       {
         header: () => <TableHeaderAssets />,

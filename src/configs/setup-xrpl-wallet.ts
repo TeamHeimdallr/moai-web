@@ -1,3 +1,6 @@
-// import { Client } from 'xrpl';
+import { Client } from 'xrpl';
 
-// export const xrplClient = new Client('wss://amm.devnet.rippletest.net:51233/');
+import { XRPL_WSS_TEST_NET } from '~/moai-xrp-ledger/constants';
+
+const client = new Client(XRPL_WSS_TEST_NET);
+export default client;
