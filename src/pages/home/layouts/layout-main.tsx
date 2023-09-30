@@ -34,7 +34,7 @@ export const MainLayout = () => {
         </>
       ) : (
         <>
-          <Title>{`DeFi Liquidity pools built on ${CURRENT_CHAIN}`}</Title>
+          <Title>{`DeFi Liquidity pools built on ${CURRENT_CHAIN || 'XRP'}`}</Title>
           <ButtonWrapper>
             <ButtonPrimaryLarge
               text="Connect wallet"
