@@ -15,11 +15,12 @@ import { usePopup } from '~/hooks/pages/use-popup';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { AccountProfile } from '../account-profile';
+import { NetworkSelection } from '../network-selection';
 
 export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { open } = usePopup(POPUP_ID.WALLET);
+  const { open, opened } = usePopup(POPUP_ID.WALLET);
   const { isConnected: gemConnected, address: gemAddress } = useConnectXrplWallet();
   const { isConnected: metamaskConnected, address: metamaskAddress } = useConnectEvmWallet();
 
@@ -39,25 +40,30 @@ export const Gnb = () => {
               {text}
             </MenuWrapper>
           ))}
-          {metamaskConnected || gemConnected ? (
-            <ConnectedButton>
-              <Notification />
-              <AccountProfile
-                bothConnected={metamaskConnected && gemConnected}
-                gemAddress={gemAddress}
-                metamaskAddress={metamaskAddress}
+          <ButtonWrapper>
+            {metamaskConnected || gemConnected ? (
+              <ConnectedButton>
+                <Notification />
+                <AccountProfile
+                  bothConnected={metamaskConnected && gemConnected}
+                  gemAddress={gemAddress}
+                  metamaskAddress={metamaskAddress}
+                />
+              </ConnectedButton>
+            ) : (
+              <ButtonPrimaryMedium
+                style={{ padding: '9px 24px' }}
+                text="Connect wallet"
+                isLoading={!!opened}
+                onClick={open}
               />
-            </ConnectedButton>
-          ) : (
-            <ButtonPrimaryMedium
-              style={{ padding: '9px 24px' }}
-              text="Connect wallet"
-              onClick={open}
-            />
-          )}
+            )}
+            <NetworkSelection />
+          </ButtonWrapper>
         </ContentWrapper>
       </Wrapper>
       <TooltipCommingSoon />
+      <TooltipCommingSoon place="bottom" id={TOOLTIP_ID.COMMING_SOON_NETWORK_SELECTION} />
     </>
   );
 };
@@ -90,3 +96,7 @@ const MenuWrapper = styled.div(({ selected, disabled }: MenuProps) => [
   disabled ? tw`non-clickable text-neutral-60` : tw`hover:text-primary-60`,
   !disabled && selected && tw`text-primary-60`,
 ]);
+
+const ButtonWrapper = tw.div`
+  flex gap-8
+`;
