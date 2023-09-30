@@ -41,7 +41,7 @@ interface WrapperProps {
 }
 const Wrapper = styled.button<WrapperProps>(({ selected }) => [
   tw`
-    gap-6 p-8 rounded-10 flex-center flex-center text-neutral-100 bg-neutral-10 clickable
+    gap-6 p-8 rounded-10 flex-center text-neutral-100 bg-neutral-10 clickable
     hover:(text-primary-80 bg-neutral-20)
   `,
   css`

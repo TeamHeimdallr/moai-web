@@ -4,11 +4,13 @@ import { TOOLTIP_ID } from '~/types';
 
 import { Tooltip } from '../base';
 
-interface Props extends ITooltip {}
+interface Props extends Omit<ITooltip, 'id'> {
+  id?: TOOLTIP_ID;
+}
 
-export const TooltipCommingSoon = ({ ...rest }: Props) => {
+export const TooltipCommingSoon = ({ id, ...rest }: Props) => {
   return (
-    <Tooltip {...rest} id={TOOLTIP_ID.COMMING_SOON}>
+    <Tooltip {...rest} id={id ?? TOOLTIP_ID.COMMING_SOON}>
       Comming soon
     </Tooltip>
   );

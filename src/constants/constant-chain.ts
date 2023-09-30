@@ -1,4 +1,4 @@
-import { ChainLinea, ChainMantle, ChainROOT, ChainXRPL } from '~/assets/images';
+import { ChainLinea, ChainMantle, ChainROOT, ChainXRPL, IconWeb } from '~/assets/images';
 
 import { ChainSelectList } from '~/types';
 
@@ -7,11 +7,11 @@ export const CHAIN_IMAGE_MAPPER: Record<string, string> = {
   LINEA: ChainLinea,
   ROOT: ChainROOT,
   XRPL: ChainXRPL,
+  EMPTY: IconWeb,
 };
 
 export const CHAIN_SELECT_LIST: ChainSelectList[] = [
-  { name: 'mantle', text: 'Mantle' },
-  { name: 'linea', text: 'Linea' },
   { name: 'root', text: 'The Root Network', show: true },
-  { name: 'xrpl', text: 'XRPL', show: true, disabled: true, commingSoon: true },
+  { name: 'xrpl', text: 'XRPL', show: true },
+  { name: 'evm-sidechain', text: 'EVM Sidechain', show: true, commingSoon: true, disabled: true },
 ];
