@@ -1,4 +1,4 @@
-name: Deploy to prod
+name: Moai web deployment - The Root Network
 on:
   push:
     branches:

@@ -11,7 +11,6 @@ import { POPUP_ID } from './types';
 
 const Web3Provider = lazy(() => import('~/hocs/hoc-web3-provider'));
 
-const MoaiEVM = lazy(() => import('./moai-evm'));
 const MoaiXRPRoot = lazy(() => import('./moai-xrp-root'));
 const MoaiXRPLedger = lazy(() => import('./moai-xrp-ledger'));
 
@@ -33,8 +32,6 @@ const App = () => {
                 </Routes>
               )}
 
-              {CHAIN === 'mantle' && <MoaiEVM />}
-              {CHAIN === 'linea' && <MoaiEVM />}
               {CHAIN === 'root' && <MoaiXRPRoot />}
               {CHAIN === 'xrpl' && <MoaiXRPLedger />}
 
