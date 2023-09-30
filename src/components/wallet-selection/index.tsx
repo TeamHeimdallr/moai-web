@@ -54,7 +54,7 @@ export const SelectWalletPopup = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col gap-24 px-24 py-0
+  flex flex-col gap-12 px-24 py-0
 `;
 
 const Wallet = tw.div`

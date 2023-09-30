@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
@@ -9,9 +9,11 @@ import { TOOLTIP_ID } from '~/types';
 
 import { ButtonDropdown } from '../buttons/dropdown';
 import { DropdownList } from '../dropdown/dropdown-list';
-import { TooltipCommingSoon } from '../tooltips/comming-soon';
 
 export const NetworkSelection = () => {
+  const hostname = window.location.hostname.split('.');
+  const subDomain = hostname[hostname.length - 1 - 2];
+
   const ref = useRef<HTMLDivElement>(null);
   const [opened, open] = useState(false);
 
@@ -21,14 +23,23 @@ export const NetworkSelection = () => {
 
   useOnClickOutside(ref, () => open(false));
 
-  const selectedNetworkInfo =
-    CHAIN_SELECT_LIST.find(chain => chain.name === selectedNetwork) ?? CHAIN_SELECT_LIST[0];
-  const { name, text } = selectedNetworkInfo;
+  const selectedNetworkInfo = CHAIN_SELECT_LIST.find(chain => chain.name === selectedNetwork);
+  const name = selectedNetworkInfo?.name ?? 'EMPTY';
+  const text = selectedNetworkInfo?.text ?? 'Select network';
 
   const handleSelect = (name: string) => {
     selectNetwork(name);
     open(false);
+
+    window.location.replace(`https://${name.toLowerCase()}.moai-finance.xyz`);
   };
+
+  useEffect(() => {
+    if (subDomain) {
+      selectNetwork(name);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subDomain, name]);
 
   return (
     <>
@@ -41,6 +52,7 @@ export const NetworkSelection = () => {
           selected={!!selectedNetwork}
           opened={opened}
           onClick={toggle}
+          style={{ minHeight: '40px' }}
         />
         {opened && (
           <ListOuterWrapper>
@@ -58,20 +70,21 @@ export const NetworkSelection = () => {
                   selected={chain.name === selectedNetwork}
                   handleSelect={handleSelect}
                   disabled={chain.disabled}
-                  data-tooltip-id={chain.commingSoon ? TOOLTIP_ID.COMMING_SOON : undefined}
+                  data-tooltip-id={
+                    chain.commingSoon ? TOOLTIP_ID.COMMING_SOON_NETWORK_SELECTION : undefined
+                  }
                 />
               ))}
             </ListWrapper>
           </ListOuterWrapper>
         )}
       </Wrapper>
-      <TooltipCommingSoon place="bottom" />
     </>
   );
 };
 
 const Wrapper = tw.div`
-  flex flex-col items-end gap-20 relative z-10
+  flex flex-col items-end gap-20 relative z-10 flex-shrink-0
 `;
 
 const ListOuterWrapper = tw.div`
