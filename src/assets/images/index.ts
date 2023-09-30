@@ -3,6 +3,7 @@ import ChainLinea from './chain-linea.png';
 import ChainMantle from './chain-mantle.png';
 import ChainROOT from './chain-root.png';
 import ChainXRPL from './chain-xrpl.png';
+import IconWeb from './icon-web.png';
 import TokenMOAI from './token-moai.png';
 import TokenROOT from './token-root.png';
 import TokenUSDC from './token-usdc.png';
@@ -16,6 +17,7 @@ export {
   ChainMantle,
   ChainROOT,
   ChainXRPL,
+  IconWeb,
   TokenMOAI,
   TokenROOT,
   TokenUSDC,
