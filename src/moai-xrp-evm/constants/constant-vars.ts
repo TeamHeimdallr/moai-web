@@ -2,27 +2,31 @@ import { TokenMOAI, TokenROOT, TokenWETH, TokenXRP } from '~/assets/images';
 
 import { GnbMenu } from '~/types';
 
-export enum TOKEN {
-  MOAI = 'MOAI',
-  WETH = 'WETH',
-  ROOT = 'ROOT',
-  XRP = 'XRP',
-
-  MOI = 'MOI',
-}
-
+export const TOKEN_DECIAML = 18;
 export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
-  MOAI: TokenMOAI,
-  MOI: TokenMOAI,
   WETH: TokenWETH,
-  ROOT: TokenROOT,
+  MOAI: TokenMOAI,
   XRP: TokenXRP,
   WXRP: TokenXRP,
-
   '50WETH-50XRP': TokenXRP, // TODO
-  '80MOAI-20WETH': TokenMOAI,
   '50ROOT-50XRP': TokenROOT,
-  '50XRP-50MOI': TokenXRP,
+};
+
+export const TOKEN_USD_MAPPER: Record<string, number> = {
+  MOAI: 10.23,
+  XRP: 0.5,
+  WXRP: 0.5,
+  WETH: 1718.39,
+};
+
+export const TOKEN_DESCRIPTION_MAPPER: Record<string, string> = {
+  WETH: 'Wrapped Ether',
+  MOAI: 'MOAI Finance Token',
+  ROOT: 'The Root Network',
+  XRP: 'XRP',
+  WXRP: 'Wrapped XRP',
+  '50ROOT-40XRP': '50ROOT-50XRP LP Token',
+  '50WETH-50XRP': '50WETH-50XRP LP Token',
 };
 
 export const GNB_MENU: GnbMenu[] = [
@@ -51,21 +55,3 @@ export const GNB_MENU: GnbMenu[] = [
     commingSoon: true,
   },
 ];
-
-/**
- * @description FORMAT NUMBER 를 진행할때 UNIT(K,M,B,T) 를 붙이는 기준
- */
-export const FORMAT_NUMBER_THRESHOLD = 1000000000;
-
-/**
- * @description RESPONSIVE BREAKPOINT
- */
-export const BREAKPOINT = {
-  SM: 0,
-  MD: 848,
-  LG: 1280,
-
-  MEDIA_SM: '(min-width: 0px)',
-  MEDIA_MD: '(min-width: 848px)',
-  MEDIA_LG: '(min-width: 1280px)',
-};

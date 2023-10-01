@@ -11,8 +11,9 @@ import { POPUP_ID } from './types';
 
 const Web3Provider = lazy(() => import('~/hocs/hoc-web3-provider'));
 
-const MoaiXRPRoot = lazy(() => import('./moai-xrp-root'));
+const MoaiRoot = lazy(() => import('./moai-xrp-root'));
 const MoaiXRPLedger = lazy(() => import('./moai-xrp-ledger'));
+const MoaiXRPEvm = lazy(() => import('./moai-xrp-evm'));
 
 const HomePage = lazy(() => import('./pages/home'));
 
@@ -32,9 +33,9 @@ const App = () => {
                 </Routes>
               )}
 
-              {CHAIN === 'root' && <MoaiXRPRoot />}
+              {CHAIN === 'root' && <MoaiRoot />}
               {CHAIN === 'xrpl' && <MoaiXRPLedger />}
-
+              {CHAIN === 'xrpevm' && <MoaiXRPEvm />}
               <ToastContainer />
               {opened && <SelectWalletPopup />}
             </RouteWrapper>

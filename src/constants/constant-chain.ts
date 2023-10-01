@@ -8,6 +8,7 @@ export const CHAIN_IMAGE_MAPPER: Record<string, string> = {
   ROOT: ChainROOT,
   XRPL: ChainXRPL,
   EMPTY: IconWeb,
+  XRPEVM: ChainXRPL, // TODO
 };
 
 export const CHAIN_SELECT_LIST: ChainSelectList[] = [
