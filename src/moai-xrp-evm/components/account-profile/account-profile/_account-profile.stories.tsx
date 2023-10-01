@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { WagmiConfig } from 'wagmi';
 
-import { wagmiConfig } from '~/configs/setup-evm-wallet';
+import { wagmiConfig } from '~/configs/setup-evm-client';
 
 import { AccountProfile } from '.';
 

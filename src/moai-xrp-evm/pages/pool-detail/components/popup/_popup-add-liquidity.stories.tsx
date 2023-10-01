@@ -52,10 +52,13 @@ export const _AddLiquidityPopup = () => {
             apr: 10,
             fees: 0.003,
           }}
-          tokenInputValues={[
-            { name: TOKEN.ROOT, amount: 4.49 },
-            { name: TOKEN.XRP, amount: 0.1 },
-          ]}
+          tokenInputValues={
+            [
+              { name: TOKEN.ROOT, amount: 4.49 },
+              { name: TOKEN.XRP, amount: 0.1 },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ] as any
+          }
           totalValue={810.45}
           priceImpact={0.13}
         />
