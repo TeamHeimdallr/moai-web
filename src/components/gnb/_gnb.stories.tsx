@@ -4,7 +4,7 @@ import { Web3Modal } from '@web3modal/react';
 import tw, { css, styled } from 'twin.macro';
 import { WagmiConfig } from 'wagmi';
 
-import { ethereumClient, projectId, wagmiConfig } from '~/configs/setup-evm-wallet';
+import { ethereumClient, projectId, wagmiConfig } from '~/configs/setup-evm-client';
 
 import { Gnb } from '.';
 

@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiConfig } from 'wagmi';
 
-import { ethereumClient, projectId, wagmiConfig } from '~/configs/setup-evm-wallet';
+import { ethereumClient, projectId, wagmiConfig } from '~/configs/setup-evm-client';
 
 const Web3Modal = lazy(() =>
   import('@web3modal/react').then(({ Web3Modal }) => ({ default: Web3Modal }))
