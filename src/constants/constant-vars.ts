@@ -7,7 +7,7 @@ export enum TOKEN {
   WETH = 'WETH',
   ROOT = 'ROOT',
   XRP = 'XRP',
-
+  WXRP = 'WXRP',
   MOI = 'MOI',
 }
 

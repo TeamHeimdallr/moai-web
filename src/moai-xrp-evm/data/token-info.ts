@@ -7,18 +7,18 @@ import { TokenInfo } from '~/moai-xrp-evm/types/contracts';
 export const tokenInfos: TokenInfo[] = [
   {
     chainId: CHAIN_ID,
-    address: TOKEN_ADDRESS.XRP,
-    name: 'XRP',
-    symbol: 'XRP',
-    decimals: 6,
-    logoURI: TokenXRP,
-  },
-  {
-    chainId: CHAIN_ID,
     address: TOKEN_ADDRESS.WETH,
     name: 'Wrapped Ether',
     symbol: 'WETH',
     decimals: 18,
     logoURI: TokenWETH,
+  },
+  {
+    chainId: CHAIN_ID,
+    address: TOKEN_ADDRESS.WXRP,
+    name: 'WXRP',
+    symbol: 'WXRP',
+    decimals: 18,
+    logoURI: TokenXRP,
   },
 ];

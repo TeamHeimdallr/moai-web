@@ -18,7 +18,7 @@ export const LiquidityPoolLayout = () => {
   const { data, columns } = useTableLiquidityPool();
   const navigate = useNavigate();
 
-  const handleRowClick = (id?: string) => {
+  const handleRowClick = (_chain?: string, id?: string) => {
     navigate(`/pools/${id}`);
   };
 

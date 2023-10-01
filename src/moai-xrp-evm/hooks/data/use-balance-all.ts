@@ -18,11 +18,11 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
     scopeKey: 'weth',
   });
 
-  const { data: xrpData } = useBalance({
-    address,
-    enabled: enabled,
-    scopeKey: 'xrp',
-  });
+  // const { data: xrpData } = useBalance({
+  //   address,
+  //   enabled: enabled,
+  //   scopeKey: 'xrp',
+  // });
 
   const { data: wxrpData } = useBalance({
     address,
@@ -31,7 +31,8 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
     scopeKey: 'wxrp',
   });
 
-  const success = wethData && xrpData && wxrpData;
+  // const success = wethData && xrpData && wxrpData;
+  const success = wethData && wxrpData;
 
   if (!success)
     return {
@@ -46,13 +47,13 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
       (TOKEN_USD_MAPPER[wethData?.symbol ?? ''] ?? 0),
     name: wethData?.symbol ?? '',
   };
-  const xrp = {
-    balance: Number(formatUnits(xrpData?.value ?? 0n, xrpData?.decimals ?? 6)),
-    value:
-      Number(formatUnits(xrpData?.value ?? 0n, xrpData?.decimals ?? 6)) *
-      (TOKEN_USD_MAPPER[xrpData?.symbol ?? ''] ?? 0),
-    name: xrpData?.symbol ?? '',
-  };
+  // const xrp = {
+  //   balance: Number(formatUnits(xrpData?.value ?? 0n, xrpData?.decimals ?? 6)),
+  //   value:
+  //     Number(formatUnits(xrpData?.value ?? 0n, xrpData?.decimals ?? 6)) *
+  //     (TOKEN_USD_MAPPER[xrpData?.symbol ?? ''] ?? 0),
+  //   name: xrpData?.symbol ?? '',
+  // };
   const wxrp = {
     balance: Number(formatUnits(wxrpData?.value ?? 0n, wxrpData?.decimals ?? 18)),
     value:
@@ -63,11 +64,11 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
 
   const balancesMap = {
     [TOKEN.WETH]: weth,
-    [TOKEN.XRP]: xrp,
+    // [TOKEN.XRP]: xrp,
     [TOKEN.WXRP]: wxrp,
   };
 
-  const balancesArray = [weth, xrp, wxrp];
+  const balancesArray = [weth, wxrp];
 
   return {
     balancesMap,
