@@ -5,6 +5,7 @@ Official web for the Moai Finance - DeFi Liquidity pools built on XRP
 ![moai status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy.yml/badge.svg?branch=main)
 ![moai root status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-root.yml/badge.svg?branch=deploy-root)
 ![moai xrpl status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-xrpl.yml/badge.svg?branch=deploy-xrpl)
+![moai xrp evm status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-xrpevm.yml/badge.svg?branch=deploy-xrpevm)
 
 ## Tech Stack
 
