@@ -4,7 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 
 import { logger } from '~/states/middleware/logger';
 
-import client from '~/configs/setup-xrpl-wallet';
+import client from '~/configs/setup-xrpl-client';
 
 interface XrplState {
   client: Client;
