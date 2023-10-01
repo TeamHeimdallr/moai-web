@@ -35,7 +35,7 @@ export const xrpEvmSidechain: Chain = {
   nativeCurrency: {
     name: 'XRP',
     symbol: 'XRP',
-    decimals: 6,
+    decimals: 18,
   },
   rpcUrls: {
     public: {
