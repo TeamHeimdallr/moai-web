@@ -7,7 +7,7 @@ const HomePage = lazy(() => import('./pages/home'));
 const PoolDetailPage = lazy(() => import('./pages/pool-detail'));
 const SwapPage = lazy(() => import('./pages/swap'));
 
-const MoaiXrpl = () => {
+const MoaiXRPLedger = () => {
   useConnectXrpl();
 
   return (
@@ -20,4 +20,4 @@ const MoaiXrpl = () => {
   );
 };
 
-export default MoaiXrpl;
+export default MoaiXRPLedger;

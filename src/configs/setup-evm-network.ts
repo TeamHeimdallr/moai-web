@@ -27,3 +27,29 @@ export const theRootNetwork: Chain = {
   },
   testnet: true,
 };
+
+export const xrpEvmSidechain: Chain = {
+  id: 1440002,
+  name: 'XRP EVM Sidechain - Devnet',
+  network: 'xrpevm',
+  nativeCurrency: {
+    name: 'XRP',
+    symbol: 'XRP',
+    decimals: 6,
+  },
+  rpcUrls: {
+    public: {
+      http: ['https://rpc-evm-sidechain.xrpl.org'],
+    },
+    default: {
+      http: ['https://rpc-evm-sidechain.xrpl.org'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'XRP EVM Sidechain',
+      url: 'https://evm-sidechain.xrpl.org/',
+    },
+  },
+  testnet: true,
+};
