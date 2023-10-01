@@ -7,7 +7,7 @@ export enum TOKEN {
   WETH = 'WETH',
   ROOT = 'ROOT',
   XRP = 'XRP',
-
+  WXRP = 'WXRP',
   MOI = 'MOI',
 }
 
@@ -17,7 +17,10 @@ export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   WETH: TokenWETH,
   ROOT: TokenROOT,
   XRP: TokenXRP,
+  WXRP: TokenXRP,
 
+  '50WETH-50XRP': TokenXRP, // TODO
+  '50WETH-50WXRP': TokenXRP, // TODO
   '80MOAI-20WETH': TokenMOAI,
   '50ROOT-50XRP': TokenROOT,
   '50XRP-50MOI': TokenXRP,

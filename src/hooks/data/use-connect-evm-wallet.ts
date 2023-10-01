@@ -3,7 +3,7 @@ import { InjectedConnector } from 'wagmi/connectors/injected';
 
 import { truncateAddress } from '~/utils/string';
 
-import { chains } from '~/configs/setup-evm-wallet';
+import { chains } from '~/configs/setup-evm-client';
 
 import { CHAIN_ID } from '~/moai-xrp-root/constants';
 
