@@ -4,9 +4,11 @@ import { linea, lineaTestnet, mantle, mantleTestnet } from 'wagmi/chains';
 
 import { IS_MAINNET, WALLETCONNECT_PROJECT_ID } from '~/constants';
 
-import { theRootNetwork } from './setup-evm-network';
+import { theRootNetwork, xrpEvmSidechain } from './setup-evm-network';
 
-export const chains = IS_MAINNET ? [mantle, linea] : [mantleTestnet, lineaTestnet, theRootNetwork];
+export const chains = IS_MAINNET
+  ? [mantle, linea]
+  : [mantleTestnet, lineaTestnet, theRootNetwork, xrpEvmSidechain];
 export const projectId = WALLETCONNECT_PROJECT_ID;
 
 const { publicClient, webSocketPublicClient } = configureChains(
