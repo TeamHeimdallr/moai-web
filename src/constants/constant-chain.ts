@@ -14,5 +14,5 @@ export const CHAIN_IMAGE_MAPPER: Record<string, string> = {
 export const CHAIN_SELECT_LIST: ChainSelectList[] = [
   { name: 'root', text: 'The Root Network', show: true },
   { name: 'xrpl', text: 'XRPL', show: true },
-  { name: 'evm-sidechain', text: 'EVM Sidechain', show: true, commingSoon: true, disabled: true },
+  { name: 'xrpevm', text: 'EVM Sidechain', show: true },
 ];
