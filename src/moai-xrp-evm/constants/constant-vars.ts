@@ -9,6 +9,7 @@ export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   XRP: TokenXRP,
   WXRP: TokenXRP,
   '50WETH-50XRP': TokenXRP, // TODO
+  '50WETH-50WXRP': TokenXRP, // TODO
   '50ROOT-50XRP': TokenROOT,
 };
 
