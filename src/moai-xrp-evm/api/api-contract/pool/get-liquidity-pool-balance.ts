@@ -12,8 +12,8 @@ import { CONTRACT_ADDRESS, POOL_ID, TOKEN_ADDRESS, TOKEN_DECIAML } from '~/moai-
 
 import { Composition, PoolInfo } from '~/moai-xrp-evm/types/components';
 
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
 import { useERC20TokenBalances } from '~/moai-xrp-evm/hooks/data/use-balance';
+import { useConnectWallet } from '~/moai-xrp-evm/hooks/data/use-connect-wallet';
 import { useGetXrpEvmTokenPrice } from '~/moai-xrp-evm/hooks/data/use-xrp-evm-token-price';
 import { PoolBalance } from '~/moai-xrp-evm/types/contracts';
 

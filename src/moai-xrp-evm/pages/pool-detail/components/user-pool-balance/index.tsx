@@ -10,7 +10,7 @@ import { formatNumber } from '~/utils/number';
 
 import { PoolInfo, TokenInfo } from '~/moai-xrp-evm/types/components';
 
-import { useConnectWallet } from '~/moai-evm/hooks/data/use-connect-wallet';
+import { useConnectWallet } from '~/moai-xrp-evm/hooks/data/use-connect-wallet';
 
 interface Props {
   pool: PoolInfo;
