@@ -19,7 +19,7 @@ export const NetworkChip = ({ network }: Props) => {
       icon: IconNetworkRoot,
       color: COLOR.CHAIN.ROOT,
     },
-    EVM: {
+    XRPEVM: {
       name: 'Evm Sidechain',
       icon: IconNetworkEvm,
       color: COLOR.CHAIN.EVM,
