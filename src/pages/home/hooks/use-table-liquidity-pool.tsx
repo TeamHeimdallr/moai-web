@@ -78,7 +78,7 @@ export const useTableLiquidityPool = () => {
     {
       id: '0xff2973a6a98583ef12927f4a7eef497a48d1fabe000200000000000000000003',
       chain: 'XRPEVM',
-      assets: ['MOAI', 'WETH'],
+      assets: ['XRP', 'WETH'],
       compositions: [
         {
           name: 'XRP',
