@@ -26,7 +26,7 @@ export const LiquidityPoolLayout = () => {
       <TitleWrapper>
         <Title>Liquidity pools</Title>
         <AllChainToggle>
-          All suported chains
+          All supported chains
           <Toggle selected={selectedAll} onClick={() => selectAll(prev => !prev)} />
         </AllChainToggle>
       </TitleWrapper>
