@@ -177,7 +177,7 @@ const ContentWrapper = styled.div<WrapperProps>(({ opened }) => [
 ]);
 
 const DropdownWrapper = tw.div`
-  min-w-294 h-324 bg-neutral-15 rounded-8 absolute top-60 right-0 box-shadow-default
+  min-w-294 bg-neutral-15 rounded-8 absolute top-60 right-0 box-shadow-default
 `;
 
 const Panel = tw.div`
