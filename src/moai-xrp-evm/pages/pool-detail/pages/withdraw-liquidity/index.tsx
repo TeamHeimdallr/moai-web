@@ -6,6 +6,7 @@ import { IconBack } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
+import { Gnb } from '~/components/gnb';
 
 import { useRequirePrarams } from '~/hooks/pages/use-require-params';
 
@@ -14,7 +15,6 @@ import { useLiquidityPoolBalance } from '~/moai-xrp-evm/api/api-contract/pool/ge
 import { CHAIN_ID } from '~/moai-xrp-evm/constants';
 
 import { SwitchNetwork } from '~/moai-xrp-evm/components/banner/switch-network';
-import { Gnb } from '~/moai-xrp-evm/components/gnb';
 
 import { useSwitchNetwork } from '~/moai-xrp-evm/hooks/pages/use-switch-network';
 

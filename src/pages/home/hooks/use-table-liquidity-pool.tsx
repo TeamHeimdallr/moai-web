@@ -45,9 +45,9 @@ export const useTableLiquidityPool = () => {
           weight: 50,
         },
       ],
-      poolValue: 0,
-      volume: 0,
-      apr: 0,
+      poolValue: 730008,
+      volume: 58137,
+      apr: 5.49,
     },
     {
       id: '0x291af6e1b841cad6e3dcd66f2aa0790a007578ad000200000000000000000000',
@@ -71,14 +71,14 @@ export const useTableLiquidityPool = () => {
           weight: 50,
         },
       ],
-      poolValue: 0,
-      volume: 0,
-      apr: 0,
+      poolValue: 1259280,
+      volume: 78086,
+      apr: 6.79,
     },
     {
       id: '0xff2973a6a98583ef12927f4a7eef497a48d1fabe000200000000000000000003',
       chain: 'XRPEVM',
-      assets: ['MOAI', 'WETH'],
+      assets: ['XRP', 'WETH'],
       compositions: [
         {
           name: 'XRP',
@@ -97,9 +97,9 @@ export const useTableLiquidityPool = () => {
           weight: 50,
         },
       ],
-      poolValue: 0,
-      volume: 0,
-      apr: 0,
+      poolValue: 948822,
+      volume: 17669,
+      apr: 8.94,
     },
   ];
 
