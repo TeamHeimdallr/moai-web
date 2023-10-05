@@ -21,7 +21,7 @@ export const useTableTotalComposition = (poolId: Address) => {
   const isMyComposition = selectedTab === 'my-composition';
 
   const {
-    poolInfo: { balance: poolBalance, tokenTotalSupply, compositions },
+    poolInfo: { tokenTotalSupply, compositions, value: poolTotalValue },
     liquidityPoolTokenBalance,
   } = useLiquidityPoolBalance(poolId);
 
@@ -37,9 +37,9 @@ export const useTableTotalComposition = (poolId: Address) => {
       token: name as TOKEN,
       weight,
       value: balance * price,
-      currentWeight: poolBalance ? (balance / poolBalance) * 100 : 0,
+      currentWeight: ((balance * price) / poolTotalValue) * 100,
 
-      userBalance,
+      balance,
     };
   });
 
@@ -53,9 +53,7 @@ export const useTableTotalComposition = (poolId: Address) => {
       />
     ),
     weight: <TableColumn value={`${d.weight.toFixed(2)}%`} width={120} align="flex-end" />,
-    balance: (
-      <TableColumn value={`${formatNumber(d.userBalance, 2)}`} width={120} align="flex-end" />
-    ),
+    balance: <TableColumn value={`${formatNumber(d.balance, 2)}`} width={120} align="flex-end" />,
     value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
     currentWeight: (
       <TableColumn value={`${formatNumber(d.currentWeight, 2)}%`} width={120} align="flex-end" />

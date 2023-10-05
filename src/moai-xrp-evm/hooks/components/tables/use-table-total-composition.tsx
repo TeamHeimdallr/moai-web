@@ -23,7 +23,7 @@ export const useTableTotalComposition = (poolId: Address) => {
   const isMyComposition = selectedTab === 'my-composition';
 
   const {
-    poolInfo: { balance: poolBalance, tokenTotalSupply, compositions },
+    poolInfo: { tokenTotalSupply, compositions, value: poolTotalValue },
     liquidityPoolTokenBalance,
   } = useLiquidityPoolBalance(poolId);
 
@@ -39,7 +39,7 @@ export const useTableTotalComposition = (poolId: Address) => {
       token: name as TOKEN,
       weight,
       value: balance * price,
-      currentWeight: (balance / poolBalance) * 100,
+      currentWeight: ((balance * price) / poolTotalValue) * 100,
 
       balance,
     };
