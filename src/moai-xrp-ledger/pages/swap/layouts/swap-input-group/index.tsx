@@ -30,7 +30,6 @@ export const SwapInputs = () => {
     setToToken,
 
     setFromValue,
-    setToValue,
     resetFromValue,
 
     fromTokenBalance,
@@ -90,8 +89,6 @@ export const SwapInputs = () => {
               schema={toSchema}
               value={toValue}
               maxButton
-              slider
-              handleChange={setToValue}
               handleTokenClick={openSelectTokenToPopup}
             />
           </InputInnerWrapper>
