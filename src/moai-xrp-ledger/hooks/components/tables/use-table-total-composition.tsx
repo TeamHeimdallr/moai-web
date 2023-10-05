@@ -19,7 +19,7 @@ export const useTableTotalComposition = (account: string = ISSUER.XRP_MOI) => {
 
   // TODO
   const {
-    poolInfo: { balance: poolBalance, tokenTotalSupply, compositions },
+    poolInfo: { tokenTotalSupply, compositions, value: poolTotalValue },
     liquidityPoolTokenBalance,
   } = useLiquidityPoolBalance(account);
 
@@ -35,7 +35,7 @@ export const useTableTotalComposition = (account: string = ISSUER.XRP_MOI) => {
       token: name,
       weight,
       value: balance * price,
-      currentWeight: poolBalance ? (balance / poolBalance) * 100 : 0,
+      currentWeight: ((balance * price) / poolTotalValue) * 100,
 
       balance,
     };
