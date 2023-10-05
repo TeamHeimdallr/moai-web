@@ -45,7 +45,7 @@ export const useTrustLines = ({ currency, issuer, amount }: Props) => {
     LimitAmount: {
       currency,
       issuer,
-      value: amount,
+      value: (Number(amount) + Number(line?.balance ?? 0)).toFixed(6),
     },
   };
 
@@ -54,7 +54,7 @@ export const useTrustLines = ({ currency, issuer, amount }: Props) => {
   const { mutateAsync, ...rest } = useMutation(QUERY_KEYS.TOKEN.SET_TRUST_LINE, setTrustLines);
 
   return {
-    allowance: !!line && limit >= Number(amount),
+    allowance: !!line && limit >= Number(amount) + Number(line?.balance ?? 0),
     allow: mutateAsync,
     refetchTrustLines,
     ...rest,
