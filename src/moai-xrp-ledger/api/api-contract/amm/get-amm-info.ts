@@ -82,7 +82,7 @@ export const useAmmInfo = (account: string) => {
       currency: ammInfoRaw?.amount2.currency ?? 'MOI',
       issuer: ammInfoRaw?.amount2.issuer ?? '',
       balance: moiBalance,
-      price: TOKEN_USD_MAPPER.XRP ?? 0,
+      price: moiPrice ?? 0,
       value: moiValue,
       weight: 50, // TODO:
     },
