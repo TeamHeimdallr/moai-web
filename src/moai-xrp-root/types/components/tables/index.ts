@@ -63,7 +63,7 @@ export interface PoolCompositionData {
   value: number;
   currentWeight: number;
 
-  userBalance: number;
+  balance: number;
 }
 export interface PoolCompositionTable {
   tokenAddress: string;
