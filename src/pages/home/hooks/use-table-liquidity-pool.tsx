@@ -24,7 +24,7 @@ export const useTableLiquidityPool = () => {
   // TODO: connect server
   const data = [
     {
-      id: 'r3k73UkdrvPxCHaw9nwG2CzQ2W5esgZXCv',
+      id: 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr',
       chain: 'XRPL',
       assets: ['XRP', 'MOAI'],
       compositions: [

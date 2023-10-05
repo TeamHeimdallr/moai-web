@@ -32,7 +32,7 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
   });
 
   // const success = wethData && xrpData && wxrpData;
-  const success = wethData && wxrpData;
+  const success = wethData !== undefined && wxrpData !== undefined;
 
   if (!success)
     return {
