@@ -28,26 +28,20 @@ interface QueryOptions {
 // because evm network cannot read contract without connect wallet
 export const useLiquidityPoolBalance = (poolId?: Address) => {
   const { address: walletAddress } = useConnectWallet();
-  const enabled = !!walletAddress;
 
   const { getTokenPrice } = useGetXrpEvmTokenPrice();
 
-  const { data: poolTokensData } = usePoolTokens(poolId, { enabled });
-  const { data: liquidityPoolTokenTotalSupplyData } = useLiquidityPoolTokenTotalSupply(poolId, {
-    enabled,
-  });
-
+  const { data: poolTokensData } = usePoolTokens(poolId);
+  const { data: liquidityPoolTokenTotalSupplyData } = useLiquidityPoolTokenTotalSupply(poolId);
   const liquidityPoolTokenAddress = getLiquidityPoolTokenAddress(poolId);
-  const { data: weightData } = usePoolTokenNormalizedWeights(liquidityPoolTokenAddress, {
-    enabled,
-  });
+  const { data: weightData } = usePoolTokenNormalizedWeights(liquidityPoolTokenAddress);
 
   const poolTokenAddresses = (poolTokensData as PoolBalance)?.[0];
   const poolTokenBalances = (poolTokensData as PoolBalance)?.[1];
 
-  const { data: symbolData } = useTokenSymbols(poolTokenAddresses ?? [], { enabled });
+  const { data: symbolData } = useTokenSymbols(poolTokenAddresses ?? []);
 
-  const { data: swapHistoriesData } = useGetSwapHistories({ poolId, options: { enabled } });
+  const { data: swapHistoriesData } = useGetSwapHistories({ poolId });
 
   const compositions: Composition[] =
     poolTokenBalances?.map((_balance, idx) => {

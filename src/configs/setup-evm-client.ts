@@ -1,14 +1,11 @@
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
 import { configureChains, createConfig } from 'wagmi';
-import { linea, lineaTestnet, mantle, mantleTestnet } from 'wagmi/chains';
 
-import { IS_MAINNET, WALLETCONNECT_PROJECT_ID } from '~/constants';
+import { CHAIN, IS_MAINNET, WALLETCONNECT_PROJECT_ID } from '~/constants';
 
 import { theRootNetwork, xrpEvmSidechain } from './setup-evm-network';
 
-export const chains = IS_MAINNET
-  ? [mantle, linea]
-  : [mantleTestnet, lineaTestnet, theRootNetwork, xrpEvmSidechain];
+export const chains = IS_MAINNET ? [] : CHAIN === 'root' ? [theRootNetwork] : [xrpEvmSidechain];
 export const projectId = WALLETCONNECT_PROJECT_ID;
 
 const { publicClient, webSocketPublicClient } = configureChains(
