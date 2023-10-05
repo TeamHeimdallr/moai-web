@@ -26,10 +26,21 @@ export const useSwap = ({ account, fromToken, fromValue, toToken, toValue }: Pro
           Amount: {
             currency: toToken,
             issuer: ISSUER[toToken],
+            value: (toValue * 1.01).toFixed(6),
+          },
+        }
+      : { Amount: xrpToDrops((toValue * 1.01).toFixed(6)) };
+
+  const deliverMin =
+    fromToken === 'XRP'
+      ? {
+          DeliverMin: {
+            currency: toToken,
+            issuer: ISSUER[toToken],
             value: toValue.toString(),
           },
         }
-      : { Amount: xrpToDrops(toValue.toString()) };
+      : { DeliverMin: xrpToDrops(toValue.toString()) };
 
   const sendMax =
     fromToken === 'XRP'
@@ -47,8 +58,9 @@ export const useSwap = ({ account, fromToken, fromValue, toToken, toValue }: Pro
     Account: address,
     ...amount,
     ...sendMax,
+    ...deliverMin,
     Destination: address,
-    Flag: PaymentFlags.tfPartialPayment,
+    Flags: PaymentFlags.tfPartialPayment,
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
