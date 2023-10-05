@@ -64,7 +64,7 @@ export const useBalancesAll = (address?: string): TokenBalanceInfoAll => {
     }
   );
 
-  const success = xrpData && moiData;
+  const success = xrpData !== undefined && moiData !== undefined;
 
   if (!success)
     return {
@@ -107,7 +107,7 @@ export const useLiquidityTokenBalances = (address?: string): number => {
       (
         await client.request({
           command: 'gateway_balances',
-          account: 'r3k73UkdrvPxCHaw9nwG2CzQ2W5esgZXCv', // TODO:
+          account: 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr', // TODO:
           hotwallet: [target], // TODO:
         } as GatewayBalancesRequest)
       )?.result?.balances?.[target]?.find(asset => asset?.currency === LIQUIDITY_TOKEN_CURRENCY)

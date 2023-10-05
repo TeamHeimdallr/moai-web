@@ -29,7 +29,7 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
     scopeKey: 'xrp',
   });
 
-  const success = rootData && xrpData;
+  const success = rootData !== undefined && xrpData !== undefined;
 
   if (!success)
     return {

@@ -31,7 +31,7 @@ export const SwapInputs = () => {
 
     setFromValue,
     setToValue,
-    resetAll,
+    resetFromValue,
 
     fromTokenBalance,
     fromTokenPrice,
@@ -59,7 +59,7 @@ export const SwapInputs = () => {
   };
 
   useEffect(
-    () => resetAll(),
+    () => resetFromValue(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [fromToken, toToken]
   );
