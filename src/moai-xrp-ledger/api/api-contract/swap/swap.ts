@@ -29,14 +29,14 @@ export const useSwap = ({ account, fromToken, fromValue, toToken, toValue }: Pro
             value: toValue.toString(),
           },
         }
-      : { Amount: toValue.toString() };
+      : { Amount: xrpToDrops(toValue.toString()) };
 
   const sendMax =
     fromToken === 'XRP'
       ? { SendMax: xrpToDrops(fromValue.toString()) }
       : {
           SendMax: {
-            currency: fromValue,
+            currency: fromToken,
             issuer: ISSUER[fromToken],
             value: fromValue.toString(),
           },

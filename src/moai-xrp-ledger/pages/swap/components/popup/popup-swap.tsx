@@ -118,7 +118,7 @@ export const PopupSwap = () => {
         onClick={handleSuccess}
       />
     </PrimaryButtonWrapper>
-  ) : allowance ? (
+  ) : allowance || toToken == 'XRP' ? (
     <ButtonPrimaryLarge
       text="Confirm swap"
       isLoading={isLoading}
@@ -127,7 +127,7 @@ export const PopupSwap = () => {
     />
   ) : (
     <ButtonPrimaryLarge
-      text={`Approve ${fromToken} for swapping`}
+      text={`Set Trustline ${toToken} for swapping`}
       isLoading={allowLoading}
       onClick={() => allowToken()}
     />

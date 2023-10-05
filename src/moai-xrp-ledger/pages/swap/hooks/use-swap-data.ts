@@ -50,13 +50,10 @@ export const useSwapData = () => {
   });
 
   const toSchema = yup.object({
-    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
-      .number()
-      .min(0)
-      .max(toTokenBalance, 'Exceeds wallet balance'),
+    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup.number().min(0),
   });
 
-  const fee = 0.003; // TODO
+  const fee = 0.005; // TODO
 
   const swapRatio =
     fromValue == 0 || toValue == 0

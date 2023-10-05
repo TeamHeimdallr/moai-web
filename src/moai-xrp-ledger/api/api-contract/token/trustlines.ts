@@ -35,7 +35,7 @@ export const useTrustLines = ({ currency, issuer, amount }: Props) => {
   );
 
   const line = trustLines?.find(d => d.currency === currency && d.account === issuer);
-  const balance = Number(line?.balance ?? 0);
+  const limit = Number(line?.limit ?? 0);
 
   const txRequest = {
     TransactionType: 'TrustSet',
@@ -54,7 +54,7 @@ export const useTrustLines = ({ currency, issuer, amount }: Props) => {
   const { mutateAsync, ...rest } = useMutation(QUERY_KEYS.TOKEN.SET_TRUST_LINE, setTrustLines);
 
   return {
-    allowance: !!line && balance > Number(amount),
+    allowance: !!line && limit >= Number(amount),
     allow: mutateAsync,
     refetchTrustLines,
     ...rest,
