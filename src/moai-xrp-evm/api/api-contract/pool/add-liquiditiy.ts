@@ -12,6 +12,7 @@ import {
 import { VAULT_ABI } from '~/moai-xrp-evm/abi/vault';
 
 import { CHAIN_ID, CONTRACT_ADDRESS } from '~/moai-xrp-evm/constants';
+import { TOKEN_ADDRESS } from '~/moai-xrp-evm/constants';
 
 interface Props {
   enabled?: boolean;
@@ -27,9 +28,16 @@ export const useAddLiquidity = ({ enabled, poolId, request }: Props) => {
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
-  const sortedTokens = request.tokens.slice().sort((a, b) => a.localeCompare(b));
+  const _translate = (token: Address) => {
+    if (token === TOKEN_ADDRESS['ZERO']) return TOKEN_ADDRESS['XRP'];
+    else return token;
+  };
+  const sortedTokens = request.tokens
+    .slice()
+    .sort((a, b) => _translate(a).localeCompare(_translate(b)));
   const sortedIndex = sortedTokens.map(token => request.tokens.findIndex(t => t === token));
   const sortedAmountsIn = sortedIndex.map(index => request.amountsIn[index]);
+  const xrpIndex = sortedTokens.findIndex(token => token === TOKEN_ADDRESS['ZERO']);
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: CONTRACT_ADDRESS.VAULT,
@@ -38,6 +46,7 @@ export const useAddLiquidity = ({ enabled, poolId, request }: Props) => {
     chainId: CHAIN_ID,
 
     account: walletAddress,
+    value: xrpIndex === -1 ? 0n : sortedAmountsIn[xrpIndex],
     args: [
       poolId,
       walletAddress,

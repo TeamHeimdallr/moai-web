@@ -17,7 +17,7 @@ export interface SwapState {
 }
 
 const defaultFrom = 'WETH';
-const defaultTo = 'WXRP';
+const defaultTo = 'XRP';
 export const useSwapStore = create<SwapState>()(
   immer(
     logger(set => ({

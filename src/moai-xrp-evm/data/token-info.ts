@@ -16,8 +16,8 @@ export const tokenInfos: TokenInfo[] = [
   {
     chainId: CHAIN_ID,
     address: TOKEN_ADDRESS.WXRP,
-    name: 'WXRP',
-    symbol: 'WXRP',
+    name: 'XRP',
+    symbol: 'XRP',
     decimals: 18,
     logoURI: TokenXRP,
   },

@@ -19,6 +19,7 @@ import {
   TOKEN_DESCRIPTION_MAPPER,
   TOKEN_IMAGE_MAPPER,
 } from '~/moai-xrp-evm/constants';
+import { TOKEN_ADDRESS } from '~/moai-xrp-evm/constants';
 
 import { PoolInfo } from '~/moai-xrp-evm/types/components';
 
@@ -46,7 +47,9 @@ export const WithdrawLiquidityPopup = ({
   const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useWithdrawLiquidity({
     poolId: poolInfo.id,
     request: {
-      tokens: compositions.map(c => c.tokenAddress),
+      tokens: compositions.map(c =>
+        c.tokenAddress === TOKEN_ADDRESS['XRP'] ? TOKEN_ADDRESS['ZERO'] : c.tokenAddress
+      ),
       amount: parseEther(`${withdrawInputValue}`),
     },
   });
@@ -109,7 +112,7 @@ export const WithdrawLiquidityPopup = ({
 
         <List title={`You're expected to receive`}>
           {compositions.map(({ tokenAddress, name, weight }, i) => (
-            <>
+            <div key={`div-${tokenAddress}`}>
               <TokenList
                 key={tokenAddress}
                 type="large"
@@ -119,7 +122,7 @@ export const WithdrawLiquidityPopup = ({
                 leftAlign={true}
               />
               {i !== compositions.length - 1 && <Divider />}
-            </>
+            </div>
           ))}
         </List>
 

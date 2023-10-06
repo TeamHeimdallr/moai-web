@@ -76,7 +76,7 @@ export const useTableLiquidityPool = () => {
       apr: 6.79,
     },
     {
-      id: '0xff2973a6a98583ef12927f4a7eef497a48d1fabe000200000000000000000003',
+      id: '0xe73749250390c51e029cfab3d0488e08c183a671000200000000000000000001',
       chain: 'XRPEVM',
       assets: ['XRP', 'WETH'],
       compositions: [

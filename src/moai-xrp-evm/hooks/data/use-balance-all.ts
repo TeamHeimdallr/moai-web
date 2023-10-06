@@ -18,21 +18,21 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
     scopeKey: 'weth',
   });
 
-  // const { data: xrpData } = useBalance({
-  //   address,
-  //   enabled: enabled,
-  //   scopeKey: 'xrp',
-  // });
-
-  const { data: wxrpData } = useBalance({
+  const { data: xrpData } = useBalance({
     address,
-    token: TOKEN_ADDRESS[TOKEN.WXRP],
-    enabled: enabled && !!TOKEN_ADDRESS[TOKEN.WXRP],
-    scopeKey: 'wxrp',
+    enabled: enabled,
+    scopeKey: 'xrp',
   });
 
+  // const { data: wxrpData } = useBalance({
+  //   address,
+  //   token: TOKEN_ADDRESS[TOKEN.WXRP],
+  //   enabled: enabled && !!TOKEN_ADDRESS[TOKEN.WXRP],
+  //   scopeKey: 'wxrp',
+  // });
+
   // const success = wethData && xrpData && wxrpData;
-  const success = wethData !== undefined && wxrpData !== undefined;
+  const success = wethData !== undefined && xrpData !== undefined;
 
   if (!success)
     return {
@@ -47,28 +47,28 @@ export const useBalancesAll = (): TokenBalanceInfoAll => {
       (TOKEN_USD_MAPPER[wethData?.symbol ?? ''] ?? 0),
     name: wethData?.symbol ?? '',
   };
-  // const xrp = {
-  //   balance: Number(formatUnits(xrpData?.value ?? 0n, xrpData?.decimals ?? 6)),
-  //   value:
-  //     Number(formatUnits(xrpData?.value ?? 0n, xrpData?.decimals ?? 6)) *
-  //     (TOKEN_USD_MAPPER[xrpData?.symbol ?? ''] ?? 0),
-  //   name: xrpData?.symbol ?? '',
-  // };
-  const wxrp = {
-    balance: Number(formatUnits(wxrpData?.value ?? 0n, wxrpData?.decimals ?? 18)),
+  const xrp = {
+    balance: Number(formatUnits(xrpData?.value ?? 0n, xrpData?.decimals ?? 6)),
     value:
-      Number(formatUnits(wxrpData?.value ?? 0n, wxrpData?.decimals ?? 18)) *
-      (TOKEN_USD_MAPPER[wxrpData?.symbol ?? ''] ?? 0),
-    name: wxrpData?.symbol ?? '',
+      Number(formatUnits(xrpData?.value ?? 0n, xrpData?.decimals ?? 6)) *
+      (TOKEN_USD_MAPPER[xrpData?.symbol ?? ''] ?? 0),
+    name: xrpData?.symbol ?? '',
   };
+  // const wxrp = {
+  //   balance: Number(formatUnits(wxrpData?.value ?? 0n, wxrpData?.decimals ?? 18)),
+  //   value:
+  //     Number(formatUnits(wxrpData?.value ?? 0n, wxrpData?.decimals ?? 18)) *
+  //     (TOKEN_USD_MAPPER[wxrpData?.symbol ?? ''] ?? 0),
+  //   name: wxrpData?.symbol ?? '',
+  // };
 
   const balancesMap = {
     [TOKEN.WETH]: weth,
-    // [TOKEN.XRP]: xrp,
-    [TOKEN.WXRP]: wxrp,
+    [TOKEN.XRP]: xrp,
+    // [TOKEN.WXRP]: wxrp,
   };
 
-  const balancesArray = [weth, wxrp];
+  const balancesArray = [weth, xrp];
 
   return {
     balancesMap,

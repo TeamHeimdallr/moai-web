@@ -12,7 +12,7 @@ export const getTokenSymbol = async (client: PublicClient, address: Address) => 
     functionName: 'symbol',
   });
 
-  return (symbol as string) || '';
+  return ((symbol as string) || '') === 'WXRP' ? 'XRP' : (symbol as string) || '';
 };
 
 interface QueryOptions {
@@ -30,7 +30,8 @@ export const useTokenSymbols = (addresses: Address[], options?: QueryOptions) =>
     })),
   });
   return {
-    data: _data?.map(d => (d?.result ?? '') as string) ?? [],
+    data:
+      _data?.map(d => ((d?.result ?? '') === 'WXRP' ? 'XRP' : ((d?.result ?? '') as string))) ?? [],
     ...rest,
   };
 };
