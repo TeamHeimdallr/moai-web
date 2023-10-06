@@ -11,6 +11,7 @@ import {
 import { TOKEN_ABI } from '~/moai-xrp-evm/abi/token';
 
 import { CHAIN_ID, TOKEN_DECIAML } from '~/moai-xrp-evm/constants';
+import { TOKEN_ADDRESS } from '~/moai-xrp-evm/constants';
 
 interface Props {
   enabled?: boolean;
@@ -64,7 +65,7 @@ export const useTokenApprove = ({
   });
 
   return {
-    allowance: isConnected && allowance,
+    allowance: (isConnected && allowance) || tokenAddress === TOKEN_ADDRESS['XRP'],
     isLoading,
     isSuccess,
     refetch,

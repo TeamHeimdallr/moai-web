@@ -8,7 +8,7 @@ import {
 
 import { VAULT_ABI } from '~/moai-xrp-evm/abi/vault';
 
-import { CONTRACT_ADDRESS } from '~/moai-xrp-evm/constants';
+import { CONTRACT_ADDRESS, TOKEN_ADDRESS } from '~/moai-xrp-evm/constants';
 
 import { useConnectWallet } from '~/moai-xrp-evm/hooks/data/use-connect-wallet';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/moai-xrp-evm/types/contracts';
@@ -38,6 +38,7 @@ export const useSwap = ({
     address: CONTRACT_ADDRESS.VAULT,
     abi: VAULT_ABI,
     functionName: 'swap',
+    value: singleSwap[2] === TOKEN_ADDRESS['ZERO'] ? singleSwap[4] : 0n,
     args: [singleSwap, fundManagement, limit, deadline],
     enabled: isEnabled,
   });
