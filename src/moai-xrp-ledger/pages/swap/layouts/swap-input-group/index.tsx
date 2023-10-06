@@ -30,8 +30,7 @@ export const SwapInputs = () => {
     setToToken,
 
     setFromValue,
-    setToValue,
-    resetAll,
+    resetFromValue,
 
     fromTokenBalance,
     fromTokenPrice,
@@ -59,7 +58,7 @@ export const SwapInputs = () => {
   };
 
   useEffect(
-    () => resetAll(),
+    () => resetFromValue(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [fromToken, toToken]
   );
@@ -90,8 +89,6 @@ export const SwapInputs = () => {
               schema={toSchema}
               value={toValue}
               maxButton
-              slider
-              handleChange={setToValue}
               handleTokenClick={openSelectTokenToPopup}
             />
           </InputInnerWrapper>

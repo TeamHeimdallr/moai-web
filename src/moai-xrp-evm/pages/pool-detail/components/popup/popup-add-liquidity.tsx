@@ -92,7 +92,9 @@ export const AddLiquidityPopup = ({
 
   const prepareRequestData = () => {
     return {
-      tokens: tokenInputValues.map(t => TOKEN_ADDRESS[t.name]),
+      tokens: tokenInputValues.map(t =>
+        t.name === 'XRP' ? TOKEN_ADDRESS['ZERO'] : TOKEN_ADDRESS[t.name]
+      ),
       amountsIn: tokenInputValues.map(t => parseUnits(t.amount.toString(), TOKEN_DECIAML)),
     };
   };

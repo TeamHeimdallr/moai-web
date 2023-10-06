@@ -39,13 +39,14 @@ const PoolDetailAddLiquidityPage = () => {
   const { compositions } = poolInfo;
 
   const tokens: TokenInfo[] = compositions?.map(composition => {
-    const data = balancesMap?.[composition.name];
+    const name = composition.name;
+    const data = balancesMap?.[name];
 
-    if (!data) return { name: composition.name, balance: 0, price: 0, value: 0 };
+    if (!data) return { name: name, balance: 0, price: 0, value: 0 };
     return {
-      name: composition.name,
+      name: name,
       balance: data.balance,
-      price: getTokenPrice(composition.name),
+      price: getTokenPrice(name),
       value: data.value,
     };
   });

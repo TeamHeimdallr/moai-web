@@ -117,9 +117,9 @@ export const WithdrawLiquidityPopup = ({
 
         <List title={`You're expected to receive`}>
           {compositions.map(({ tokenIssuer, name, weight }, i) => {
-            if (!name) return <></>;
+            if (!name) return <div key={`div-${tokenIssuer + name + i}`}></div>;
             return (
-              <>
+              <div key={`div-${tokenIssuer + name + i}`}>
                 <TokenList
                   key={tokenIssuer + name + i}
                   type="large"
@@ -129,7 +129,7 @@ export const WithdrawLiquidityPopup = ({
                   leftAlign={true}
                 />
                 {i !== compositions.length - 1 && <Divider />}
-              </>
+              </div>
             );
           })}
         </List>

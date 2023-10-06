@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 
+import { formatFloat } from '~/utils/number';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { useAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';
@@ -22,19 +23,17 @@ export const useSwapData = () => {
     fromToken,
     fromValue,
     toToken,
-    toValue,
 
     setFromToken,
     setFromValue,
     setToToken,
-    setToValue,
 
     resetFromValue,
     resetAll,
   } = useSwapStore();
 
-  const fromReserve = fromToken === token1.currency ? token1.value : token2.value;
-  const toReserve = toToken === token1.currency ? token1.value : token2.value;
+  const fromReserve = fromToken === token1.currency ? token1.balance : token2.balance;
+  const toReserve = toToken === token1.currency ? token1.balance : token2.balance;
 
   const fromTokenBalance = balancesMap?.[fromToken]?.balance ?? 0;
   const toTokenBalance = balancesMap?.[toToken]?.balance ?? 0;
@@ -50,13 +49,22 @@ export const useSwapData = () => {
   });
 
   const toSchema = yup.object({
-    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
-      .number()
-      .min(0)
-      .max(toTokenBalance, 'Exceeds wallet balance'),
+    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup.number().min(0),
   });
 
-  const fee = 0.003; // TODO
+  const fee = 0.005; // TODO
+  const slippage = 0.005; // TOOD
+  const toValue = fromValue
+    ? Number(
+        formatFloat(
+          (toReserve -
+            toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee))) -
+            0.000001) *
+            (1 - slippage),
+          6
+        )
+      )
+    : undefined;
 
   const swapRatio =
     fromValue == 0 || toValue == 0
@@ -80,7 +88,6 @@ export const useSwapData = () => {
     setFromToken,
     setFromValue,
     setToToken,
-    setToValue,
 
     resetFromValue,
     resetAll,

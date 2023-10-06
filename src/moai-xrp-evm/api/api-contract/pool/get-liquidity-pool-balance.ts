@@ -170,7 +170,7 @@ export const useLiquidityPoolTokenTotalSupply = (poolId?: Address, options?: Que
     abi: TOKEN_ABI,
     functionName: 'totalSupply',
     enabled: !!poolId && !!liquidityPoolTokenAddress && !!(enabled ?? true),
-    staleTime: Infinity,
+    staleTime: 1000 * 5,
     scopeKey: `totalSupply-${poolId}`,
   });
   const data = _data as bigint | undefined;
@@ -187,7 +187,7 @@ export const usePoolTokens = (poolId?: Address, options?: QueryOptions) => {
     functionName: 'getPoolTokens',
     args: [poolId],
     enabled: !!poolId && !!(enabled ?? true),
-    staleTime: Infinity,
+    staleTime: 1000 * 5,
     scopeKey: `getPoolToken-${poolId}`,
   });
   const data = _data as PoolBalance | undefined;

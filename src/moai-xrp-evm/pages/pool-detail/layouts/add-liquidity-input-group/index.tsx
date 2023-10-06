@@ -33,8 +33,8 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
   const [inputValue2, setInputValue2] = useState<number>(0);
 
   const getInputValue = (token: string) => {
-    if (token === 'WETH') return inputValue1;
-    if (token === 'WXRP') return inputValue2;
+    if (token === tokens[0].name) return inputValue1;
+    if (token === tokens[1].name) return inputValue2;
     return 0;
   };
 

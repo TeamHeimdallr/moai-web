@@ -21,7 +21,7 @@ export const getXrpEvmTokenPrice = async (client?: PublicClient, name?: string) 
 
   const wethPrice = data
     ? Number(
-        (TOKEN_USD_MAPPER['WXRP'] * Number(data?.[1]?.[1] ?? 0)) / Number(data?.[1]?.[0] ?? 1) || 0
+        (TOKEN_USD_MAPPER['XRP'] * Number(data?.[1]?.[1] ?? 0)) / Number(data?.[1]?.[0] ?? 1) || 0
       )
     : 0;
 
@@ -43,7 +43,7 @@ export const useGetXrpEvmTokenPrice = () => {
 
   const wethPrice = data
     ? Number(
-        (TOKEN_USD_MAPPER['WXRP'] * Number(data?.[1]?.[1] ?? 0)) / Number(data?.[1]?.[0] ?? 1) || 0
+        (TOKEN_USD_MAPPER['XRP'] * Number(data?.[1]?.[1] ?? 0)) / Number(data?.[1]?.[0] ?? 1) || 0
       )
     : 0;
 

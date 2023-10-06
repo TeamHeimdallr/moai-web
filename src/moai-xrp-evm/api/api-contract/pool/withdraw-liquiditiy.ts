@@ -11,7 +11,7 @@ import {
 
 import { VAULT_ABI } from '~/moai-xrp-evm/abi/vault';
 
-import { CHAIN_ID, CONTRACT_ADDRESS } from '~/moai-xrp-evm/constants';
+import { CHAIN_ID, CONTRACT_ADDRESS, TOKEN_ADDRESS } from '~/moai-xrp-evm/constants';
 
 interface Props {
   enabled?: boolean;
@@ -28,6 +28,11 @@ export const useWithdrawLiquidity = ({ enabled, poolId, request }: Props) => {
   const { isConnected, address: walletAddress } = useAccount();
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
+  const _translate = (token: Address) => {
+    if (token === TOKEN_ADDRESS['ZERO']) return TOKEN_ADDRESS['XRP'];
+    else return token;
+  };
+  const sortedTokens = tokens.slice().sort((a, b) => _translate(a).localeCompare(_translate(b)));
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: CONTRACT_ADDRESS.VAULT,
@@ -40,7 +45,12 @@ export const useWithdrawLiquidity = ({ enabled, poolId, request }: Props) => {
       poolId,
       walletAddress,
       walletAddress,
-      [tokens, tokens.map(() => 0n), WeightedPoolEncoder.exitExactBPTInForTokensOut(amount), false],
+      [
+        sortedTokens,
+        tokens.map(() => 0n),
+        WeightedPoolEncoder.exitExactBPTInForTokensOut(amount),
+        false,
+      ],
     ],
     enabled: enabled && isConnected && amount > 0,
   });

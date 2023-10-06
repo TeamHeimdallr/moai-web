@@ -112,7 +112,7 @@ export const useGetSwapHistories = ({ poolId, options }: UseGetSwapHistoriesProp
     {
       keepPreviousData: true,
       enabled: !!poolId && !!client,
-      staleTime: Infinity,
+      staleTime: 1000 * 5,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(options as any),
     }
@@ -130,7 +130,7 @@ export const useGetSwapHistories = ({ poolId, options }: UseGetSwapHistoriesProp
             txHash: data.transactionHash,
           },
         }),
-      staleTime: Infinity,
+      staleTime: 1000 * 5,
     })) ?? [];
   const data = useQueries({ queries });
 

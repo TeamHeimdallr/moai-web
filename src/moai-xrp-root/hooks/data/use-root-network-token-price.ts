@@ -38,7 +38,7 @@ export const useGetRootNetworkTokenPrice = () => {
     abi: VAULT_ABI,
     functionName: 'getPoolTokens',
     args: [POOL_ID.ROOT_XRP],
-    staleTime: Infinity,
+    staleTime: 1000 * 5,
     enabled: !!address,
   });
 
