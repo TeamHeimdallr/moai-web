@@ -19,6 +19,7 @@ import { formatNumber } from '~/utils/number';
 import { POPUP_ID } from '~/types/components';
 
 import { useAddLiquidity } from '~/moai-xrp-root/api/api-contract/pool/add-liquiditiy';
+import { useLiquidityPoolTokenAmount } from '~/moai-xrp-root/api/api-contract/pool/get-liquidity-pool-balance';
 import { useTokenApprove } from '~/moai-xrp-root/api/api-contract/token/approve';
 
 import {
@@ -86,6 +87,11 @@ export const AddLiquidityPopup = ({
   const navigate = useNavigate();
   const { id: poolId } = useParams();
 
+  const { bptOut: liquidityTokenAmount } = useLiquidityPoolTokenAmount({
+    poolId: poolId as Address,
+    amountsIn: tokenInputValues.map(v => v.amount),
+  });
+
   useRequirePrarams([!!poolId, isAddress(poolId as Address)], () => navigate(-1));
 
   const { tokenName: liquidityTokenName } = poolInfo;
@@ -119,12 +125,6 @@ export const AddLiquidityPopup = ({
   }, [allowance1, allowance2, tokenInputValues.length, isSuccess]);
 
   const txDate = new Date(blockTimestamp ?? 0);
-
-  // TODO
-  const liquidityTokenAmount = Math.sqrt(
-    tokenInputValues[0].amount * tokenInputValues[0].amount +
-      tokenInputValues[1].amount * tokenInputValues[1].amount
-  ).toFixed(2);
 
   const { close } = usePopup(POPUP_ID.ADD_LP);
 
