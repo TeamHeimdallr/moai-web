@@ -1,3 +1,7 @@
+import { formatEther, parseEther } from 'viem';
+
+import { BZERO, ONE, SolidityMaths } from './solidityMaths';
+
 interface Props {
   balances: number[];
   normalizedWeights: number[];
@@ -12,6 +16,13 @@ export const calcBptOutGivenExactTokensIn = ({
   bptTotalSupply,
   swapFeePercentage,
 }: Props) => {
+  if (amountsIn.every(v => v === 0)) {
+    return {
+      bptOut: 0,
+      priceImpact: 0,
+    };
+  }
+
   // BPT out, so we round down overall.
   const balanceRatiosWithFee: number[] = new Array<number>(amountsIn.length);
 
@@ -31,7 +42,18 @@ export const calcBptOutGivenExactTokensIn = ({
   );
 
   const bptOut = invariantRatio > 1 ? bptTotalSupply * (invariantRatio - 1) : 0;
-  return bptOut;
+  const priceImpact = calcJoinPoolPriceImpact(
+    parseEther(bptTotalSupply.toString()),
+    amountsIn.map(v => parseEther(v.toString())),
+    balances.map(v => parseEther(v.toString())),
+    parseEther(bptOut.toString()),
+    normalizedWeights.map(v => parseEther(v.toString()))
+  );
+
+  return {
+    bptOut,
+    priceImpact,
+  };
 };
 
 const _computeJoinExactTokensInInvariantRatio = (
@@ -74,4 +96,22 @@ const _computeJoinExactTokensInInvariantRatio = (
   }
 
   return invariantRatio;
+};
+
+const calcJoinPoolPriceImpact = (
+  bptTotalSupply: bigint,
+  tokenAmounts: bigint[],
+  balances: bigint[],
+  bptOut: bigint,
+  weights: bigint[]
+) => {
+  let bptZeroPriceImpact = BZERO;
+  for (let i = 0; i < tokenAmounts.length; i++) {
+    const price = (weights[i] * bptTotalSupply) / balances[i];
+    const newTerm = (price * tokenAmounts[i]) / ONE;
+    bptZeroPriceImpact += newTerm;
+  }
+
+  const pi = ONE - SolidityMaths.divDownFixed(bptOut, bptZeroPriceImpact);
+  return pi < 0 ? 0 : 100 * Number(formatEther(pi));
 };

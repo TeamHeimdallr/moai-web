@@ -145,7 +145,7 @@ export const useLiquidityPoolTokenAmount = ({
 
   const balances = (poolTokensData as PoolBalance)?.[1];
 
-  const bptOut = calcBptOutGivenExactTokensIn({
+  const { bptOut, priceImpact } = calcBptOutGivenExactTokensIn({
     balances: balances.map((v: bigint) => Number(formatUnits(v, TOKEN_DECIAML))) ?? [],
     normalizedWeights,
     amountsIn,
@@ -155,6 +155,7 @@ export const useLiquidityPoolTokenAmount = ({
 
   return {
     bptOut,
+    priceImpact,
   };
 };
 

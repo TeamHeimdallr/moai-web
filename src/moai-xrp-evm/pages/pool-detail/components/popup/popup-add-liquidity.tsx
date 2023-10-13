@@ -54,6 +54,8 @@ export const AddLiquidityPopup = ({
   totalValue,
   priceImpact,
 }: Props) => {
+  const priceImpactString = priceImpact < 0.01 ? '< 0.01' : formatNumber(priceImpact, 2);
+
   const { getTokenPrice } = useGetXrpEvmTokenPrice();
 
   const {
@@ -228,7 +230,7 @@ export const AddLiquidityPopup = ({
           </Summary>
           <Summary>
             <SummaryTextTitle>Price impact</SummaryTextTitle>
-            <SummaryText>{formatNumber(priceImpact, 2)}%</SummaryText>
+            <SummaryText>{priceImpactString}%</SummaryText>
           </Summary>
         </List>
 

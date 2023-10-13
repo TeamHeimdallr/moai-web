@@ -84,6 +84,7 @@ export const AddLiquidityPopup = ({
     tokenAddress: TOKEN_ADDRESS[tokenInputValues[1]?.name],
   });
 
+  const priceImpactString = priceImpact < 0.01 ? '< 0.01' : formatNumber(priceImpact, 2);
   const navigate = useNavigate();
   const { id: poolId } = useParams();
 
@@ -226,7 +227,7 @@ export const AddLiquidityPopup = ({
           </Summary>
           <Summary>
             <SummaryTextTitle>Price impact</SummaryTextTitle>
-            <SummaryText>{formatNumber(priceImpact, 2)}%</SummaryText>
+            <SummaryText>{priceImpactString}%</SummaryText>
           </Summary>
         </List>
 
