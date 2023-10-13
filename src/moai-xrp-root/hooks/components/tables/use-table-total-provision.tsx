@@ -14,10 +14,10 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
-import { formatNumber } from '~/utils/number';
-import { elapsedTime } from '~/utils/time';
-import { useTableLiquidityPoolProvisionStore } from '~/states/components/table-liquidity-pool-provision';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
+import { formatNumber } from '~/utils/util-number';
+import { elapsedTime } from '~/utils/util-time';
+import { useTableLiquidityPoolProvisionStore } from '~/states/components/table/table-liquidity-pool-provision';
 import { useSelectedLiquidityPoolProvisionTabStore } from '~/states/pages/selected-liquidity-pool-provision-tab';
 
 import { useGetLiquidityPoolProvisions } from '~/moai-xrp-root/api/api-contract/pool/get-liquidity-pool-provisions';

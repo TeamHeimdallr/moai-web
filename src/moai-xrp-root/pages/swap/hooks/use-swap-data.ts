@@ -1,8 +1,8 @@
 import { formatUnits } from 'viem';
 import * as yup from 'yup';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
-import { formatFloat } from '~/utils/number';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
+import { formatFloat } from '~/utils/util-number';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { usePoolTokens } from '~/moai-xrp-root/api/api-contract/pool/get-liquidity-pool-balance';

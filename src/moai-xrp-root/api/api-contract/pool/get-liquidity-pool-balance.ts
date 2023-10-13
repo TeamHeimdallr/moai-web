@@ -1,12 +1,8 @@
 import { Address, formatEther, formatUnits } from 'viem';
 import { useContractRead } from 'wagmi';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
-import { formatNumber } from '~/utils/number';
-import {
-  calcBptInTokenOutAmountAndPriceImpact,
-  calcBptOutAmountAndPriceImpact,
-} from '~/utils/pool';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
+import { formatNumber } from '~/utils/util-number';
 import { Entries } from '~/types/helpers';
 
 import { LIQUIDITY_POOL_ABI } from '~/moai-xrp-root/abi/liquidity-pool';

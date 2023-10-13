@@ -5,8 +5,8 @@ import { IconGem, IconMetamask } from '~/assets/icons';
 
 import { Popup } from '~/components/popup';
 
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
-import { usePopup } from '~/hooks/pages/use-popup';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
+import { usePopup } from '~/hooks/components/use-popup';
 import { POPUP_ID } from '~/types/components';
 
 export const SelectWalletPopup = () => {

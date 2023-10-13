@@ -6,7 +6,7 @@ import { TOKEN_IMAGE_MAPPER } from '~/constants';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 
 import { PoolInfo, TokenInfo } from '~/moai-xrp-evm/types/components';
 

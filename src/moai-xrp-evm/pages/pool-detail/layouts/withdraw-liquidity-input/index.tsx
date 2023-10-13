@@ -10,8 +10,8 @@ import { Tab } from '~/components/tab';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
-import { usePopup } from '~/hooks/pages/use-popup';
-import { formatNumber } from '~/utils/number';
+import { usePopup } from '~/hooks/components/use-popup';
+import { formatNumber } from '~/utils/util-number';
 import { useWithdrawLiquidityInputTabStore } from '~/states/components/withdraw-liquidity-input-tab';
 import { POPUP_ID } from '~/types';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
@@ -43,6 +43,7 @@ export const WithdrawLiquidityInput = ({
     { key: 'proportional', name: 'Proportional pool tokens' },
     { key: 'single', name: 'Single token', disabled: true },
   ];
+  // TODO: 로컬 state로 전환
   const { selected: selectedTab, select: selectTab } = useWithdrawLiquidityInputTabStore();
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.WITHDRAW_LP);
 

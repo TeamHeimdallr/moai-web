@@ -4,7 +4,7 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconArrowUp } from '~/assets/icons';
 
-import { toggleSorting } from '~/utils/table';
+import { toggleSorting } from '~/utils/util-table';
 import { SortingState } from '~/types';
 
 interface TableHeaderSortableProps extends HTMLAttributes<HTMLDivElement> {

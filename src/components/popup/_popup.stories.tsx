@@ -5,7 +5,7 @@ import { IconCheck } from '~/assets/icons';
 
 import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
-import { usePopup } from '~/hooks/pages/use-popup';
+import { usePopup } from '~/hooks/components/use-popup';
 import { POPUP_ID } from '~/types';
 
 import { ButtonPrimaryLarge, ButtonPrimarySmall } from '../buttons/primary';

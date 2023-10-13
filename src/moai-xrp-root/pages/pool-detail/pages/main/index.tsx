@@ -6,7 +6,7 @@ import { Address } from 'wagmi';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
-import { useRequirePrarams } from '~/hooks/pages/use-require-params';
+import { useRequirePrarams } from '~/hooks/utils/use-require-params';
 
 import { useLiquidityPoolBalance } from '~/moai-xrp-root/api/api-contract/pool/get-liquidity-pool-balance';
 

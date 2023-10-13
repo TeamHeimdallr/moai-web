@@ -2,8 +2,8 @@ import { Amm } from '../types/contracts';
 
 import { CHAIN, IS_MAINNET } from '.';
 
-export const XRPL_JSON_RPC_TEST_NET = 'https://s.devnet.rippletest.net:51234/';
-export const XRPL_WSS_TEST_NET = 'wss://s.devnet.rippletest.net:51233/';
+export const XRPL_JSON_RPC = IS_MAINNET ? '' : 'https://s.devnet.rippletest.net:51234/';
+export const XRPL_WSS = IS_MAINNET ? '' : 'wss://s.devnet.rippletest.net:51233/';
 
 export const SCANNER_URL = IS_MAINNET ? '' : 'https://devnet.xrpl.org/';
 

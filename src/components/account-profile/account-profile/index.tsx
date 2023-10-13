@@ -14,9 +14,9 @@ import { CHAIN } from '~/constants';
 import { BothConnected } from '~/components/account-profile/both-connected';
 import { ButtonIconSmall } from '~/components/buttons/icon';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
-import { truncateAddress } from '~/utils/string';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
+import { truncateAddress } from '~/utils/util-string';
 
 import { Slippage } from '../slippage';
 

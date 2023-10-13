@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
 
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 

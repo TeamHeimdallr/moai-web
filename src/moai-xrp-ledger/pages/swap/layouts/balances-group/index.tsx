@@ -4,7 +4,7 @@ import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
 import { TokenList } from '~/components/token-list';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 
 import { useBalancesAll } from '~/moai-xrp-ledger/hooks/data/use-balance-all';
 

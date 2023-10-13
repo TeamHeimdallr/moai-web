@@ -2,7 +2,7 @@ import { submitTransaction } from '@gemwallet/api';
 import { useMutation } from '@tanstack/react-query';
 import { xrpToDrops } from 'xrpl';
 
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
 
 import { QUERY_KEYS } from '../../utils/query-keys';
 import { useAmmInfo } from '../amm/get-amm-info';

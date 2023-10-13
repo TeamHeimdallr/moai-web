@@ -12,9 +12,9 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 
-import { formatNumber } from '~/utils/number';
-import { truncateAddress } from '~/utils/string';
-import { elapsedTime } from '~/utils/time';
+import { formatNumber } from '~/utils/util-number';
+import { truncateAddress } from '~/utils/util-string';
+import { elapsedTime } from '~/utils/util-time';
 import { useTableSwapHistoriesStore } from '~/states/components/table-swap-histories';
 
 import { useGetSwapHistories } from '~/moai-xrp-root/api/api-contract/swap/get-swap-histories';

@@ -11,7 +11,7 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 import { useTableLiquidityPoolStore } from '~/states/components/table-liquidity-pool';
 
 import { useGetLiquidityPoolLists } from '~/moai-xrp-root/api/api-contract/pool/get-liquidity-pool-lists';

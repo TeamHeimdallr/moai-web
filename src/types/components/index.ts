@@ -1,5 +1,56 @@
-export * from './gnb';
-export * from './popups';
-export * from './tables';
-export * from './tokens';
-export * from './tooltips';
+import { NETWORK } from '..';
+
+/**
+ * tooltip id
+ */
+export enum TOOLTIP_ID {
+  STORYBOOK_EXAMPLE = 'TOOLTIP_STORYBOOK_EXAMPLE',
+
+  COMMING_SOON = 'TOOLTIP_COMMIG_SOON',
+  COMMING_SOON_NETWORK_SELECTION = 'TOOLTIP_COMMIG_SOON_NETWORK_SELECTION',
+}
+
+/**
+ * popup id
+ */
+export enum POPUP_ID {
+  STORYBOOK_SAMPLE = 'POPUP_STORYBOOK_SAMPLE',
+
+  ADD_LP = 'POPUP_ADD_LP',
+  WITHDRAW_LP = 'POPUP_WITHDRAW_LP',
+
+  WALLET = 'POPUP_WALLET',
+
+  SWAP_SELECT_TOKEN_FROM = 'POPUP_SWAP_SELECT_TOKEN_FROM',
+  SWAP_SELECT_TOKEN_TO = 'POPUP_SWAP_SELECT_TOKEN_TO',
+  SWAP = 'POPUP_SWAP',
+}
+
+/**
+ * Gnb
+ */
+export interface IGnbMenu {
+  id: string;
+  text: string;
+  path: string; // route path
+
+  disabled?: boolean;
+  commingSoon?: boolean; // if true, show comming soon tooltip
+}
+
+export interface IGnbChainList {
+  network: NETWORK;
+  text: string;
+
+  show?: boolean;
+  disabled?: boolean;
+  commingSoon?: boolean; // if true, show comming soon tooltip
+}
+
+/**
+ * table
+ */
+export interface ITableSort {
+  key: string;
+  order: 'asc' | 'desc';
+}

@@ -5,7 +5,7 @@ import bgMain from '~/assets/images/bg-main.png';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 
 import { useBalancesAll } from '~/moai-xrp-evm/hooks/data/use-balance-all';
 import { useConnectWallet } from '~/moai-xrp-evm/hooks/data/use-connect-wallet';

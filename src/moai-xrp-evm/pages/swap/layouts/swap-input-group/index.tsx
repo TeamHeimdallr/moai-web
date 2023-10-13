@@ -7,8 +7,8 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { InputNumber } from '~/components/inputs/number';
 import { Token } from '~/components/token';
 
-import { usePopup } from '~/hooks/pages/use-popup';
-import { formatNumber } from '~/utils/number';
+import { usePopup } from '~/hooks/components/use-popup';
+import { formatNumber } from '~/utils/util-number';
 import { POPUP_ID } from '~/types/components';
 
 import { TOKEN } from '~/moai-xrp-evm/types/contracts';

@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
 import { Popup } from '~/components/popup';
 
-import { usePopup } from '~/hooks/pages/use-popup';
+import { usePopup } from '~/hooks/components/use-popup';
 import { POPUP_ID } from '~/types';
 
 import { WithdrawLiquidityPopup } from './popup-withdraw-liquidity';

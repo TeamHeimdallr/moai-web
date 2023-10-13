@@ -5,7 +5,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 import { COLOR } from '~/assets/colors';
 import { IconCancel } from '~/assets/icons';
 
-import { usePopup } from '~/hooks/pages/use-popup';
+import { usePopup } from '~/hooks/components/use-popup';
 
 import { ButtonIconLarge } from '../buttons/icon';
 

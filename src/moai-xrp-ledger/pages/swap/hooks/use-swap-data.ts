@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-import { formatFloat } from '~/utils/number';
+import { formatFloat } from '~/utils/util-number';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { useAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';

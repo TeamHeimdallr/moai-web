@@ -1,7 +1,7 @@
 import { Address, isAddress } from 'viem';
 import { useBalance } from 'wagmi';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 interface Balance {
   value: string;
   symbol: string;

@@ -6,8 +6,8 @@ import { TOKEN_IMAGE_MAPPER } from '~/constants';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
 
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
-import { formatNumber } from '~/utils/number';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
+import { formatNumber } from '~/utils/util-number';
 
 import { PoolInfo, TokenInfo } from '~/moai-xrp-ledger/types/components';
 

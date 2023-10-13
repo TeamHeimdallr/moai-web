@@ -1,7 +1,7 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 
-import { truncateAddress } from '~/utils/string';
+import { truncateAddress } from '~/utils/util-string';
 
 import { chains } from '~/configs/setup-evm-client';
 

@@ -2,7 +2,7 @@ import { submitTransaction } from '@gemwallet/api';
 import { useMutation } from 'wagmi';
 import { PaymentFlags, xrpToDrops } from 'xrpl';
 
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
 
 import { ISSUER } from '~/moai-xrp-ledger/constants';
 
