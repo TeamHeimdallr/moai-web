@@ -23,6 +23,7 @@ export const calcBptOutAmountAndPriceImpact = ({
     };
   }
 
+  // BPT = Balance Pool Token = LP Token
   // BPT out, so we round down overall.
   const balanceRatiosWithFee: number[] = new Array<number>(amountsIn.length);
 
