@@ -3,7 +3,7 @@ import tw, { css, styled } from 'twin.macro';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
 
 import { CHAIN_ID } from '~/moai-xrp-root/constants';
 

@@ -7,7 +7,7 @@ import { ButtonIconLarge } from '~/components/buttons/icon';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
-import { useRequirePrarams } from '~/hooks/pages/use-require-params';
+import { useRequirePrarams } from '~/hooks/utils/use-require-params';
 import { TokenInfo } from '~/types/components';
 
 import { useAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';

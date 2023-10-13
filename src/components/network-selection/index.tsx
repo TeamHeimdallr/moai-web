@@ -4,7 +4,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 
 import { CHAIN_IMAGE_MAPPER, CHAIN_SELECT_LIST } from '~/constants';
 
-import { useSelectedNetworkStore } from '~/states/data/selected-network';
+import { useSelectedNetworkStore } from '~/states/data/network/select-network';
 import { TOOLTIP_ID } from '~/types';
 
 import { ButtonDropdown } from '../buttons/dropdown';

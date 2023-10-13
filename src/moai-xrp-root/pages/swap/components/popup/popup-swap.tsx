@@ -12,10 +12,10 @@ import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
-import { usePopup } from '~/hooks/pages/use-popup';
-import { formatNumber } from '~/utils/number';
-import { DATE_FORMATTER } from '~/utils/time';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
+import { usePopup } from '~/hooks/components/use-popup';
+import { formatNumber } from '~/utils/util-number';
+import { DATE_FORMATTER } from '~/utils/util-time';
 import { useSlippageStore } from '~/states/data/slippage';
 import { POPUP_ID } from '~/types/components';
 

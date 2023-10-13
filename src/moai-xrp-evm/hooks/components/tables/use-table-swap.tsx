@@ -9,9 +9,9 @@ import { TableColumnIcon } from '~/components/tables/columns/column-icon';
 import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenSwap } from '~/components/tables/columns/column-token-swap';
 
-import { formatNumber } from '~/utils/number';
-import { truncateAddress } from '~/utils/string';
-import { elapsedTime } from '~/utils/time';
+import { formatNumber } from '~/utils/util-number';
+import { truncateAddress } from '~/utils/util-string';
+import { elapsedTime } from '~/utils/util-time';
 import { useTableSwapHistoriesStore } from '~/states/components/table-swap-histories';
 
 import { useGetSwapHistories } from '~/moai-xrp-evm/api/api-contract/swap/get-swap-histories';

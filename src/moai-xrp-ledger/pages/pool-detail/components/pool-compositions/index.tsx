@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
 
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
 import { useSelectedLiquidityPoolCompositionTabStore } from '~/states/pages/selected-liquidity-pool-composition-tab';
 
 import { useTableTotalComposition } from '~/moai-xrp-ledger/hooks/components/tables/use-table-total-composition';

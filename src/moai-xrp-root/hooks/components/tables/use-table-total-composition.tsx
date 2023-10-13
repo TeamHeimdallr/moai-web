@@ -4,7 +4,7 @@ import { Address } from 'viem';
 
 import { TableColumn, TableColumnTokenAddress, TableHeader } from '~/components/tables';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 import { useSelectedLiquidityPoolCompositionTabStore } from '~/states/pages/selected-liquidity-pool-composition-tab';
 
 import { useLiquidityPoolBalance } from '~/moai-xrp-root/api/api-contract/pool/get-liquidity-pool-balance';

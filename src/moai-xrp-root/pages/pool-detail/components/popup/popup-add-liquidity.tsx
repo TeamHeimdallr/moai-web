@@ -13,9 +13,9 @@ import { Popup } from '~/components/popup';
 import { Stepper } from '~/components/stepper';
 import { TokenList } from '~/components/token-list';
 
-import { usePopup } from '~/hooks/pages/use-popup';
-import { useRequirePrarams } from '~/hooks/pages/use-require-params';
-import { formatNumber } from '~/utils/number';
+import { usePopup } from '~/hooks/components/use-popup';
+import { useRequirePrarams } from '~/hooks/utils/use-require-params';
+import { formatNumber } from '~/utils/util-number';
 import { POPUP_ID } from '~/types/components';
 
 import { useAddLiquidity } from '~/moai-xrp-root/api/api-contract/pool/add-liquiditiy';

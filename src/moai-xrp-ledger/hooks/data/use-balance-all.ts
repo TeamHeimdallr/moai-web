@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { formatUnits } from 'viem';
 import { AccountInfoRequest, GatewayBalancesRequest } from 'xrpl';
 
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
 import { useXrplStore } from '~/states/data/xrpl';
 
 import { useAmmInfo } from '~/moai-xrp-ledger/api/api-contract/amm/get-amm-info';

@@ -3,7 +3,7 @@ import { submitTransaction } from '@gemwallet/api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AccountLinesRequest } from 'xrpl';
 
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
 import { useXrplStore } from '~/states/data/xrpl';
 
 import { QUERY_KEYS } from '../../utils/query-keys';

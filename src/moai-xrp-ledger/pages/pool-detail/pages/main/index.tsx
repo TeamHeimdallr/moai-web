@@ -4,7 +4,7 @@ import tw, { css, styled } from 'twin.macro';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
-import { useRequirePrarams } from '~/hooks/pages/use-require-params';
+import { useRequirePrarams } from '~/hooks/utils/use-require-params';
 
 import { useLiquidityPoolBalance } from '~/moai-xrp-ledger/api/api-contract/pool/get-liquidity-pool-balance';
 

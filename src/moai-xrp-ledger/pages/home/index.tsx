@@ -3,7 +3,7 @@ import tw, { css, styled } from 'twin.macro';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';

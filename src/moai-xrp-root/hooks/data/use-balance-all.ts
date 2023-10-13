@@ -1,7 +1,7 @@
 import { formatUnits, isAddress } from 'viem';
 import { useBalance } from 'wagmi';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
 
 import { TOKEN_ADDRESS, TOKEN_USD_MAPPER } from '~/moai-xrp-root/constants';
 

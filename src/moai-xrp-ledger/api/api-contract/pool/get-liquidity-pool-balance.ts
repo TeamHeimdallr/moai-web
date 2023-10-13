@@ -1,4 +1,4 @@
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 
 import { ISSUER } from '~/moai-xrp-ledger/constants';
 

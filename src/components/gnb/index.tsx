@@ -9,9 +9,9 @@ import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
-import { usePopup } from '~/hooks/pages/use-popup';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
+import { usePopup } from '~/hooks/components/use-popup';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { AccountProfile } from '../account-profile';

@@ -15,7 +15,7 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 import { useTableLiquidityPoolStore } from '~/states/components/table-liquidity-pool';
 
 export const useTableLiquidityPool = () => {

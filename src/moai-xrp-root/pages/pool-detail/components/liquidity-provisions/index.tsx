@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
 import { useSelectedLiquidityPoolProvisionTabStore } from '~/states/pages/selected-liquidity-pool-provision-tab';
 
 import { useTableTotalProvision } from '~/moai-xrp-root/hooks/components/tables/use-table-total-provision';

@@ -6,8 +6,8 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { InputNumber } from '~/components/inputs/number';
 import { Token } from '~/components/token';
 
-import { usePopup } from '~/hooks/pages/use-popup';
-import { formatFloat, formatNumber } from '~/utils/number';
+import { usePopup } from '~/hooks/components/use-popup';
+import { formatFloat, formatNumber } from '~/utils/util-number';
 import { POPUP_ID, TokenInfo } from '~/types/components';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 

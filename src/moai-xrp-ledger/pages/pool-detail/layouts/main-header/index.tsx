@@ -5,7 +5,7 @@ import { IconLink } from '~/assets/icons';
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 
 import { SCANNER_URL } from '~/moai-xrp-ledger/constants';
 

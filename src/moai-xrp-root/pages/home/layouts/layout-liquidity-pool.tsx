@@ -8,7 +8,7 @@ import { FilterChip } from '~/components/filter-chip';
 import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
 
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
 

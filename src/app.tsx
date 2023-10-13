@@ -5,7 +5,7 @@ import tw from 'twin.macro';
 import { ToastContainer } from './components/toasts';
 import { SelectWalletPopup } from './components/wallet-selection';
 import { AsyncBoundary } from './hocs/hoc-error-boundary';
-import { usePopup } from './hooks/pages/use-popup';
+import { usePopup } from './hooks/components/use-popup';
 import { CHAIN } from './constants';
 import { POPUP_ID } from './types';
 

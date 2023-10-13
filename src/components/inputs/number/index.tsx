@@ -9,7 +9,7 @@ import { COLOR } from '~/assets/colors';
 
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 type OmitType = 'type' | 'onChange' | 'onBlur';

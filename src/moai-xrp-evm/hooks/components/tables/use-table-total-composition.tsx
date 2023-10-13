@@ -6,7 +6,7 @@ import { TableHeader } from '~/components/tables';
 import { TableColumn } from '~/components/tables/columns';
 import { TableColumnTokenAddress } from '~/components/tables/columns/column-token-address';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 import { useSelectedLiquidityPoolCompositionTabStore } from '~/states/pages/selected-liquidity-pool-composition-tab';
 
 import { useLiquidityPoolBalance } from '~/moai-xrp-evm/api/api-contract/pool/get-liquidity-pool-balance';

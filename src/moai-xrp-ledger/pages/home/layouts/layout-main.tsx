@@ -4,10 +4,10 @@ import bgMain from '~/assets/images/bg-main.png';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
-import { usePopup } from '~/hooks/pages/use-popup';
-import { formatNumber } from '~/utils/number';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
+import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
+import { usePopup } from '~/hooks/components/use-popup';
+import { formatNumber } from '~/utils/util-number';
 import { POPUP_ID } from '~/types';
 
 import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';

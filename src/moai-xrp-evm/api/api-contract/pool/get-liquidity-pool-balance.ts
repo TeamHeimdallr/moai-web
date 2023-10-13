@@ -1,7 +1,7 @@
 import { Address, formatEther, formatUnits } from 'viem';
 import { useContractRead } from 'wagmi';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 import { Entries } from '~/types/helpers';
 
 import { LIQUIDITY_POOL_ABI } from '~/moai-xrp-evm/abi/liquidity-pool';

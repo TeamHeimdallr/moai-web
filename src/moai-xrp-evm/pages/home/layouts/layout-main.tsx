@@ -5,7 +5,7 @@ import bgMain from '~/assets/images/bg-main.png';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 
 import { CURRENT_CHAIN } from '~/moai-xrp-evm/constants';
 

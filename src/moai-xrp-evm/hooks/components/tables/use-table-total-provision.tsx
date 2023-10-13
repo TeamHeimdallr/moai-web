@@ -11,9 +11,9 @@ import { TableColumnIcon } from '~/components/tables/columns/column-icon';
 import { TableColumnLink } from '~/components/tables/columns/column-link';
 import { TableColumnTokenPair } from '~/components/tables/columns/column-token-pair';
 
-import { formatNumber } from '~/utils/number';
-import { elapsedTime } from '~/utils/time';
-import { useTableLiquidityPoolProvisionStore } from '~/states/components/table-liquidity-pool-provision';
+import { formatNumber } from '~/utils/util-number';
+import { elapsedTime } from '~/utils/util-time';
+import { useTableLiquidityPoolProvisionStore } from '~/states/components/table/table-liquidity-pool-provision';
 import { useSelectedLiquidityPoolProvisionTabStore } from '~/states/pages/selected-liquidity-pool-provision-tab';
 
 import { useGetLiquidityPoolProvisions } from '~/moai-xrp-evm/api/api-contract/pool/get-liquidity-pool-provisions';

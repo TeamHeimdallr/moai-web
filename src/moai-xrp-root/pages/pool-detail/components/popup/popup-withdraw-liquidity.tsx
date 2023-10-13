@@ -8,8 +8,8 @@ import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 
-import { usePopup } from '~/hooks/pages/use-popup';
-import { formatNumber } from '~/utils/number';
+import { usePopup } from '~/hooks/components/use-popup';
+import { formatNumber } from '~/utils/util-number';
 import { POPUP_ID } from '~/types';
 
 import { useWithdrawLiquidity } from '~/moai-xrp-root/api/api-contract/pool/withdraw-liquiditiy';

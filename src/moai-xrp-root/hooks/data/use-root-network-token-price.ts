@@ -1,7 +1,7 @@
 import { PublicClient } from 'viem';
 import { useContractRead } from 'wagmi';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
+import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
 
 import { VAULT_ABI } from '~/moai-xrp-root/abi/vault';
 

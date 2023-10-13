@@ -9,7 +9,7 @@ import {
 } from '~/components/tables';
 import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '~/components/tables/columns';
 
-import { formatNumber } from '~/utils/number';
+import { formatNumber } from '~/utils/util-number';
 import { useTableLiquidityPoolStore } from '~/states/components/table-liquidity-pool';
 
 import { useGetLiquidityPoolLists } from '~/moai-xrp-evm/api/api-contract/pool/get-liquidity-pool-lists';

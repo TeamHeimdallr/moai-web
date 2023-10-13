@@ -1,7 +1,7 @@
 import { formatUnits } from 'viem';
 import * as yup from 'yup';
 
-import { formatFloat } from '~/utils/number';
+import { formatFloat } from '~/utils/util-number';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { usePoolTokens } from '~/moai-xrp-evm/api/api-contract/pool/get-liquidity-pool-balance';
