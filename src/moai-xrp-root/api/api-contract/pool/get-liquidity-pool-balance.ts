@@ -3,6 +3,10 @@ import { useContractRead } from 'wagmi';
 
 import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
+import {
+  calcBptInTokenOutAmountAndPriceImpact,
+  calcBptOutAmountAndPriceImpact,
+} from '~/utils/pool';
 import { Entries } from '~/types/helpers';
 
 import { LIQUIDITY_POOL_ABI } from '~/moai-xrp-root/abi/liquidity-pool';
@@ -128,6 +132,63 @@ export const useLiquidityPoolBalance = (poolId?: Address) => {
   };
 };
 
+interface LiquidityPoolTokenAmountProp {
+  poolId?: Address;
+  amountsIn: number[];
+}
+export const useLiquidityPoolTokenAmount = ({
+  poolId,
+  amountsIn,
+}: LiquidityPoolTokenAmountProp) => {
+  const { data: poolTokensData } = usePoolTokens(poolId);
+  const { data: bptTotalSupply } = useLiquidityPoolTokenTotalSupply(poolId);
+  const { data: swapFeePercentage } = useGetSwapFeePercentage(poolId);
+  const liquidityPoolTokenAddress = getLiquidityPoolTokenAddress(poolId);
+  const { data: weightData } = usePoolTokenNormalizedWeights(liquidityPoolTokenAddress);
+  const normalizedWeights = weightData?.map(v => Number(formatEther(v ?? 0n)) || 0) ?? [];
+
+  const balances = (poolTokensData as PoolBalance)?.[1];
+
+  const { bptOut, priceImpact } = calcBptOutAmountAndPriceImpact({
+    balances: balances.map((v: bigint) => Number(formatUnits(v, TOKEN_DECIAML))) ?? [],
+    normalizedWeights,
+    amountsIn,
+    bptTotalSupply: Number(formatEther(bptTotalSupply ?? 0n)),
+    swapFeePercentage: Number(formatEther(swapFeePercentage ?? 0n)),
+  });
+
+  return {
+    bptOut,
+    priceImpact,
+  };
+};
+
+interface WithdrawPriceImpactProp {
+  poolId?: Address;
+  bptIn: number;
+}
+export const useWithdrawTokenAmounts = ({ poolId, bptIn }: WithdrawPriceImpactProp) => {
+  const { data: poolTokensData } = usePoolTokens(poolId);
+  const { data: bptTotalSupply } = useLiquidityPoolTokenTotalSupply(poolId);
+  const liquidityPoolTokenAddress = getLiquidityPoolTokenAddress(poolId);
+  const { data: weightData } = usePoolTokenNormalizedWeights(liquidityPoolTokenAddress);
+  const normalizedWeights = weightData?.map(v => Number(formatEther(v ?? 0n)) || 0) ?? [];
+
+  const balances = (poolTokensData as PoolBalance)?.[1];
+
+  const { amountsOut, priceImpact } = calcBptInTokenOutAmountAndPriceImpact({
+    balances: balances.map((v: bigint) => Number(formatUnits(v, TOKEN_DECIAML))) ?? [],
+    normalizedWeights,
+    bptIn,
+    bptTotalSupply: Number(formatEther(bptTotalSupply ?? 0n)),
+  });
+
+  return {
+    amountsOut,
+    priceImpact,
+  };
+};
+
 export const usePoolTotalLpTokens = (poolAddress?: Address, options?: QueryOptions) => {
   const poolName = (Object.entries(POOL_ID) as Entries<typeof POOL_ID>).find(
     ([_key, value]) => value === poolAddress
@@ -211,6 +272,27 @@ export const usePoolTokenNormalizedWeights = (
     scopeKey: `getNormalizedWeights-${liquidityPoolTokenAddress}`,
   });
   const data = _data as Array<bigint> | undefined;
+
+  return { data, ...rest };
+};
+
+export const useGetSwapFeePercentage = (poolId?: Address, options?: QueryOptions) => {
+  const poolName = (Object.entries(POOL_ID) as Entries<typeof POOL_ID>).find(
+    ([_key, value]) => value === poolId
+  )?.[0];
+  const liquidityPoolTokenAddress = poolName ? TOKEN_ADDRESS[poolName] : undefined;
+
+  const { enabled } = options ?? {};
+
+  const { data: _data, ...rest } = useContractRead({
+    address: liquidityPoolTokenAddress,
+    abi: LIQUIDITY_POOL_ABI,
+    functionName: 'getSwapFeePercentage',
+    enabled: !!poolId && !!liquidityPoolTokenAddress && !!(enabled ?? true),
+    staleTime: 1000 * 60,
+    scopeKey: `getSwapFeePercentage-${poolId}`,
+  });
+  const data = _data as bigint | undefined;
 
   return { data, ...rest };
 };

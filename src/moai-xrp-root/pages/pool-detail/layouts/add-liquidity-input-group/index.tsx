@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
+import { Address } from 'viem';
 import * as yup from 'yup';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
@@ -10,6 +12,8 @@ import { usePopup } from '~/hooks/pages/use-popup';
 import { formatFloat, formatNumber } from '~/utils/number';
 import { POPUP_ID, TokenInfo } from '~/types/components';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
+
+import { useLiquidityPoolTokenAmount } from '~/moai-xrp-root/api/api-contract/pool/get-liquidity-pool-balance';
 
 import { PoolInfo } from '~/moai-xrp-root/types/components';
 
@@ -26,15 +30,21 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
   // const iconRef = useRef<HTMLDivElement>(null);
 
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
-
-  const priceImpact = 0.13; // TODO
+  const { id: poolId } = useParams();
 
   const [inputValue1, setInputValue1] = useState<number>(0);
   const [inputValue2, setInputValue2] = useState<number>(0);
 
+  const { priceImpact } = useLiquidityPoolTokenAmount({
+    poolId: poolId as Address,
+    amountsIn: [inputValue1, inputValue2],
+  });
+
+  const priceImpactString = priceImpact < 0.01 ? '< 0.01' : formatNumber(priceImpact, 2);
+
   const getInputValue = (token: string) => {
-    if (token === 'ROOT') return inputValue1;
-    if (token === 'XRP') return inputValue2;
+    if (token === tokens[0].name) return inputValue1;
+    if (token === tokens[1].name) return inputValue2;
     return 0;
   };
 
@@ -146,7 +156,7 @@ export const AddLiquidityInput = ({ tokens, poolInfo }: Props) => {
               <MaxButton onClick={handleMax}>Max</MaxButton>
             </TotalValueWrapper>
           </TotalInnerWrapper>
-          <PriceImpact>{`Price impact  ${formatNumber(priceImpact, 2)}%`}</PriceImpact>
+          <PriceImpact>{`Price impact ${priceImpactString}%`}</PriceImpact>
         </Total>
       </InnerWrapper>
       <ButtonPrimaryLarge text="Preview" onClick={popupOpen} disabled={!isValid} />
