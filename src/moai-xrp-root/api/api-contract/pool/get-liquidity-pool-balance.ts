@@ -3,7 +3,10 @@ import { useContractRead } from 'wagmi';
 
 import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
 import { formatNumber } from '~/utils/number';
-import { calcBptOutGivenExactTokensIn } from '~/utils/pool';
+import {
+  calcBptInTokenOutAmountAndPriceImpact,
+  calcBptOutAmountAndPriceImpact,
+} from '~/utils/pool';
 import { Entries } from '~/types/helpers';
 
 import { LIQUIDITY_POOL_ABI } from '~/moai-xrp-root/abi/liquidity-pool';
@@ -146,7 +149,7 @@ export const useLiquidityPoolTokenAmount = ({
 
   const balances = (poolTokensData as PoolBalance)?.[1];
 
-  const { bptOut, priceImpact } = calcBptOutGivenExactTokensIn({
+  const { bptOut, priceImpact } = calcBptOutAmountAndPriceImpact({
     balances: balances.map((v: bigint) => Number(formatUnits(v, TOKEN_DECIAML))) ?? [],
     normalizedWeights,
     amountsIn,
@@ -159,6 +162,33 @@ export const useLiquidityPoolTokenAmount = ({
     priceImpact,
   };
 };
+
+interface WithdrawPriceImpactProp {
+  poolId?: Address;
+  bptIn: number;
+}
+export const useWithdrawTokenAmounts = ({ poolId, bptIn }: WithdrawPriceImpactProp) => {
+  const { data: poolTokensData } = usePoolTokens(poolId);
+  const { data: bptTotalSupply } = useLiquidityPoolTokenTotalSupply(poolId);
+  const liquidityPoolTokenAddress = getLiquidityPoolTokenAddress(poolId);
+  const { data: weightData } = usePoolTokenNormalizedWeights(liquidityPoolTokenAddress);
+  const normalizedWeights = weightData?.map(v => Number(formatEther(v ?? 0n)) || 0) ?? [];
+
+  const balances = (poolTokensData as PoolBalance)?.[1];
+
+  const { amountsOut, priceImpact } = calcBptInTokenOutAmountAndPriceImpact({
+    balances: balances.map((v: bigint) => Number(formatUnits(v, TOKEN_DECIAML))) ?? [],
+    normalizedWeights,
+    bptIn,
+    bptTotalSupply: Number(formatEther(bptTotalSupply ?? 0n)),
+  });
+
+  return {
+    amountsOut,
+    priceImpact,
+  };
+};
+
 export const usePoolTotalLpTokens = (poolAddress?: Address, options?: QueryOptions) => {
   const poolName = (Object.entries(POOL_ID) as Entries<typeof POOL_ID>).find(
     ([_key, value]) => value === poolAddress

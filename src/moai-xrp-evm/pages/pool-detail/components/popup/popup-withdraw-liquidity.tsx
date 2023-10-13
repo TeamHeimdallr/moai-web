@@ -33,6 +33,7 @@ interface Props {
   tokenValue: number;
 
   priceImpact: number;
+  amountsOut: number[];
 }
 
 export const WithdrawLiquidityPopup = ({
@@ -41,6 +42,7 @@ export const WithdrawLiquidityPopup = ({
   liquidityPoolTokenBalance,
   tokenValue,
   priceImpact,
+  amountsOut,
 }: Props) => {
   const priceImpactString = priceImpact < 0.01 ? '< 0.01' : formatNumber(priceImpact, 2);
   const { compositions } = poolInfo;
@@ -117,7 +119,7 @@ export const WithdrawLiquidityPopup = ({
               <TokenList
                 key={tokenAddress}
                 type="large"
-                title={`${name} ${weight}%`}
+                title={`${name} ${amountsOut[i].toFixed(4)} (${weight}%)`}
                 description={`${TOKEN_DESCRIPTION_MAPPER[name]}`}
                 image={TOKEN_IMAGE_MAPPER[name]}
                 leftAlign={true}

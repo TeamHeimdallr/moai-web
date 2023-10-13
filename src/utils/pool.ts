@@ -9,7 +9,7 @@ interface Props {
   bptTotalSupply: number;
   swapFeePercentage: number;
 }
-export const calcBptOutGivenExactTokensIn = ({
+export const calcBptOutAmountAndPriceImpact = ({
   balances,
   normalizedWeights,
   amountsIn,
@@ -42,12 +42,13 @@ export const calcBptOutGivenExactTokensIn = ({
   );
 
   const bptOut = invariantRatio > 1 ? bptTotalSupply * (invariantRatio - 1) : 0;
-  const priceImpact = calcJoinPoolPriceImpact(
+  const priceImpact = calcPriceImpact(
     parseEther(bptTotalSupply.toString()),
     amountsIn.map(v => parseEther(v.toString())),
     balances.map(v => parseEther(v.toString())),
     parseEther(bptOut.toString()),
-    normalizedWeights.map(v => parseEther(v.toString()))
+    normalizedWeights.map(v => parseEther(v.toString())),
+    true
   );
 
   return {
@@ -98,12 +99,61 @@ const _computeJoinExactTokensInInvariantRatio = (
   return invariantRatio;
 };
 
-const calcJoinPoolPriceImpact = (
+interface CalcBptInTokenOutAmountAndPriceImpactProp {
+  balances: number[];
+  normalizedWeights: number[];
+  bptIn: number;
+  bptTotalSupply: number;
+}
+export const calcBptInTokenOutAmountAndPriceImpact = ({
+  balances,
+  normalizedWeights,
+  bptIn,
+  bptTotalSupply,
+}: CalcBptInTokenOutAmountAndPriceImpactProp) => {
+  if (bptIn === 0) {
+    return {
+      amountsOut: new Array<number>(balances.length).fill(0),
+      priceImpact: 0,
+    };
+  }
+  /**********************************************************************************************
+  // computeProportionalAmountsOut                                                             //
+  // (per token)                                                                               //
+  // aO = tokenAmountOut             /        bptIn         \                                  //
+  // b = tokenBalance      a0 = b * | ---------------------  |                                 //
+  // bptIn = bptAmountIn             \     bptTotalSupply    /                                 //
+  // bpt = bptTotalSupply                                                                      //
+  **********************************************************************************************/
+  const bptRatio = bptIn / bptTotalSupply;
+
+  const amountsOut = new Array<number>(balances.length).fill(0);
+  for (let i = 0; i < balances.length; i++) {
+    amountsOut[i] = balances[i] * bptRatio;
+  }
+
+  const priceImpact = calcPriceImpact(
+    parseEther(bptTotalSupply.toString()),
+    amountsOut.map(v => parseEther(v.toString())),
+    balances.map(v => parseEther(v.toString())),
+    parseEther(bptIn.toString()),
+    normalizedWeights.map(v => parseEther(v.toString())),
+    false
+  );
+
+  return {
+    amountsOut,
+    priceImpact,
+  };
+};
+
+const calcPriceImpact = (
   bptTotalSupply: bigint,
   tokenAmounts: bigint[],
   balances: bigint[],
-  bptOut: bigint,
-  weights: bigint[]
+  bptAmount: bigint,
+  weights: bigint[],
+  isJoin: boolean
 ) => {
   let bptZeroPriceImpact = BZERO;
   for (let i = 0; i < tokenAmounts.length; i++) {
@@ -112,6 +162,11 @@ const calcJoinPoolPriceImpact = (
     bptZeroPriceImpact += newTerm;
   }
 
-  const pi = ONE - SolidityMaths.divDownFixed(bptOut, bptZeroPriceImpact);
-  return pi < 0 ? 0 : 100 * Number(formatEther(pi));
+  if (isJoin) {
+    const pi = ONE - SolidityMaths.divDownFixed(bptAmount, bptZeroPriceImpact);
+    return pi < 0 ? 0 : 100 * Number(formatEther(pi));
+  } else {
+    const pi = SolidityMaths.divDownFixed(bptAmount, bptZeroPriceImpact) - ONE;
+    return pi < 0 ? 0 : 100 * Number(formatEther(pi));
+  }
 };

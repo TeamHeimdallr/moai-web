@@ -1,5 +1,7 @@
 import { Fragment, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
+import { Address } from 'viem';
 import * as yup from 'yup';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
@@ -13,6 +15,8 @@ import { formatNumber } from '~/utils/number';
 import { useWithdrawLiquidityInputTabStore } from '~/states/components/withdraw-liquidity-input-tab';
 import { POPUP_ID } from '~/types';
 import { HOOK_FORM_KEY } from '~/types/components/inputs';
+
+import { useWithdrawTokenAmounts } from '~/moai-xrp-evm/api/api-contract/pool/get-liquidity-pool-balance';
 
 import { TOKEN_DESCRIPTION_MAPPER, TOKEN_IMAGE_MAPPER } from '~/moai-xrp-evm/constants';
 
@@ -42,7 +46,14 @@ export const WithdrawLiquidityInput = ({
   const { selected: selectedTab, select: selectTab } = useWithdrawLiquidityInputTabStore();
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.WITHDRAW_LP);
 
-  const priceImpact = 0.13; // TODO
+  const { id: poolId } = useParams();
+
+  const { amountsOut, priceImpact } = useWithdrawTokenAmounts({
+    poolId: poolId as Address,
+    bptIn: withdrawInputValue ?? 0,
+  });
+
+  const priceImpactString = priceImpact < 0.01 ? '< 0.01' : formatNumber(priceImpact, 2);
 
   // const [settingOpened, settingOpen] = useState(false);
   // const toggle = () => settingOpen(prev => !prev);
@@ -95,7 +106,7 @@ export const WithdrawLiquidityInput = ({
               <Fragment key={tokenAddress + i}>
                 <TokenList
                   type="large"
-                  title={`${name} ${weight}%`}
+                  title={`${name} ${amountsOut[i].toFixed(4)} (${weight}%)`}
                   description={`${TOKEN_DESCRIPTION_MAPPER[name]}`}
                   image={TOKEN_IMAGE_MAPPER[name]}
                   leftAlign={true}
@@ -107,7 +118,7 @@ export const WithdrawLiquidityInput = ({
         </ContentWrapper>
         <PriceImpaceWrapper>
           <PriceImpact>Price impact</PriceImpact>
-          <PriceImpact>{`< ${formatNumber(priceImpact)}%`}</PriceImpact>
+          <PriceImpact>{`${priceImpactString}%`}</PriceImpact>
         </PriceImpaceWrapper>
       </InnerWrapper>
       <ButtonPrimaryLarge text="Preview" onClick={popupOpen} />
@@ -118,6 +129,7 @@ export const WithdrawLiquidityInput = ({
           liquidityPoolTokenBalance={liquidityPoolTokenBalance}
           tokenValue={withdrawTokenValue}
           priceImpact={priceImpact}
+          amountsOut={amountsOut}
         />
       )}
     </Wrapper>
