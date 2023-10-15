@@ -1,61 +1,47 @@
 import { useEffect, useState } from 'react';
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
-import { Web3Modal } from '@web3modal/react';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import { Chain, configureChains, createConfig, WagmiConfig } from 'wagmi';
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+import { publicProvider } from 'wagmi/providers/public';
 
 import { WALLETCONNECT_PROJECT_ID } from '~/constants';
 
-import { useEvmChain } from '~/hooks/contexts';
-import { useSelecteNetworkStore } from '~/states/data';
+import { useEvm } from '~/hooks/contexts';
 
 interface Props {
   children: React.ReactNode;
 }
-// TODO: change to connect kit
 const Web3Provider = ({ children }: Props) => {
-  const { selectedNetwork } = useSelecteNetworkStore();
-  const { chains } = useEvmChain();
+  const { chains } = useEvm();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [wagmiConfig, setWagmiConfig] = useState<any>();
-  const [ethereumClient, setEthereumClient] = useState<EthereumClient>();
+  const projectId = WALLETCONNECT_PROJECT_ID as string;
 
-  const projectId = WALLETCONNECT_PROJECT_ID;
-
-  useEffect(() => {
-    const { publicClient, webSocketPublicClient } = configureChains(chains, [
-      w3mProvider({ projectId }),
-    ]);
-
-    const wagmiConfig = createConfig({
+  const getConfig = (chains: Chain[]) => {
+    const { publicClient, webSocketPublicClient } = configureChains(chains, [publicProvider()]);
+    return createConfig({
       autoConnect: true,
-      connectors: w3mConnectors({ projectId, chains }),
+      connectors: [
+        new MetaMaskConnector({ chains }),
+        new WalletConnectConnector({ chains, options: { projectId } }),
+      ],
       publicClient,
       webSocketPublicClient,
     });
+  };
 
-    const ethereumClient = new EthereumClient(wagmiConfig, chains);
+  const defaultConfig = getConfig(chains);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [wagmiConfig, setWagmiConfig] = useState<any>(defaultConfig);
 
-    setWagmiConfig(wagmiConfig);
-    setEthereumClient(ethereumClient);
-  }, [projectId, selectedNetwork, chains]);
+  useEffect(() => {
+    const changedCOnfig = getConfig(chains);
+    setWagmiConfig(changedCOnfig);
 
-  return (
-    <>
-      <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>
-      <Web3Modal
-        projectId={projectId}
-        ethereumClient={ethereumClient}
-        themeVariables={{
-          '--w3m-accent-color': '#23263A',
-          '--w3m-font-family': 'Pretendard Variable',
-          '--w3m-text-medium-regular-size': '14px',
-          '--w3m-text-medium-regular-weight': '500',
-          '--w3m-text-medium-regular-line-height': '22px',
-        }}
-      />
-    </>
-  );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chains]);
+
+  if (!wagmiConfig) return;
+  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
 };
 
 export default Web3Provider;

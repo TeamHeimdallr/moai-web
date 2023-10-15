@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { TOKEN } from '~/constants';
-
 import { FilterChip } from '.';
 
 const meta = {
@@ -16,6 +14,13 @@ type Story = StoryObj<typeof meta>;
 export const Normal: Story = {
   args: {
     selected: false,
-    token: TOKEN.ROOT,
+    token: { symbol: 'ROOT' },
+  },
+};
+
+export const Selected: Story = {
+  args: {
+    selected: true,
+    token: { symbol: 'ROOT' },
   },
 };

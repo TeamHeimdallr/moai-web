@@ -2,8 +2,8 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import tw from 'twin.macro';
 
+import { ConnectWallet } from './components/connect-wallet';
 import { ToastContainer } from './components/toasts';
-import { SelectWalletPopup } from './components/wallet-selection';
 import { AsyncBoundary } from './hocs/hoc-error-boundary';
 import { usePopup } from './hooks/components/use-popup';
 import { CHAIN } from './constants';
@@ -19,7 +19,7 @@ const HomePage = lazy(() => import('./pages/home'));
 
 const RouteWrapper = tw.main`relative w-full h-full min-w-1440`;
 const App = () => {
-  const { opened } = usePopup(POPUP_ID.WALLET);
+  const { opened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   return (
     <BrowserRouter>
@@ -37,7 +37,7 @@ const App = () => {
               {CHAIN === 'xrpl' && <MoaiXRPLedger />}
               {CHAIN === 'xrpevm' && <MoaiXRPEvm />}
               <ToastContainer />
-              {opened && <SelectWalletPopup />}
+              {opened && <ConnectWallet />}
             </RouteWrapper>
           </AsyncBoundary>
         </Web3Provider>

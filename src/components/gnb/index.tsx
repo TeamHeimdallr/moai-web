@@ -9,12 +9,12 @@ import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
+import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
 import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
-import { usePopup } from '~/hooks/components/use-popup';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
-import { AccountProfile } from '../account-profile';
+import { AccountProfile } from '../account';
 import { NetworkSelection } from '../network-selection';
 
 export const Gnb = () => {

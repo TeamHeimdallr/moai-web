@@ -19,13 +19,17 @@ type Story = StoryObj<typeof meta>;
 export const Normal: Story = {
   render: () => (
     <>
-      <ButtonPrimarySmall text="Open tooltip" disabled data-tooltip-id={TOOLTIP_ID.EXAMPLE} />
-      <Tooltip id={TOOLTIP_ID.EXAMPLE} isOpen>
+      <ButtonPrimarySmall
+        text="Open tooltip"
+        disabled
+        data-tooltip-id={TOOLTIP_ID.STORYBOOK_EXAMPLE}
+      />
+      <Tooltip id={TOOLTIP_ID.STORYBOOK_EXAMPLE} isOpen>
         Comming soon
       </Tooltip>
     </>
   ),
   args: {
-    id: TOOLTIP_ID.EXAMPLE,
+    id: TOOLTIP_ID.STORYBOOK_EXAMPLE,
   },
 };

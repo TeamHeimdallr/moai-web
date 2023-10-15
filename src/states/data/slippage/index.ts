@@ -15,7 +15,7 @@ export const useSlippageStore = create<State>()(
       logger(set => ({
         name: 'SLIPPAGE_STORE',
 
-        slippage: 1.5,
+        slippage: 0.5,
         setSlippage: (slippage: number) => set({ slippage }),
       }))
     ),

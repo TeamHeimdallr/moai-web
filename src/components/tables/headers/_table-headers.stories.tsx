@@ -52,7 +52,7 @@ export const _TableHeaderSortable: Story = {
     <TableHeaderSortable
       sortKey="VOLUME"
       label="Volume(24h)"
-      sorting={{ key: 'VOLUME', order: 'asc' }}
+      sort={{ key: 'VOLUME', order: 'asc' }}
     />
   ),
   args: {

@@ -1,8 +1,9 @@
 import { HTMLAttributes } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
-import { COLOR } from '~/assets/colors';
 import { IconLink } from '~/assets/icons';
+
+import { ButtonIconSmall } from '~/components/buttons';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
@@ -21,9 +22,7 @@ export const TableColumnLink = ({ token, link, width, align, ...rest }: Props) =
     <Wrapper width={width} align={align} onClick={handleClick} {...rest}>
       <TextWrapper>
         {token}
-        <IconWrapper>
-          <IconLink />
-        </IconWrapper>
+        <ButtonIconSmall icon={<IconLink />} />
       </TextWrapper>
     </Wrapper>
   );
@@ -51,18 +50,3 @@ const Wrapper = styled.div<WrapperProps>(({ width, align }) => [
 const TextWrapper = tw.div`
   flex gap-4 items-center
 `;
-
-const IconWrapper = styled.div(() => [
-  tw`p-2 flex-center clickable`,
-  css`
-    & svg {
-      width: 16px;
-      height: 16px;
-      fill: ${COLOR.NEUTRAL[60]};
-    }
-
-    &:hover svg {
-      fill: ${COLOR.NEUTRAL[80]};
-    }
-  `,
-]);

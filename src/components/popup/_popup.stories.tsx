@@ -25,13 +25,13 @@ const Wrapper = tw.div``;
 const Text = tw.div`text-white`;
 
 export const NoButton = () => {
-  const { opened, open } = usePopup(POPUP_ID.SAMPLE);
+  const { opened, open } = usePopup(POPUP_ID.STORYBOOK_SAMPLE);
 
   return (
     <Wrapper>
       <ButtonPrimarySmall text="open popup !" onClick={open} />
       {opened && (
-        <Popup id={POPUP_ID.SAMPLE} title="Select token">
+        <Popup id={POPUP_ID.STORYBOOK_SAMPLE} title="Select token">
           <TokenList
             type="selectable"
             title={'MOAI'}
@@ -49,7 +49,7 @@ export const NoButton = () => {
 export const HasButton = () => {
   return (
     <Popup
-      id={POPUP_ID.SAMPLE}
+      id={POPUP_ID.STORYBOOK_SAMPLE}
       title="Preview swap"
       button={<ButtonPrimaryLarge text="Confirm swap" />}
     >
@@ -61,7 +61,7 @@ export const HasButton = () => {
 export const Success = () => {
   return (
     <Popup
-      id={POPUP_ID.SAMPLE}
+      id={POPUP_ID.STORYBOOK_SAMPLE}
       title="Preview swap"
       button={<ButtonPrimaryLarge text="Confirm swap" />}
       icon={

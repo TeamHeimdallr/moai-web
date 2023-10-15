@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { TokenROOT } from '~/assets/images';
+import { imageTokenROOT } from '~/assets/images';
 
 import { DropdownList } from '.';
 
@@ -18,7 +18,7 @@ export const Normal: Story = {
   args: {
     id: '1',
 
-    image: TokenROOT,
+    image: imageTokenROOT,
     imageAlt: 'Root',
     imageTitle: 'Root',
 
@@ -30,7 +30,7 @@ export const Selected: Story = {
   args: {
     id: '1',
 
-    image: TokenROOT,
+    image: imageTokenROOT,
     imageAlt: 'Root',
     imageTitle: 'Root',
 
@@ -45,7 +45,7 @@ export const Disabled: Story = {
   args: {
     id: '1',
 
-    image: TokenROOT,
+    image: imageTokenROOT,
     imageAlt: 'Root',
     imageTitle: 'Root',
 

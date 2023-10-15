@@ -8,6 +8,11 @@ import imageTokenUSDC from './token-usdc.png';
 import imageTokenUSDT from './token-usdt.png';
 import imageTokenWETH from './token-weth.png';
 import imageTokenXRP from './token-xrp.png';
+import imageWalletCrossmark from './wallet-crossmark.png';
+import imageWalletDcent from './wallet-dcent.png';
+import imageWalletGem from './wallet-gem.png';
+import imageWalletMetamask from './wallet-metamask.png';
+import imageWalletXumm from './wallet-xumm.png';
 
 export {
   imageNetworkEmpty,
@@ -20,4 +25,9 @@ export {
   imageTokenUSDT,
   imageTokenWETH,
   imageTokenXRP,
+  imageWalletCrossmark,
+  imageWalletDcent,
+  imageWalletGem,
+  imageWalletMetamask,
+  imageWalletXumm,
 };

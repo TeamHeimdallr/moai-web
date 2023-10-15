@@ -15,7 +15,8 @@ interface ReactTableProps<T extends object> {
   isLoading?: boolean;
 
   handleMoreClick?: () => void;
-  handleRowClick?: (chain: string, id: string) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handleRowClick?: (meta: any) => void;
 }
 
 export const Table = <T extends object>({
@@ -33,13 +34,7 @@ export const Table = <T extends object>({
     data,
     columns,
     state: {
-      columnVisibility: {
-        id: false,
-        tokenAddress: false,
-        issuer: false,
-        'id-raw': false,
-        'chain-raw': false,
-      },
+      columnVisibility: { meta: false },
     },
     getCoreRowModel: getCoreRowModel(),
   });
@@ -69,10 +64,8 @@ export const Table = <T extends object>({
               key={row.id + i}
               rounded={!hasMore && !isLoading}
               onClick={() => {
-                handleRowClick?.(
-                  (row.getValue('chain-raw') as string)?.toLowerCase(),
-                  row.getValue('id-raw')
-                );
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                handleRowClick?.((row as any)?.meta);
               }}
             >
               {row.getVisibleCells().map((cell, i) => (

@@ -4,19 +4,21 @@ import tw, { styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconCancel } from '~/assets/icons';
 
-import { TOKEN, TOKEN_IMAGE_MAPPER } from '~/constants';
+import { TOKEN_IMAGE_MAPPER } from '~/constants';
+
+import { IToken } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
+  token: IToken;
   selected?: boolean;
-  token: TOKEN;
 }
 
 export const FilterChip = ({ selected, token, ...rest }: Props) => {
   return (
     <Wrapper selected={selected} {...rest}>
-      <Image src={TOKEN_IMAGE_MAPPER[token]} />
+      <Image src={token.image || TOKEN_IMAGE_MAPPER[token.symbol]} />
       <TextWrapper>
-        {token}
+        {token.symbol}
         {selected && (
           <IconWrapper>
             <IconCancel width={16} height={16} fill={COLOR.NEUTRAL[60]} />
