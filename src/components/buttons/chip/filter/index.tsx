@@ -13,7 +13,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
 }
 
-export const FilterChip = ({ selected, token, ...rest }: Props) => {
+export const ButtonChipFilter = ({ selected, token, ...rest }: Props) => {
   return (
     <Wrapper selected={selected} {...rest}>
       <Image src={token.image || TOKEN_IMAGE_MAPPER[token.symbol]} />
