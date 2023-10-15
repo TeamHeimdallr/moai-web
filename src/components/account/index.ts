@@ -1,3 +1,3 @@
-export * from './account-profile';
-export * from './both-connected';
+export * from './account';
+export * from './account-detail';
 export * from './slippage';

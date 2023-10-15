@@ -1,22 +1,28 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { BASE_URL_SUBROUTE, TOKEN } from '~/constants';
-
-import { FilterChip } from '~/components/filter-chip';
+import { ButtonChipFilter } from '~/components/buttons/chip/filter';
 import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
 
-import { useTableLiquidityPool } from '../hooks/use-table-liquidity-pool';
+import { useTableLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool';
 
+interface Meta {
+  chain: string;
+  id: string;
+}
 export const LiquidityPoolLayout = () => {
+  const navigate = useNavigate();
   const { data, columns } = useTableLiquidityPool();
 
-  const handleRowClick = (chain: string, id: string) => {
-    window.open(`${BASE_URL_SUBROUTE(chain)}/pools/${id}`);
+  const handleRowClick = (meta?: Meta) => {
+    if (!meta) return;
+    navigate(`/pools/${meta.chain}/${meta.id}`);
   };
 
-  const tokens = [TOKEN.MOAI, TOKEN.XRP, TOKEN.ROOT, TOKEN.WETH];
+  // TODO: pool 구성에 있는 토큰 리스트
+  const tokens = [{ symbol: 'MOAI' }, { symbol: 'XRP' }, { symbol: 'ROOT' }, { symbol: 'WETH' }];
 
   // TODO : connect selecting all chian api
   const [selectedAll, selectAll] = useState(true);
@@ -33,7 +39,7 @@ export const LiquidityPoolLayout = () => {
       <TableWrapper>
         <BadgeWrapper>
           {tokens.map(token => (
-            <FilterChip key={token} token={token} selected={false} />
+            <ButtonChipFilter key={token.symbol} token={token} selected={false} />
           ))}
         </BadgeWrapper>
         <Table data={data} columns={columns} handleRowClick={handleRowClick} />

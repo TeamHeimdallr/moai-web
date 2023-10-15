@@ -4,9 +4,8 @@ import bgMain from '~/assets/images/bg-main.png';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
-import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
-import { useConnectXrplWallet } from '~/hooks/wallets/use-connect-xrp-wallet';
 import { usePopup } from '~/hooks/components/use-popup';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber } from '~/utils/util-number';
 import { POPUP_ID } from '~/types';
 
@@ -16,11 +15,10 @@ import { useBalancesAll } from '~/moai-xrp-root/hooks/data/use-balance-all';
 import { TOKEN } from '~/moai-xrp-root/types/contracts';
 
 export const MainLayout = () => {
-  const { open, opened } = usePopup(POPUP_ID.WALLET);
+  const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
-  const { isConnected: isEvmConnected } = useConnectEvmWallet();
-  const { isConnected: isXrplConnected } = useConnectXrplWallet();
-  const isConnected = isEvmConnected || isXrplConnected;
+  const { evm, xrp } = useConnectedWallet();
+  const isConnected = !!evm.address || !!xrp.address;
 
   const { balancesMap } = useBalancesAll();
   const moaiBalance = balancesMap?.[TOKEN.MOAI];

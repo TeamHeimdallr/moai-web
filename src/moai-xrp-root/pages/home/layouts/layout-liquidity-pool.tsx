@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 
 import { TOKEN } from '~/constants';
 
-import { FilterChip } from '~/components/filter-chip';
+import { FilterChip } from '~/components/buttons/chip/filter';
 import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
 

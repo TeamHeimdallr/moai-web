@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { FilterChip } from '.';
+import { ButtonChipFilter } from '.';
 
 const meta = {
-  title: 'Components/FilterChip/FilterChip',
-  component: FilterChip,
+  title: 'Components/Buttons/ButtonChipFilter',
+  component: ButtonChipFilter,
   tags: ['autodocs'],
-} satisfies Meta<typeof FilterChip>;
+} satisfies Meta<typeof ButtonChipFilter>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
