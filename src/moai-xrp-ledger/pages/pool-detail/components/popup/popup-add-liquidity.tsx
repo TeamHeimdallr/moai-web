@@ -8,8 +8,8 @@ import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
+import { LoadingStep } from '~/components/loadings/step';
 import { Popup } from '~/components/popup';
-import { Stepper } from '~/components/stepper';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components/use-popup';
@@ -202,7 +202,7 @@ export const AddLiquidityPopup = ({
           </Summary>
         </List>
 
-        <Stepper
+        <LoadingStep
           totalSteps={tokenInputValues.length + 1}
           step={step}
           isLoading={step === 1 ? allowLoading1 : isLoading}

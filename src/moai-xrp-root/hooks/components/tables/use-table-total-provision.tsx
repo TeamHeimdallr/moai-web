@@ -7,7 +7,7 @@ import { IconMinus, IconPlus } from '~/assets/icons';
 
 import {
   TableColumn,
-  TableColumnIcon,
+  TableColumnIconText,
   TableColumnLink,
   TableColumnTokenPair,
   TableHeader,
@@ -77,7 +77,7 @@ export const useTableTotalProvision = (poolId: Address) => {
   const tableData: LiquidityProvisionTable[] = filteredData?.map(d => ({
     id: d.id,
     action: (
-      <TableColumnIcon
+      <TableColumnIconText
         text={d.action.label}
         icon={
           d.action.key === 'deposit' ? (

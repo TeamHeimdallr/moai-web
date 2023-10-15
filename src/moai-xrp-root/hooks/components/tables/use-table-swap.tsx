@@ -5,7 +5,7 @@ import { Address } from 'viem';
 
 import {
   TableColumn,
-  TableColumnIcon,
+  TableColumnIconText,
   TableColumnLink,
   TableColumnTokenSwap,
   TableHeader,
@@ -60,11 +60,11 @@ export const useTableSwap = (poolId: Address) => {
   const tableData: SwapTable[] = sortedData?.map(d => ({
     poolId: d.poolId,
     trader: (
-      <TableColumnIcon
+      <TableColumnIconText
         width={160}
         text={truncateAddress(d.trader as Address, 4)}
         icon={<Jazzicon diameter={24} seed={jsNumberForAddress(d.trader ?? '0x0')} />}
-        isAddress
+        address
       />
     ),
     tradeDetail: <TableColumnTokenSwap tokens={d.tradeDetail} />,

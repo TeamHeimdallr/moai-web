@@ -10,7 +10,7 @@ import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
-import { Stepper } from '~/components/stepper';
+import { Stepper } from '~/components/loadings/step';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components/use-popup';

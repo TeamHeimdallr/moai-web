@@ -3,10 +3,10 @@ import tw from 'twin.macro';
 
 import { Token } from '~/components/token';
 
-import { TokenInfo } from '~/types';
+import { IToken } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  tokens: TokenInfo[];
+  tokens: IToken[];
   isNew?: boolean;
 }
 export const TableColumnTokenPair = ({ tokens, ...rest }: Props) => {
@@ -14,9 +14,9 @@ export const TableColumnTokenPair = ({ tokens, ...rest }: Props) => {
     <Wrapper {...rest}>
       {tokens.map(token => (
         <Token
-          key={token.name}
-          title={`${Number(token.balance.toFixed(6))}`}
-          token={token.name}
+          key={token.symbol}
+          title={`${Number((token?.balance || 0).toFixed(6))}`}
+          token={token.symbol}
           image={true}
           type="small"
         />

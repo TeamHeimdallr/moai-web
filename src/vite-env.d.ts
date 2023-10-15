@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-svgr/client" />
 
@@ -25,4 +26,15 @@ declare module 'react' {
 declare module '*.svg' {
   const content: React.FC<React.SVGProps<SVGElement>>;
   export default content;
+}
+
+declare global {
+  interface Window {
+    gemWallet?: boolean;
+    crossmark?: any;
+    ethereum: {
+      isMetaMask?: boolean;
+      [key: string]: any;
+    };
+  }
 }

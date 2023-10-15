@@ -1,2 +1,2 @@
-export * from './use-evm-chain';
+export * from './use-evm';
 export * from './use-xrp-ledger';

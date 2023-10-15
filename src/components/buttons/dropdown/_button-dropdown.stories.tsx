@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { ChainXRPL } from '~/assets/images';
+import { imageNetworkEmpty } from '~/assets/images';
 
 import { ButtonDropdown } from '.';
 
@@ -17,7 +17,7 @@ type Story = StoryObj<typeof meta>;
 export const _Normal: Story = {
   args: {
     text: 'XRPL',
-    image: ChainXRPL,
+    image: imageNetworkEmpty,
     selected: false,
   },
 };
@@ -25,7 +25,7 @@ export const _Normal: Story = {
 export const _Selected: Story = {
   args: {
     text: 'XRPL',
-    image: ChainXRPL,
+    image: imageNetworkEmpty,
     selected: true,
   },
 };
@@ -33,7 +33,7 @@ export const _Selected: Story = {
 export const _Opened: Story = {
   args: {
     text: 'XRPL',
-    image: ChainXRPL,
+    image: imageNetworkEmpty,
     opened: true,
   },
 };
@@ -41,7 +41,7 @@ export const _Opened: Story = {
 export const _OpenedSelected: Story = {
   args: {
     text: 'XRPL',
-    image: ChainXRPL,
+    image: imageNetworkEmpty,
     opened: true,
     selected: true,
   },

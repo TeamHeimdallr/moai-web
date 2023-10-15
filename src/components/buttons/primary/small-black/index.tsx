@@ -5,7 +5,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
 }
 
-export const ButtonPrimarySmall = ({ text, ...rest }: Props) => {
+export const ButtonPrimarySmallBlack = ({ text, ...rest }: Props) => {
   return <Wrapper {...rest}>{text}</Wrapper>;
 };
 

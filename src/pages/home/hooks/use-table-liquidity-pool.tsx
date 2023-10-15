@@ -1,11 +1,8 @@
 import { useMemo } from 'react';
 
-import { TOKEN } from '~/constants';
-
 import { NetworkChip } from '~/components/network-chip';
 import {
   TableColumn,
-  TableColumnBadge,
   TableColumnToken,
   TableColumnTokenIcon,
   TableHeader,
@@ -16,10 +13,11 @@ import {
 } from '~/components/tables';
 
 import { formatNumber } from '~/utils/util-number';
-import { useTableLiquidityPoolStore } from '~/states/components/table-liquidity-pool';
+import { useTableLiquidityPoolSortStore } from '~/states/components';
+import { NETWORK } from '~/types';
 
 export const useTableLiquidityPool = () => {
-  const { sorting, setSorting } = useTableLiquidityPoolStore();
+  const { sort, setSort } = useTableLiquidityPoolSortStore();
 
   // TODO: connect server
   const data = [
@@ -104,11 +102,11 @@ export const useTableLiquidityPool = () => {
   ];
 
   const sortedData = data?.sort((a, b) => {
-    if (sorting?.key === 'POOL_VALUE')
-      return sorting.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;
+    if (sort?.key === 'POOL_VALUE')
+      return sort.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;
 
-    if (sorting?.key === 'VOLUME')
-      return sorting.order === 'asc' ? a.volume - b.volume : b.volume - a.volume;
+    if (sort?.key === 'VOLUME')
+      return sort.order === 'asc' ? a.volume - b.volume : b.volume - a.volume;
 
     return 0;
   });
@@ -117,14 +115,16 @@ export const useTableLiquidityPool = () => {
     () =>
       sortedData?.map(d => {
         const tokens = d.compositions.reduce((acc, cur) => {
-          acc[cur.name as TOKEN] = cur.weight;
+          acc[cur.name] = cur.weight;
           return acc;
         }, {});
 
         return {
-          'id-raw': d.id,
-          'chain-raw': d.chain,
-          chain: <TableColumnBadge value={<NetworkChip network={d.chain} />} width={216} />,
+          meta: {
+            id: d.id,
+            chain: d.chain,
+          },
+          chain: <TableColumn value={<NetworkChip network={d.chain as NETWORK} />} width={216} />,
           assets: <TableColumnTokenIcon tokens={d.assets} />,
           compositions: <TableColumnToken tokens={tokens} />,
           poolValue: (
@@ -141,8 +141,7 @@ export const useTableLiquidityPool = () => {
 
   const columns = useMemo(
     () => [
-      { accessorKey: 'id-raw' },
-      { accessorKey: 'chain-raw' },
+      { accessorKey: 'meta' },
       {
         header: () => <TableHeader width={216} label="Chain" />,
         cell: row => row.renderValue(),
@@ -163,8 +162,8 @@ export const useTableLiquidityPool = () => {
           <TableHeaderSortable
             sortKey="POOL_VALUE"
             label="Pool value"
-            sorting={sorting}
-            setSorting={setSorting}
+            sort={sort}
+            setSort={setSort}
           />
         ),
         cell: row => row.renderValue(),
@@ -175,8 +174,8 @@ export const useTableLiquidityPool = () => {
           <TableHeaderSortable
             sortKey="VOLUME"
             label="Volume (24h)"
-            sorting={sorting}
-            setSorting={setSorting}
+            sort={sort}
+            setSort={setSort}
           />
         ),
         cell: row => row.renderValue(),
@@ -189,7 +188,7 @@ export const useTableLiquidityPool = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sorting]
+    [sort]
   );
 
   return {

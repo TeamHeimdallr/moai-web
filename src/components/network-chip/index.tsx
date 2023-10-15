@@ -1,25 +1,33 @@
+import { ReactNode } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconNetworkEvm, IconNetworkRoot, IconNetworkXrpl } from '~/assets/icons';
 
+import { NETWORK } from '~/types';
+
 interface Props {
-  network: string;
+  network: NETWORK;
+}
+interface NetworkMapData {
+  name: string;
+  color: string;
+  icon: ReactNode;
 }
 
 export const NetworkChip = ({ network }: Props) => {
-  const networkMap = {
-    XRPL: {
+  const networkMap: Record<NETWORK, NetworkMapData> = {
+    [NETWORK.XRPL]: {
       name: 'XRPL',
       icon: IconNetworkXrpl,
       color: COLOR.CHAIN.XRPL,
     },
-    ROOT: {
+    [NETWORK.THE_ROOT_NETWORK]: {
       name: 'Root Network',
       icon: IconNetworkRoot,
       color: COLOR.CHAIN.ROOT,
     },
-    XRPEVM: {
+    [NETWORK.EVM_SIDECHAIN]: {
       name: 'Evm Sidechain',
       icon: IconNetworkEvm,
       color: COLOR.CHAIN.EVM,
@@ -29,7 +37,7 @@ export const NetworkChip = ({ network }: Props) => {
   if (!networkMap[network]) return <></>;
   return (
     <Wrapper color={networkMap[network]?.color}>
-      <IconWrapper>{networkMap[network]?.icon()} </IconWrapper>
+      <IconWrapper>{networkMap[network]?.icon}</IconWrapper>
       <Network>{networkMap[network]?.name}</Network>
     </Wrapper>
   );
