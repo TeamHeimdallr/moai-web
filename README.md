@@ -1,6 +1,6 @@
 # MOAI-FINANCE WEB
 
-Official web for the Moai Finance - DeFi Liquidity pools built on XRP
+Official web for the Moai Finance - Your Universal Gateway to Multi-chain Liquidity
 
 ![moai status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy.yml/badge.svg?branch=main)
 ![moai root status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-root.yml/badge.svg?branch=deploy-root)

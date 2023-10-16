@@ -10,8 +10,6 @@ import { usePopup } from '~/hooks/pages/use-popup';
 import { formatNumber } from '~/utils/number';
 import { POPUP_ID } from '~/types';
 
-import { CURRENT_CHAIN } from '~/moai-xrp-root/constants';
-
 import { useBalancesAll } from '~/moai-xrp-root/hooks/data/use-balance-all';
 import { TOKEN } from '~/moai-xrp-root/types/contracts';
 
@@ -34,7 +32,7 @@ export const MainLayout = () => {
         </>
       ) : (
         <>
-          <Title>{`DeFi Liquidity pools built on ${CURRENT_CHAIN}`}</Title>
+          <Title>Your Universal Gateway to Multi-chain Liquidity</Title>
           <ButtonWrapper>
             <ButtonPrimaryLarge
               text="Connect wallet"
