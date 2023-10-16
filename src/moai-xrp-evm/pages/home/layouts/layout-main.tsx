@@ -7,8 +7,6 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
 import { formatNumber } from '~/utils/number';
 
-import { CURRENT_CHAIN } from '~/moai-xrp-evm/constants';
-
 import { useBalancesAll } from '~/moai-xrp-evm/hooks/data/use-balance-all';
 import { useConnectWallet } from '~/moai-xrp-evm/hooks/data/use-connect-wallet';
 import { TOKEN } from '~/moai-xrp-evm/types/contracts';
@@ -29,7 +27,7 @@ export const MainLayout = () => {
         </>
       ) : (
         <>
-          <Title>{`DeFi Liquidity pools built on ${CURRENT_CHAIN}`}</Title>
+          <Title>Your Universal Gateway to Multi-chain Liquidity</Title>
           <ButtonWrapper>
             <ButtonPrimaryLarge
               text="Connect wallet"
