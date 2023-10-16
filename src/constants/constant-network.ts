@@ -1,6 +1,6 @@
 import { imageNetworkEmpty, imageNetworkROOT, imageNetworkXRPL } from '~/assets/images';
 
-import { IGnbChainList, NETWORK } from '~/types';
+import { IAmm, IGnbChainList, NETWORK } from '~/types';
 
 import { IS_MAINNET } from '.';
 
@@ -69,6 +69,30 @@ export const EVM_POOL: Record<string, Record<string, string>[]> = {
       tokenAddress: IS_MAINNET ? '' : '0xe73749250390C51e029CfaB3d0488E08C183a671',
     },
   ],
+};
+
+export const XRP_AMM: IAmm[] = [
+  {
+    id: IS_MAINNET ? '' : 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr',
+
+    lpTokenName: 'XRP_MOI',
+    lpTokenCurrency: '03DECA00BD834D6F16685F645625D144108D4D57',
+
+    assets: {
+      asset1: {
+        currency: 'XRP',
+      },
+      asset2: {
+        currency: 'MOI',
+        issuer: 'rKvd5hkFXvPcmLuF2yYFyN6RkgNcnYrjok',
+      },
+    },
+  },
+];
+
+export const XRP_TOKEN_ISSUER = {
+  MOI: 'rKvd5hkFXvPcmLuF2yYFyN6RkgNcnYrjok',
+  XRP_MOI: 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr',
 };
 
 // TODO: connect to server
