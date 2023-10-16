@@ -1,23 +1,28 @@
 import { useQueries, useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { Address, formatUnits, PublicClient } from 'viem';
-import { usePublicClient } from 'wagmi';
+import { formatUnits } from 'viem';
+import { Address, PublicClient, usePublicClient } from 'wagmi';
 
-import { CONTRACT_ADDRESS, TOKEN_DECIAML } from '~/moai-xrp-root/constants';
+import { QUERY_KEYS } from '~/api/utils/query-keys';
 
-import { getRootNetworkTokenPrice } from '~/moai-xrp-root/hooks/data/use-root-network-token-price';
-import { QUERY_KEYS } from '~/moai-xrp-root/api/utils/query-keys';
-import { GetSwapHistories } from '~/moai-xrp-root/types/contracts';
+import { EVM_CONTRACT_ADDRESS, TOKEN_DECIMAL } from '~/constants';
 
+import { useSelecteNetworkStore } from '~/states/data';
+import { NETWORK } from '~/types';
+
+import { getTokenPrice } from '../token/price';
 import { getTokenSymbol } from '../token/symbol';
 
+// TODO: change to server api
 interface GetSwapHistoriesProps {
   client: PublicClient;
-  poolId?: Address;
+  network: NETWORK;
+  poolId: Address;
 }
-const getSwapHistories = async ({ client, poolId }: GetSwapHistoriesProps) => {
+const getSwapHistories = async ({ client, network, poolId }: GetSwapHistoriesProps) => {
   const block = await client.getBlockNumber();
+
   const res = await client.getLogs({
-    address: CONTRACT_ADDRESS.VAULT,
+    address: EVM_CONTRACT_ADDRESS[network].VAULT as Address,
     event: {
       type: 'event',
       name: 'Swap',
@@ -38,6 +43,7 @@ const getSwapHistories = async ({ client, poolId }: GetSwapHistoriesProps) => {
 
 interface GetFormattedSwapHistoriesProps {
   client: PublicClient;
+  network: NETWORK;
   data: {
     args: {
       poolId?: Address | undefined;
@@ -57,7 +63,11 @@ interface SwapTokenInfo {
   price: number;
   value: number;
 }
-const getFormattedSwapHistories = async ({ client, data }: GetFormattedSwapHistoriesProps) => {
+const getFormattedSwapHistories = async ({
+  client,
+  network,
+  data,
+}: GetFormattedSwapHistoriesProps) => {
   const { args, blockHash, txHash } = data;
   const { poolId, tokenIn, tokenOut, amountIn, amountOut } = args;
 
@@ -71,8 +81,8 @@ const getFormattedSwapHistories = async ({ client, data }: GetFormattedSwapHisto
   for (let i = 0; i < tokenSymbols.length; i++) {
     const address = [tokenIn, tokenOut][i] ?? '0x0';
     const name = tokenSymbols?.[i];
-    const balance = Number(formatUnits([amountIn, amountOut][i] ?? 0n, TOKEN_DECIAML));
-    const price = await getRootNetworkTokenPrice(client, name);
+    const balance = Number(formatUnits([amountIn, amountOut][i] ?? 0n, TOKEN_DECIMAL[network]));
+    const price = await getTokenPrice(client, network, name);
     const value = price * balance;
 
     tokens.push({
@@ -96,19 +106,20 @@ const getFormattedSwapHistories = async ({ client, data }: GetFormattedSwapHisto
     trader,
     time,
     txHash,
-  } as GetSwapHistories;
+  };
 };
 
 interface UseGetSwapHistoriesProps {
-  poolId?: Address;
+  poolId: Address;
   options?: UseQueryOptions;
 }
 export const useGetSwapHistories = ({ poolId, options }: UseGetSwapHistoriesProps) => {
   const client = usePublicClient();
+  const { selectedNetwork } = useSelecteNetworkStore();
 
   const { data: swapHistoriesData } = useQuery(
     [...QUERY_KEYS.SWAP.GET_HISTORIES, poolId],
-    () => getSwapHistories({ client, poolId }),
+    () => getSwapHistories({ client, network: selectedNetwork, poolId }),
     {
       keepPreviousData: true,
       enabled: !!poolId && !!client,
@@ -124,6 +135,7 @@ export const useGetSwapHistories = ({ poolId, options }: UseGetSwapHistoriesProp
       queryFn: () =>
         getFormattedSwapHistories({
           client,
+          network: selectedNetwork,
           data: {
             args: data.args,
             blockHash: data.blockHash,

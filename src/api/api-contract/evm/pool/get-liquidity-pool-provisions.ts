@@ -12,6 +12,7 @@ import { NETWORK } from '~/types';
 import { getTokenPrice } from '../token/price';
 import { getTokenSymbol } from '../token/symbol';
 
+// TODO: change to server api
 interface GetLiquidityPoolProvisionsProps {
   client: PublicClient;
   network: NETWORK;
@@ -58,7 +59,7 @@ interface GetFormattedLiquidityPoolProvisionsProps {
     txHash: Address;
   };
 }
-interface SwapTokenInfo {
+interface PoolTokenInfo {
   address: Address;
   name: string;
   balance: number;
@@ -78,7 +79,7 @@ const getFormattedLiquidityPoolProvisions = async ({
   const tokenSymbolPromises = tokenAddresses?.map(address => getTokenSymbol(client, address));
   const tokenSymbols = await Promise.all(tokenSymbolPromises ?? []);
 
-  const tokens: SwapTokenInfo[] = [];
+  const tokens: PoolTokenInfo[] = [];
 
   for (let i = 0; i < tokenSymbols.length; i++) {
     const address = tokenAddresses?.[i] ?? '0x0';

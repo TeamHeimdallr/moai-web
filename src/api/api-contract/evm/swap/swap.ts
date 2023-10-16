@@ -1,25 +1,27 @@
 import { useEffect, useState } from 'react';
 import {
+  Address,
   useContractWrite,
   usePrepareContractWrite,
   usePublicClient,
   useWaitForTransaction,
 } from 'wagmi';
 
-import { useConnectEvmWallet } from '~/hooks/wallets/use-connect-evm-wallet';
+import { EVM_CONTRACT_ADDRESS } from '~/constants';
 
-import { VAULT_ABI } from '~/moai-xrp-root/abi/vault';
+import { useConnectedWallet } from '~/hooks/wallets';
+import { useSelecteNetworkStore } from '~/states/data';
+import { SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
 
-import { CONTRACT_ADDRESS } from '~/moai-xrp-root/constants';
-
-import { SwapFundManagementInput, SwapSingleSwapInput } from '~/moai-xrp-root/types/contracts';
+import { BALANCER_VAULT_ABI } from '~/abi';
 
 interface Props {
-  enabled?: boolean;
   singleSwap: SwapSingleSwapInput;
   fundManagement: SwapFundManagementInput;
   limit?: number;
   deadline?: number;
+
+  enabled?: boolean;
 }
 export const useSwap = ({
   singleSwap,
@@ -29,15 +31,17 @@ export const useSwap = ({
   enabled = true,
 }: Props) => {
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
+  const { selectedNetwork } = useSelecteNetworkStore();
 
   const publicClient = usePublicClient();
-  const { address } = useConnectEvmWallet();
+  const { evm } = useConnectedWallet();
+  const { address } = evm;
 
   const isEnabled = !!singleSwap && !!fundManagement && !!address && enabled;
 
   const { config, error } = usePrepareContractWrite({
-    address: CONTRACT_ADDRESS.VAULT,
-    abi: VAULT_ABI,
+    address: EVM_CONTRACT_ADDRESS[selectedNetwork].VAULT as Address,
+    abi: BALANCER_VAULT_ABI,
     functionName: 'swap',
     args: [singleSwap, fundManagement, limit, deadline],
     enabled: isEnabled,

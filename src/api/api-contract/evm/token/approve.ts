@@ -8,17 +8,20 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { TOKEN_ABI } from '~/moai-xrp-root/abi/token';
+import { TOKEN_DECIMAL } from '~/constants';
 
-import { CHAIN_ID, TOKEN_DECIAML } from '~/moai-xrp-root/constants';
+import { useEvm } from '~/hooks/contexts';
+import { useSelecteNetworkStore } from '~/states/data';
+
+import { ERC20_TOKEN_ABI } from '~/abi';
 
 interface Props {
-  enabled?: boolean;
   amount?: number;
-
   allowanceMin?: number;
   spender?: Address;
   tokenAddress?: Address;
+
+  enabled?: boolean;
 }
 export const useTokenApprove = ({
   enabled,
@@ -27,20 +30,23 @@ export const useTokenApprove = ({
   spender,
   tokenAddress,
 }: Props) => {
+  const { selectedNetwork } = useSelecteNetworkStore();
+  const { chainId } = useEvm();
   const [allowance, setAllowance] = useState(false);
 
   const { isConnected, address: walletAddress } = useAccount();
 
   const { refetch } = useContractRead({
     address: tokenAddress,
-    abi: TOKEN_ABI,
+    abi: ERC20_TOKEN_ABI,
     functionName: 'allowance',
     args: [walletAddress, spender],
     enabled: enabled && !!walletAddress && !!spender,
 
     onSuccess: (data: string) => {
       return setAllowance(
-        BigInt(data || 0) >= parseUnits((allowanceMin || 0)?.toString(), TOKEN_DECIAML)
+        BigInt(data || 0) >=
+          parseUnits((allowanceMin || 0)?.toString(), TOKEN_DECIMAL[selectedNetwork])
       );
     },
     onError: () => setAllowance(false),
@@ -48,12 +54,12 @@ export const useTokenApprove = ({
 
   const { config } = usePrepareContractWrite({
     address: tokenAddress,
-    abi: TOKEN_ABI,
+    abi: ERC20_TOKEN_ABI,
     functionName: 'approve',
-    chainId: CHAIN_ID,
+    chainId,
 
     account: walletAddress,
-    args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIAML)}`],
+    args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[selectedNetwork])}`],
   });
 
   const { data, writeAsync } = useContractWrite(config);
