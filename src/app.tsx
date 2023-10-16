@@ -1,47 +1,36 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { ConnectWallet } from './components/connect-wallet';
 import { ToastContainer } from './components/toasts';
-import { AsyncBoundary } from './hocs/hoc-error-boundary';
+import ReactQueryProvider from './hocs/hoc-react-query-provider';
+import Web3Provider from './hocs/hoc-web3-provider';
 import { usePopup } from './hooks/components/use-popup';
-import { CHAIN } from './constants';
+import { useConnectXrpl } from './hooks/contexts';
 import { POPUP_ID } from './types';
-
-const Web3Provider = lazy(() => import('~/hocs/hoc-web3-provider'));
-
-const MoaiRoot = lazy(() => import('./moai-xrp-root'));
-const MoaiXRPLedger = lazy(() => import('./moai-xrp-ledger'));
-const MoaiXRPEvm = lazy(() => import('./moai-xrp-evm'));
 
 const HomePage = lazy(() => import('./pages/home'));
 
 const RouteWrapper = tw.main`relative w-full h-full min-w-1440`;
 const App = () => {
-  const { opened } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
+  useConnectXrpl();
 
   return (
     <BrowserRouter>
-      <Suspense fallback={<></>}>
+      <ReactQueryProvider>
         <Web3Provider>
-          <AsyncBoundary>
-            <RouteWrapper>
-              {!CHAIN && (
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                </Routes>
-              )}
+          <RouteWrapper>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+            </Routes>
 
-              {CHAIN === 'root' && <MoaiRoot />}
-              {CHAIN === 'xrpl' && <MoaiXRPLedger />}
-              {CHAIN === 'xrpevm' && <MoaiXRPEvm />}
-              <ToastContainer />
-              {opened && <ConnectWallet />}
-            </RouteWrapper>
-          </AsyncBoundary>
+            <ToastContainer />
+            {connectWalletOpened && <ConnectWallet />}
+          </RouteWrapper>
         </Web3Provider>
-      </Suspense>
+      </ReactQueryProvider>
     </BrowserRouter>
   );
 };
