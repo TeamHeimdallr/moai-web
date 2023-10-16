@@ -1,7 +1,7 @@
 import { Abi, Address, isAddress, PublicClient } from 'viem';
 import { useContractReads } from 'wagmi';
 
-import { TOKEN_ABI } from '~/moai-xrp-root/abi/token';
+import { ERC20_TOKEN_ABI } from '~/abi';
 
 // TODO: change to fetchToken in wagmi/core
 export const getTokenSymbol = async (client: PublicClient, address: Address) => {
@@ -9,7 +9,7 @@ export const getTokenSymbol = async (client: PublicClient, address: Address) => 
 
   const symbol = await client.readContract({
     address,
-    abi: TOKEN_ABI,
+    abi: ERC20_TOKEN_ABI,
     functionName: 'symbol',
   });
 
@@ -25,7 +25,7 @@ export const useTokenSymbols = (addresses: Address[], options?: QueryOptions) =>
   const { data: _data, ...rest } = useContractReads({
     contracts: addresses.map(address => ({
       address,
-      abi: TOKEN_ABI as Abi,
+      abi: ERC20_TOKEN_ABI as Abi,
       functionName: 'symbol',
       enabled,
     })),
