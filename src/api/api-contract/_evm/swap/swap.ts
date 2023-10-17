@@ -9,8 +9,8 @@ import {
 
 import { EVM_CONTRACT_ADDRESS } from '~/constants';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useSelecteNetworkStore } from '~/states/data';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -20,46 +20,41 @@ interface Props {
   fundManagement: SwapFundManagementInput;
   limit?: number;
   deadline?: number;
-
-  enabled?: boolean;
 }
 export const useSwap = ({
   singleSwap,
   fundManagement,
   limit = 10,
   deadline = 2000000000,
-  enabled = true,
 }: Props) => {
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
-  const { selectedNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, isEvm } = useNetwork();
 
   const publicClient = usePublicClient();
   const { evm } = useConnectedWallet();
   const { address } = evm;
 
-  const isEnabled = !!singleSwap && !!fundManagement && !!address && enabled;
-
-  const { config, error } = usePrepareContractWrite({
+  const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: EVM_CONTRACT_ADDRESS[selectedNetwork].VAULT as Address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'swap',
     args: [singleSwap, fundManagement, limit, deadline],
-    enabled: isEnabled,
+    enabled: !!singleSwap && !!fundManagement && !!address && isEvm,
   });
 
   const { data, writeAsync } = useContractWrite(config);
 
   const {
     isLoading,
-    fetchStatus,
+    isSuccess,
     data: txData,
   } = useWaitForTransaction({
     hash: data?.hash,
-    enabled: !!data?.hash,
+    enabled: !!data?.hash && isEvm,
   });
 
   const getBlockTimestamp = async () => {
-    if (!txData || !txData.blockNumber) return;
+    if (!txData || !txData.blockNumber || !isEvm) return;
 
     const { timestamp } = await publicClient.getBlock({ blockNumber: txData.blockNumber });
     setBlockTimestamp(Number(timestamp) * 1000);
@@ -71,13 +66,12 @@ export const useSwap = ({
   }, [txData]);
 
   return {
-    isLoading: isLoading || fetchStatus === 'fetching',
-    isSuccess: !!txData,
-    error,
+    isLoading: prepareLoading || isLoading,
+    isSuccess,
 
-    data,
     txData,
     blockTimestamp,
+
     swap: writeAsync,
   };
 };

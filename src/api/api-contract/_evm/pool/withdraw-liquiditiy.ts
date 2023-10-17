@@ -10,8 +10,8 @@ import {
 
 import { EVM_CONTRACT_ADDRESS, EVM_TOKEN_ADDRESS } from '~/constants';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useSelecteNetworkStore } from '~/states/data';
 import { NETWORK } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -23,20 +23,21 @@ interface Props {
 
   enabled?: boolean;
 }
+
 export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props) => {
   const publicClient = usePublicClient();
   const { evm } = useConnectedWallet();
   const { address: walletAddress } = evm;
 
-  const { selectedNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, isEvm } = useNetwork();
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const handleNativeXrp = (token: string) => {
     if (selectedNetwork !== NETWORK.EVM_SIDECHAIN) return token;
 
-    if (token === EVM_TOKEN_ADDRESS[selectedNetwork].ZERO)
-      return EVM_TOKEN_ADDRESS[selectedNetwork].XRP;
+    if (token === EVM_TOKEN_ADDRESS?.[selectedNetwork]?.ZERO)
+      return EVM_TOKEN_ADDRESS?.[selectedNetwork]?.XRP;
     return token;
   };
   const sortedTokens = tokens
@@ -63,7 +64,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
         false,
       ],
     ],
-    enabled: enabled && !!walletAddress && amount > 0,
+    enabled: enabled && !!walletAddress && amount > 0 && isEvm,
   });
 
   const { data, writeAsync } = useContractWrite(config);
@@ -74,11 +75,11 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
     data: txData,
   } = useWaitForTransaction({
     hash: data?.hash,
-    enabled: !!data?.hash,
+    enabled: !!data?.hash && isEvm,
   });
 
   const getBlockTimestamp = async () => {
-    if (!txData || !txData.blockNumber) return;
+    if (!txData || !txData.blockNumber || !isEvm) return;
 
     const { timestamp } = await publicClient.getBlock({ blockNumber: txData.blockNumber });
     setBlockTimestamp(Number(timestamp) * 1000);

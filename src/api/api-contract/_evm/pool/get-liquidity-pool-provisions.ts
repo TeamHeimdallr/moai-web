@@ -6,7 +6,7 @@ import { QUERY_KEYS } from '~/api/utils/query-keys';
 
 import { EVM_CONTRACT_ADDRESS, TOKEN_DECIMAL } from '~/constants';
 
-import { useSelecteNetworkStore } from '~/states/data';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { NETWORK } from '~/types';
 
 import { getTokenPrice } from '../token/price';
@@ -23,6 +23,9 @@ const getLiquidityPoolProvisions = async ({
   network,
   poolId,
 }: GetLiquidityPoolProvisionsProps) => {
+  const isEvm = network === NETWORK.THE_ROOT_NETWORK || network === NETWORK.EVM_SIDECHAIN;
+  if (!isEvm) return;
+
   const block = await client.getBlockNumber();
 
   const res = await client.getLogs({
@@ -71,6 +74,9 @@ const getFormattedLiquidityPoolProvisions = async ({
   network,
   data,
 }: GetFormattedLiquidityPoolProvisionsProps) => {
+  const isEvm = network === NETWORK.THE_ROOT_NETWORK || network === NETWORK.EVM_SIDECHAIN;
+  if (!isEvm) return;
+
   const { args, blockHash, txHash } = data;
   const { deltas, liquidityProvider, poolId, tokens: tokenAddresses } = args;
 
@@ -119,14 +125,14 @@ export const useGetLiquidityPoolProvisions = ({
   options,
 }: UseGetLiquidityPoolProvisionsProps) => {
   const client = usePublicClient();
-  const { selectedNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, isEvm } = useNetwork();
 
   const { data: liquidityPoolProvisionsData } = useQuery(
     [...QUERY_KEYS.LIQUIIDITY_POOL.GET_PROVISIONS, poolId],
     () => getLiquidityPoolProvisions({ client, network: selectedNetwork, poolId }),
     {
       keepPreviousData: true,
-      enabled: !!poolId && !!client,
+      enabled: !!poolId && !!client && isEvm,
       staleTime: 1000 * 5,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(options as any),
@@ -143,13 +149,14 @@ export const useGetLiquidityPoolProvisions = ({
           data: { args: data.args, blockHash: data.blockHash, txHash: data.transactionHash },
         }),
       staleTime: 1000 * 5,
+      enabled: isEvm,
     })) ?? [];
   const data = useQueries({ queries });
 
   return {
-    data: data.map(query => query.data),
-    isLoading: data.some(query => query.isLoading),
-    isError: data.some(query => query.isError),
-    isSuccess: data.every(query => query.isSuccess),
+    data: data?.map(query => query.data) ?? [],
+    isLoading: data?.some(query => query.isLoading) ?? false,
+    isError: data?.some(query => query.isError) ?? false,
+    isSuccess: data?.every(query => query.isSuccess) ?? false,
   };
 };

@@ -9,10 +9,10 @@ import {
   TOKEN_IMAGE_MAPPER,
 } from '~/constants';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { calcBptInTokenOutAmountAndPriceImpact, calcBptOutAmountAndPriceImpact } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
-import { useSelecteNetworkStore } from '~/states/data';
 import { IPool, IPoolTokenBalanceRaw, ITokenComposition } from '~/types';
 
 import { BALANCER_LP_ABI, BALANCER_VAULT_ABI, ERC20_TOKEN_ABI } from '~/abi';
@@ -23,7 +23,8 @@ import { useTokenPrice } from '../token/price';
 import { useTokenSymbols } from '../token/symbol';
 
 export const useLiquidityPoolBalance = (poolId: Address) => {
-  const { selectedNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork } = useNetwork();
+
   const { evm } = useConnectedWallet();
   const { address: walletAddress } = evm;
 
@@ -143,7 +144,8 @@ export const useLiquidityPoolTokenAmount = ({
   poolId,
   amountsIn,
 }: LiquidityPoolTokenAmountProp) => {
-  const { selectedNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, isEvm } = useNetwork();
+
   const { tokenAddress: liquidityPoolTokenAddress } = EVM_POOL[selectedNetwork]?.[0] ?? {};
 
   const { data: poolTokensData } = usePoolTokens({ poolId });
@@ -157,6 +159,12 @@ export const useLiquidityPoolTokenAmount = ({
   const normalizedWeights = weightData?.map(v => Number(formatEther(v ?? 0n)) || 0) ?? [];
 
   const balances = poolTokensData?.[1] || [];
+
+  if (!isEvm)
+    return {
+      bptOut: 0,
+      priceImpact: 0,
+    };
 
   const { bptOut, priceImpact } = calcBptOutAmountAndPriceImpact({
     balances:
@@ -178,7 +186,8 @@ interface WithdrawPriceImpactProp {
   bptIn: number;
 }
 export const useWithdrawTokenAmounts = ({ poolId, bptIn }: WithdrawPriceImpactProp) => {
-  const { selectedNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, isEvm } = useNetwork();
+
   const { tokenAddress: liquidityPoolTokenAddress } = EVM_POOL[selectedNetwork]?.[0] ?? {};
 
   const { data: poolTokensData } = usePoolTokens({ poolId });
@@ -189,6 +198,12 @@ export const useWithdrawTokenAmounts = ({ poolId, bptIn }: WithdrawPriceImpactPr
   const normalizedWeights = weightData?.map(v => Number(formatEther(v ?? 0n)) || 0) ?? [];
 
   const balances = poolTokensData?.[1] || [];
+
+  if (!isEvm)
+    return {
+      amountsOut: [],
+      priceImpact: 0,
+    };
 
   const { amountsOut, priceImpact } = calcBptInTokenOutAmountAndPriceImpact({
     balances:
@@ -208,16 +223,15 @@ interface UseGetSwapFeePercentage {
   liquidityPoolTokenAddress?: Address;
   enabled?: boolean;
 }
-export const useGetSwapFeePercentage = ({
-  liquidityPoolTokenAddress,
-  enabled,
-}: UseGetSwapFeePercentage) => {
+export const useGetSwapFeePercentage = ({ liquidityPoolTokenAddress }: UseGetSwapFeePercentage) => {
+  const { isEvm } = useNetwork();
+
   const { data: _data, ...rest } = useContractRead({
     address: liquidityPoolTokenAddress,
     abi: BALANCER_LP_ABI,
     functionName: 'getSwapFeePercentage',
-    enabled: !!liquidityPoolTokenAddress && !!(enabled ?? true),
     staleTime: 1000 * 60,
+    enabled: !!liquidityPoolTokenAddress && isEvm,
   });
   const data = _data as bigint | undefined;
 
@@ -229,7 +243,7 @@ interface UsePoolTotalLpTokens {
   enabled?: boolean;
 }
 export const usePoolTotalLpTokens = ({ poolId }: UsePoolTotalLpTokens) => {
-  const { selectedNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, isEvm } = useNetwork();
   const { tokenAddress } = EVM_POOL[selectedNetwork]?.[0] ?? {};
 
   const { data } = useContractRead({
@@ -237,7 +251,7 @@ export const usePoolTotalLpTokens = ({ poolId }: UsePoolTotalLpTokens) => {
     abi: ERC20_TOKEN_ABI,
     functionName: 'totalSupply',
     staleTime: 1000 * 5,
-    enabled: !!poolId && !!tokenAddress,
+    enabled: !!poolId && !!tokenAddress && isEvm,
   });
 
   return {
@@ -250,7 +264,7 @@ interface UsePoolTokens {
   enabled?: boolean;
 }
 export const usePoolTokens = ({ poolId }: UsePoolTokens) => {
-  const { selectedNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, isEvm } = useNetwork();
 
   const { data: res, ...rest } = useContractRead({
     address: EVM_CONTRACT_ADDRESS[selectedNetwork].VAULT as Address,
@@ -258,7 +272,7 @@ export const usePoolTokens = ({ poolId }: UsePoolTokens) => {
     functionName: 'getPoolTokens',
     args: [poolId],
     staleTime: 1000 * 5,
-    enabled: !!poolId,
+    enabled: !!poolId && isEvm,
   });
   const data = res as IPoolTokenBalanceRaw | undefined;
 
@@ -272,12 +286,14 @@ interface UsePoolTokenNormalizedWeights {
 export const usePoolTokenNormalizedWeights = ({
   liquidityPoolTokenAddress,
 }: UsePoolTokenNormalizedWeights) => {
+  const { isEvm } = useNetwork();
+
   const { data: res, ...rest } = useContractRead({
     address: liquidityPoolTokenAddress,
     abi: BALANCER_LP_ABI,
     functionName: 'getNormalizedWeights',
     staleTime: Infinity,
-    enabled: !!liquidityPoolTokenAddress,
+    enabled: !!liquidityPoolTokenAddress && isEvm,
   });
   const data = res as Array<bigint> | undefined;
 

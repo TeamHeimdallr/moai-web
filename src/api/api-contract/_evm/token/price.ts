@@ -2,18 +2,21 @@ import { Address, PublicClient, useContractRead } from 'wagmi';
 
 import { EVM_CONTRACT_ADDRESS, EVM_POOL, EVM_TOKEN_ADDRESS, TOKEN_PRICE } from '~/constants';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useSelecteNetworkStore } from '~/states/data';
 import { NETWORK } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
 
 // TODO: connect to server. get calculated token price in pool
 export const getTokenPrice = async (client: PublicClient, network: NETWORK, symbol: string) => {
+  const isEvm = network === NETWORK.THE_ROOT_NETWORK || network === NETWORK.EVM_SIDECHAIN;
+  if (!isEvm) return 0;
+
   const tokenAddress =
     network === NETWORK.THE_ROOT_NETWORK
-      ? EVM_TOKEN_ADDRESS[network].WETH_XRP
-      : EVM_TOKEN_ADDRESS[network].ROOT_XRP;
+      ? EVM_TOKEN_ADDRESS?.[network]?.WETH_XRP
+      : EVM_TOKEN_ADDRESS?.[network]?.ROOT_XRP;
 
   if (!tokenAddress || !client) return 0;
 
@@ -38,21 +41,21 @@ export const getTokenPrice = async (client: PublicClient, network: NETWORK, symb
 
 // TODO: connect to server. get calculated token price in pool
 export const useTokenPrice = () => {
+  const { selectedNetwork, isEvm } = useNetwork();
   const { evm } = useConnectedWallet();
   const { address: walletAddress } = evm;
-  const { selectedNetwork } = useSelecteNetworkStore();
 
   const tokenAddress =
     selectedNetwork === NETWORK.THE_ROOT_NETWORK
-      ? EVM_TOKEN_ADDRESS[selectedNetwork].WETH_XRP
-      : EVM_TOKEN_ADDRESS[selectedNetwork].ROOT_XRP;
+      ? EVM_TOKEN_ADDRESS?.[selectedNetwork]?.WETH_XRP
+      : EVM_TOKEN_ADDRESS?.[selectedNetwork]?.ROOT_XRP;
 
   const { data } = useContractRead({
     address: EVM_CONTRACT_ADDRESS[selectedNetwork].VAULT as Address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'getPoolTokens',
     args: [tokenAddress],
-    enabled: !!walletAddress,
+    enabled: !!walletAddress || isEvm,
   });
 
   const price = data

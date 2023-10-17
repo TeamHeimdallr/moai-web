@@ -1,6 +1,7 @@
 import { Address, isAddress } from 'viem';
 import { useBalance } from 'wagmi';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { formatNumber } from '~/utils/util-number';
 interface Balance {
   value: string;
@@ -10,11 +11,11 @@ interface Balance {
 }
 
 export const useNativeTokenBalances = (address?: Address, decimals?: number): Balance => {
-  const enabled = isAddress(address ?? '0x0');
+  const { isEvm } = useNetwork();
 
   const { data } = useBalance({
     address: address ?? '0x0',
-    enabled,
+    enabled: isEvm && isAddress(address ?? ''),
   });
 
   const formatted = formatNumber(data?.formatted, decimals);
@@ -32,7 +33,9 @@ export const useERC20TokenBalances = (
   token?: Address,
   decimals?: number
 ): Balance => {
-  const enabled = !!address && !!token && isAddress(address ?? '0x0') && isAddress(token ?? '0x0');
+  const { isEvm } = useNetwork();
+  const enabled =
+    isEvm && !!address && !!token && isAddress(address ?? '0x0') && isAddress(token ?? '0x0');
 
   const { data } = useBalance({
     address: address ?? '0x0',

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Address, parseUnits } from 'viem';
 import {
-  useAccount,
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
@@ -11,7 +10,8 @@ import {
 import { TOKEN_DECIMAL } from '~/constants';
 
 import { useEvm } from '~/hooks/contexts';
-import { useSelecteNetworkStore } from '~/states/data';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { useConnectedWallet } from '~/hooks/wallets';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
 
@@ -24,24 +24,26 @@ interface Props {
   enabled?: boolean;
 }
 export const useTokenApprove = ({
-  enabled,
   amount,
   allowanceMin,
   spender,
   tokenAddress,
+
+  enabled,
 }: Props) => {
-  const { selectedNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, isEvm } = useNetwork();
   const { chainId } = useEvm();
   const [allowance, setAllowance] = useState(false);
 
-  const { isConnected, address: walletAddress } = useAccount();
+  const { evm } = useConnectedWallet();
+  const { isConnected, address: walletAddress } = evm;
 
   const { refetch } = useContractRead({
     address: tokenAddress,
     abi: ERC20_TOKEN_ABI,
     functionName: 'allowance',
     args: [walletAddress, spender],
-    enabled: enabled && !!walletAddress && !!spender,
+    enabled: enabled && !!walletAddress && !!spender && isEvm,
 
     onSuccess: (data: string) => {
       return setAllowance(
@@ -58,15 +60,16 @@ export const useTokenApprove = ({
     functionName: 'approve',
     chainId,
 
-    account: walletAddress,
+    account: walletAddress as Address,
     args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[selectedNetwork])}`],
+    enabled: enabled && !!walletAddress && !!spender && isEvm,
   });
 
   const { data, writeAsync } = useContractWrite(config);
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
-    enabled: !!data?.hash,
+    enabled: !!data?.hash && isEvm,
   });
 
   return {
