@@ -12,18 +12,22 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { formatNumber } from '~/utils/util-number';
 import { useTableLiquidityPoolSortStore } from '~/states/components';
+import { useShowAllPoolsStore } from '~/states/pages';
 import { NETWORK } from '~/types';
 
 export const useTableLiquidityPool = () => {
+  const { showAllPools } = useShowAllPoolsStore();
+  const { selectedNetwork } = useNetwork();
   const { sort, setSort } = useTableLiquidityPoolSortStore();
 
   // TODO: connect server
   const data = [
     {
       id: 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr',
-      chain: 'XRPL',
+      network: NETWORK.XRPL,
       assets: ['XRP', 'MOAI'],
       compositions: [
         {
@@ -49,7 +53,7 @@ export const useTableLiquidityPool = () => {
     },
     {
       id: '0x291af6e1b841cad6e3dcd66f2aa0790a007578ad000200000000000000000000',
-      chain: 'ROOT',
+      network: NETWORK.THE_ROOT_NETWORK,
       assets: ['XRP', 'ROOT'],
       compositions: [
         {
@@ -75,7 +79,7 @@ export const useTableLiquidityPool = () => {
     },
     {
       id: '0xe73749250390c51e029cfab3d0488e08c183a671000200000000000000000001',
-      chain: 'XRPEVM',
+      network: NETWORK.EVM_SIDECHAIN,
       assets: ['XRP', 'WETH'],
       compositions: [
         {
@@ -100,8 +104,8 @@ export const useTableLiquidityPool = () => {
       apr: 8.94,
     },
   ];
-
-  const sortedData = data?.sort((a, b) => {
+  const filteredData = showAllPools ? data : data?.filter(d => d.network === selectedNetwork);
+  const sortedData = filteredData?.sort((a, b) => {
     if (sort?.key === 'POOL_VALUE')
       return sort.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;
 
@@ -122,9 +126,9 @@ export const useTableLiquidityPool = () => {
         return {
           meta: {
             id: d.id,
-            chain: d.chain,
+            network: d.network,
           },
-          chain: <TableColumn value={<NetworkChip network={d.chain as NETWORK} />} width={216} />,
+          chain: <TableColumn value={<NetworkChip network={d.network} />} width={216} />,
           assets: <TableColumnTokenIcon tokens={d.assets} />,
           compositions: <TableColumnToken tokens={tokens} />,
           poolValue: (
@@ -145,7 +149,7 @@ export const useTableLiquidityPool = () => {
       {
         header: () => <TableHeader width={216} label="Chain" />,
         cell: row => row.renderValue(),
-        accessorKey: 'chain',
+        accessorKey: 'network',
       },
       {
         header: () => <TableHeaderAssets />,

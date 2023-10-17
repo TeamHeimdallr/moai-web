@@ -1,10 +1,11 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { ButtonChipFilter } from '~/components/buttons/chip/filter';
 import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
+
+import { useShowAllPoolsStore } from '~/states/pages';
 
 import { useTableLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool';
 
@@ -15,6 +16,7 @@ interface Meta {
 export const LiquidityPoolLayout = () => {
   const navigate = useNavigate();
   const { data, columns } = useTableLiquidityPool();
+  const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
 
   const handleRowClick = (meta?: Meta) => {
     if (!meta) return;
@@ -24,16 +26,13 @@ export const LiquidityPoolLayout = () => {
   // TODO: pool 구성에 있는 토큰 리스트
   const tokens = [{ symbol: 'MOAI' }, { symbol: 'XRP' }, { symbol: 'ROOT' }, { symbol: 'WETH' }];
 
-  // TODO : connect selecting all chian api
-  const [selectedAll, selectAll] = useState(true);
-
   return (
     <Wrapper>
       <TitleWrapper>
         <Title>Liquidity pools</Title>
         <AllChainToggle>
           All supported chains
-          <Toggle selected={selectedAll} onClick={() => selectAll(prev => !prev)} />
+          <Toggle selected={showAllPools} onClick={() => setShowAllPools(!showAllPools)} />
         </AllChainToggle>
       </TitleWrapper>
       <TableWrapper>
