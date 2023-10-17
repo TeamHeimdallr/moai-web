@@ -67,7 +67,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
     enabled: enabled && !!walletAddress && amount > 0 && isEvm,
   });
 
-  const { data, writeAsync } = useContractWrite(config);
+  const { data, writeAsync: writeAsyncBase } = useContractWrite(config);
 
   const {
     isLoading,
@@ -85,6 +85,10 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
     setBlockTimestamp(Number(timestamp) * 1000);
   };
 
+  const writeAsync = async () => {
+    await writeAsyncBase?.();
+  };
+
   useEffect(() => {
     getBlockTimestamp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -94,7 +98,8 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
     isLoading: prepareLoading || isLoading,
     isSuccess,
 
-    txData,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    txData: txData as any,
     blockTimestamp,
 
     writeAsync,

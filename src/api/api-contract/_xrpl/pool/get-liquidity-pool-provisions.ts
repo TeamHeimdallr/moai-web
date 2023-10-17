@@ -7,7 +7,7 @@ import { TOKEN_PRICE } from '~/constants';
 
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { IToken } from '~/types';
+import { IPoolLiquidityProvisions, IToken } from '~/types';
 
 import { useTokenPrice } from '../token/price';
 
@@ -26,8 +26,6 @@ export const useGetLiquidityPoolProvisions = (account: string) => {
   } as AccountTxRequest;
 
   const getTxs = async () => {
-    if (!isXrp) return;
-
     const info = await client.request(request);
     return info;
   };
@@ -38,22 +36,21 @@ export const useGetLiquidityPoolProvisions = (account: string) => {
       { symbol: 'XRP', balance: 0, price: 0, value: 0 },
       { symbol: 'MOI', balance: 0, price: 0, value: 0 },
     ] as IToken[];
-
-    if (!tx || !tx.Asset || !tx.Asset2 || !tx.Amount || !tx.Amount2 || !isXrp) return defaultResult;
+    if (!tx || !isXrp) return defaultResult;
 
     let xrpBalance: number = 0;
     let xrpPrice: number = 0;
     let moiBalance: number = 0;
 
-    if (tx.Asset.currency === 'XRP') {
+    if (tx?.Asset?.currency === 'XRP') {
       xrpBalance = Number(dropsToXrp(tx.Amount));
       xrpPrice = TOKEN_PRICE.XRP;
-      moiBalance = Number(tx.Amount2.value);
+      moiBalance = Number(tx?.Amount2?.value ?? 0);
     }
-    if (tx.Asset.currency === 'MOI') {
+    if (tx?.Asset?.currency === 'MOI') {
       xrpBalance = Number(dropsToXrp(tx.Amount2));
       xrpPrice = TOKEN_PRICE.XRP;
-      moiBalance = Number(tx.Amount.value);
+      moiBalance = Number(tx?.Amount?.value ?? 0);
     }
 
     const token1 = {
@@ -90,13 +87,6 @@ export const useGetLiquidityPoolProvisions = (account: string) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (tx?.TransactionType as any) === 'AMMWithdraw'
   );
-  if (txData.length === 0)
-    return {
-      data: [] as IToken[],
-      isLoading,
-      isSuccess,
-      isError,
-    };
 
   const provisions = txData?.map(({ tx }) => {
     const type =
@@ -112,7 +102,7 @@ export const useGetLiquidityPoolProvisions = (account: string) => {
 
     return {
       type,
-      account,
+      id: account,
       tokens,
       liquidityProvider,
       time,
@@ -121,7 +111,7 @@ export const useGetLiquidityPoolProvisions = (account: string) => {
   });
 
   return {
-    data: provisions,
+    data: provisions as IPoolLiquidityProvisions[],
     isLoading,
     isSuccess,
     isError,

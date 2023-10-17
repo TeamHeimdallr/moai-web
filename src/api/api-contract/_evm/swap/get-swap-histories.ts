@@ -7,7 +7,7 @@ import { QUERY_KEYS } from '~/api/utils/query-keys';
 import { EVM_CONTRACT_ADDRESS, TOKEN_DECIMAL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { NETWORK } from '~/types';
+import { IPoolSwapHistories, IToken, NETWORK } from '~/types';
 
 import { getTokenPrice } from '../token/price';
 import { getTokenSymbol } from '../token/symbol';
@@ -59,13 +59,6 @@ interface GetFormattedSwapHistoriesProps {
     txHash: Address;
   };
 }
-interface SwapTokenInfo {
-  address: Address;
-  name: string;
-  balance: number;
-  price: number;
-  value: number;
-}
 const getFormattedSwapHistories = async ({
   client,
   network,
@@ -82,18 +75,18 @@ const getFormattedSwapHistories = async ({
   );
   const tokenSymbols = await Promise.all(tokenSymbolPromises);
 
-  const tokens: SwapTokenInfo[] = [];
+  const tokens: IToken[] = [];
 
   for (let i = 0; i < tokenSymbols.length; i++) {
     const address = [tokenIn, tokenOut][i] ?? '0x0';
-    const name = tokenSymbols?.[i];
+    const symbol = tokenSymbols?.[i];
     const balance = Number(formatUnits([amountIn, amountOut][i] ?? 0n, TOKEN_DECIMAL[network]));
-    const price = await getTokenPrice(client, network, name);
+    const price = await getTokenPrice(client, network, symbol);
     const value = price * balance;
 
     tokens.push({
       address,
-      name,
+      symbol,
       balance,
       price,
       value,
@@ -103,16 +96,16 @@ const getFormattedSwapHistories = async ({
   const blockInfo = await client.getBlock({ blockHash });
   const transaction = await client.getTransaction({ hash: txHash });
 
-  const trader = transaction?.from ?? '0x0';
+  const trader = (transaction?.from ?? '0x0') as string;
   const time = Number(blockInfo?.timestamp ?? Date.now() / 1000) * 1000;
 
   return {
-    poolId: poolId ?? '0x0',
+    id: (poolId ?? '') as string,
     tokens,
     trader,
     time,
-    txHash,
-  };
+    txHash: (txHash ?? '') as string,
+  } as IPoolSwapHistories;
 };
 
 interface UseGetSwapHistoriesProps {
@@ -151,12 +144,18 @@ export const useGetSwapHistories = ({ poolId, options }: UseGetSwapHistoriesProp
       staleTime: 1000 * 5,
       enabled: isEvm,
     })) ?? [];
-  const data = useQueries({ queries });
+
+  const queryRes = useQueries({ queries });
+  const data = (queryRes?.filter(query => !!query.data)?.map(query => query.data) ??
+    []) as IPoolSwapHistories[];
+  const isLoading = queryRes?.some(query => query.isLoading) ?? false;
+  const isSuccess = queryRes?.every(query => query.isSuccess) ?? false;
+  const isError = queryRes?.some(query => query.isError) ?? false;
 
   return {
-    data: data?.map(query => query.data) ?? [],
-    isLoading: data?.some(query => query.isLoading) ?? false,
-    isError: data?.some(query => query.isError) ?? false,
-    isSuccess: data?.every(query => query.isSuccess) ?? false,
+    data,
+    isLoading,
+    isSuccess,
+    isError,
   };
 };

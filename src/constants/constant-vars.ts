@@ -9,6 +9,7 @@ import {
 
 import { IGnbMenu } from '~/types';
 
+// TODO: change name TOKEN_IMAGE
 export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   MOAI: imageTokenMOAI,
   MOI: imageTokenMOAI,
@@ -23,6 +24,7 @@ export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
   WXRP: imageTokenXRP,
 };
 
+// TODO: change name TOKEN_DESCRIPTION
 export const TOKEN_DESCRIPTION_MAPPER: Record<string, string> = {
   WETH: 'Wrapped Ether',
   MOAI: 'MOAI Finance Token',

@@ -47,6 +47,23 @@ export interface IPoolList {
   isNew?: boolean;
 }
 
+export interface IPoolLiquidityProvisions {
+  id: string;
+  type: 'deposit' | 'withdraw';
+
+  tokens: IToken[];
+  liquidityProvider: string;
+  time: number;
+  txHash: string;
+}
+export interface IPoolSwapHistories {
+  id: string;
+  tokens: IToken[];
+  trader: string;
+  time: number;
+  txHash: string;
+}
+
 export type SwapFundManagementInput = [
   string, // 지갑주소
   boolean, // false

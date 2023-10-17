@@ -97,11 +97,11 @@ export const useLiquidityPoolBalance = (poolId: Address) => {
     liquidityPoolTokenAddress as Address
   );
   // users lp token balance
-  const liquidityPoolTokenBalance = Number(
+  const lpTokenBalance = Number(
     formatUnits(liquidityPoolTokenBalanceData ?? 0n, TOKEN_DECIMAL[selectedNetwork])
   );
 
-  const liquidityPoolTokenPrice = liquidityPoolTokenTotalSupply
+  const lpTokenPrice = liquidityPoolTokenTotalSupply
     ? poolTotalValue / liquidityPoolTokenTotalSupply
     : 0;
 
@@ -131,8 +131,8 @@ export const useLiquidityPoolBalance = (poolId: Address) => {
     pool,
 
     // users lp token balance
-    liquidityPoolTokenBalance,
-    liquidityPoolTokenPrice,
+    lpTokenBalance,
+    lpTokenPrice,
   };
 };
 

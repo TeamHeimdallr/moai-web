@@ -72,24 +72,20 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitTx = async () => await submitTransaction({ transaction: txRequest as any });
 
-  const { data, isLoading, isSuccess, isError, mutateAsync } = useMutation(
-    QUERY_KEYS.SWAP.SWAP,
-    submitTx
-  );
+  const { data, isLoading, isSuccess, mutateAsync } = useMutation(QUERY_KEYS.SWAP.SWAP, submitTx);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const txData = data?.result as any;
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
-  const writeAsync = () => {
+  const writeAsync = async () => {
     if (!ammExist || !address || !isXrp) return;
-    return mutateAsync();
+    await mutateAsync();
   };
 
   return {
     isLoading,
     isSuccess,
-    isError,
 
     txData,
     blockTimestamp,

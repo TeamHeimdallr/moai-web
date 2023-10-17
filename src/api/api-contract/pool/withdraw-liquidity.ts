@@ -13,7 +13,7 @@ interface Props {
   amount?: bigint;
 }
 
-export const useWithdrawLiquidity1 = ({ id, tokens, amount }: Props) => {
+export const useWithdrawLiquidity = ({ id, tokens, amount }: Props) => {
   const { isEvm } = useNetwork();
 
   const resEvm = useWithdrawLiquidityEvm({

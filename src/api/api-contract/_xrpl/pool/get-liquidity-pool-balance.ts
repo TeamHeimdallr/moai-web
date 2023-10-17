@@ -45,7 +45,7 @@ export const useLiquidityPoolBalance = (id: string) => {
   }, 0);
   const apr = poolTotalValue === 0 ? 0 : ((poolVolume * fee * 365) / poolTotalValue) * 100;
 
-  const liquidityPoolTokenBalance = useLiquidityTokenBalances(id);
+  const lpTokenBalance = useLiquidityTokenBalances(id);
 
   const pool: IPool = {
     id,
@@ -73,7 +73,7 @@ export const useLiquidityPoolBalance = (id: string) => {
     pool,
 
     // users lp token balance
-    liquidityPoolTokenBalance,
-    liquidityPoolTokenPrice: liquidityPoolToken.price,
+    lpTokenBalance,
+    lpTokenPrice: liquidityPoolToken.price,
   };
 };

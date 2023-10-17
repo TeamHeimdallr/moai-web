@@ -8,7 +8,7 @@ import { TOKEN_PRICE } from '~/constants';
 
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { IToken } from '~/types';
+import { IPoolSwapHistories, IToken } from '~/types';
 
 import { useTokenPrice } from '../token/price';
 
@@ -144,7 +144,7 @@ export const useGetSwapHistories = (id: string) => {
         tokens: [] as IToken[],
         time,
         txHash,
-      };
+      } as IPoolSwapHistories;
     }
 
     const tokens = getTxTokens(amount, meta as TransactionMetadata);
@@ -154,7 +154,7 @@ export const useGetSwapHistories = (id: string) => {
       tokens,
       time,
       txHash,
-    };
+    } as IPoolSwapHistories;
   });
 
   return {

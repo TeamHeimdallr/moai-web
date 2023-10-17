@@ -42,7 +42,7 @@ export const useSwap = ({
     enabled: !!singleSwap && !!fundManagement && !!address && isEvm,
   });
 
-  const { data, writeAsync } = useContractWrite(config);
+  const { data, writeAsync: writeAsyncBase } = useContractWrite(config);
 
   const {
     isLoading,
@@ -65,11 +65,16 @@ export const useSwap = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txData]);
 
+  const writeAsync = async () => {
+    await writeAsyncBase?.();
+  };
+
   return {
     isLoading: prepareLoading || isLoading,
     isSuccess,
 
-    txData,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    txData: txData as any,
     blockTimestamp,
 
     swap: writeAsync,

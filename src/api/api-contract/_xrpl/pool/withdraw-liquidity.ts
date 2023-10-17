@@ -88,9 +88,9 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
   const txData = data?.result as any;
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
-  const writeAsync = () => {
+  const writeAsync = async () => {
     if (!ammExist || !address || !isXrp) return;
-    return mutateAsync();
+    await mutateAsync();
   };
 
   return {
