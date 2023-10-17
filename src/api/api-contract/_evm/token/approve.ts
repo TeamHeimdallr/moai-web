@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { Address, parseUnits } from 'viem';
-import {
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from 'wagmi';
+import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
 
 import { TOKEN_DECIMAL } from '~/constants';
 
@@ -23,7 +18,7 @@ interface Props {
 
   enabled?: boolean;
 }
-export const useTokenApprove = ({
+export const useApprove = ({
   amount,
   allowanceMin,
   spender,
@@ -65,19 +60,17 @@ export const useTokenApprove = ({
     enabled: enabled && !!walletAddress && !!spender && isEvm,
   });
 
-  const { data, writeAsync } = useContractWrite(config);
+  const { writeAsync } = useContractWrite(config);
 
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: data?.hash,
-    enabled: !!data?.hash && isEvm,
-  });
+  const allow = async () => {
+    if (!isEvm) return;
+
+    await writeAsync?.();
+  };
 
   return {
     allowance: isConnected && allowance,
-    isLoading,
-    isSuccess,
     refetch,
-
-    allow: writeAsync,
+    allow,
   };
 };

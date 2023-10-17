@@ -20,24 +20,19 @@ export const getTokenSymbol = async (client: PublicClient, network: NETWORK, add
   return (symbol as string) || '';
 };
 
-interface QueryOptions {
-  enabled?: boolean;
-}
-export const useTokenSymbols = (addresses: Address[], options?: QueryOptions) => {
+export const useTokenSymbols = (addresses: Address[]) => {
   const { isEvm } = useNetwork();
-  const { enabled } = options ?? {};
 
-  const { data: res, ...rest } = useContractReads({
+  const { data: res } = useContractReads({
     contracts: addresses.map(address => ({
       address,
       abi: ERC20_TOKEN_ABI as Abi,
       functionName: 'symbol',
-      enabled: enabled && isEvm,
+      enabled: isEvm && !!address,
     })),
   });
 
   return {
     data: res?.map(d => (d?.result ?? '') as string) ?? [],
-    ...rest,
   };
 };

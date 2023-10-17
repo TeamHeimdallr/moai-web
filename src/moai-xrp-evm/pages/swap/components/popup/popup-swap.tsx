@@ -66,12 +66,10 @@ export const PopupSwap = () => {
     singleSwap: [
       poolId,
       SwapKind.GivenIn,
-      TOKEN_ADDRESS[fromToken] === TOKEN_ADDRESS['XRP']
-        ? TOKEN_ADDRESS['ZERO']
+      TOKEN_ADDRESS[fromToken] === TOKEN_ADDRESS.XRP
+        ? TOKEN_ADDRESS.ZERO
         : TOKEN_ADDRESS[fromToken],
-      TOKEN_ADDRESS[toToken] === TOKEN_ADDRESS['XRP']
-        ? TOKEN_ADDRESS['ZERO']
-        : TOKEN_ADDRESS[toToken],
+      TOKEN_ADDRESS[toToken] === TOKEN_ADDRESS.XRP ? TOKEN_ADDRESS.ZERO : TOKEN_ADDRESS[toToken],
       parseUnits(`${fromValue ?? 0}`, TOKEN_DECIAML),
       '0x0',
     ],

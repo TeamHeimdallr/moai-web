@@ -17,19 +17,16 @@ interface Token {
 
 interface Props {
   id: string;
-  request: {
-    token1: Token;
-    token2: Token;
-  };
+  token1: Token;
+  token2: Token;
 }
-export const useWithdrawLiquidity = ({ id, request }: Props) => {
+export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
   const { ammExist } = useAmmInfo(id);
   const { isXrp } = useNetwork();
 
   const { xrp } = useConnectedWallet();
   const { address } = xrp;
 
-  const { token1, token2 } = request;
   const tokens = [token1, token2];
 
   const getTxRequestAssets = () => {
