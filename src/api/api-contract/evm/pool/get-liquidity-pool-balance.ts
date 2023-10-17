@@ -10,6 +10,7 @@ import {
 } from '~/constants';
 
 import { useConnectedWallet } from '~/hooks/wallets';
+import { calcBptInTokenOutAmountAndPriceImpact, calcBptOutAmountAndPriceImpact } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { useSelecteNetworkStore } from '~/states/data';
 import { IPool, IPoolTokenBalanceRaw, ITokenComposition } from '~/types';
@@ -21,7 +22,7 @@ import { useGetSwapHistories } from '../swap/get-swap-histories';
 import { useTokenPrice } from '../token/price';
 import { useTokenSymbols } from '../token/symbol';
 
-export const useLiquidityPoolBalance = (poolId?: Address) => {
+export const useLiquidityPoolBalance = (poolId: Address) => {
   const { selectedNetwork } = useSelecteNetworkStore();
   const { evm } = useConnectedWallet();
   const { address: walletAddress } = evm;
@@ -132,6 +133,95 @@ export const useLiquidityPoolBalance = (poolId?: Address) => {
     liquidityPoolTokenBalance,
     liquidityPoolTokenPrice,
   };
+};
+
+interface LiquidityPoolTokenAmountProp {
+  poolId?: Address;
+  amountsIn: number[];
+}
+export const useLiquidityPoolTokenAmount = ({
+  poolId,
+  amountsIn,
+}: LiquidityPoolTokenAmountProp) => {
+  const { selectedNetwork } = useSelecteNetworkStore();
+  const { tokenAddress: liquidityPoolTokenAddress } = EVM_POOL[selectedNetwork]?.[0] ?? {};
+
+  const { data: poolTokensData } = usePoolTokens({ poolId });
+  const { data: bptTotalSupply } = usePoolTotalLpTokens({ poolId });
+  const { data: swapFeePercentage } = useGetSwapFeePercentage({
+    liquidityPoolTokenAddress: liquidityPoolTokenAddress as Address,
+  });
+  const { data: weightData } = usePoolTokenNormalizedWeights({
+    liquidityPoolTokenAddress: liquidityPoolTokenAddress as Address,
+  });
+  const normalizedWeights = weightData?.map(v => Number(formatEther(v ?? 0n)) || 0) ?? [];
+
+  const balances = poolTokensData?.[1] || [];
+
+  const { bptOut, priceImpact } = calcBptOutAmountAndPriceImpact({
+    balances:
+      balances.map((v: bigint) => Number(formatUnits(v, TOKEN_DECIMAL[selectedNetwork]))) ?? [],
+    normalizedWeights,
+    amountsIn,
+    bptTotalSupply: Number(formatEther(bptTotalSupply ?? 0n)),
+    swapFeePercentage: Number(formatEther(swapFeePercentage ?? 0n)),
+  });
+
+  return {
+    bptOut,
+    priceImpact,
+  };
+};
+
+interface WithdrawPriceImpactProp {
+  poolId?: Address;
+  bptIn: number;
+}
+export const useWithdrawTokenAmounts = ({ poolId, bptIn }: WithdrawPriceImpactProp) => {
+  const { selectedNetwork } = useSelecteNetworkStore();
+  const { tokenAddress: liquidityPoolTokenAddress } = EVM_POOL[selectedNetwork]?.[0] ?? {};
+
+  const { data: poolTokensData } = usePoolTokens({ poolId });
+  const { data: bptTotalSupply } = usePoolTotalLpTokens({ poolId });
+  const { data: weightData } = usePoolTokenNormalizedWeights({
+    liquidityPoolTokenAddress: liquidityPoolTokenAddress as Address,
+  });
+  const normalizedWeights = weightData?.map(v => Number(formatEther(v ?? 0n)) || 0) ?? [];
+
+  const balances = poolTokensData?.[1] || [];
+
+  const { amountsOut, priceImpact } = calcBptInTokenOutAmountAndPriceImpact({
+    balances:
+      balances.map((v: bigint) => Number(formatUnits(v, TOKEN_DECIMAL[selectedNetwork]))) ?? [],
+    normalizedWeights,
+    bptIn,
+    bptTotalSupply: Number(formatEther(bptTotalSupply ?? 0n)),
+  });
+
+  return {
+    amountsOut,
+    priceImpact,
+  };
+};
+
+interface UseGetSwapFeePercentage {
+  liquidityPoolTokenAddress?: Address;
+  enabled?: boolean;
+}
+export const useGetSwapFeePercentage = ({
+  liquidityPoolTokenAddress,
+  enabled,
+}: UseGetSwapFeePercentage) => {
+  const { data: _data, ...rest } = useContractRead({
+    address: liquidityPoolTokenAddress,
+    abi: BALANCER_LP_ABI,
+    functionName: 'getSwapFeePercentage',
+    enabled: !!liquidityPoolTokenAddress && !!(enabled ?? true),
+    staleTime: 1000 * 60,
+  });
+  const data = _data as bigint | undefined;
+
+  return { data, ...rest };
 };
 
 interface UsePoolTotalLpTokens {
