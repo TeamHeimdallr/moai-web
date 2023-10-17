@@ -1,5 +1,7 @@
 import tw, { styled } from 'twin.macro';
 
+import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
+
 import bgMain from '~/assets/images/bg-main.png';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
@@ -9,17 +11,14 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber } from '~/utils/util-number';
 import { POPUP_ID } from '~/types';
 
-import { useBalancesAll } from '~/moai-xrp-root/hooks/data/use-balance-all';
-import { TOKEN } from '~/moai-xrp-root/types/contracts';
-
 export const MainLayout = () => {
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { evm, xrp } = useConnectedWallet();
   const isConnected = !!evm.address || !!xrp.address;
 
-  const { balancesMap } = useBalancesAll();
-  const moaiBalance = balancesMap?.[TOKEN.MOAI];
+  const { balancesMap } = useTokenBalanceInPool();
+  const moaiBalance = balancesMap?.MOAI;
 
   return (
     <MainWrapper isConnected={isConnected} style={{ backgroundImage: `url(${bgMain})` }}>

@@ -34,7 +34,7 @@ export const Table = <T extends object>({
     data,
     columns,
     state: {
-      columnVisibility: { meta: false },
+      columnVisibility: { id: false, meta: false },
     },
     getCoreRowModel: getCoreRowModel(),
   });

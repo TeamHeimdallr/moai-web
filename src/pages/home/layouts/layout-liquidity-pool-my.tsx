@@ -3,26 +3,23 @@ import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
 
+import { useTableLiquidityMy } from '../hooks/components/table/use-table-liquidity-pool-my';
+
 export const MyLiquidityLayout = () => {
-  const { address } = useConnectEvmWallet();
-  const { data, columns, empty } = useTableMyLiquidity();
+  const { data, columns } = useTableLiquidityMy();
+
   const navigate = useNavigate();
 
   const handleRowClick = (_chain?: string, id?: string) => {
     navigate(`/pools/${id}`);
   };
 
-  if (!address || empty) return <></>;
   return (
     <Wrapper>
       <TitleWrapper>
         <Title>My liquidity in Moai pools</Title>
       </TitleWrapper>
-      <Table<MyLiquidityPoolTable>
-        data={data}
-        columns={columns}
-        handleRowClick={handleRowClick}
-      />
+      <Table data={data} columns={columns} handleRowClick={handleRowClick} />
     </Wrapper>
   );
 };

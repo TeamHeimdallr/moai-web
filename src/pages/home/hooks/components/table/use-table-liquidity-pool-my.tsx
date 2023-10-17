@@ -1,7 +1,6 @@
-import { ReactNode, useMemo } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
+import { useMemo } from 'react';
 
-import { useGetLiquidityPoolLists } from '~/api/api-contract/_evm/pool/get-liquidity-pool-lists';
+import { useGetLiquidityPoolLists } from '~/api/api-contract/pool/get-liquidity-pool-lists';
 
 import {
   TableColumn,
@@ -16,15 +15,11 @@ import {
 import { formatNumber } from '~/utils/util-number';
 import { useTableMyLiquidityPoolSortStore } from '~/states/components';
 
-import { MyLiquidityPoolTable } from '~/moai-xrp-root/types/components';
-
-import { TOKEN } from '~/moai-xrp-root/types/contracts';
-
-export const useTableMyLiquidity = () => {
+export const useTableLiquidityMy = () => {
   const data = useGetLiquidityPoolLists();
   const empty = data.every(d => d.balance === 0);
 
-  const { sort, setSort} = useTableMyLiquidityPoolSortStore();
+  const { sort, setSort } = useTableMyLiquidityPoolSortStore();
   const sortedData = data?.sort((a, b) => {
     if (sort?.key === 'POOL_VALUE')
       return sort.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;
@@ -37,7 +32,7 @@ export const useTableMyLiquidity = () => {
     () =>
       sortedData?.map(d => {
         const tokens = d.compositions.reduce((acc, cur) => {
-          acc[cur.name as TOKEN] = cur.weight;
+          acc[cur.symbol] = cur.weight;
           return acc;
         }, {});
 
@@ -61,14 +56,9 @@ export const useTableMyLiquidity = () => {
     [sortedData]
   );
 
-  const columns = useMemo<ColumnDef<MyLiquidityPoolTable, ReactNode>[]>(
+  const columns = useMemo(
     () => [
-      { accessorKey: 'id-raw' },
-      { accessorKey: 'chain-raw' },
-      {
-        cell: row => row.renderValue(),
-        accessorKey: 'id',
-      },
+      { accessorKey: 'meta' },
       {
         header: () => <TableHeaderAssets />,
         cell: row => row.renderValue(),
@@ -81,12 +71,7 @@ export const useTableMyLiquidity = () => {
       },
       {
         header: () => (
-          <TableHeaderSortable
-            sortKey="BALANCE"
-            label="My Balance"
-             sort={sort}
-            setSort={setSort}
-          />
+          <TableHeaderSortable sortKey="BALANCE" label="My Balance" sort={sort} setSort={setSort} />
         ),
         cell: row => row.renderValue(),
         accessorKey: 'balance',
