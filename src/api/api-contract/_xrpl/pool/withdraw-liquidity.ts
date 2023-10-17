@@ -4,6 +4,7 @@ import { xrpToDrops } from 'xrpl';
 
 import { QUERY_KEYS } from '~/api/utils/query-keys';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 
 import { useAmmInfo } from '../amm/get-amm-info';
@@ -23,6 +24,7 @@ interface Props {
 }
 export const useWithdrawLiquidity = ({ id, request }: Props) => {
   const { ammExist } = useAmmInfo(id);
+  const { isXrp } = useNetwork();
 
   const { xrp } = useConnectedWallet();
   const { address } = xrp;
@@ -55,10 +57,10 @@ export const useWithdrawLiquidity = ({ id, request }: Props) => {
       };
     }
 
-    const asset1 = { issuer: token1.issuer ?? '', currency: token1.currency };
-    const amount1 = { ...asset1, value: token1.amount ?? 0 };
-    const asset2 = { issuer: token2.issuer ?? '', currency: token2.currency };
-    const amount2 = { ...asset2, value: token2.amount ?? 0 };
+    const asset1 = { issuer: token1?.issuer ?? '', currency: token1?.currency ?? '' };
+    const amount1 = { ...asset1, value: token1?.amount ?? 0 };
+    const asset2 = { issuer: token2?.issuer ?? '', currency: token2?.currency ?? '' };
+    const amount2 = { ...asset2, value: token2?.amount ?? 0 };
 
     return {
       Amount: amount1,
@@ -90,7 +92,7 @@ export const useWithdrawLiquidity = ({ id, request }: Props) => {
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = () => {
-    if (!ammExist || !address) return;
+    if (!ammExist || !address || !isXrp) return;
     return mutateAsync();
   };
 

@@ -16,14 +16,14 @@ export const useGetLiquidityPoolLists = () => {
   );
 
   const isNew = false;
-  const id = pool.id;
-  const compositions = pool.compositions;
-  const assets = pool.compositions.map(composition => composition.symbol);
-  const poolValue = pool.value;
-  const volume = pool.volume;
-  const apr = pool.apr;
+  const id = pool?.id ?? '';
+  const compositions = pool?.compositions ?? [];
+  const assets = pool?.compositions?.map(composition => composition.symbol) ?? [];
+  const poolValue = pool?.value ?? 0;
+  const volume = pool?.volume ?? 0;
+  const apr = pool?.apr ?? 0;
 
-  const balance = liquidityPoolTokenBalance * liquidityPoolTokenPrice;
+  const balance = (liquidityPoolTokenBalance ?? 0) * (liquidityPoolTokenPrice ?? 0);
 
   return [
     {

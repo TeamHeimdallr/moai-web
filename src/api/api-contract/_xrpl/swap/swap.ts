@@ -6,6 +6,7 @@ import { QUERY_KEYS } from '~/api/utils/query-keys';
 
 import { XRP_TOKEN_ISSUER } from '~/constants';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 
 import { useAmmInfo } from '../amm/get-amm-info';
@@ -20,6 +21,7 @@ interface Props {
   toValue: number;
 }
 export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) => {
+  const { isXrp } = useNetwork();
   const { ammExist } = useAmmInfo(id);
   const { xrp } = useConnectedWallet();
   const { address } = xrp;
@@ -80,7 +82,7 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = () => {
-    if (!ammExist || !address) return;
+    if (!ammExist || !address || !isXrp) return;
     return mutateAsync();
   };
 

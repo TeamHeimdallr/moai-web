@@ -7,20 +7,24 @@ import { QUERY_KEYS } from '~/api/utils/query-keys';
 import { TOKEN_PRICE, XRP_AMM, XRP_TOKEN_ISSUER } from '~/constants';
 
 import { useXrpl } from '~/hooks/contexts';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { IAmm, ITokenbalanceInPool } from '~/types';
 
-import { useAmmInfo } from '../amm/get-amm-info';
+import { useTokenPrice } from '../token/price';
 
 // TODO: change to get all balances. using gateway balances promise all
 export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
+  const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
   const { xrp: xrpWallet } = useConnectedWallet();
   const { address } = xrpWallet;
 
-  const { moiPrice } = useAmmInfo(XRP_TOKEN_ISSUER.XRP_MOI);
+  const { price: moiPrice } = useTokenPrice();
 
   const xrpBalanceData = async () => {
+    if (!isXrp) return 0;
+
     const res =
       (
         await client.request({
@@ -33,6 +37,8 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
   };
 
   const moiBalanceData = async () => {
+    if (!isXrp) return 0;
+
     const res =
       (
         await client.request({
@@ -50,7 +56,7 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     xrpBalanceData,
     {
       staleTime: 1000 * 60 * 5,
-      enabled: !!address && !!client && isConnected,
+      enabled: !!address && !!client && isConnected && isXrp,
     }
   );
 
@@ -59,13 +65,13 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     moiBalanceData,
     {
       staleTime: 1000 * 60 * 5,
-      enabled: !!address && !!client && isConnected,
+      enabled: !!address && !!client && isConnected && isXrp,
     }
   );
 
   const success = xrpData !== undefined && moiData !== undefined;
 
-  if (!success)
+  if (!success || !isXrp)
     return {
       balancesMap: undefined,
       balancesArray: undefined,
@@ -96,12 +102,16 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
 };
 
 export const useLiquidityTokenBalances = (id: string): number => {
+  const { isXrp } = useNetwork();
+
   const amm = XRP_AMM.find(amm => amm.id === id) as IAmm;
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
   const { address } = xrp;
 
   const getLiquidityTokenBalanceData = async () => {
+    if (!isXrp) return 0;
+
     const res =
       (
         await client.request({
@@ -120,7 +130,7 @@ export const useLiquidityTokenBalances = (id: string): number => {
     getLiquidityTokenBalanceData,
     {
       staleTime: 1000 * 60 * 5,
-      enabled: !!address && !!client && isConnected,
+      enabled: !!address && !!client && isConnected && isXrp,
     }
   );
 

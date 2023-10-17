@@ -7,13 +7,16 @@ import { QUERY_KEYS } from '~/api/utils/query-keys';
 import { TOKEN_PRICE } from '~/constants';
 
 import { useXrpl } from '~/hooks/contexts';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { IToken } from '~/types';
 
-import { useAmmInfo } from '../amm/get-amm-info';
+import { useTokenPrice } from '../token/price';
 
 export const useGetSwapHistories = (id: string) => {
+  const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
-  const { moiPrice } = useAmmInfo(id);
+
+  const { price: moiPrice } = useTokenPrice();
 
   const request = {
     command: 'account_tx',
@@ -24,24 +27,27 @@ export const useGetSwapHistories = (id: string) => {
   } as AccountTxRequest;
 
   const getTxs = async () => {
+    if (!isXrp) return;
+
     const info = await client.request(request);
     return info;
   };
 
   const getTxTokens = (amount: string | Record<string, string>, meta: TransactionMetadata) => {
-    const { TransactionResult, AffectedNodes } = meta;
-
     const defaultResult = [
       { symbol: 'XRP', balance: 0, price: 0, value: 0 },
       { symbol: 'MOI', balance: 0, price: 0, value: 0 },
     ] as IToken[];
+    if (!amount || !isXrp) return defaultResult;
+
+    const { TransactionResult, AffectedNodes } = meta;
 
     if (TransactionResult !== 'tesSUCCESS') return defaultResult;
     if (AffectedNodes.length === 0) return defaultResult;
 
     // xrp => moi
     if (typeof amount === 'object') {
-      const affectedNode = AffectedNodes.find(node => {
+      const affectedNode = AffectedNodes?.find(node => {
         const isAccountRoot = (node as any)?.ModifiedNode?.LedgerEntryType === 'AccountRoot';
         const isAMM = !!(node as any)?.ModifiedNode?.FinalFields.AMMID;
 
@@ -74,7 +80,7 @@ export const useGetSwapHistories = (id: string) => {
 
     // moi => xrp
     if (typeof amount === 'string') {
-      const affectedNode = AffectedNodes.find(
+      const affectedNode = AffectedNodes?.find(
         node => (node as any)?.ModifiedNode?.LedgerEntryType === 'RippleState'
       )?.[0];
 
@@ -111,7 +117,7 @@ export const useGetSwapHistories = (id: string) => {
     isError,
   } = useQuery([...QUERY_KEYS.AMM.GET_TRANSACTIONS, id], getTxs, {
     staleTime: 3000,
-    enabled: isConnected,
+    enabled: isConnected && isXrp,
   });
 
   const txData = (txDataRaw?.result?.transactions ?? []).filter(
@@ -125,7 +131,7 @@ export const useGetSwapHistories = (id: string) => {
       isError,
     };
 
-  const provisions = txData.map(({ tx, meta }) => {
+  const provisions = txData?.map(({ tx, meta }) => {
     const trader = tx?.Account ?? '';
     const time = (tx?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
     const txHash = tx?.hash ?? '';

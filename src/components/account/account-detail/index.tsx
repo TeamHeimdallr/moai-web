@@ -3,18 +3,18 @@ import copy from 'copy-to-clipboard';
 import tw from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { IconCopy, IconGem, IconLogout, IconMetamask, IconNext } from '~/assets/icons';
+import { IconCopy, IconLogout, IconNext } from '~/assets/icons';
 
 import { ButtonIconSmall } from '~/components/buttons/icon';
 
-import { useNetworkName } from '~/hooks/contexts/use-network-name';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 
 import { Slippage } from '../slippage';
 
 export const AccountDetail = () => {
   const { evm, xrp } = useConnectedWallet();
-  const networkName = useNetworkName();
+  const networkName = useNetwork();
 
   return (
     <Wrapper>

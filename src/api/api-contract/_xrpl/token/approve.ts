@@ -6,6 +6,7 @@ import { AccountLinesRequest } from 'xrpl';
 import { QUERY_KEYS } from '~/api/utils/query-keys';
 
 import { useXrpl } from '~/hooks/contexts';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 
 interface Props {
@@ -13,7 +14,9 @@ interface Props {
   issuer: string;
   amount: string;
 }
-export const useTrustLines = ({ currency, issuer, amount }: Props) => {
+// xrp trust line. use evm’s approve to unify function names.
+export const useApprove = ({ currency, issuer, amount }: Props) => {
+  const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
   const { address } = xrp;
@@ -23,15 +26,17 @@ export const useTrustLines = ({ currency, issuer, amount }: Props) => {
     account: address,
   } as AccountLinesRequest;
 
-  const getTrustLInes = async () =>
-    (await client.request(getTrustLinesRequest))?.result?.lines ?? [];
+  const getTrustLInes = async () => {
+    if (!isXrp) return [];
+    return (await client.request(getTrustLinesRequest))?.result?.lines ?? [];
+  };
 
   const { data: trustLines, refetch: refetchTrustLines } = useQuery(
     [...QUERY_KEYS.TOKEN.GET_TRUST_LINES, address],
     getTrustLInes,
     {
       staleTime: 5 * 60 * 1000,
-      enabled: !!client && isConnected,
+      enabled: !!client && isConnected && isXrp,
     }
   );
 
@@ -54,9 +59,15 @@ export const useTrustLines = ({ currency, issuer, amount }: Props) => {
 
   const { mutateAsync, ...rest } = useMutation(QUERY_KEYS.TOKEN.SET_TRUST_LINE, setTrustLines);
 
+  const allow = async () => {
+    if (!isXrp) return;
+
+    await mutateAsync();
+  };
+
   return {
     allowance: !!line && limit >= Number(amount) + Number(line?.balance ?? 0),
-    allow: mutateAsync,
+    allow,
     refetchTrustLines,
     ...rest,
   };

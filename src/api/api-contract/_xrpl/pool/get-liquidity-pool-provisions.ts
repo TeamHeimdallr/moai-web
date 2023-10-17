@@ -6,14 +6,16 @@ import { QUERY_KEYS } from '~/api/utils/query-keys';
 import { TOKEN_PRICE } from '~/constants';
 
 import { useXrpl } from '~/hooks/contexts';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { IToken } from '~/types';
 
-import { useAmmInfo } from '../amm/get-amm-info';
+import { useTokenPrice } from '../token/price';
 
 export const useGetLiquidityPoolProvisions = (account: string) => {
+  const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
 
-  const { moiPrice } = useAmmInfo(account);
+  const { price: moiPrice } = useTokenPrice();
 
   const request = {
     command: 'account_tx',
@@ -24,17 +26,20 @@ export const useGetLiquidityPoolProvisions = (account: string) => {
   } as AccountTxRequest;
 
   const getTxs = async () => {
+    if (!isXrp) return;
+
     const info = await client.request(request);
     return info;
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getTxTokens = (tx: any) => {
-    if (!tx || !tx.Asset || !tx.Asset2 || !tx.Amount || !tx.Amount2)
-      return [
-        { symbol: 'XRP', balance: 0, price: 0, value: 0 },
-        { symbol: 'MOI', balance: 0, price: 0, value: 0 },
-      ] as IToken[];
+    const defaultResult = [
+      { symbol: 'XRP', balance: 0, price: 0, value: 0 },
+      { symbol: 'MOI', balance: 0, price: 0, value: 0 },
+    ] as IToken[];
+
+    if (!tx || !tx.Asset || !tx.Asset2 || !tx.Amount || !tx.Amount2 || !isXrp) return defaultResult;
 
     let xrpBalance: number = 0;
     let xrpPrice: number = 0;
@@ -75,7 +80,7 @@ export const useGetLiquidityPoolProvisions = (account: string) => {
     isError,
   } = useQuery([...QUERY_KEYS.AMM.GET_TRANSACTIONS, account], getTxs, {
     staleTime: 3000,
-    enabled: isConnected,
+    enabled: isConnected && isXrp,
   });
 
   const txData = (txDataRaw?.result?.transactions ?? []).filter(
@@ -93,7 +98,7 @@ export const useGetLiquidityPoolProvisions = (account: string) => {
       isError,
     };
 
-  const provisions = txData.map(({ tx }) => {
+  const provisions = txData?.map(({ tx }) => {
     const type =
       (tx?.TransactionType as 'AMMDeposit' | 'AMMWithdraw') === 'AMMDeposit'
         ? 'deposit'
