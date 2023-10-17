@@ -46,7 +46,7 @@ import IconTelegram from './icon-telegram.svg?react';
 import IconTime from './icon-time.svg?react';
 import IconTokens from './icon-tokens.svg?react';
 import IconTwitter from './icon-twitter.svg?react';
-import IconTwitterX from './icon-twitter-x.svg';
+import IconTwitterX from './icon-twitter-x.svg?react';
 import IconUnlocked from './icon-unlocked.svg?react';
 import IconUp from './icon-up.svg?react';
 import IconUpFill from './icon-up-fill.svg?react';

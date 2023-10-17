@@ -1,6 +1,6 @@
 import tw from 'twin.macro';
 
-import { ReactComponent as LogoLanding } from '~/assets/logos/logo-landing.svg';
+import LogoLanding from '~/assets/logos/logo-landing.svg?react';
 
 import { ButtonLanding } from '../button';
 

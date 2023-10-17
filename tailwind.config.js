@@ -101,11 +101,36 @@ module.exports = {
         ...convertSpacing([...Array(21).keys()]),
       }),
 
-      animation: theme => ({
-        ...defaultTheme.animation,
-      }),
       keyframes: theme => ({
         ...defaultTheme.keyframes,
+        showup: {
+          '0%': {
+            transform: 'translateY(40%)',
+            opacity: 0,
+            display: 'none',
+          },
+          '100%': {
+            transform: 'translateY(0)',
+            opacity: 1,
+            display: 'flex',
+          },
+        },
+        goingup: {
+          '0%': {
+            top: '320px',
+          },
+          '100%': {
+            top: '160px',
+          },
+        },
+        smaller: {
+          '0%': {
+            transform: 'scale(1)',
+          },
+          '100%': {
+            transform: 'scale(0.33)',
+          },
+        },
       }),
 
       boxShadow: theme => ({
@@ -116,6 +141,10 @@ module.exports = {
         ...defaultTheme.zIndex,
         ...convertSpacing([...Array(101).keys()], true),
       }),
+
+      backgroundImage: {
+        landing: "url('/src/assets/images/bg-landing.png')",
+      },
     },
   },
   truncate: {
@@ -268,6 +297,26 @@ module.exports = {
           fontSize: '48px',
           fontWeight: 700,
           lineHeight: '60px',
+          letterSpacing: '-1px',
+        },
+        '.font-eb-32': {
+          fontFamily: 'Pretendard Variable',
+          fontSize: '32px',
+          fontWeight: 800,
+          lineHeight: '36px',
+        },
+        '.font-eb-60': {
+          fontFamily: 'Pretendard Variable',
+          fontSize: '60px',
+          fontWeight: 800,
+          lineHeight: '72px',
+          letterSpacing: '-1px',
+        },
+        '.font-eb-80': {
+          fontFamily: 'Pretendard Variable',
+          fontSize: '80px',
+          fontWeight: 800,
+          lineHeight: '84px',
           letterSpacing: '-1px',
         },
       });

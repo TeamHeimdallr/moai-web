@@ -1,8 +1,8 @@
 import tw from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { IconMedium, IconTelegram, IconX } from '~/assets/icons';
-import { ReactComponent as LogoText } from '~/assets/logos/logo-text.svg';
+import { IconMedium, IconTelegram, IconTwitterX } from '~/assets/icons';
+import LogoText from '~/assets/logos/logo-text.svg?react';
 
 export const LandingFooter = () => {
   return (
@@ -12,7 +12,7 @@ export const LandingFooter = () => {
         <Text>© 2023 Moai Finance, Inc. All Rights Reserved</Text>
         <IconWrapper>
           <Icon>
-            <IconX width={24} fill={COLOR.NEUTRAL[60]} />
+            <IconTwitterX width={24} fill={COLOR.NEUTRAL[60]} />
           </Icon>
           <Icon>
             <IconMedium width={24} fill={COLOR.NEUTRAL[60]} />
