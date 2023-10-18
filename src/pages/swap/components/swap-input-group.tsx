@@ -121,46 +121,51 @@ export const SwapInputGroup = () => {
   return (
     <>
       <Wrapper>
-        <InputWrapper>
-          <InputInnerWrapper>
-            <InputNumber
-              token={<Token token={fromToken} icon={<IconDown />} />}
-              balance={fromTokenBalance}
-              tokenValue={fromTokenPrice * (Number(fromValue) || 0)}
-              value={fromValue}
-              maxButton
-              slider
-              handleChange={setFromValue}
-              handleTokenClick={openSelectTokenFromPopup}
-              name={'from'}
-              control={control}
-              setValue={setValue}
-              formState={formState}
-            />
-            <IconWrapper onClick={() => arrowClick()}>
-              <SwapArrowDown />
-            </IconWrapper>
-            <InputNumber
-              disabled
-              token={<Token token={toToken} icon={<IconDown />} />}
-              tokenValue={toTokenPrice * (Number(toValue) || 0)}
-              balance={toTokenBalance}
-              value={toValue}
-              focus={false}
-              handleTokenClick={openSelectTokenToPopup}
-              name={'to'}
-              control={control}
-              setValue={setValue}
-              formState={formState}
-            />
-          </InputInnerWrapper>
-          <InputLabel>{`1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`}</InputLabel>
-        </InputWrapper>
+        {address ? (
+          <InputWrapper>
+            <InputInnerWrapper>
+              <InputNumber
+                token={<Token token={fromToken} icon={<IconDown />} />}
+                balance={fromTokenBalance}
+                tokenValue={fromTokenPrice * (Number(fromValue) || 0)}
+                value={fromValue}
+                maxButton
+                slider
+                handleChange={setFromValue}
+                handleTokenClick={openSelectTokenFromPopup}
+                name={'from'}
+                control={control}
+                setValue={setValue}
+                formState={formState}
+              />
+              <IconWrapper onClick={() => arrowClick()}>
+                <SwapArrowDown />
+              </IconWrapper>
+              <InputNumber
+                disabled
+                token={<Token token={toToken} icon={<IconDown />} />}
+                tokenValue={toTokenPrice * (Number(toValue) || 0)}
+                balance={toTokenBalance}
+                value={toValue}
+                focus={false}
+                handleTokenClick={openSelectTokenToPopup}
+                name={'to'}
+                control={control}
+                setValue={setValue}
+                formState={formState}
+              />
+            </InputInnerWrapper>
+            <InputLabel>{`1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`}</InputLabel>
+          </InputWrapper>
+        ) : (
+          // TODO: component 수정
+          <Empty>please connect wallet</Empty>
+        )}
         <ButtonPrimaryLarge text="Preview" disabled={!validToSwap} onClick={openSwapPopup} />
       </Wrapper>
-      {selectTokenFromPopupOpened && <SelectFromTokenPopup />}
-      {selectTokenToPopupOpened && <SelectToTokenPopup />}
-      {swapPopupOpened && <SwapPopup />}
+      {address && selectTokenFromPopupOpened && <SelectFromTokenPopup />}
+      {address && selectTokenToPopupOpened && <SelectToTokenPopup />}
+      {address && swapPopupOpened && <SwapPopup />}
     </>
   );
 };
@@ -183,4 +188,8 @@ const IconWrapper = tw.div`
 
 const InputLabel = tw.div`
   flex justify-end font-r-12 text-neutral-60
+`;
+
+const Empty = tw.div`
+  flex-center font-r-16 text-neutral-60
 `;

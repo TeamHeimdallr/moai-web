@@ -50,12 +50,13 @@ export const useTokenPrice = () => {
       ? EVM_TOKEN_ADDRESS?.[selectedNetwork]?.WETH_XRP
       : EVM_TOKEN_ADDRESS?.[selectedNetwork]?.ROOT_XRP;
 
+  const address = EVM_CONTRACT_ADDRESS[selectedNetwork]?.VAULT as Address;
   const { data } = useContractRead({
-    address: EVM_CONTRACT_ADDRESS[selectedNetwork].VAULT as Address,
+    address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'getPoolTokens',
     args: [tokenAddress],
-    enabled: !!walletAddress || isEvm,
+    enabled: !!address && !!walletAddress && isEvm,
   });
 
   const price = data

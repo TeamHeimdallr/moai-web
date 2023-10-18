@@ -18,7 +18,7 @@ export const useEvm = () => {
     if (selectedNetwork === NETWORK.EVM_SIDECHAIN) {
       return IS_MAINNET ? [] : [xrpEvmSidechainTestnet];
     }
-    return [];
+    return [theRootNetworkTestnet];
   }, [selectedNetwork]);
 
   const chainId = chains?.[0]?.id ?? 0;

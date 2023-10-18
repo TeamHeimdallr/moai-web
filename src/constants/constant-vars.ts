@@ -83,3 +83,5 @@ export const BREAKPOINT = {
   MEDIA_MD: '(min-width: 848px)',
   MEDIA_LG: '(min-width: 1280px)',
 };
+
+export const ASSET_URL = 'https://moai-finance-assets.s3.amazonaws.com';

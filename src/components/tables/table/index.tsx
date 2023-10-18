@@ -65,7 +65,7 @@ export const Table = <T extends object>({
               rounded={!hasMore && !isLoading}
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                handleRowClick?.((row as any)?.meta);
+                handleRowClick?.(row.getValue('meta'));
               }}
             >
               {row.getVisibleCells().map((cell, i) => (

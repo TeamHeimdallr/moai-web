@@ -87,5 +87,5 @@ const ConnectedEvm = tw(ConnectedBase)`left-9`;
 const ConnectedXrp = tw(ConnectedBase)`right-9`;
 
 const Image = tw.img`
-  w-24 h-24 object-conver flex-center
+  w-24 h-24 object-cover flex-center
 `;

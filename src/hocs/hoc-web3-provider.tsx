@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ConnectKitProvider } from 'connectkit';
 import { Chain, configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
@@ -41,7 +42,11 @@ const Web3Provider = ({ children }: Props) => {
   }, [chains]);
 
   if (!wagmiConfig) return;
-  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
+  return (
+    <WagmiConfig config={wagmiConfig}>
+      <ConnectKitProvider>{children}</ConnectKitProvider>
+    </WagmiConfig>
+  );
 };
 
 export default Web3Provider;

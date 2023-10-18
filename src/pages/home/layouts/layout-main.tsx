@@ -2,7 +2,7 @@ import tw, { styled } from 'twin.macro';
 
 import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
 
-import bgMain from '~/assets/images/bg-main.png';
+import { ASSET_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
@@ -21,7 +21,10 @@ export const MainLayout = () => {
   const moaiBalance = balancesMap?.MOAI;
 
   return (
-    <MainWrapper isConnected={isConnected} style={{ backgroundImage: `url(${bgMain})` }}>
+    <MainWrapper
+      isConnected={isConnected}
+      style={{ backgroundImage: `url(${ASSET_URL}/images/bg-main.png)` }}
+    >
       {isConnected ? (
         <>
           <Label>My Moai balance</Label>

@@ -8,9 +8,9 @@ const PoolDetailWithdrawLiquidity = lazy(() => import('./pages/withdraw-liquidit
 const PoolDetailPage = () => {
   return (
     <Routes>
-      <Route path="/:id" element={<PoolDetail />} />
-      <Route path="/:id/deposit" element={<PoolDetailAddLiquidity />} />
-      <Route path="/:id/withdraw" element={<PoolDetailWithdrawLiquidity />} />
+      <Route path="/:network/:id" element={<PoolDetail />} />
+      <Route path="/:network/:id/deposit" element={<PoolDetailAddLiquidity />} />
+      <Route path="/:network/:id/withdraw" element={<PoolDetailWithdrawLiquidity />} />
     </Routes>
   );
 };

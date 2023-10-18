@@ -266,13 +266,14 @@ interface UsePoolTokens {
 export const usePoolTokens = ({ poolId }: UsePoolTokens) => {
   const { selectedNetwork, isEvm } = useNetwork();
 
+  const address = EVM_CONTRACT_ADDRESS[selectedNetwork]?.VAULT as Address;
   const { data: res, ...rest } = useContractRead({
-    address: EVM_CONTRACT_ADDRESS[selectedNetwork].VAULT as Address,
+    address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'getPoolTokens',
     args: [poolId],
     staleTime: 1000 * 5,
-    enabled: !!poolId && isEvm,
+    enabled: !!address && !!poolId && isEvm,
   });
   const data = res as IPoolTokenBalanceRaw | undefined;
 

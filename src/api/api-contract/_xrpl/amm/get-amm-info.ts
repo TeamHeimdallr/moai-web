@@ -41,12 +41,12 @@ export const useAmmInfo = (id: string) => {
   };
 
   const { data: ammInfoRawData } = useQuery(
-    [...QUERY_KEYS.AMM.GET_AMM_INFO, amm?.assets.asset1.currency, amm?.assets.asset2.currency],
+    [...QUERY_KEYS.AMM.GET_AMM_INFO, amm?.assets?.asset1?.currency, amm?.assets?.asset2?.currency],
     getAmm,
     { staleTime: 1000 * 60 * 5, enabled: isConnected && !!amm && isXrp }
   );
   const { data: feeData } = useQuery(
-    [...QUERY_KEYS.AMM.GET_FEE, amm?.assets.asset1.currency, amm?.assets.asset2.currency],
+    [...QUERY_KEYS.AMM.GET_FEE, amm?.assets?.asset1?.currency, amm?.assets?.asset2?.currency],
     getFee,
     { staleTime: 1000 * 60 * 5, enabled: isConnected && !!amm && isXrp }
   );

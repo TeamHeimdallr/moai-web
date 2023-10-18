@@ -34,12 +34,13 @@ export const useSwap = ({
   const { evm } = useConnectedWallet();
   const { address } = evm;
 
+  const contractAddress = EVM_CONTRACT_ADDRESS[selectedNetwork]?.VAULT as Address;
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
-    address: EVM_CONTRACT_ADDRESS[selectedNetwork].VAULT as Address,
+    address: contractAddress,
     abi: BALANCER_VAULT_ABI,
     functionName: 'swap',
     args: [singleSwap, fundManagement, limit, deadline],
-    enabled: !!singleSwap && !!fundManagement && !!address && isEvm,
+    enabled: !!contractAddress && !!singleSwap && !!fundManagement && !!address && isEvm,
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);

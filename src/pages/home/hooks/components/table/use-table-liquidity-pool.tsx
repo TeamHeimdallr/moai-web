@@ -128,7 +128,7 @@ export const useTableLiquidityPool = () => {
             id: d.id,
             network: d.network,
           },
-          chain: <TableColumn value={<NetworkChip network={d.network} />} width={216} />,
+          network: <TableColumn value={<NetworkChip network={d.network} />} width={216} />,
           assets: <TableColumnTokenIcon tokens={d.assets} />,
           compositions: <TableColumnToken tokens={tokens} />,
           poolValue: (

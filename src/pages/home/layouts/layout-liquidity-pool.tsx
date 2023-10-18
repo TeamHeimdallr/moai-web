@@ -5,12 +5,14 @@ import { ButtonChipFilter } from '~/components/buttons/chip/filter';
 import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
 
+import { getNetworkAbbr } from '~/utils';
 import { useShowAllPoolsStore } from '~/states/pages';
+import { NETWORK } from '~/types';
 
 import { useTableLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool';
 
 interface Meta {
-  chain: string;
+  network: NETWORK;
   id: string;
 }
 export const LiquidityPoolLayout = () => {
@@ -20,7 +22,7 @@ export const LiquidityPoolLayout = () => {
 
   const handleRowClick = (meta?: Meta) => {
     if (!meta) return;
-    navigate(`/pools/${meta.chain}/${meta.id}`);
+    navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.id}`);
   };
 
   // TODO: pool 구성에 있는 토큰 리스트

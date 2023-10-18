@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import tw from 'twin.macro';
 
@@ -19,18 +19,20 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <ReactQueryProvider>
-        <Web3Provider>
-          <RouteWrapper>
-            <Routes>
-              <Route path="*" element={<Pages />} />
-            </Routes>
+      <Suspense>
+        <ReactQueryProvider>
+          <Web3Provider>
+            <RouteWrapper>
+              <Routes>
+                <Route path="*" element={<Pages />} />
+              </Routes>
 
-            <ToastContainer />
-            {connectWalletOpened && <ConnectWallet />}
-          </RouteWrapper>
-        </Web3Provider>
-      </ReactQueryProvider>
+              <ToastContainer />
+              {connectWalletOpened && <ConnectWallet />}
+            </RouteWrapper>
+          </Web3Provider>
+        </ReactQueryProvider>
+      </Suspense>
     </BrowserRouter>
   );
 };
