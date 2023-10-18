@@ -9,7 +9,7 @@ import { IPool } from '~/types';
 interface Props {
   pool: IPool;
 }
-export const SwapHistories = ({ pool }: Props) => {
+export const PoolSwapHistories = ({ pool }: Props) => {
   const { data, columns } = useTableSwapHistories(pool.id);
 
   return (

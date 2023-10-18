@@ -10,15 +10,17 @@ interface Props {
     currency?: string;
     amount: string;
   }[];
+  enabled?: boolean;
 }
 
-export const useAddLiquidity = ({ id, tokens }: Props) => {
+export const useAddLiquidity = ({ id, tokens, enabled }: Props) => {
   const { isEvm } = useNetwork();
 
   const resEvm = useAddLiquidityEvm({
     poolId: id,
     tokens: tokens?.map(t => t?.address ?? '') ?? [],
     amountsIn: tokens?.map(t => BigInt(t?.amount || '0')) ?? [],
+    enabled,
   });
   const resXrp = useAddLiquidityXrp({
     id,
@@ -32,6 +34,7 @@ export const useAddLiquidity = ({ id, tokens }: Props) => {
       amount: tokens?.[1]?.amount ?? '0',
       currency: tokens?.[1]?.currency ?? '',
     },
+    enabled,
   });
 
   return isEvm ? resEvm : resXrp;

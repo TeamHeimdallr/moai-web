@@ -3,7 +3,7 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconCheck } from '~/assets/icons';
-import stepLoading from '~/assets/icons/icon-step-loading.png';
+import { imageStepLoading } from '~/assets/images';
 
 interface Props {
   totalSteps: number;
@@ -38,7 +38,7 @@ export const LoadingStep = ({ totalSteps, step, isLoading, isDone = false }: Pro
                 <>
                   {progress === Progress.CURRENT && isLoading ? (
                     <IconAndText>
-                      <LoadingIcon src={stepLoading} width={32} height={32}></LoadingIcon>
+                      <LoadingIcon src={imageStepLoading} width={32} height={32} />
                       {(i + 1).toString()}
                     </IconAndText>
                   ) : (

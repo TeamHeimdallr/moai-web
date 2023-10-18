@@ -82,7 +82,7 @@ export const useLiquidityPoolBalance = (poolId: Address) => {
   const poolTotalBalance = compositions?.reduce((acc, cur) => acc + (cur?.balance || 0), 0) ?? 0;
   const poolTotalValue = compositions?.reduce((acc, cur) => acc + (cur?.value || 0), 0) ?? 0;
   const poolVolume = swapHistoriesData?.reduce((acc, cur) => {
-    const value = cur?.tokens?.reduce((tAcc, tCur) => tAcc + tCur.value, 0) ?? 0;
+    const value = cur?.tokens?.reduce((tAcc, tCur) => tAcc + (tCur?.value ?? 0), 0) ?? 0;
     return acc + value;
   }, 0);
   const apr = poolTotalValue === 0 ? 0 : ((poolVolume * 0.003 * 365) / poolTotalValue) * 100;

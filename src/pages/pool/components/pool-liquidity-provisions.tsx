@@ -13,7 +13,7 @@ import { IPool } from '~/types';
 interface Props {
   pool: IPool;
 }
-export const LiquidityProvisions = ({ pool }: Props) => {
+export const PoolLiquidityProvisions = ({ pool }: Props) => {
   const { selectedTab, selectTab } = useTablePoolLiquidityProvisionSelectTabStore();
   const { evm, xrp } = useConnectedWallet();
   const address = evm?.address ?? xrp?.address;

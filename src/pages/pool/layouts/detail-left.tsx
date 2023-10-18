@@ -5,10 +5,10 @@ import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-p
 
 import { useRequirePrarams } from '~/hooks/utils';
 
-import { LiquidityProvisions } from './components/liquidity-provisions';
-import { PoolCompositions } from './components/pool-compositions';
-import { PoolInfo } from './components/pool-info';
-import { SwapHistories } from './components/swap-histories';
+import { PoolCompositions } from '../components/pool-compositions';
+import { PoolInfo } from '../components/pool-info';
+import { PoolLiquidityProvisions } from '../components/pool-liquidity-provisions';
+import { PoolSwapHistories } from '../components/pool-swap-histories';
 
 export const DetailLeft = () => {
   const navigate = useNavigate();
@@ -28,8 +28,8 @@ export const DetailLeft = () => {
         fees={formattedFees}
       />
       <PoolCompositions pool={pool} />
-      <LiquidityProvisions pool={pool} />
-      <SwapHistories pool={pool} />
+      <PoolLiquidityProvisions pool={pool} />
+      <PoolSwapHistories pool={pool} />
     </Wrapper>
   );
 };

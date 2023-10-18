@@ -47,7 +47,7 @@ export const useTokenPrice = () => {
   const getTokenPrice = (name?: string) => {
     if (name?.toLowerCase() === 'xrp' || name?.toLowerCase() === 'wxrp') return price;
 
-    return TOKEN_PRICE[name || ''] || 0;
+    return (TOKEN_PRICE?.[name || ''] as number) || 0;
   };
 
   return {

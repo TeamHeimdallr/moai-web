@@ -33,7 +33,7 @@ export const useApprove = ({
   const { evm } = useConnectedWallet();
   const { isConnected, address: walletAddress } = evm;
 
-  const { refetch } = useContractRead({
+  const { isLoading: isReadLoading, refetch } = useContractRead({
     address: tokenAddress,
     abi: ERC20_TOKEN_ABI,
     functionName: 'allowance',
@@ -49,7 +49,7 @@ export const useApprove = ({
     onError: () => setAllowance(false),
   });
 
-  const { config } = usePrepareContractWrite({
+  const { isLoading: isPrepareLoading, config } = usePrepareContractWrite({
     address: tokenAddress,
     abi: ERC20_TOKEN_ABI,
     functionName: 'approve',
@@ -60,7 +60,7 @@ export const useApprove = ({
     enabled: enabled && !!walletAddress && !!spender && isEvm,
   });
 
-  const { writeAsync } = useContractWrite(config);
+  const { isLoading, isSuccess, writeAsync } = useContractWrite(config);
 
   const allow = async () => {
     if (!isEvm) return;
@@ -69,6 +69,8 @@ export const useApprove = ({
   };
 
   return {
+    isLoading: isLoading || isReadLoading || isPrepareLoading,
+    isSuccess,
     allowance: isConnected && allowance,
     refetch,
     allow,

@@ -31,14 +31,14 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
     return (await client.request(getTrustLinesRequest))?.result?.lines ?? [];
   };
 
-  const { data: trustLines, refetch } = useQuery(
-    [...QUERY_KEYS.TOKEN.GET_TRUST_LINES, address],
-    getTrustLines,
-    {
-      staleTime: 5 * 60 * 1000,
-      enabled: !!client && isConnected && isXrp,
-    }
-  );
+  const {
+    isLoading: isReadLoading,
+    data: trustLines,
+    refetch,
+  } = useQuery([...QUERY_KEYS.TOKEN.GET_TRUST_LINES, address], getTrustLines, {
+    staleTime: 5 * 60 * 1000,
+    enabled: !!client && isConnected && isXrp,
+  });
 
   const line = trustLines?.find(d => d.currency === currency && d.account === issuer);
   const limit = Number(line?.limit ?? 0);
@@ -57,7 +57,10 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
 
   const setTrustLines = async () => await submitTransaction({ transaction: txRequest as any });
 
-  const { mutateAsync } = useMutation(QUERY_KEYS.TOKEN.SET_TRUST_LINE, setTrustLines);
+  const { isLoading, isSuccess, mutateAsync } = useMutation(
+    QUERY_KEYS.TOKEN.SET_TRUST_LINE,
+    setTrustLines
+  );
 
   const allow = async () => {
     if (!isXrp) return;
@@ -66,6 +69,8 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
   };
 
   return {
+    isLoading: isLoading || isReadLoading,
+    isSuccess,
     allowance: !!line && limit >= Number(amount) + Number(line?.balance ?? 0),
     refetch,
     allow,

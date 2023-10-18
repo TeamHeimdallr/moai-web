@@ -19,17 +19,17 @@ export const NetworkChip = ({ network }: Props) => {
   const networkMap: Record<NETWORK, NetworkMapData> = {
     [NETWORK.XRPL]: {
       name: 'XRPL',
-      icon: IconNetworkXrpl,
+      icon: <IconNetworkXrpl width={20} height={20} />,
       color: COLOR.CHAIN.XRPL,
     },
     [NETWORK.THE_ROOT_NETWORK]: {
       name: 'Root Network',
-      icon: IconNetworkRoot,
+      icon: <IconNetworkRoot width={20} height={20} />,
       color: COLOR.CHAIN.ROOT,
     },
     [NETWORK.EVM_SIDECHAIN]: {
       name: 'Evm Sidechain',
-      icon: IconNetworkEvm,
+      icon: <IconNetworkEvm width={20} height={20} />,
       color: COLOR.CHAIN.EVM,
     },
   };

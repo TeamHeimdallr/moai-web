@@ -1,6 +1,6 @@
 import tw from 'twin.macro';
 
-import { UserPoolBalance } from '../../components/user-pool-balance';
+import { UserPoolBalance } from '../components/user-pool-balance';
 
 export const DetailRight = () => {
   return (

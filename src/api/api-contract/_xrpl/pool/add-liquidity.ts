@@ -20,8 +20,9 @@ interface Props {
 
   token1: Token;
   token2: Token;
+  enabled?: boolean;
 }
-export const useAddLiquidity = ({ id, token1, token2 }: Props) => {
+export const useAddLiquidity = ({ id, token1, token2, enabled }: Props) => {
   const { isXrp } = useNetwork();
   const { ammExist } = useAmmInfo(id);
 
@@ -90,7 +91,7 @@ export const useAddLiquidity = ({ id, token1, token2 }: Props) => {
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = async () => {
-    if (!ammExist || !address || !isXrp) return;
+    if (!ammExist || !address || !isXrp || !enabled) return;
     await mutateAsync?.();
   };
 

@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import * as yup from 'yup';
 
 import { IconDown } from '~/assets/icons';
 
 import { Token } from '~/components/token';
-
-import { HOOK_FORM_KEY } from '~/types/components/inputs';
 
 import { InputNumber } from '.';
 
@@ -29,17 +26,8 @@ export const Normal: Story = {
 const Template = () => {
   const [_inputValue, setInputValue] = useState<number>();
 
-  const balance = 1234.12;
-  const schema = yup.object({
-    [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]: yup
-      .number()
-      .min(0)
-      .max(balance || 0, 'Exceeds wallet balance'),
-  });
-
   return (
     <InputNumber
-      schema={schema}
       handleChange={setInputValue}
       token={<Token token={'MOAI'} icon={<IconDown />} />}
       handleTokenClick={() => console.log('token clicked')}
