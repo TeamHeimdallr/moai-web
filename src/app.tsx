@@ -10,7 +10,7 @@ import { usePopup } from './hooks/components/use-popup';
 import { useConnectXrpl } from './hooks/contexts';
 import { POPUP_ID } from './types';
 
-const HomePage = lazy(() => import('./pages/home'));
+const Pages = lazy(() => import('./pages'));
 
 const RouteWrapper = tw.main`relative w-full h-full min-w-1440`;
 const App = () => {
@@ -23,7 +23,7 @@ const App = () => {
         <Web3Provider>
           <RouteWrapper>
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route path="*" element={<Pages />} />
             </Routes>
 
             <ToastContainer />
