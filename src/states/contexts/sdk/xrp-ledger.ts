@@ -2,9 +2,9 @@ import { Client } from 'xrpl';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
-import { logger } from '~/states/middleware/logger';
+import { XRPL_WSS } from '~/constants';
 
-import { XRPL_WSS } from '~/moai-xrp-ledger/constants';
+import { logger } from '~/states/middleware/logger';
 
 const client = new Client(XRPL_WSS);
 

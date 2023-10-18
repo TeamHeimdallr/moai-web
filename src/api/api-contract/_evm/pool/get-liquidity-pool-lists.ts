@@ -14,11 +14,7 @@ export const useGetLiquidityPoolLists = () => {
   const { id } = pool;
 
   // TODO: update to server api
-  const {
-    pool: poolInfo,
-    liquidityPoolTokenPrice,
-    liquidityPoolTokenBalance,
-  } = useLiquidityPoolBalance(id as Address);
+  const { pool: poolInfo, lpTokenPrice, lpTokenBalance } = useLiquidityPoolBalance(id as Address);
 
   const isNew = false;
   const compositions = poolInfo?.compositions ?? [];
@@ -27,7 +23,7 @@ export const useGetLiquidityPoolLists = () => {
   const volume = poolInfo?.volume ?? 0;
   const apr = poolInfo?.apr ?? 0;
 
-  const balance = (liquidityPoolTokenBalance ?? 0) * (liquidityPoolTokenPrice ?? 0);
+  const balance = (lpTokenBalance ?? 0) * (lpTokenPrice ?? 0);
 
   return [
     {

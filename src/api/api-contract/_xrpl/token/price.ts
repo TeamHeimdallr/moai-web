@@ -7,9 +7,7 @@ import { TOKEN_PRICE, XRP_AMM } from '~/constants';
 
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { IAmm } from '~/types';
-
-import { AmmResponse } from '~/moai-xrp-ledger/types/contracts';
+import { IAmm, IAmmResponse } from '~/types';
 
 // TODO: connect to server. get calculated token price in pool
 export const useTokenPrice = () => {
@@ -27,7 +25,7 @@ export const useTokenPrice = () => {
   const getAmm = async () => {
     if (!isXrp) return;
 
-    const info = await client.request<BaseRequest, AmmResponse>(request);
+    const info = await client.request<BaseRequest, IAmmResponse>(request);
     return info;
   };
 

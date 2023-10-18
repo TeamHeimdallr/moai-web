@@ -3,7 +3,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
-import { IconGem, IconMetamask } from '~/assets/icons';
+import { imageWalletGem, imageWalletMetamask } from '~/assets/images';
 
 import { useConnectedWallet } from '~/hooks/wallets';
 import { truncateAddress } from '~/utils/util-string';
@@ -27,11 +27,11 @@ export const Account = () => {
         {bothConnected ? (
           <BothConnectedWrapper>
             <ConnectedEvm>
-              <IconMetamask width={24} height={24} />
+              <Image src={imageWalletMetamask} alt="metamask" />
             </ConnectedEvm>
             <ConnectedXrp>
               {/* TODO: change to connected wallet icon */}
-              <IconGem width={24} height={24} />
+              <Image src={imageWalletGem} alt="gem wallet" />
             </ConnectedXrp>
           </BothConnectedWrapper>
         ) : (
@@ -85,3 +85,7 @@ const ConnectedBase = tw.div`
 `;
 const ConnectedEvm = tw(ConnectedBase)`left-9`;
 const ConnectedXrp = tw(ConnectedBase)`right-9`;
+
+const Image = tw.img`
+  w-24 h-24 object-conver flex-center
+`;

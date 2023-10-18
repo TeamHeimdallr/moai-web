@@ -7,9 +7,7 @@ import { TOKEN_PRICE, XRP_AMM } from '~/constants';
 
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { IAmm } from '~/types';
-
-import { AmmResponse, FormattedAmmResponse } from '~/moai-xrp-ledger/types/contracts';
+import { IAmm, IAmmResponse, IFormattedAmmResponse } from '~/types';
 
 // TODO: change to server api
 export const useAmmInfo = (id: string) => {
@@ -27,7 +25,7 @@ export const useAmmInfo = (id: string) => {
   const getAmm = async () => {
     if (!isXrp) return;
 
-    const info = await client.request<BaseRequest, AmmResponse>(request);
+    const info = await client.request<BaseRequest, IAmmResponse>(request);
     return info;
   };
 
@@ -73,7 +71,7 @@ export const useAmmInfo = (id: string) => {
     ? poolTotalValue / liquidityPoolTokenBalance
     : 0;
 
-  const ammInfo: FormattedAmmResponse = {
+  const ammInfo: IFormattedAmmResponse = {
     account: ammInfoRaw?.account ?? '',
     poolTotalValue,
     fee,

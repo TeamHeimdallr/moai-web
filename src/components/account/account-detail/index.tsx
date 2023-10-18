@@ -4,6 +4,7 @@ import tw from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconCopy, IconLogout, IconNext } from '~/assets/icons';
+import { imageWalletGem, imageWalletMetamask } from '~/assets/images';
 
 import { ButtonIconSmall } from '~/components/buttons/icon';
 
@@ -14,7 +15,7 @@ import { Slippage } from '../slippage';
 
 export const AccountDetail = () => {
   const { evm, xrp } = useConnectedWallet();
-  const networkName = useNetwork();
+  const { name } = useNetwork();
 
   return (
     <Wrapper>
@@ -43,9 +44,7 @@ export const AccountDetail = () => {
           </Account>
         ) : (
           <AccountNotConnected onClick={evm.connect}>
-            <NotConnectedLogo>
-              <IconMetamask width={24} height={24} />
-            </NotConnectedLogo>
+            <NotConnectedLogo src={imageWalletMetamask} alt="metamask" />
             <ConnectText>Connect with Metamask</ConnectText>
             <IconButton>
               <IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />
@@ -72,9 +71,7 @@ export const AccountDetail = () => {
           </Account>
         ) : (
           <AccountNotConnected onClick={xrp.connect}>
-            <NotConnectedLogo>
-              <IconGem width={24} height={24} />
-            </NotConnectedLogo>
+            <NotConnectedLogo src={imageWalletGem} alt="gem wallet" />
             <ConnectText>Connect with XRP Wallet</ConnectText>
             <IconButton>
               <IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />
@@ -88,7 +85,7 @@ export const AccountDetail = () => {
           <Text>{'Network'}</Text>
           <CurrentNetwork>
             <NetworkStatus />
-            <NetworkText>{networkName}</NetworkText>
+            <NetworkText>{name}</NetworkText>
           </CurrentNetwork>
         </NetworkWrapper>
       </Panel>
@@ -156,7 +153,7 @@ const NetworkText = tw.div`
 const SmallText = tw.div`font-r-11 text-neutral-60`;
 const AddressTextWrapper = tw.div`flex justify-between`;
 
-const NotConnectedLogo = tw.div`
+const NotConnectedLogo = tw.img`
   rounded-full bg-neutral-20 w-40 h-40 flex-center flex-shrink-0
 `;
 
