@@ -13,14 +13,14 @@ const Graph = () => {
     const graph = document.getElementById('graph') as HTMLCanvasElement;
 
     const ctx = graph.getContext('2d');
-    console.log(ctx);
     if (!ctx) return;
+    console.log(ctx);
 
-    const gradient1 = ctx.createLinearGradient(0, 100, 190, 280);
+    const gradient1 = ctx.createLinearGradient(190, 100, 0, 290);
     gradient1.addColorStop(0, '#FCFFD6'); // 그라데이션 끝 색상
     gradient1.addColorStop(1, 'rgba(252, 255, 214, 0.1)'); // 그라데이션 시작 색상 및 투명도
 
-    const gradient2 = ctx.createLinearGradient(0, 0, 150, 150);
+    const gradient2 = ctx.createLinearGradient(190, 100, 380, 290);
     gradient2.addColorStop(0, '#A3B6FF'); // 그라데이션 끝 색상
     gradient2.addColorStop(1, 'rgba(163, 182, 255, 0.1)'); // 그라데이션 시작 색상 및 투명도
 
