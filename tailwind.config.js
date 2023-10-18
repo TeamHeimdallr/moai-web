@@ -101,38 +101,6 @@ module.exports = {
         ...convertSpacing([...Array(21).keys()]),
       }),
 
-      keyframes: theme => ({
-        ...defaultTheme.keyframes,
-        showup: {
-          '0%': {
-            transform: 'translateY(40%)',
-            opacity: 0,
-            display: 'none',
-          },
-          '100%': {
-            transform: 'translateY(0)',
-            opacity: 1,
-            display: 'flex',
-          },
-        },
-        goingup: {
-          '0%': {
-            top: '320px',
-          },
-          '100%': {
-            top: '160px',
-          },
-        },
-        smaller: {
-          '0%': {
-            transform: 'scale(1)',
-          },
-          '100%': {
-            transform: 'scale(0.33)',
-          },
-        },
-      }),
-
       boxShadow: theme => ({
         ...defaultTheme.boxShadow,
       }),
