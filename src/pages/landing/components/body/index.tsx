@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { IconLink } from '~/assets/icons';
@@ -7,8 +6,6 @@ import LogoLanding from '~/assets/logos/logo-landing.svg?react';
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
 
 export const LandingBody = () => {
-  const navigate = useNavigate();
-
   return (
     <Wrapper>
       <LogoWrapper>
@@ -25,7 +22,7 @@ export const LandingBody = () => {
             text="Get started"
             buttonType={'outlined'}
             icon={<IconLink />}
-            onClick={() => navigate('/')}
+            onClick={() => window.open('https://moai-finance.xyz/')}
           />
         </ButtonWrapper>
       </BottomWrapper>

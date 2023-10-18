@@ -11,10 +11,10 @@ export const LandingFooter = () => {
         <LogoText width={70} height={16} />
         <Text>© 2023 Moai Finance, Inc. All Rights Reserved</Text>
         <IconWrapper>
-          <Icon>
+          <Icon onClick={() => window.open('https://twitter.com/MoaiFinance')}>
             <IconTwitterX width={24} fill={COLOR.NEUTRAL[60]} />
           </Icon>
-          <Icon>
+          <Icon onClick={() => window.open('https://medium.com/@moai-finance')}>
             <IconMedium width={24} fill={COLOR.NEUTRAL[60]} />
           </Icon>
           <Icon>
