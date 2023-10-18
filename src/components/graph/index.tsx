@@ -1,63 +1,33 @@
-import { useEffect } from 'react';
-import { Chart } from 'chart.js/auto';
 import tw from 'twin.macro';
 
-import { TOKEN } from '~/constants';
+import { useDoughnutGraph } from '~/hooks/data/use-doughnut-graph';
+import { formatNumberWithUnit } from '~/utils/number';
 
-const Graph = () => {
-  useEffect(() => {
-    const data = [
-      { token: TOKEN.MOAI, ratio: 50 },
-      { token: TOKEN.WETH, ratio: 50 },
-    ];
-    const graph = document.getElementById('graph') as HTMLCanvasElement;
+import { PoolCompositionData } from '~/moai-xrp-ledger/types/components';
 
-    const ctx = graph.getContext('2d');
-    if (!ctx) return;
-    console.log(ctx);
+interface Props {
+  data: Omit<PoolCompositionData, 'tokenIssuer'>[];
+}
+const Graph = ({ data }: Props) => {
+  const totalValue = data.reduce((acc, cur) => acc + cur.value, 0);
 
-    const gradient1 = ctx.createLinearGradient(190, 100, 0, 290);
-    gradient1.addColorStop(0, '#FCFFD6'); // 그라데이션 끝 색상
-    gradient1.addColorStop(1, 'rgba(252, 255, 214, 0.1)'); // 그라데이션 시작 색상 및 투명도
-
-    const gradient2 = ctx.createLinearGradient(190, 100, 380, 290);
-    gradient2.addColorStop(0, '#A3B6FF'); // 그라데이션 끝 색상
-    gradient2.addColorStop(1, 'rgba(163, 182, 255, 0.1)'); // 그라데이션 시작 색상 및 투명도
-
-    new Chart(graph, {
-      type: 'doughnut',
-      data: {
-        datasets: [
-          {
-            data: data.map(row => row.ratio),
-            backgroundColor: [gradient1, gradient2],
-            borderWidth: 0,
-            circumference: 180,
-            rotation: -90,
-            spacing: 3,
-            borderRadius: 3,
-          },
-        ],
-      },
-      options: {
-        cutout: '83%',
-        animation: false,
-        plugins: {
-          tooltip: {
-            enabled: false,
-          },
-        },
-      },
-    });
-  }, []);
+  useDoughnutGraph({ data });
 
   return (
     <Wrapper>
       <Canvas id="graph" />
+      <TotalValue>
+        <Amount>${formatNumberWithUnit(totalValue)}</Amount>
+        <Title>Pool Value</Title>
+      </TotalValue>
     </Wrapper>
   );
 };
 
 export default Graph;
-const Wrapper = tw.div`w-380 h-380`;
-const Canvas = tw.canvas``;
+
+const Wrapper = tw.div`w-380 h-380 relative flex items-end justify-center`;
+const Canvas = tw.canvas`z-1 absolute`;
+const TotalValue = tw.div`flex-center flex-col gap-2`;
+const Amount = tw.div`font-b-28 text-neutral-100`;
+const Title = tw.div`font-m-16 text-neutral-80 pb-120`;
