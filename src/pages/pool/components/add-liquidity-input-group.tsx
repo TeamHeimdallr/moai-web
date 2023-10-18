@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
 import { Address } from 'wagmi';
+import * as yup from 'yup';
 
 import { useLiquidityPoolTokenAmount } from '~/api/api-contract/_evm/pool/get-liquidity-pool-balance';
 import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
@@ -31,8 +33,6 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
   const [inputValue1, setInputValue1] = useState<number>(0);
   const [inputValue2, setInputValue2] = useState<number>(0);
 
-  const { control, setValue, formState } = useForm<InputFormState>();
-
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
 
   const { balancesMap } = useTokenBalanceInPool();
@@ -50,6 +50,23 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
       value: data.value,
     };
   });
+
+  const schema = yup.object().shape({
+    input1: yup
+      .number()
+      .min(0)
+      .max(tokens?.[0]?.balance ?? 0, 'Exceeds wallet balance')
+      .required(),
+    input2: yup
+      .number()
+      .min(0)
+      .max(tokens?.[1]?.balance ?? 0, 'Exceeds wallet balance')
+      .required(),
+  });
+  const { control, setValue, formState } = useForm<InputFormState>({
+    resolver: yupResolver(schema),
+  });
+
   const { priceImpact: priceImpactRaw } = useLiquidityPoolTokenAmount({
     poolId: pool.id as Address,
     amountsIn: [inputValue1, inputValue2],

@@ -1,11 +1,11 @@
 import tw from 'twin.macro';
 
-import { UserPoolBalance } from '../components/user-pool-balance';
+import { UserPoolBalances } from '../components/user-pool-balances';
 
 export const DetailRight = () => {
   return (
     <Wrapper>
-      <UserPoolBalance />
+      <UserPoolBalances />
     </Wrapper>
   );
 };

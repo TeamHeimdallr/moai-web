@@ -1,7 +1,9 @@
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
 import { Address } from 'wagmi';
+import * as yup from 'yup';
 
 import { useWithdrawTokenAmounts } from '~/api/api-contract/_evm/pool/get-liquidity-pool-balance';
 
@@ -38,9 +40,6 @@ export const WithdrawLiquidityInputGroup = ({
 
   const [inputValue, setInputValue] = useState<number>();
 
-  const { control, setValue, formState } = useForm<InputFormState>();
-  const isFormError = formState?.errors?.input1 !== undefined;
-
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.WITHDRAW_LP);
   const { compositions } = pool;
 
@@ -56,7 +55,6 @@ export const WithdrawLiquidityInputGroup = ({
   });
 
   const priceImpact = priceImpactRaw < 0.01 ? '< 0.01' : formatNumber(priceImpactRaw, 2);
-  const isValid = isFormError || !inputValue || inputValue <= lpTokenBalance;
 
   // const [opened, open] = useState(false);
   // const toggle = () => open(!opened);
@@ -64,6 +62,20 @@ export const WithdrawLiquidityInputGroup = ({
   // useOnClickOutside([ref, iconRef], () => settingOpen(false));
   const withdrawTokenValue =
     (inputValue ?? 0) * (lpTokenTotalSupply ? (pool.value ?? 0) / lpTokenTotalSupply : 0);
+
+  const schema = yup.object().shape({
+    input1: yup
+      .number()
+      .min(0)
+      .max(lpTokenBalance ?? 0, 'Exceeds wallet balance')
+      .required(),
+  });
+  const { control, setValue, formState } = useForm<InputFormState>({
+    resolver: yupResolver(schema),
+  });
+
+  const isFormError = formState?.errors?.input1 !== undefined;
+  const isValid = isFormError || !inputValue || inputValue <= lpTokenBalance;
 
   return (
     <Wrapper>

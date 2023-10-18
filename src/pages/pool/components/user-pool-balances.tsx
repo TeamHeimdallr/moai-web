@@ -13,7 +13,7 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber } from '~/utils/util-number';
 import { IToken } from '~/types';
 
-export const UserPoolBalance = () => {
+export const UserPoolBalances = () => {
   const navigate = useNavigate();
 
   const { evm, xrp } = useConnectedWallet();
