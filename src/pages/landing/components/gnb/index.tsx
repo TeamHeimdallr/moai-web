@@ -1,7 +1,7 @@
 import tw from 'twin.macro';
 
 import { IconLink } from '~/assets/icons';
-import { ReactComponent as LogoText } from '~/assets/logos/logo-text.svg';
+import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
 
