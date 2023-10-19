@@ -16,8 +16,8 @@ export const getTokenPrice = async (client: PublicClient, network: NETWORK, symb
 
   const tokenAddress =
     network === NETWORK.THE_ROOT_NETWORK
-      ? EVM_TOKEN_ADDRESS?.[network]?.WETH_XRP
-      : EVM_TOKEN_ADDRESS?.[network]?.ROOT_XRP;
+      ? EVM_TOKEN_ADDRESS?.[network]?.ROOT_XRP
+      : EVM_TOKEN_ADDRESS?.[network]?.WETH_XRP;
 
   if (!tokenAddress || !client) return 0;
 
@@ -25,7 +25,7 @@ export const getTokenPrice = async (client: PublicClient, network: NETWORK, symb
     address: EVM_CONTRACT_ADDRESS[network].VAULT as Address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'getPoolTokens',
-    args: [EVM_POOL[network]?.[0]],
+    args: [EVM_POOL[network]?.[0]?.id],
   });
 
   const tokenPrice = data

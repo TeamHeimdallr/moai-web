@@ -116,7 +116,7 @@ export const WithdrawLiquidityInputGroup = ({
               <Fragment key={symbol + i}>
                 <TokenList
                   type="large"
-                  title={`${symbol} ${amountsOut[i].toFixed(4)} (${weight}%)`}
+                  title={`${symbol} ${Number(amountsOut[i]?.toFixed(4))} (${weight}%)`}
                   description={`${TOKEN_DESCRIPTION_MAPPER[symbol]}`}
                   image={TOKEN_IMAGE_MAPPER[symbol]}
                   leftAlign={true}
@@ -128,7 +128,7 @@ export const WithdrawLiquidityInputGroup = ({
         </ContentWrapper>
         <PriceImpaceWrapper>
           <PriceImpact>Price impact</PriceImpact>
-          <PriceImpact>{`< ${formatNumber(priceImpact)}%`}</PriceImpact>
+          <PriceImpact>{`${priceImpact}%`}</PriceImpact>
         </PriceImpaceWrapper>
       </InnerWrapper>
 

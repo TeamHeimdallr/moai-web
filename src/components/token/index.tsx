@@ -1,4 +1,5 @@
 import { HTMLAttributes, ReactNode } from 'react';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -34,7 +35,11 @@ export const Token = ({
 }: Props) => {
   return (
     <Wrapper type={type} selected={selected} clickable={clickable} hasImage={!!image} {...rest}>
-      {image && <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />}
+      {image && TOKEN_IMAGE_MAPPER[token] ? (
+        <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />
+      ) : (
+        <Jazzicon diameter={type === 'large' ? 24 : 20} seed={jsNumberForAddress(token || '')} />
+      )}
       <TextWrapper>
         <TokenText>{title ? title : token}</TokenText>
         {percentage && <Percentage>{percentage}%</Percentage>}

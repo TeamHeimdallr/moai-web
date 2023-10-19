@@ -115,3 +115,11 @@ export const TOKEN_DECIMAL = {
   [NETWORK.EVM_SIDECHAIN]: 18,
   [NETWORK.XRPL]: 6,
 };
+
+// TODO: connect to server
+// TODO: token 별로 다름
+export const TOKEN_DECIMAL_WITHDRAW = {
+  [NETWORK.THE_ROOT_NETWORK]: 18,
+  [NETWORK.EVM_SIDECHAIN]: 18,
+  [NETWORK.XRPL]: 6,
+};

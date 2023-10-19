@@ -99,18 +99,15 @@ export const useLiquidityPoolBalance = ({ id }: UseLiquidityPoolBalance) => {
   const apr = poolTotalValue === 0 ? 0 : ((poolVolume * 0.003 * 365) / poolTotalValue) * 100;
 
   // lp token total supply
-  const lpTokenTotalSupply = Number(
-    formatUnits(liquidityPoolTokenTotalSupplyData ?? 0n, TOKEN_DECIMAL[currentNetwork])
-  );
+  // TOOD: token decimal
+  const lpTokenTotalSupply = Number(formatUnits(liquidityPoolTokenTotalSupplyData ?? 0n, 18));
 
   const { rawValue: liquidityPoolTokenBalanceData } = useERC20TokenBalances(
     walletAddress as Address,
     lpTokenAddress as Address
   );
   // users lp token balance
-  const lpTokenBalance = Number(
-    formatUnits(liquidityPoolTokenBalanceData ?? 0n, TOKEN_DECIMAL[currentNetwork])
-  );
+  const lpTokenBalance = Number(formatUnits(liquidityPoolTokenBalanceData ?? 0n, 18));
 
   const lpTokenPrice = lpTokenTotalSupply ? poolTotalValue / lpTokenTotalSupply : 0;
 

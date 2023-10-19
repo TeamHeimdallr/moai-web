@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { parseUnits } from 'viem';
 
@@ -9,7 +9,7 @@ import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 
 import {
   SCANNER_URL,
-  TOKEN_DECIMAL,
+  TOKEN_DECIMAL_WITHDRAW,
   TOKEN_DESCRIPTION_MAPPER,
   TOKEN_IMAGE_MAPPER,
 } from '~/constants';
@@ -44,6 +44,7 @@ export const WithdrawLiquidityPopup = ({
   priceImpact,
   amountsOut,
 }: Props) => {
+  const navigate = useNavigate();
   const { compositions } = pool;
   const { network } = useParams();
   const { selectedNetwork } = useNetwork();
@@ -57,7 +58,7 @@ export const WithdrawLiquidityPopup = ({
       currency: c.symbol,
       amount: '0',
     })),
-    amount: parseUnits(`${inputValue}`, TOKEN_DECIMAL[currentNetwork]),
+    amount: parseUnits(`${inputValue}`, TOKEN_DECIMAL_WITHDRAW[currentNetwork]),
   });
 
   const txDate = new Date(blockTimestamp ?? 0);
@@ -71,6 +72,7 @@ export const WithdrawLiquidityPopup = ({
 
   const handleButton = async () => {
     if (isSuccess) {
+      navigate(-1);
       close();
     } else {
       await writeAsync?.();
@@ -136,7 +138,7 @@ export const WithdrawLiquidityPopup = ({
           </Summary>
           <Summary>
             <SummaryTextTitle>Price impact</SummaryTextTitle>
-            <SummaryText>{formatNumber(priceImpact, 2)}%</SummaryText>
+            <SummaryText>{priceImpact}%</SummaryText>
           </Summary>
         </List>
 
