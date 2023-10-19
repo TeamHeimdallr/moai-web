@@ -3,15 +3,16 @@ import Chart from 'chart.js/auto';
 
 import { COLOR } from '~/assets/colors';
 
-import { PoolCompositionData } from '~/moai-xrp-ledger/types/components';
+import { ITokenComposition } from '~/types';
 
 interface Props {
-  data: Pick<PoolCompositionData, 'currentWeight' | 'token'>[];
+  data: ITokenComposition[];
 }
 
 export const useDoughnutGraph = ({ data }: Props) => {
   useEffect(() => {
-    const graph = document.getElementById('graph') as HTMLCanvasElement;
+    const graph = document.getElementById('graph') as HTMLCanvasElement | undefined;
+    if (!graph) return;
 
     const ctx = graph.getContext('2d');
     if (!ctx) return;
@@ -29,7 +30,7 @@ export const useDoughnutGraph = ({ data }: Props) => {
       data: {
         datasets: [
           {
-            data: data.map(row => row.currentWeight),
+            data: data.map(row => row?.weight ?? 0),
             backgroundColor: [gradient1, gradient2],
             borderWidth: 0,
             circumference: 180,
@@ -49,5 +50,15 @@ export const useDoughnutGraph = ({ data }: Props) => {
         },
       },
     });
+
+    return () => {
+      const graph = document.getElementById('graph') as HTMLCanvasElement | undefined;
+      if (!graph) return;
+
+      const ctx = graph.getContext('2d');
+      if (!ctx) return;
+
+      ctx.reset();
+    };
   }, [data]);
 };

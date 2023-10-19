@@ -1,0 +1,40 @@
+import tw from 'twin.macro';
+
+import { useDoughnutGraph } from '~/hooks/components/use-graph-semi-donut';
+import { formatNumberWithUnit } from '~/utils';
+import { ITokenComposition } from '~/types';
+
+interface Props {
+  data: ITokenComposition[];
+}
+export const GraphSemiDonut = ({ data }: Props) => {
+  const totalValue = data.reduce((acc, cur) => acc + (cur?.value ?? 0), 0);
+
+  useDoughnutGraph({ data });
+
+  return (
+    <Wrapper>
+      <Canvas id="graph" />
+      <TotalValue>
+        <Amount>${formatNumberWithUnit(totalValue)}</Amount>
+        <Title>Pool Value</Title>
+      </TotalValue>
+    </Wrapper>
+  );
+};
+
+const Wrapper = tw.div`
+  w-380 h-380 relative flex items-end justify-center
+`;
+const Canvas = tw.canvas`
+  z-1 absolute
+`;
+const TotalValue = tw.div`
+  flex-center flex-col gap-2
+`;
+const Amount = tw.div`
+  font-b-28 text-neutral-100
+`;
+const Title = tw.div`
+  font-m-16 text-neutral-80 pb-120
+`;
