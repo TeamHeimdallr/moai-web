@@ -35,11 +35,15 @@ export const Token = ({
 }: Props) => {
   return (
     <Wrapper type={type} selected={selected} clickable={clickable} hasImage={!!image} {...rest}>
-      {image && TOKEN_IMAGE_MAPPER[token] ? (
-        <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />
-      ) : (
-        <Jazzicon diameter={type === 'large' ? 24 : 20} seed={jsNumberForAddress(token || '')} />
-      )}
+      {image &&
+        (TOKEN_IMAGE_MAPPER[token] ? (
+          <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />
+        ) : (
+          <Jazzicon
+            diameter={type === 'large' ? 24 : 20}
+            seed={jsNumberForAddress(token ?? title)}
+          />
+        ))}
       <TextWrapper>
         <TokenText>{title ? title : token}</TokenText>
         {percentage && <Percentage>{percentage}%</Percentage>}

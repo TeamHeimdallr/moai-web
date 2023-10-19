@@ -11,7 +11,7 @@ import { useTokenPrice } from '~/api/api-contract/token/price';
 
 import { IconDown } from '~/assets/icons';
 
-import { EVM_CONTRACT_ADDRESS, XRP_AMM } from '~/constants';
+import { EVM_POOL, XRP_AMM } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
@@ -40,7 +40,7 @@ export const SwapInputGroup = () => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   // TODO: 추후 스왑 가능한 토큰 / 풀을 서버 api로 받아오도록 수정
-  const id = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT || XRP_AMM?.[0]?.id || '';
+  const id = EVM_POOL?.[currentNetwork]?.[0]?.id || XRP_AMM?.[0]?.id || '';
 
   const { pool } = useLiquidityPoolBalance(id);
   const { evm, xrp } = useConnectedWallet();
@@ -130,7 +130,13 @@ export const SwapInputGroup = () => {
           <InputWrapper>
             <InputInnerWrapper>
               <InputNumber
-                token={<Token token={fromToken} icon={<IconDown />} />}
+                token={
+                  fromToken ? (
+                    <Token token={fromToken} icon={<IconDown />} />
+                  ) : (
+                    <Token token="" title="Select token" icon={<IconDown />} />
+                  )
+                }
                 balance={fromTokenBalance}
                 tokenValue={fromTokenPrice * (Number(fromValue) || 0)}
                 value={fromValue}
@@ -148,7 +154,13 @@ export const SwapInputGroup = () => {
               </IconWrapper>
               <InputNumber
                 disabled
-                token={<Token token={toToken} icon={<IconDown />} />}
+                token={
+                  toToken ? (
+                    <Token token={toToken} icon={<IconDown />} />
+                  ) : (
+                    <Token token="" title="Select token" icon={<IconDown />} />
+                  )
+                }
                 tokenValue={toTokenPrice * (Number(toValue) || 0)}
                 balance={toTokenBalance}
                 value={toValue}
@@ -188,7 +200,7 @@ const InputInnerWrapper = tw.div`
 `;
 
 const IconWrapper = tw.div`
-  absolute absolute-center-x bottom-100 z-1 clickable
+  absolute absolute-center-x bottom-100 z-1 clickable select-none
 `;
 
 const InputLabel = tw.div`

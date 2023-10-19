@@ -10,7 +10,7 @@ import { EVM_TOKEN_ADDRESS, TOKEN_DECIMAL } from '~/constants';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
-import { SwapKind } from '~/types';
+import { NETWORK, SwapKind } from '~/types';
 
 interface Props {
   id: string;
@@ -30,21 +30,32 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
   const { evm } = useConnectedWallet();
   const evmAddress = evm?.address ?? '';
 
-  const evmFromToken =
-    EVM_TOKEN_ADDRESS?.[currentNetwork]?.[fromToken] === EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP
-      ? EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO ?? ''
-      : EVM_TOKEN_ADDRESS?.[currentNetwork]?.[fromToken] ?? '';
-  const evmToToken =
-    EVM_TOKEN_ADDRESS?.[currentNetwork]?.[toToken] === EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP
-      ? EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO ?? ''
-      : EVM_TOKEN_ADDRESS?.[currentNetwork]?.[toToken] ?? '';
+  const evmFromToken = () => {
+    if (currentNetwork !== NETWORK.EVM_SIDECHAIN)
+      return EVM_TOKEN_ADDRESS?.[currentNetwork]?.[fromToken];
+
+    if (
+      EVM_TOKEN_ADDRESS?.[currentNetwork]?.[fromToken] === EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP
+    )
+      return EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO ?? '';
+    return EVM_TOKEN_ADDRESS?.[currentNetwork]?.[fromToken];
+  };
+
+  const evmToToken = () => {
+    if (currentNetwork !== NETWORK.EVM_SIDECHAIN)
+      return EVM_TOKEN_ADDRESS?.[currentNetwork]?.[toToken];
+
+    if (EVM_TOKEN_ADDRESS?.[currentNetwork]?.[toToken] === EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP)
+      return EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO ?? '';
+    return EVM_TOKEN_ADDRESS?.[currentNetwork]?.[toToken];
+  };
 
   const resEvm = useSwapEvm({
     singleSwap: [
       id as Address, // pool id
       SwapKind.GivenIn,
-      evmFromToken,
-      evmToToken,
+      evmFromToken(),
+      evmToToken(),
       parseUnits(`${fromValue ?? 0}`, TOKEN_DECIMAL[currentNetwork]),
       '0x0',
     ],

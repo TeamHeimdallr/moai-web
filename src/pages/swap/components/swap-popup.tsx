@@ -13,6 +13,7 @@ import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 
 import {
   EVM_CONTRACT_ADDRESS,
+  EVM_POOL,
   EVM_TOKEN_ADDRESS,
   SCANNER_URL,
   TOKEN_IMAGE_MAPPER,
@@ -40,7 +41,7 @@ export const SwapPopup = () => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   // TODO: 추후 스왑 가능한 토큰 / 풀을 서버 api로 받아오도록 수정
-  const id = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT || XRP_AMM?.[0]?.id || '';
+  const id = EVM_POOL?.[currentNetwork]?.[0]?.id || XRP_AMM?.[0]?.id || '';
 
   const { pool } = useLiquidityPoolBalance(id);
   const { getTokenPrice } = useTokenPrice();

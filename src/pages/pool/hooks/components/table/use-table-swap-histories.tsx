@@ -24,6 +24,7 @@ export const useTableSwapHistories = (id: string) => {
 
   const { sort, setSort } = useTableSwapHistoriesStore();
 
+  console.log(data);
   const swapData = data?.map(d => {
     const id = d?.id ?? '';
 
