@@ -80,7 +80,7 @@ export const WithdrawLiquidityPopup = ({
   };
 
   const handleLink = () => {
-    window.open(`${SCANNER_URL}/tx/${txData?.transactionHash}`);
+    window.open(`${SCANNER_URL[currentNetwork]}/tx/${txData?.transactionHash}`);
   };
 
   return (

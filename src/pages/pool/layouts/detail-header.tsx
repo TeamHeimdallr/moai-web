@@ -10,7 +10,9 @@ import { SCANNER_URL } from '~/constants';
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useRequirePrarams } from '~/hooks/utils';
+import { getNetworkFull } from '~/utils';
 
 export const DetailHeader = () => {
   const navigate = useNavigate();
@@ -21,6 +23,10 @@ export const DetailHeader = () => {
   const { pool } = useLiquidityPoolBalance(id ?? '');
   const { compositions, lpTokenAddress } = pool;
   const tokens = compositions?.map(composition => composition.symbol);
+
+  const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   return (
     <HeaderWrapper>
@@ -38,7 +44,9 @@ export const DetailHeader = () => {
         <ButtonIconMedium
           icon={<IconLink />}
           onClick={() =>
-            window.open(`${SCANNER_URL}/address/${lpTokenAddress}?tab=erc20_transfers`)
+            window.open(
+              `${SCANNER_URL[currentNetwork]}/address/${lpTokenAddress}?tab=erc20_transfers`
+            )
           }
         />
       </TokenWrapper>

@@ -108,7 +108,7 @@ export const SwapPopup = () => {
   }, [allowSuccess, refetchAllowance]);
 
   const handleLink = () => {
-    window.open(`${SCANNER_URL}/tx/${txData?.hash ?? ''}`);
+    window.open(`${SCANNER_URL[currentNetwork]}/tx/${txData?.hash ?? ''}`);
   };
 
   const numFromValue = Number(fromValue) || 0;

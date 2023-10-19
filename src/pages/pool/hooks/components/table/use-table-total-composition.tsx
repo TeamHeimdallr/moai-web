@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 
@@ -6,11 +7,17 @@ import { SCANNER_URL } from '~/constants';
 
 import { TableColumn, TableColumnTokenAddress, TableHeader } from '~/components/tables';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { useTablePoolCompositionSelectTabStore } from '~/states/components/table/tab';
 
 export const useTableTotalComposition = (id: string) => {
   const { selectedTab } = useTablePoolCompositionSelectTabStore();
+  const { network } = useParams();
+  const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const isMyComposition = selectedTab === 'my-composition';
 
@@ -45,7 +52,7 @@ export const useTableTotalComposition = (id: string) => {
           <TableColumnTokenAddress
             token={d.symbol}
             width={216}
-            onClick={() => window.open(`${SCANNER_URL}/address/${d.address ?? ''}`)}
+            onClick={() => window.open(`${SCANNER_URL[currentNetwork]}/address/${d.address ?? ''}`)}
           />
         ),
         weight: <TableColumn value={`${d.weight.toFixed(2)}%`} width={120} align="flex-end" />,
@@ -61,7 +68,7 @@ export const useTableTotalComposition = (id: string) => {
           />
         ),
       })),
-    [poolData]
+    [currentNetwork, poolData]
   );
 
   const columns = useMemo(

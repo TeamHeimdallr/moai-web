@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { useGetLiquidityPoolProvisions } from '~/api/api-contract/pool/get-liquidity-pool-provisions';
 
@@ -16,7 +17,9 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { elapsedTime } from '~/utils/util-time';
 import { useTableLiquidityPoolProvisionSortStore } from '~/states/components';
@@ -30,6 +33,11 @@ export const useTableTotalProvision = (id: string) => {
 
   const { selectedTab } = useTablePoolLiquidityProvisionSelectTabStore();
   const { sort, setSort } = useTableLiquidityPoolProvisionSortStore();
+
+  const { network } = useParams();
+  const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const isMyProvision = selectedTab === 'my-provision';
 
@@ -96,11 +104,11 @@ export const useTableTotalProvision = (id: string) => {
             token={`${elapsedTime(d.time)}`}
             align="flex-end"
             width={160}
-            link={`${SCANNER_URL}/transactions/${d.txHash}`}
+            link={`${SCANNER_URL[currentNetwork]}/transactions/${d.txHash}`}
           />
         ),
       })),
-    [filteredData]
+    [currentNetwork, filteredData]
   );
 
   const columns = useMemo(

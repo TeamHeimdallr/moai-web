@@ -158,7 +158,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
   }, [allowSuccess1, allowSuccess2, refetchAllowance1, refetchAllowance2]);
 
   const handleLink = () => {
-    window.open(`${SCANNER_URL}/tx/${txData?.transactionHash}`);
+    window.open(`${SCANNER_URL[currentNetwork]}/tx/${txData?.transactionHash}`);
   };
 
   return (

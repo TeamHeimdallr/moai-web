@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { useParams } from 'react-router-dom';
 
 import { useGetSwapHistories } from '~/api/api-contract/swap/get-swap-histories';
 
@@ -14,6 +15,8 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { truncateAddress } from '~/utils/util-string';
 import { elapsedTime } from '~/utils/util-time';
@@ -22,6 +25,10 @@ import { useTableSwapHistoriesStore } from '~/states/components';
 export const useTableSwapHistories = (id: string) => {
   const { data } = useGetSwapHistories({ id });
 
+  const { network } = useParams();
+  const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { sort, setSort } = useTableSwapHistoriesStore();
 
   const swapData = data?.map(d => {
@@ -73,11 +80,11 @@ export const useTableSwapHistories = (id: string) => {
             token={`${elapsedTime(d.time)}`}
             align="flex-end"
             width={160}
-            link={`${SCANNER_URL}/tx/${d.txHash}`}
+            link={`${SCANNER_URL[currentNetwork]}/tx/${d.txHash}`}
           />
         ),
       })),
-    [sortedData]
+    [currentNetwork, sortedData]
   );
 
   const columns = useMemo(
