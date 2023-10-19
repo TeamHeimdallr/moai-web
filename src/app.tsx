@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { ConnectWallet } from './components/connect-wallet';
@@ -23,10 +23,7 @@ const App = () => {
         <ReactQueryProvider>
           <Web3Provider>
             <RouteWrapper>
-              <Routes>
-                <Route path="*" element={<Pages />} />
-              </Routes>
-
+              <Pages />
               <ToastContainer />
               {connectWalletOpened && <ConnectWallet />}
             </RouteWrapper>

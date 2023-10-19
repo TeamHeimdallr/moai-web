@@ -89,7 +89,7 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     value: (moiData ?? 0) * moiPrice,
   };
   const balancesMap = {
-    XRP: xrp,
+    Token: xrp,
     MOI: moi,
   };
 

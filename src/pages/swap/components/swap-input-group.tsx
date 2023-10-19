@@ -44,7 +44,7 @@ export const SwapInputGroup = () => {
 
   const { pool } = useLiquidityPoolBalance(id);
   const { evm, xrp } = useConnectedWallet();
-  const { balancesMap } = useTokenBalanceInPool();
+  const { balancesArray } = useTokenBalanceInPool();
   const { getTokenPrice } = useTokenPrice();
 
   const {
@@ -63,8 +63,8 @@ export const SwapInputGroup = () => {
   const fromReserve = pool?.compositions?.[0]?.balance ?? 0;
   const toReserve = pool?.compositions?.[1]?.balance ?? 0;
 
-  const fromTokenBalance = balancesMap?.[fromToken]?.balance ?? 0;
-  const toTokenBalance = balancesMap?.[toToken]?.balance ?? 0;
+  const fromTokenBalance = balancesArray?.find(b => b.symbol === fromToken)?.balance ?? 0;
+  const toTokenBalance = balancesArray?.find(b => b.symbol === toToken)?.balance ?? 0;
 
   const fromTokenPrice = getTokenPrice(fromToken);
   const toTokenPrice = getTokenPrice(toToken);

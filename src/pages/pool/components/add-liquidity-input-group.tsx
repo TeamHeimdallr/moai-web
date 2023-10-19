@@ -35,12 +35,12 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
 
-  const { balancesMap } = useTokenBalanceInPool();
+  const { balancesArray } = useTokenBalanceInPool();
   const { getTokenPrice } = useTokenPrice();
   const { compositions } = pool;
 
   const tokens: IToken[] = compositions?.map(composition => {
-    const data = balancesMap?.[composition.symbol];
+    const data = balancesArray?.find(b => b.symbol === composition.symbol);
 
     if (!data) return { symbol: composition.symbol, balance: 0, price: 0, value: 0 };
     return {
@@ -188,7 +188,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
               <MaxButton onClick={handleMax}>Max</MaxButton>
             </TotalValueWrapper>
           </TotalInnerWrapper>
-          <PriceImpact>{`Price impact  ${formatNumber(priceImpact, 2)}%`}</PriceImpact>
+          <PriceImpact>{`Price impact  ${priceImpact}%`}</PriceImpact>
         </Total>
       </InnerWrapper>
 

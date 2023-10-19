@@ -8,14 +8,18 @@ import { imageWalletGem, imageWalletMetamask } from '~/assets/images';
 
 import { ButtonIconSmall } from '~/components/buttons/icon';
 
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { POPUP_ID } from '~/types';
 
 import { Slippage } from '../slippage';
 
 export const AccountDetail = () => {
   const { evm, xrp } = useConnectedWallet();
   const { name } = useNetwork();
+
+  const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   return (
     <Wrapper>
@@ -70,7 +74,8 @@ export const AccountDetail = () => {
             </AddressWrapper>
           </Account>
         ) : (
-          <AccountNotConnected onClick={xrp.connect}>
+          <AccountNotConnected onClick={openConnectWallet}>
+            {/* TODO: change ui */}
             <NotConnectedLogo src={imageWalletGem} alt="gem wallet" />
             <ConnectText>Connect with XRP Wallet</ConnectText>
             <IconButton>

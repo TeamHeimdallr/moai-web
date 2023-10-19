@@ -17,8 +17,8 @@ export const MainLayout = () => {
   const { evm, xrp } = useConnectedWallet();
   const isConnected = !!evm.address || !!xrp.address;
 
-  const { balancesMap } = useTokenBalanceInPool();
-  const moaiBalance = balancesMap?.MOAI;
+  const { balancesArray } = useTokenBalanceInPool();
+  const moaiBalance = balancesArray?.find(b => b.symbol === 'MOAI');
 
   return (
     <MainWrapper

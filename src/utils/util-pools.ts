@@ -16,7 +16,7 @@ export const calcBptOutAmountAndPriceImpact = ({
   bptTotalSupply,
   swapFeePercentage,
 }: Props) => {
-  if (amountsIn.every(v => v === 0)) {
+  if (amountsIn.length === 0 || amountsIn.every(v => v === 0)) {
     return {
       bptOut: 0,
       priceImpact: 0,
@@ -158,10 +158,12 @@ const calcPriceImpact = (
 ) => {
   let bptZeroPriceImpact = BZERO;
   for (let i = 0; i < tokenAmounts.length; i++) {
-    const price = (weights[i] * bptTotalSupply) / balances[i];
+    const price = ((weights?.[i] ?? 0n) * (bptTotalSupply ?? 0n)) / (balances?.[i] ?? 1n);
     const newTerm = (price * tokenAmounts[i]) / ONE;
     bptZeroPriceImpact += newTerm;
   }
+
+  if (bptZeroPriceImpact === BZERO) return 0;
 
   if (isJoin) {
     const pi = ONE - SolidityMaths.divDownFixed(bptAmount, bptZeroPriceImpact);

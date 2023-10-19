@@ -11,6 +11,7 @@ import { ButtonPrimarySmall } from '~/components/buttons/primary';
 
 import { formatNumber } from '~/utils';
 
+// TODO: focus 이슈 수정
 type OmitType = 'type' | 'onChange' | 'onBlur';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   balance?: number;

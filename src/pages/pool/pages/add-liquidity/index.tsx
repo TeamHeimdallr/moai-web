@@ -26,11 +26,11 @@ const PoolDetailAddLiquidityPage = () => {
   useRequirePrarams([!!id], () => navigate(-1));
 
   const { pool } = useLiquidityPoolBalance(id ?? '');
-  const { balancesMap } = useTokenBalanceInPool();
+  const { balancesArray } = useTokenBalanceInPool();
   const { compositions } = pool;
 
   const tokens: IToken[] = compositions?.map(composition => {
-    const data = balancesMap?.[composition.symbol];
+    const data = balancesArray?.find(b => b.symbol === composition.symbol);
 
     if (!data) return { symbol: composition.symbol, balance: 0, price: 0, value: 0 };
     return {

@@ -60,7 +60,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
     tokenInputs[0].amount * tokenInputs[0].amount + tokenInputs[1].amount * tokenInputs[1].amount
   ).toFixed(2);
 
-  const lpTokenAmount = lpTokenAmountEvm || lpTokenAmountXrp || 0;
+  const lpTokenAmount = formatNumber(lpTokenAmountEvm || lpTokenAmountXrp || 0, 6);
 
   const {
     allow: allowToken1,
@@ -234,7 +234,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
           </Summary>
           <Summary>
             <SummaryTextTitle>Price impact</SummaryTextTitle>
-            <SummaryText>{formatNumber(priceImpact, 2)}%</SummaryText>
+            <SummaryText>{priceImpact}%</SummaryText>
           </Summary>
         </List>
 

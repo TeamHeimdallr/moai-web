@@ -18,7 +18,7 @@ import {
   getNetworkFull,
 } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
-import { IPool, IPoolTokenBalanceRaw, ITokenComposition, NETWORK } from '~/types';
+import { IPool, IPoolTokenBalanceRaw, ITokenComposition } from '~/types';
 
 import { BALANCER_LP_ABI, BALANCER_VAULT_ABI, ERC20_TOKEN_ABI } from '~/abi';
 
@@ -148,13 +148,9 @@ export const useLiquidityPoolBalance = ({ id }: UseLiquidityPoolBalance) => {
 interface LiquidityPoolTokenAmountProp {
   id?: Address;
   amountsIn: number[];
-  network?: NETWORK;
 }
-export const useLiquidityPoolTokenAmount = ({
-  id,
-  amountsIn,
-  network,
-}: LiquidityPoolTokenAmountProp) => {
+export const useLiquidityPoolTokenAmount = ({ id, amountsIn }: LiquidityPoolTokenAmountProp) => {
+  const { network } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 

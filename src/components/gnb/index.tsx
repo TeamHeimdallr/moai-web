@@ -20,6 +20,7 @@ export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
+
   const { evm, xrp } = useConnectedWallet();
 
   return (

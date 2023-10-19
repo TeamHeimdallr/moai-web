@@ -73,15 +73,17 @@ export const useConnectedWallet = (): UseConnectedWallet => {
           (await gemSubmitTransaction(tx)) as SubmitTransactionResponse,
       };
 
+  const evm = {
+    isConnected: isEvmConnected,
+    connect: connectEvm,
+    disconnect: disconnectEvm,
+    connectedConnector: connectedEvmConnector,
+    address: evmAddress,
+    truncatedAddress: truncatedEvmAddress,
+  };
+
   return {
-    evm: {
-      isConnected: isEvmConnected,
-      connect: connectEvm,
-      disconnect: disconnectEvm,
-      connectedConnector: connectedEvmConnector,
-      address: evmAddress,
-      truncatedAddress: truncatedEvmAddress,
-    },
+    evm,
     xrp,
   };
 };

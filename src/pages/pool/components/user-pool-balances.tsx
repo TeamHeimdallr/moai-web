@@ -16,11 +16,12 @@ import { IToken } from '~/types';
 export const UserPoolBalances = () => {
   const navigate = useNavigate();
 
-  const { evm, xrp } = useConnectedWallet();
-  const address = evm.address || xrp.address;
+  const { network, id } = useParams();
+  useRequirePrarams([!!id, !!network], () => navigate(-1));
 
-  const { id } = useParams();
-  useRequirePrarams([!!id], () => navigate(-1));
+  const { evm, xrp } = useConnectedWallet();
+
+  const address = evm.address || xrp.address;
 
   const { pool, lpTokenBalance } = useLiquidityPoolBalance(id ?? '');
   const { compositions, lpTokenTotalSupply } = pool;
@@ -52,12 +53,12 @@ export const UserPoolBalances = () => {
 
   const handleAddLiquidity = () => {
     if (!address) return;
-    navigate(`/pools/${id}/deposit`);
+    navigate(`/pools/${network}/${id}/deposit`);
   };
 
   const handleWithdrawLiquidity = () => {
     if (!address) return;
-    navigate(`/pools/${id}/withdraw`);
+    navigate(`/pools/${network}/${id}/withdraw`);
   };
 
   return (

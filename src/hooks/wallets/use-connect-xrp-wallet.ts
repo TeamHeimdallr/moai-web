@@ -20,7 +20,7 @@ export const useConnectWithGemWallet = () => {
 
       setInfo({
         isInstalled: installed,
-        isConnected: !!publicKey,
+        isConnected: !!publicKey && !!address,
         address,
       });
     }
@@ -58,11 +58,13 @@ export const useConnectWithCrossmarkWallet = () => {
 
   const isInstalled = window.crossmark;
   const connect = async () => {
-    const res = await crossmarkSdk.connect(60 * 60 * 1000); // 1 minute
+    const connected = await crossmarkSdk.connect(60 * 60 * 1000); // 1 minute
+    const signed = await crossmarkSdk.signInAndWait();
+
     const address = crossmarkSdk.session.address;
 
     setInfo({
-      isConnected: res,
+      isConnected: connected && !!signed && !!address,
       address,
     });
   };
