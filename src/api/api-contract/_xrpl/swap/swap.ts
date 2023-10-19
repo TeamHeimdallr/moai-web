@@ -43,19 +43,19 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
           DeliverMin: {
             currency: toToken,
             issuer: XRP_TOKEN_ISSUER[toToken],
-            value: toValue.toString(),
+            value: toValue.toFixed(6),
           },
         }
-      : { DeliverMin: xrpToDrops(toValue.toString()) };
+      : { DeliverMin: xrpToDrops(toValue.toFixed(6)) };
 
   const sendMax =
     fromToken === 'XRP'
-      ? { SendMax: xrpToDrops(fromValue.toString()) }
+      ? { SendMax: xrpToDrops(fromValue.toFixed(6)) }
       : {
           SendMax: {
             currency: fromToken,
             issuer: XRP_TOKEN_ISSUER[fromToken],
-            value: fromValue.toString(),
+            value: fromValue.toFixed(6),
           },
         };
 
