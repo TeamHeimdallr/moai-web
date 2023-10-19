@@ -1,9 +1,10 @@
+import { useParams } from 'react-router-dom';
 import { Address, PublicClient, useContractRead } from 'wagmi';
 
 import { EVM_CONTRACT_ADDRESS, EVM_POOL, EVM_TOKEN_ADDRESS, TOKEN_PRICE } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -41,22 +42,20 @@ export const getTokenPrice = async (client: PublicClient, network: NETWORK, symb
 
 // TODO: connect to server. get calculated token price in pool
 export const useTokenPrice = () => {
+  const { network } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
-  const { evm } = useConnectedWallet();
-  const { address: walletAddress } = evm;
 
-  const tokenAddress =
-    selectedNetwork === NETWORK.THE_ROOT_NETWORK
-      ? EVM_TOKEN_ADDRESS?.[selectedNetwork]?.WETH_XRP
-      : EVM_TOKEN_ADDRESS?.[selectedNetwork]?.ROOT_XRP;
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
-  const address = EVM_CONTRACT_ADDRESS[selectedNetwork]?.VAULT as Address;
+  const tokenAddress = EVM_POOL?.[currentNetwork]?.[0]?.id;
+
+  const address = EVM_CONTRACT_ADDRESS[currentNetwork]?.VAULT as Address;
   const { data } = useContractRead({
     address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'getPoolTokens',
     args: [tokenAddress],
-    enabled: !!address && !!walletAddress && isEvm,
+    enabled: !!address && !!tokenAddress && isEvm,
   });
 
   const price = data

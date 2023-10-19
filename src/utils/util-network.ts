@@ -7,3 +7,8 @@ export const getNetworkAbbr = (network: NETWORK) => {
 
   return '';
 };
+export const getNetworkFull = (networkAbbr?: string): NETWORK | undefined => {
+  if (networkAbbr === 'trn') return NETWORK.THE_ROOT_NETWORK;
+  if (networkAbbr === 'evm') return NETWORK.EVM_SIDECHAIN;
+  if (networkAbbr === 'xrpl') return NETWORK.XRPL;
+};

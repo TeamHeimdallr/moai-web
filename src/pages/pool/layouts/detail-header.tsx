@@ -14,17 +14,18 @@ import { useRequirePrarams } from '~/hooks/utils';
 
 export const DetailHeader = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { network, id } = useParams();
 
-  useRequirePrarams([!!id], () => navigate(-1));
+  useRequirePrarams([!!id, !!network], () => navigate(-1));
 
   const { pool } = useLiquidityPoolBalance(id ?? '');
   const { compositions, lpTokenAddress } = pool;
+  const tokens = compositions?.map(composition => composition.symbol);
 
   return (
     <HeaderWrapper>
       {/* TODO: change title */}
-      <Title>ROOT-XRP Pool</Title>
+      <Title>{`${tokens?.[0]}-${tokens?.[1]} Pool`}</Title>
       <TokenWrapper>
         {compositions?.map((composition, i) => (
           <Token

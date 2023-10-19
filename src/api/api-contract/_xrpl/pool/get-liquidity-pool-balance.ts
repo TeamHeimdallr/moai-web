@@ -7,13 +7,16 @@ import { useAmmInfo } from '../amm/get-amm-info';
 import { useLiquidityTokenBalances } from '../balance/get-token-balance-in-pool';
 import { useGetSwapHistories } from '../swap/get-swap-histories';
 
-export const useLiquidityPoolBalance = (id: string) => {
+interface UseLiquidityPoolBalance {
+  id: string;
+}
+export const useLiquidityPoolBalance = ({ id }: UseLiquidityPoolBalance) => {
   const { ammInfo } = useAmmInfo(id);
   const { poolTotalValue, fee, token1, token2, liquidityPoolToken } = ammInfo;
 
   const poolTokens = [token1, token2];
 
-  const { data: swapHistoriesData } = useGetSwapHistories(XRP_TOKEN_ISSUER.XRP_MOI);
+  const { data: swapHistoriesData } = useGetSwapHistories({ id: XRP_TOKEN_ISSUER.XRP_MOI });
 
   const compositions: ITokenComposition[] = poolTokens?.map(token => {
     const tokenIssuer = token.issuer ?? '';

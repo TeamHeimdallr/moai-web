@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import { formatUnits } from 'viem';
 import { Address, useBalance } from 'wagmi';
 
@@ -5,22 +6,27 @@ import { EVM_TOKEN_ADDRESS, TOKEN_PRICE } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkFull } from '~/utils';
 import { ITokenbalanceInPool, NETWORK } from '~/types';
 
 import { useTokenPrice } from '../token/price';
 
 // TODO: change to get all balances. using fetchBalance in wagmi/core
 export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
+  const { network } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
   const { evm } = useConnectedWallet();
   const { getTokenPrice } = useTokenPrice();
 
   const { address } = evm;
 
   const tokenAddress =
-    selectedNetwork === NETWORK.THE_ROOT_NETWORK
-      ? EVM_TOKEN_ADDRESS?.[selectedNetwork]?.ROOT
-      : EVM_TOKEN_ADDRESS?.[selectedNetwork]?.XRP;
+    currentNetwork === NETWORK.THE_ROOT_NETWORK
+      ? EVM_TOKEN_ADDRESS?.[currentNetwork]?.ROOT
+      : EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP;
 
   const { data: tokenData } = useBalance({
     address: address as Address,
@@ -30,8 +36,8 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
 
   const { data: xrpData } = useBalance({
     address: address as Address,
-    token: EVM_TOKEN_ADDRESS?.[selectedNetwork]?.XRP as Address,
-    enabled: isEvm && !!address && !!EVM_TOKEN_ADDRESS?.[selectedNetwork]?.XRP,
+    token: EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP as Address,
+    enabled: isEvm && !!address && !!EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP,
   });
 
   const success = tokenData !== undefined && xrpData !== undefined;

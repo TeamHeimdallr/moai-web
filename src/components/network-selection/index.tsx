@@ -4,7 +4,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 
 import { NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
 
-import { useSelecteNetworkStore } from '~/states/data';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { NETWORK } from '~/types';
 
 import { ButtonDropdown } from '../buttons/dropdown';
@@ -14,7 +14,7 @@ export const NetworkSelection = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [opened, open] = useState(false);
 
-  const { selectedNetwork, selectNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, selectNetwork } = useNetwork();
 
   const toggle = () => open(!opened);
 

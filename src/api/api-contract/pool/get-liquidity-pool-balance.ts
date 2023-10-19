@@ -8,8 +8,8 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 export const useLiquidityPoolBalance = (id: string) => {
   const { isEvm } = useNetwork();
 
-  const resEvm = useLiquidityPoolBalanceEvm(id as Address);
-  const resXrp = useLiquidityPoolBalanceXrp(id);
+  const resEvm = useLiquidityPoolBalanceEvm({ id: id as Address });
+  const resXrp = useLiquidityPoolBalanceXrp({ id });
 
   return isEvm ? resEvm : resXrp;
 };

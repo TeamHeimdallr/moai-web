@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { WeightedPoolEncoder } from '@balancer-labs/sdk';
 import {
   Address,
@@ -12,6 +13,7 @@ import { EVM_CONTRACT_ADDRESS, EVM_TOKEN_ADDRESS } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -24,19 +26,21 @@ interface Props {
   enabled?: boolean;
 }
 export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) => {
+  const { network } = useParams();
   const publicClient = usePublicClient();
   const { evm } = useConnectedWallet();
   const { isConnected, address: walletAddress } = evm;
 
   const { selectedNetwork, isEvm } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const handleNativeXrp = (token: string) => {
-    if (selectedNetwork !== NETWORK.EVM_SIDECHAIN) return token;
+    if (currentNetwork !== NETWORK.EVM_SIDECHAIN) return token;
 
-    if (token === EVM_TOKEN_ADDRESS?.[selectedNetwork]?.ZERO)
-      return EVM_TOKEN_ADDRESS?.[selectedNetwork]?.XRP;
+    if (token === EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO)
+      return EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP;
     return token;
   };
   const sortedTokens = tokens
@@ -46,7 +50,7 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
   const sortedAmountsIn = sortedIndex.map(index => amountsIn[index]);
 
   // TODO: connect to server. get vault address according to network and pool id
-  const vault = EVM_CONTRACT_ADDRESS[selectedNetwork].VAULT as Address;
+  const vault = EVM_CONTRACT_ADDRESS[currentNetwork].VAULT as Address;
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: vault,

@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { parseUnits } from 'viem';
 
@@ -20,7 +21,7 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkFull } from '~/utils';
 import { IPool, POPUP_ID } from '~/types';
 
 interface Props {
@@ -44,7 +45,10 @@ export const WithdrawLiquidityPopup = ({
   amountsOut,
 }: Props) => {
   const { compositions } = pool;
+  const { network } = useParams();
   const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useWithdrawLiquidity({
     id: pool.id,
@@ -53,7 +57,7 @@ export const WithdrawLiquidityPopup = ({
       currency: c.symbol,
       amount: '0',
     })),
-    amount: parseUnits(`${inputValue}`, TOKEN_DECIMAL[selectedNetwork]),
+    amount: parseUnits(`${inputValue}`, TOKEN_DECIMAL[currentNetwork]),
   });
 
   const txDate = new Date(blockTimestamp ?? 0);

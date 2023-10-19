@@ -68,7 +68,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
   });
 
   const { priceImpact: priceImpactRaw } = useLiquidityPoolTokenAmount({
-    poolId: pool.id as Address,
+    id: pool.id as Address,
     amountsIn: [inputValue1, inputValue2],
   });
 

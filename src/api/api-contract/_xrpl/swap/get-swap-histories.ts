@@ -12,7 +12,10 @@ import { IPoolSwapHistories, IToken } from '~/types';
 
 import { useTokenPrice } from '../token/price';
 
-export const useGetSwapHistories = (id: string) => {
+interface UseGetSwapHistories {
+  id: string;
+}
+export const useGetSwapHistories = ({ id }: UseGetSwapHistories) => {
   const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
 

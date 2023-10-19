@@ -16,6 +16,7 @@ export const useConnectXrpl = () => {
   const { client, setConnection } = useXrplStore();
 
   const connect = async () => {
+    if (!client) return;
     await client.connect();
 
     setConnection(true);
@@ -23,6 +24,7 @@ export const useConnectXrpl = () => {
   };
 
   const disconnect = async () => {
+    if (!client) return;
     await client.disconnect();
 
     console.log('[xrpl] wss client disconnected');

@@ -12,8 +12,8 @@ interface Props {
 export const useGetSwapHistories = ({ id }: Props) => {
   const { isXrp } = useNetwork();
 
-  const resEvm = useGetSwapHistoriesEvm({ poolId: id as Address });
-  const resXrp = useGetSwapHistoriesXrp(id);
+  const resEvm = useGetSwapHistoriesEvm({ id: id as Address });
+  const resXrp = useGetSwapHistoriesXrp({ id });
 
   return isXrp ? resXrp : resEvm;
 };

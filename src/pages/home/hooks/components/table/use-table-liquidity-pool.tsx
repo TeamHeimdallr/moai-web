@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { NetworkChip } from '~/components/network-chip';
 import {
@@ -13,6 +14,7 @@ import {
 } from '~/components/tables';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { useTableLiquidityPoolSortStore } from '~/states/components';
 import { useShowAllPoolsStore } from '~/states/pages';
@@ -20,7 +22,12 @@ import { NETWORK } from '~/types';
 
 export const useTableLiquidityPool = () => {
   const { showAllPools } = useShowAllPoolsStore();
+
+  const { network } = useParams();
   const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
   const { sort, setSort } = useTableLiquidityPoolSortStore();
 
   // TODO: connect server
@@ -104,7 +111,7 @@ export const useTableLiquidityPool = () => {
       apr: 8.94,
     },
   ];
-  const filteredData = showAllPools ? data : data?.filter(d => d.network === selectedNetwork);
+  const filteredData = showAllPools ? data : data?.filter(d => d.network === currentNetwork);
   const sortedData = filteredData?.sort((a, b) => {
     if (sort?.key === 'POOL_VALUE')
       return sort.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;

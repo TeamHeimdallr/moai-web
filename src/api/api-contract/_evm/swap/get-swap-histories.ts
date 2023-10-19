@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import { useQueries, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { formatUnits } from 'viem';
 import { Address, PublicClient, usePublicClient } from 'wagmi';
@@ -7,6 +8,7 @@ import { QUERY_KEYS } from '~/api/utils/query-keys';
 import { EVM_CONTRACT_ADDRESS, TOKEN_DECIMAL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkFull } from '~/utils';
 import { IPoolSwapHistories, IToken, NETWORK } from '~/types';
 
 import { getTokenPrice } from '../token/price';
@@ -109,19 +111,21 @@ const getFormattedSwapHistories = async ({
 };
 
 interface UseGetSwapHistoriesProps {
-  poolId: Address;
+  id: Address;
   options?: UseQueryOptions;
 }
-export const useGetSwapHistories = ({ poolId, options }: UseGetSwapHistoriesProps) => {
+export const useGetSwapHistories = ({ id, options }: UseGetSwapHistoriesProps) => {
   const client = usePublicClient();
+  const { network } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { data: swapHistoriesData } = useQuery(
-    [...QUERY_KEYS.SWAP.GET_HISTORIES, poolId],
-    () => getSwapHistories({ client, network: selectedNetwork, poolId }),
+    [...QUERY_KEYS.SWAP.GET_HISTORIES, id],
+    () => getSwapHistories({ client, network: currentNetwork as NETWORK, poolId: id }),
     {
       keepPreviousData: true,
-      enabled: !!poolId && !!client && isEvm,
+      enabled: !!id && !!client && isEvm,
       staleTime: 1000 * 5,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(options as any),
@@ -134,7 +138,7 @@ export const useGetSwapHistories = ({ poolId, options }: UseGetSwapHistoriesProp
       queryFn: () =>
         getFormattedSwapHistories({
           client,
-          network: selectedNetwork,
+          network: currentNetwork as NETWORK,
           data: {
             args: data.args,
             blockHash: data.blockHash,

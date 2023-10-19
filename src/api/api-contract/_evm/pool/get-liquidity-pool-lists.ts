@@ -1,20 +1,29 @@
+import { useParams } from 'react-router-dom';
 import { Address } from 'viem';
 
 import { EVM_POOL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkFull } from '~/utils';
 import { IPoolList } from '~/types';
 
 import { useLiquidityPoolBalance } from './get-liquidity-pool-balance';
 
 export const useGetLiquidityPoolLists = () => {
+  const { network } = useParams();
   const { selectedNetwork } = useNetwork();
 
-  const pool = EVM_POOL[selectedNetwork]?.[0] ?? { id: '', tokenName: '', tokenAddress: '' };
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
+  const pool = EVM_POOL[currentNetwork]?.[0] ?? { id: '', tokenName: '', tokenAddress: '' };
   const { id } = pool;
 
   // TODO: update to server api
-  const { pool: poolInfo, lpTokenPrice, lpTokenBalance } = useLiquidityPoolBalance(id as Address);
+  const {
+    pool: poolInfo,
+    lpTokenPrice,
+    lpTokenBalance,
+  } = useLiquidityPoolBalance({ id: id as Address });
 
   const isNew = false;
   const compositions = poolInfo?.compositions ?? [];
@@ -28,7 +37,7 @@ export const useGetLiquidityPoolLists = () => {
   return [
     {
       id,
-      network: selectedNetwork,
+      network: currentNetwork,
 
       assets,
       compositions,

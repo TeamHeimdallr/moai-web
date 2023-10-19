@@ -31,7 +31,7 @@ export const EVM_CONTRACT_ADDRESS: Record<string, { VAULT: string }> = {
     VAULT: IS_MAINNET ? '' : '0x6548DEA2fB59143215E54595D0157B79aac1335e',
   },
   [NETWORK.EVM_SIDECHAIN]: {
-    VAULT: IS_MAINNET ? '' : '0x6548DEA2fB59143215E54595D0157B79aac1335e',
+    VAULT: IS_MAINNET ? '' : '0x1cc5a9f4fd07E97e616F72D829d38c0A6aC5D623',
   },
 };
 
@@ -99,11 +99,13 @@ export const XRP_TOKEN_ISSUER = {
 export const TOKEN_PRICE = {
   MOAI: 10.23,
   XRP: 0.5,
+  WXRP: 0.5,
 };
 
 // TODO: connect to server
+// TODO: token 별로 다름
 export const TOKEN_DECIMAL = {
-  [NETWORK.THE_ROOT_NETWORK]: 18,
+  [NETWORK.THE_ROOT_NETWORK]: 6,
   [NETWORK.EVM_SIDECHAIN]: 18,
   [NETWORK.XRPL]: 6,
 };

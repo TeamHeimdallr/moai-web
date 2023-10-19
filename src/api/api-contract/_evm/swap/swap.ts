@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Address,
   useContractWrite,
@@ -11,6 +12,7 @@ import { EVM_CONTRACT_ADDRESS } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkFull } from '~/utils';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -28,13 +30,16 @@ export const useSwap = ({
   deadline = 2000000000,
 }: Props) => {
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
+  const { network } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const publicClient = usePublicClient();
   const { evm } = useConnectedWallet();
   const { address } = evm;
 
-  const contractAddress = EVM_CONTRACT_ADDRESS[selectedNetwork]?.VAULT as Address;
+  const contractAddress = EVM_CONTRACT_ADDRESS[currentNetwork]?.VAULT as Address;
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: contractAddress,
     abi: BALANCER_VAULT_ABI,

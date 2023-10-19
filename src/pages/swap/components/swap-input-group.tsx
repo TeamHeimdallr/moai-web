@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
 import * as yup from 'yup';
@@ -19,7 +20,7 @@ import { Token } from '~/components/token';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatFloat, formatNumber } from '~/utils';
+import { formatFloat, formatNumber, getNetworkFull } from '~/utils';
 import { useSwapStore } from '~/states/pages';
 import { POPUP_ID } from '~/types/components';
 
@@ -33,9 +34,13 @@ interface InputFormState {
   to: number;
 }
 export const SwapInputGroup = () => {
+  const { network } = useParams();
   const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
   // TODO: 추후 스왑 가능한 토큰 / 풀을 서버 api로 받아오도록 수정
-  const id = EVM_CONTRACT_ADDRESS[selectedNetwork]?.VAULT || XRP_AMM[0]?.id || '';
+  const id = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT || XRP_AMM?.[0]?.id || '';
 
   const { pool } = useLiquidityPoolBalance(id);
   const { evm, xrp } = useConnectedWallet();

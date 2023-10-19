@@ -7,6 +7,7 @@ import { DetailHeader } from '../../layouts/detail-header';
 import { DetailLeft } from '../../layouts/detail-left';
 import { DetailRight } from '../../layouts/detail-right';
 
+// TODO: switch network alert popup
 const PoolDetailMainPage = () => {
   return (
     <>

@@ -30,7 +30,7 @@ import { TokenList } from '~/components/token-list';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useRequirePrarams } from '~/hooks/utils';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkFull } from '~/utils';
 import { IPool, POPUP_ID } from '~/types';
 
 interface Props {
@@ -44,11 +44,14 @@ interface Props {
 }
 
 export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }: Props) => {
+  const { network } = useParams();
   const { selectedNetwork } = useNetwork();
   const { getTokenPrice } = useTokenPrice();
 
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
   const { bptOut: lpTokenAmountEvm } = useLiquidityPoolTokenAmount({
-    poolId: pool.id as Address,
+    id: pool.id as Address,
     amountsIn: tokenInputs?.map(v => v.amount) ?? [],
   });
 
@@ -67,9 +70,9 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
     refetch: refetchAllowance1,
   } = useApprove({
     amount: tokenInputs?.[0]?.amount ?? 0,
-    address: EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[tokenInputs?.[0]?.symbol] ?? '',
+    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[tokenInputs?.[0]?.symbol] ?? '',
 
-    spender: EVM_CONTRACT_ADDRESS?.[selectedNetwork]?.VAULT ?? '',
+    spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
     currency: tokenInputs?.[0]?.symbol ?? '',
 
     enabled: tokenInputs?.length > 0,
@@ -83,9 +86,9 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
     refetch: refetchAllowance2,
   } = useApprove({
     amount: tokenInputs?.[1]?.amount ?? 0,
-    address: EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[tokenInputs?.[1]?.symbol] ?? '',
+    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[tokenInputs?.[1]?.symbol] ?? '',
 
-    spender: EVM_CONTRACT_ADDRESS?.[selectedNetwork]?.VAULT ?? '',
+    spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
     currency: tokenInputs?.[1]?.symbol ?? '',
 
     enabled: tokenInputs?.length > 1,
@@ -104,9 +107,9 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
     enabled,
     tokens:
       tokenInputs?.map(t => ({
-        address: EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[t.symbol] ?? '',
+        address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[t.symbol] ?? '',
         currency: t?.symbol ?? '',
-        amount: parseUnits(t.amount.toString(), TOKEN_DECIMAL[selectedNetwork]).toString(),
+        amount: parseUnits(t.amount.toString(), TOKEN_DECIMAL[currentNetwork]).toString(),
       })) ?? [],
   });
 
@@ -216,7 +219,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
               <Jazzicon
                 diameter={36}
                 seed={jsNumberForAddress(
-                  EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[lpTokenName] || lpTokenName || ''
+                  EVM_TOKEN_ADDRESS?.[currentNetwork]?.[lpTokenName] || lpTokenName || ''
                 )}
               />
             }

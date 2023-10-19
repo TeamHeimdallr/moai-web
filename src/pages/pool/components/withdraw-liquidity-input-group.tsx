@@ -50,7 +50,7 @@ export const WithdrawLiquidityInputGroup = ({
   const { selectedTab, selectTab } = useWithdrawLiquidityInputGroupTabStore();
 
   const { amountsOut, priceImpact: priceImpactRaw } = useWithdrawTokenAmounts({
-    poolId: pool.id as Address,
+    id: pool.id as Address,
     bptIn: inputValue ?? 0,
   });
 

@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import { useQueries, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { formatUnits } from 'viem';
 import { Address, PublicClient, usePublicClient } from 'wagmi';
@@ -7,6 +8,7 @@ import { QUERY_KEYS } from '~/api/utils/query-keys';
 import { EVM_CONTRACT_ADDRESS, TOKEN_DECIMAL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkFull } from '~/utils';
 import { IPoolLiquidityProvisions, IToken, NETWORK } from '~/types';
 
 import { getTokenPrice } from '../token/price';
@@ -27,7 +29,6 @@ const getLiquidityPoolProvisions = async ({
   if (!isEvm) return;
 
   const block = await client.getBlockNumber();
-
   const res = await client.getLogs({
     address: EVM_CONTRACT_ADDRESS[network].VAULT as Address,
     event: {
@@ -120,11 +121,13 @@ export const useGetLiquidityPoolProvisions = ({
   options,
 }: UseGetLiquidityPoolProvisionsProps) => {
   const client = usePublicClient();
+  const { network } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { data: liquidityPoolProvisionsData } = useQuery(
     [...QUERY_KEYS.LIQUIIDITY_POOL.GET_PROVISIONS, poolId],
-    () => getLiquidityPoolProvisions({ client, network: selectedNetwork, poolId }),
+    () => getLiquidityPoolProvisions({ client, network: currentNetwork as NETWORK, poolId }),
     {
       keepPreviousData: true,
       enabled: !!poolId && !!client && isEvm,
@@ -140,7 +143,7 @@ export const useGetLiquidityPoolProvisions = ({
       queryFn: () =>
         getFormattedLiquidityPoolProvisions({
           client,
-          network: selectedNetwork,
+          network: currentNetwork as NETWORK,
           data: { args: data.args, blockHash: data.blockHash, txHash: data.transactionHash },
         }),
       staleTime: 1000 * 5,

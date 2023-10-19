@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
 
@@ -25,7 +26,7 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { DATE_FORMATTER, formatFloat, formatNumber } from '~/utils';
+import { DATE_FORMATTER, formatFloat, formatNumber, getNetworkFull } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
 import { POPUP_ID } from '~/types/components';
@@ -33,9 +34,13 @@ import { POPUP_ID } from '~/types/components';
 import { SwapArrowDown } from './swap-arrow-down';
 
 export const SwapPopup = () => {
+  const { network } = useParams();
   const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
   // TODO: 추후 스왑 가능한 토큰 / 풀을 서버 api로 받아오도록 수정
-  const id = EVM_CONTRACT_ADDRESS[selectedNetwork]?.VAULT || XRP_AMM[0]?.id || '';
+  const id = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT || XRP_AMM?.[0]?.id || '';
 
   const { pool } = useLiquidityPoolBalance(id);
   const { getTokenPrice } = useTokenPrice();
@@ -79,9 +84,9 @@ export const SwapPopup = () => {
     refetch: refetchAllowance,
   } = useApprove({
     amount: Number(fromValue ?? 0),
-    address: EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[fromToken] ?? '',
+    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[fromToken] ?? '',
 
-    spender: EVM_CONTRACT_ADDRESS?.[selectedNetwork]?.VAULT ?? '',
+    spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
     currency: fromToken ?? '',
 
     enabled: !!fromToken,
