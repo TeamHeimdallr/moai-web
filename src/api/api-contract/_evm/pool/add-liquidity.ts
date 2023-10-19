@@ -11,7 +11,7 @@ import {
 
 import { EVM_CONTRACT_ADDRESS, EVM_TOKEN_ADDRESS } from '~/constants';
 
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
@@ -33,6 +33,8 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
 
   const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
+  const chainId = useNetworkId(currentNetwork);
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
@@ -58,6 +60,7 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
     functionName: 'joinPool',
 
     account: walletAddress as Address,
+    chainId,
     args: [
       poolId,
       walletAddress,

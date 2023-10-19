@@ -4,21 +4,22 @@ import { InjectedConnector } from 'wagmi/connectors/injected';
 import { publicProvider } from 'wagmi/providers/public';
 
 // import { WALLETCONNECT_PROJECT_ID } from '~/constants';
-import { useEvm } from '~/hooks/contexts';
+import { theRootNetworkTestnet, xrpEvmSidechainTestnet } from '~/configs/evm-network';
 
 interface Props {
   children: React.ReactNode;
 }
 const Web3Provider = ({ children }: Props) => {
-  const { chains } = useEvm();
-
   // const projectId = WALLETCONNECT_PROJECT_ID as string;
 
-  const { publicClient, webSocketPublicClient } = configureChains(chains, [publicProvider()]);
+  const { publicClient, webSocketPublicClient } = configureChains(
+    [theRootNetworkTestnet, xrpEvmSidechainTestnet],
+    [publicProvider()]
+  );
   const wagmiConfig = createConfig({
     autoConnect: true,
     connectors: [
-      new InjectedConnector({ chains }),
+      new InjectedConnector({ chains: [theRootNetworkTestnet, xrpEvmSidechainTestnet] }),
       // new WalletConnectConnector({ chains, options: { projectId } }),
     ],
     publicClient,

@@ -20,14 +20,11 @@ export const useConnectXrpl = () => {
     await client.connect();
 
     setConnection(true);
-    console.log('[xrpl] wss client connected');
   };
 
   const disconnect = async () => {
     if (!client) return;
     await client.disconnect();
-
-    console.log('[xrpl] wss client disconnected');
   };
 
   useEffect(() => {

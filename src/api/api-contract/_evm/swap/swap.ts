@@ -10,7 +10,7 @@ import {
 
 import { EVM_CONTRACT_ADDRESS } from '~/constants';
 
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
@@ -34,6 +34,7 @@ export const useSwap = ({
   const { selectedNetwork, isEvm } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const chainId = useNetworkId(currentNetwork);
 
   const publicClient = usePublicClient();
   const { evm } = useConnectedWallet();
@@ -44,6 +45,7 @@ export const useSwap = ({
     address: contractAddress,
     abi: BALANCER_VAULT_ABI,
     functionName: 'swap',
+    chainId,
     args: [singleSwap, fundManagement, limit, deadline],
     enabled: !!contractAddress && !!singleSwap && !!fundManagement && !!address && isEvm,
   });

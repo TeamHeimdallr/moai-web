@@ -1,9 +1,8 @@
-import { lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-const PoolDetail = lazy(() => import('./pages/detail'));
-const PoolDetailAddLiquidity = lazy(() => import('./pages/add-liquidity'));
-const PoolDetailWithdrawLiquidity = lazy(() => import('./pages/withdraw-liquidity'));
+import PoolDetailAddLiquidity from './pages/add-liquidity';
+import PoolDetail from './pages/detail';
+import PoolDetailWithdrawLiquidity from './pages/withdraw-liquidity';
 
 const PoolDetailPage = () => {
   return (

@@ -3,7 +3,7 @@ import { Address, PublicClient, useContractRead } from 'wagmi';
 
 import { EVM_CONTRACT_ADDRESS, EVM_POOL, EVM_TOKEN_ADDRESS, TOKEN_PRICE } from '~/constants';
 
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
 
@@ -46,6 +46,7 @@ export const useTokenPrice = () => {
   const { selectedNetwork, isEvm } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const chainId = useNetworkId(currentNetwork);
 
   const tokenAddress = EVM_POOL?.[currentNetwork]?.[0]?.id;
 
@@ -54,6 +55,7 @@ export const useTokenPrice = () => {
     address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'getPoolTokens',
+    chainId,
     args: [tokenAddress],
     enabled: !!address && !!tokenAddress && isEvm,
   });

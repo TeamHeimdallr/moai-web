@@ -11,7 +11,7 @@ import {
 
 import { EVM_CONTRACT_ADDRESS, EVM_TOKEN_ADDRESS } from '~/constants';
 
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
@@ -35,6 +35,8 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
   const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
+  const chainId = useNetworkId(currentNetwork);
+
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const handleNativeXrp = (token: string) => {
@@ -56,6 +58,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
     functionName: 'exitPool',
 
     account: walletAddress as Address,
+    chainId,
     args: [
       poolId,
       walletAddress,

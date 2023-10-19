@@ -10,7 +10,7 @@ import {
   TOKEN_IMAGE_MAPPER,
 } from '~/constants';
 
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import {
   calcBptInTokenOutAmountAndPriceImpact,
@@ -234,13 +234,18 @@ interface UseGetSwapFeePercentage {
   enabled?: boolean;
 }
 export const useGetSwapFeePercentage = ({ lpTokenAddress }: UseGetSwapFeePercentage) => {
-  const { isEvm } = useNetwork();
+  const { network } = useParams();
+  const { selectedNetwork, isEvm } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) || selectedNetwork;
+  const chainId = useNetworkId(currentNetwork);
 
   const { data: _data, ...rest } = useContractRead({
     address: lpTokenAddress,
     abi: BALANCER_LP_ABI,
     functionName: 'getSwapFeePercentage',
     staleTime: 1000 * 60,
+    chainId,
     enabled: !!lpTokenAddress && isEvm,
   });
   const data = _data as bigint | undefined;
@@ -257,12 +262,15 @@ export const usePoolTotalLpTokens = ({ id }: UsePoolTotalLpTokens) => {
   const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
+  const chainId = useNetworkId(currentNetwork);
+
   const { tokenAddress } = EVM_POOL[currentNetwork]?.[0] ?? {};
 
   const { data } = useContractRead({
     address: tokenAddress as Address,
     abi: ERC20_TOKEN_ABI,
     functionName: 'totalSupply',
+    chainId,
     staleTime: 1000 * 5,
     enabled: !!id && !!tokenAddress && isEvm,
   });
@@ -282,11 +290,14 @@ export const usePoolTokens = ({ id }: UsePoolTokens) => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const address = EVM_CONTRACT_ADDRESS[currentNetwork]?.VAULT as Address;
+  const chainId = useNetworkId(currentNetwork);
+
   const { data: res, ...rest } = useContractRead({
     address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'getPoolTokens',
     args: [id],
+    chainId,
     staleTime: 1000 * 5,
     enabled: !!address && !!id && isEvm,
   });
@@ -302,12 +313,17 @@ interface UsePoolTokenNormalizedWeights {
 export const usePoolTokenNormalizedWeights = ({
   lpTokenAddress,
 }: UsePoolTokenNormalizedWeights) => {
-  const { isEvm } = useNetwork();
+  const { network } = useParams();
+  const { selectedNetwork, isEvm } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const chainId = useNetworkId(currentNetwork);
 
   const { data: res, ...rest } = useContractRead({
     address: lpTokenAddress,
     abi: BALANCER_LP_ABI,
     functionName: 'getNormalizedWeights',
+    chainId,
     staleTime: Infinity,
     enabled: !!lpTokenAddress && isEvm,
   });

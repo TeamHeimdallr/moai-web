@@ -146,11 +146,7 @@ export const SwapPopup = () => {
           </ClickableIcon>
         </TimeWrapper>
       )}
-      <ButtonPrimaryLarge
-        buttonType="outlined"
-        text="Return to swap page"
-        onClick={handleSuccess}
-      />
+      <ButtonPrimaryLarge buttonType="outlined" text="Close" onClick={handleSuccess} />
     </PrimaryButtonWrapper>
   ) : allowance ? (
     <ButtonPrimaryLarge text="Confirm swap" isLoading={isLoading} onClick={swap} />

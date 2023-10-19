@@ -1,36 +1,25 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { ConnectWallet } from './components/connect-wallet';
-import { ToastContainer } from './components/toasts';
 import ReactQueryProvider from './hocs/hoc-react-query-provider';
 import Web3Provider from './hocs/hoc-web3-provider';
-import { usePopup } from './hooks/components/use-popup';
-import { useConnectXrpl } from './hooks/contexts';
-import { POPUP_ID } from './types';
-
-const Pages = lazy(() => import('./pages'));
+import Pages from './pages';
 
 const RouteWrapper = tw.main`relative w-full h-full min-w-1440`;
 const App = () => {
-  const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
-  useConnectXrpl();
-
   return (
-    <BrowserRouter>
-      <Suspense>
+    <Suspense>
+      <Web3Provider>
         <ReactQueryProvider>
-          <Web3Provider>
+          <BrowserRouter>
             <RouteWrapper>
               <Pages />
-              <ToastContainer />
-              {connectWalletOpened && <ConnectWallet />}
             </RouteWrapper>
-          </Web3Provider>
+          </BrowserRouter>
         </ReactQueryProvider>
-      </Suspense>
-    </BrowserRouter>
+      </Web3Provider>
+    </Suspense>
   );
 };
 

@@ -1,14 +1,11 @@
 import tw, { styled } from 'twin.macro';
 
-import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
-
 import { ASSET_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatNumber } from '~/utils/util-number';
 import { POPUP_ID } from '~/types';
 
 export const MainLayout = () => {
@@ -16,9 +13,6 @@ export const MainLayout = () => {
 
   const { evm, xrp } = useConnectedWallet();
   const isConnected = !!evm.address || !!xrp.address;
-
-  const { balancesArray } = useTokenBalanceInPool();
-  const moaiBalance = balancesArray?.find(b => b.symbol === 'MOAI');
 
   return (
     <MainWrapper
@@ -28,7 +22,8 @@ export const MainLayout = () => {
       {isConnected ? (
         <>
           <Label>My Moai balance</Label>
-          <SubTitle>{`$${formatNumber(moaiBalance?.value ?? 0, 4)}`}</SubTitle>
+          {/* TODO: moai balance */}
+          <SubTitle>{`$0`}</SubTitle>
         </>
       ) : (
         <>

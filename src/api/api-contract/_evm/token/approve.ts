@@ -5,8 +5,7 @@ import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagm
 
 import { TOKEN_DECIMAL } from '~/constants';
 
-import { useEvm } from '~/hooks/contexts';
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 
@@ -32,8 +31,8 @@ export const useApprove = ({
   const { selectedNetwork, isEvm } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const chainId = useNetworkId(currentNetwork);
 
-  const { chainId } = useEvm();
   const [allowance, setAllowance] = useState(false);
 
   const { evm } = useConnectedWallet();
@@ -43,6 +42,7 @@ export const useApprove = ({
     address: tokenAddress,
     abi: ERC20_TOKEN_ABI,
     functionName: 'allowance',
+    chainId,
     args: [walletAddress, spender],
     enabled: enabled && !!walletAddress && !!spender && isEvm,
 
@@ -60,7 +60,6 @@ export const useApprove = ({
     abi: ERC20_TOKEN_ABI,
     functionName: 'approve',
     chainId,
-
     account: walletAddress as Address,
     args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
     enabled: enabled && !!walletAddress && !!spender && isEvm,

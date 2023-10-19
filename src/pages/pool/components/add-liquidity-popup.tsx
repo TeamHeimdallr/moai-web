@@ -130,6 +130,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
   // TODO: handle 3 tokens
   const handleButton = async () => {
     if (isSuccess) {
+      navigate(-1);
       close();
       return;
     }

@@ -42,6 +42,9 @@ export const EVM_TOKEN_ADDRESS: Record<string, Record<string, string>> = {
     ROOT: IS_MAINNET ? '' : '0xcCcCCccC00000001000000000000000000000000',
 
     ROOT_XRP: IS_MAINNET ? '' : '0x291af6e1b841cad6e3dcd66f2aa0790a007578ad',
+
+    // TODO Moai token address
+    MOAI: IS_MAINNET ? '' : '',
   },
   [NETWORK.EVM_SIDECHAIN]: {
     ZERO: IS_MAINNET ? '' : '0x0000000000000000000000000000000000000000',
@@ -50,6 +53,9 @@ export const EVM_TOKEN_ADDRESS: Record<string, Record<string, string>> = {
     WETH: IS_MAINNET ? '' : '0x2A40A6D0Fb23cf12F550BaFfd54fb82b07a21BDe',
 
     WETH_XRP: IS_MAINNET ? '' : '0xe73749250390C51e029CfaB3d0488E08C183a671',
+
+    // TODO Moai token address
+    MOAI: IS_MAINNET ? '' : '',
   },
 };
 

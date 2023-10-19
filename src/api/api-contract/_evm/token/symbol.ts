@@ -1,7 +1,9 @@
+import { useParams } from 'react-router-dom';
 import { Abi, Address, isAddress, PublicClient } from 'viem';
 import { useContractReads } from 'wagmi';
 
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
+import { getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
@@ -21,12 +23,17 @@ export const getTokenSymbol = async (client: PublicClient, network: NETWORK, add
 };
 
 export const useTokenSymbols = (addresses: Address[]) => {
-  const { isEvm } = useNetwork();
+  const { network } = useParams();
+  const { selectedNetwork, isEvm } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const chainId = useNetworkId(currentNetwork);
 
   const { data: res } = useContractReads({
     contracts: addresses.map(address => ({
       address,
       abi: ERC20_TOKEN_ABI as Abi,
+      chainId,
       functionName: 'symbol',
       enabled: isEvm && !!address,
     })),

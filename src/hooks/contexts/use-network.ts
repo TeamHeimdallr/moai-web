@@ -1,7 +1,11 @@
 import { useMemo } from 'react';
 
+import { IS_MAINNET } from '~/constants';
+
 import { useSelecteNetworkStore } from '~/states/data';
 import { NETWORK } from '~/types';
+
+import { theRootNetworkTestnet, xrpEvmSidechainTestnet } from '~/configs/evm-network';
 
 export const useNetwork = () => {
   const { selectedNetwork, selectNetwork } = useSelecteNetworkStore();
@@ -23,4 +27,14 @@ export const useNetwork = () => {
     isXrp,
     name,
   };
+};
+
+export const useNetworkId = (network: NETWORK) => {
+  if (network === NETWORK.THE_ROOT_NETWORK) {
+    return IS_MAINNET ? 0 : theRootNetworkTestnet.id;
+  }
+  if (network === NETWORK.EVM_SIDECHAIN) {
+    return IS_MAINNET ? 0 : xrpEvmSidechainTestnet.id;
+  }
+  return 0;
 };
