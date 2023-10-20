@@ -1,6 +1,6 @@
 import tw from 'twin.macro';
 
-import { IconDiscord, IconTelegram, IconTwitter } from '~/assets/icons';
+import { IconDiscord, IconMedium, IconPaper, IconTwitterX } from '~/assets/icons';
 import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { ButtonIconLarge } from '~/components/buttons/icon';
@@ -8,9 +8,10 @@ import { ButtonIconLarge } from '~/components/buttons/icon';
 export const Footer = () => {
   // TODO: sns link
   const sns = [
-    { name: 'twitter', url: 'https://twitter.com/MoaiFinance', icon: <IconTwitter /> },
-    { name: 'discord', url: '#', icon: <IconDiscord /> },
-    { name: 'telegram', url: '#', icon: <IconTelegram /> },
+    { name: 'twitter', url: 'https://twitter.com/MoaiFinance', icon: <IconTwitterX /> },
+    { name: 'medium', url: 'https://medium.com/@moai-finance', icon: <IconMedium /> },
+    { name: 'discord', url: '#', icon: <IconDiscord />, disabled: true },
+    { name: 'paper', url: '#', icon: <IconPaper /> },
   ];
 
   return (
@@ -18,8 +19,14 @@ export const Footer = () => {
       <LogoText width={70} height={16} />
       <Text>{`© ${new Date().getFullYear()} Moai Finance, Inc. All Rights Reserved`}</Text>
       <SnsWrapper>
-        {sns.map(({ name, url, icon }) => (
-          <ButtonIconLarge key={name} title={name} icon={icon} onClick={() => window.open(url)} />
+        {sns.map(({ name, url, icon, disabled }) => (
+          <ButtonIconLarge
+            key={name}
+            title={name}
+            icon={icon}
+            disabled={disabled}
+            onClick={() => window.open(url)}
+          />
         ))}
       </SnsWrapper>
     </Wrapper>

@@ -1,7 +1,8 @@
 import tw from 'twin.macro';
 
+import { Footer } from '~/components/footer';
+
 import { LandingBody } from './components/body';
-import { LandingFooter } from './components/footer';
 import { LandingGnb } from './components/gnb';
 
 const LandingPage = () => {
@@ -9,7 +10,7 @@ const LandingPage = () => {
     <Wrapper>
       <LandingGnb />
       <LandingBody />
-      <LandingFooter />
+      <Footer />
     </Wrapper>
   );
 };
