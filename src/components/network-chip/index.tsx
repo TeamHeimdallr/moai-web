@@ -48,7 +48,7 @@ interface WrapperProps {
 }
 
 const Wrapper = styled.div<WrapperProps>(({ color }) => [
-  tw`px-12 py-5 flex inline-flex items-center justify-center gap-6 font-m-14 rounded-20`,
+  tw`px-14 py-9 flex inline-flex items-center justify-center gap-6 font-m-14 rounded-10`,
   css`
     color: ${color};
     background-color: ${color + '33'};
