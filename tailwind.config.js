@@ -101,13 +101,6 @@ module.exports = {
         ...convertSpacing([...Array(21).keys()]),
       }),
 
-      animation: theme => ({
-        ...defaultTheme.animation,
-      }),
-      keyframes: theme => ({
-        ...defaultTheme.keyframes,
-      }),
-
       boxShadow: theme => ({
         ...defaultTheme.boxShadow,
       }),
@@ -116,6 +109,10 @@ module.exports = {
         ...defaultTheme.zIndex,
         ...convertSpacing([...Array(101).keys()], true),
       }),
+
+      backgroundImage: {
+        landing: "url('https://moai-finance-assets.s3.amazonaws.com/images/bg-landing.png')",
+      },
     },
   },
   truncate: {
@@ -268,6 +265,26 @@ module.exports = {
           fontSize: '48px',
           fontWeight: 700,
           lineHeight: '60px',
+          letterSpacing: '-1px',
+        },
+        '.font-eb-32': {
+          fontFamily: 'Pretendard Variable',
+          fontSize: '32px',
+          fontWeight: 800,
+          lineHeight: '36px',
+        },
+        '.font-eb-60': {
+          fontFamily: 'Pretendard Variable',
+          fontSize: '60px',
+          fontWeight: 800,
+          lineHeight: '72px',
+          letterSpacing: '-1px',
+        },
+        '.font-eb-80': {
+          fontFamily: 'Pretendard Variable',
+          fontSize: '80px',
+          fontWeight: 800,
+          lineHeight: '84px',
           letterSpacing: '-1px',
         },
       });

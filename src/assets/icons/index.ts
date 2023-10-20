@@ -23,6 +23,7 @@ import IconLink from './icon-link.svg?react';
 import IconLocked from './icon-locked.svg?react';
 import IconLogout from './icon-logout.svg?react';
 import IconMail from './icon-mail.svg?react';
+import IconMedium from './icon-medium.svg?react';
 import IconMenu from './icon-menu.svg?react';
 import IconMinus from './icon-minus.svg?react';
 import IconMore from './icon-more.svg?react';
@@ -45,6 +46,7 @@ import IconTelegram from './icon-telegram.svg?react';
 import IconTime from './icon-time.svg?react';
 import IconTokens from './icon-tokens.svg?react';
 import IconTwitter from './icon-twitter.svg?react';
+import IconTwitterX from './icon-twitter-x.svg?react';
 import IconUnlocked from './icon-unlocked.svg?react';
 import IconUp from './icon-up.svg?react';
 import IconUpFill from './icon-up-fill.svg?react';
@@ -77,6 +79,7 @@ export {
   IconLocked,
   IconLogout,
   IconMail,
+  IconMedium,
   IconMenu,
   IconMinus,
   IconMore,
@@ -99,6 +102,7 @@ export {
   IconTime,
   IconTokens,
   IconTwitter,
+  IconTwitterX,
   IconUnlocked,
   IconUp,
   IconUpFill,
