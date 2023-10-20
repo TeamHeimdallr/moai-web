@@ -111,7 +111,7 @@ module.exports = {
       }),
 
       backgroundImage: {
-        landing: "url('/src/assets/images/bg-landing.png')",
+        landing: "url('https://moai-finance-assets.s3.amazonaws.com/images/bg-landing.png')",
       },
     },
   },
