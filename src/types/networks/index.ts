@@ -3,3 +3,9 @@ export enum NETWORK {
   THE_ROOT_NETWORK = 'THE_ROOT_NETWORK',
   EVM_SIDECHAIN = 'EVM_SIDECHAIN',
 }
+
+export const NETWORK_NAMES = {
+  [NETWORK.XRPL]: 'XRPL',
+  [NETWORK.THE_ROOT_NETWORK]: 'The Root',
+  [NETWORK.EVM_SIDECHAIN]: 'EVM Sidechain',
+};
