@@ -7,7 +7,7 @@ import LogoLanding from '~/assets/logos/logo-landing.svg?react';
 
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
 
-export const LandingBody = () => {
+export const Contents = () => {
   return (
     <Wrapper
       initial={{ top: '320px' }}

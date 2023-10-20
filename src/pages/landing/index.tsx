@@ -2,14 +2,14 @@ import tw from 'twin.macro';
 
 import { Footer } from '~/components/footer';
 
-import { LandingBody } from './components/body';
-import { LandingGnb } from './components/gnb';
+import { Contents } from './components/contents';
+import { Gnb } from './components/gnb';
 
 const LandingPage = () => {
   return (
     <Wrapper>
-      <LandingGnb />
-      <LandingBody />
+      <Gnb />
+      <Contents />
       <Footer />
     </Wrapper>
   );

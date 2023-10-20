@@ -5,7 +5,7 @@ import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
 
-export const LandingGnb = () => {
+export const Gnb = () => {
   return (
     <Wrapper>
       <LogoWrapper>
