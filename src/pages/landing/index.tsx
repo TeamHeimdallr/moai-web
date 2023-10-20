@@ -15,6 +15,6 @@ const LandingPage = () => {
   );
 };
 
-const Wrapper = tw.div`w-full h-full flex flex-col justify-between bg-landing bg-cover bg-center pb-40`;
+const Wrapper = tw.div`w-full h-full flex flex-col justify-between bg-landing bg-cover bg-center`;
 
 export default LandingPage;

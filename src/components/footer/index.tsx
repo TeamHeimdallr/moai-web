@@ -34,7 +34,7 @@ export const Footer = () => {
 };
 
 const Wrapper = tw.div`
-  px-48 py-40 flex-center flex-col gap-16
+  w-full px-20 py-40 flex-center flex-col gap-16
 `;
 
 const Text = tw.div`
