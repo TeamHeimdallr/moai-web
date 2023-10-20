@@ -2838,6 +2838,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
+  languageName: node
+  linkType: hard
+
 "@ledgerhq/connect-kit-loader@npm:^1.1.0":
   version: 1.1.2
   resolution: "@ledgerhq/connect-kit-loader@npm:1.1.2"
@@ -2913,6 +2920,7 @@ __metadata:
     "@storybook/theming": ^7.4.6
     "@tanstack/react-query": ^4.36.1
     "@tanstack/react-table": ^8.10.6
+    "@types/chart.js": ^2.9.39
     "@types/d3-format": ^3.0.2
     "@types/lodash-es": ^4.17.9
     "@types/node": ^20.8.5
@@ -2927,6 +2935,7 @@ __metadata:
     axios: ^1.5.1
     babel-plugin-auto-import: ^1.1.0
     babel-plugin-macros: ^3.1.0
+    chart.js: ^4.4.0
     copy-to-clipboard: ^3.3.3
     d3-format: ^3.1.0
     date-fns: ^2.30.0
@@ -5269,6 +5278,15 @@ __metadata:
     "@types/node": "*"
     "@types/responselike": ^1.0.0
   checksum: d9b26403fe65ce6b0cb3720b7030104c352bcb37e4fac2a7089a25a97de59c355fa08940658751f2f347a8512aa9d18fdb66ab3ade835975b2f454f2d5befbd9
+  languageName: node
+  linkType: hard
+
+"@types/chart.js@npm:^2.9.39":
+  version: 2.9.39
+  resolution: "@types/chart.js@npm:2.9.39"
+  dependencies:
+    moment: ^2.10.2
+  checksum: c19cab03143db9cabc9c7277b77a974634baa9a9554dc95a7d2996091ac88ca9d98718e701446932a4cf0b8f3c2862ad0d3f232e1deb6a9bdf72d9ef5342582d
   languageName: node
   linkType: hard
 
@@ -7726,6 +7744,15 @@ __metadata:
     ansi-styles: ^4.1.0
     supports-color: ^7.1.0
   checksum: 8e3ddf3981c4da405ddbd7d9c8d91944ddf6e33d6837756979f7840a29272a69a5189ecae0ff84006750d6d1e92368d413335eab4db5476db6e6703a1d1e0505
+  languageName: node
+  linkType: hard
+
+"chart.js@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "chart.js@npm:4.4.0"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: 5ee2d99b78608025525b5790af17178fdaa5adc3294e082deba2718029b0496109ba124f1b08dd1e4c8a04d6e842be7f384f2cfe9a11df8d1c6fe884acece52b
   languageName: node
   linkType: hard
 
@@ -12057,6 +12084,13 @@ __metadata:
   bin:
     mkdirp: bin/cmd.js
   checksum: a96865108c6c3b1b8e1d5e9f11843de1e077e57737602de1b82030815f311be11f96f09cce59bd5b903d0b29834733e5313f9301e3ed6d6f6fba2eae0df4298f
+  languageName: node
+  linkType: hard
+
+"moment@npm:^2.10.2":
+  version: 2.29.4
+  resolution: "moment@npm:2.29.4"
+  checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
   languageName: node
   linkType: hard
 
