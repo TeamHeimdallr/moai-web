@@ -1,7 +1,6 @@
 export {
   TableHeader,
   TableHeaderAPR,
-  TableHeaderAssets,
   TableHeaderComposition,
   TableHeaderMyAPR,
 } from './header-normal';
