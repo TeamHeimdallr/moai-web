@@ -6,6 +6,7 @@ import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
 
 import { getNetworkAbbr } from '~/utils';
+import { useTablePoolCompositionSelectTokenStore } from '~/states/components/table';
 import { useShowAllPoolsStore } from '~/states/pages';
 import { NETWORK } from '~/types';
 
@@ -19,6 +20,7 @@ export const LiquidityPoolLayout = () => {
   const navigate = useNavigate();
   const { data, columns } = useTableLiquidityPool();
   const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
+  const { selectedTokens, setSelectedTokens } = useTablePoolCompositionSelectTokenStore();
 
   const handleRowClick = (meta?: Meta) => {
     if (!meta) return;
@@ -27,6 +29,31 @@ export const LiquidityPoolLayout = () => {
 
   // TODO: pool 구성에 있는 토큰 리스트
   const tokens = [{ symbol: 'MOAI' }, { symbol: 'XRP' }, { symbol: 'ROOT' }, { symbol: 'WETH' }];
+
+  const handleTokenClick = (token: string) => {
+    if (selectedTokens.includes(token)) {
+      setSelectedTokens(selectedTokens.filter(t => t !== token));
+    } else {
+      setSelectedTokens([...selectedTokens, token]);
+    }
+  };
+
+  const sortTokensBySelection = (tokens, selectedTokens: string[]) => {
+    return tokens.sort((a, b) => {
+      const isASelected = selectedTokens.includes(a.symbol);
+      const isBSelected = selectedTokens.includes(b.symbol);
+
+      if (isASelected && !isBSelected) {
+        return -1;
+      } else if (!isASelected && isBSelected) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  };
+
+  const sortedTokens = sortTokensBySelection(tokens, selectedTokens);
 
   return (
     <Wrapper>
@@ -39,8 +66,13 @@ export const LiquidityPoolLayout = () => {
       </TitleWrapper>
       <TableWrapper>
         <BadgeWrapper>
-          {tokens.map(token => (
-            <ButtonChipFilter key={token.symbol} token={token} selected={false} />
+          {sortedTokens.map(token => (
+            <ButtonChipFilter
+              key={token.symbol}
+              token={token}
+              selected={selectedTokens.includes(token.symbol)}
+              onClick={() => handleTokenClick(token.symbol)}
+            />
           ))}
         </BadgeWrapper>
         <Table data={data} columns={columns} handleRowClick={handleRowClick} />

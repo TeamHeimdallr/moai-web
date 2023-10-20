@@ -4,6 +4,7 @@ import tw from 'twin.macro';
 import { BadgeNew } from '~/components/badges/new';
 import { Token } from '~/components/token';
 
+import { useTablePoolCompositionSelectTokenStore } from '~/states/components';
 import { Entries } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -12,10 +13,18 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 // will be removed
 export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
+  const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
+
   return (
     <Wrapper {...rest}>
-      {(Object.entries(tokens) as Entries<Record<string, number>>).map(([token, percentage]) => (
-        <Token key={token} token={token} percentage={percentage} image={true} type="small" />
+      {(Object.entries(tokens) as Entries<Record<string, number>>).map(([token]) => (
+        <Token
+          key={token}
+          token={token}
+          image={true}
+          selected={selectedTokens && selectedTokens.includes(token)}
+          type="large"
+        />
       ))}
       {isNew && <BadgeNew />}
     </Wrapper>
@@ -23,5 +32,5 @@ export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
 };
 
 const Wrapper = tw.div`
-  w-full flex gap-8 items-center flex-1 h-32
+  w-full flex gap-8 items-center flex-1
 `;
