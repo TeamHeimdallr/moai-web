@@ -1,17 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { InputHTMLAttributes, ReactNode, useCallback, useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Control, Controller, FormState, UseFormSetValue } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
 import ReactSlider from 'react-slider';
-import { yupResolver } from '@hookform/resolvers/yup';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
 
-import { formatNumber } from '~/utils/number';
-import { HOOK_FORM_KEY } from '~/types/components/inputs';
+import { formatNumber } from '~/utils';
 
+// TODO: focus 이슈 수정
 type OmitType = 'type' | 'onChange' | 'onBlur';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   balance?: number;
@@ -31,12 +31,10 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   slider?: boolean;
   sliderActive?: boolean;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  schema?: any;
-}
-
-interface FormState {
-  [HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?: number;
+  name?: string;
+  control?: Control<any>;
+  setValue?: UseFormSetValue<any>;
+  formState?: FormState<any>;
 }
 
 export const InputNumber = ({
@@ -44,7 +42,6 @@ export const InputNumber = ({
   tokenValue: defaultTokenValue,
   balance,
   placeholder = '0',
-  schema,
   maxButton,
   slider,
   sliderActive,
@@ -52,17 +49,17 @@ export const InputNumber = ({
   value,
   handleChange,
   handleTokenClick,
+
+  name = '',
+  control,
+  setValue,
+  formState,
+
   ...rest
 }: Props) => {
   const [focused, setFocus] = useState(false);
 
-  const { control, setValue, formState } = useForm<FormState>({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-    resolver: schema && yupResolver(schema),
-  });
-
-  const errorMessage = formState?.errors?.[HOOK_FORM_KEY.NUMBER_INPUT_VALUE]?.message ?? '';
+  const errorMessage = (formState?.errors?.[name ?? '']?.message ?? '') as string;
   const numValue = Number(value) || 0;
   const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
@@ -76,7 +73,7 @@ export const InputNumber = ({
   }, [handledValue, focus]);
 
   useEffect(() => {
-    setValue(HOOK_FORM_KEY.NUMBER_INPUT_VALUE, Number(value || 0), {
+    setValue?.(name ?? '', Number(value || 0), {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
@@ -84,10 +81,10 @@ export const InputNumber = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  const CustomInput = useCallback(({ ...rest }: Props) => <Input {...rest} />, []);
+  const CustomInput = useCallback((props: Props) => <Input {...props} />, []);
   return (
     <Controller
-      name={HOOK_FORM_KEY.NUMBER_INPUT_VALUE}
+      name={name}
       control={control}
       render={formProps => {
         const { field } = formProps;

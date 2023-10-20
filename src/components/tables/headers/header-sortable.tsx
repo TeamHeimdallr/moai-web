@@ -4,27 +4,27 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconArrowUp } from '~/assets/icons';
 
-import { toggleSorting } from '~/utils/table';
-import { SortingState } from '~/types';
+import { toggleTableSorting } from '~/utils/util-table';
+import { ITableSort } from '~/types';
 
 interface TableHeaderSortableProps extends HTMLAttributes<HTMLDivElement> {
   label: string;
 
   sortKey: string;
-  sorting?: SortingState;
-  setSorting?: (sorting: SortingState) => void;
+  sort?: ITableSort;
+  setSort?: (sorting: ITableSort) => void;
 }
 export const TableHeaderSortable = ({
   label,
 
   sortKey,
-  sorting,
-  setSorting,
+  sort,
+  setSort,
 
   ...rest
 }: TableHeaderSortableProps) => {
   const icon =
-    sorting?.order === 'asc' ? (
+    sort?.order === 'asc' ? (
       <IconArrowUp width={16} height={16} />
     ) : (
       <IconArrowDown width={16} height={16} />
@@ -32,12 +32,12 @@ export const TableHeaderSortable = ({
 
   return (
     <SelectableHeaderText
-      selected={sorting?.key === sortKey}
-      onClick={() => setSorting?.(toggleSorting({ order: sorting?.order ?? 'asc', key: sortKey }))}
+      selected={sort?.key === sortKey}
+      onClick={() => setSort?.(toggleTableSorting({ order: sort?.order ?? 'asc', key: sortKey }))}
       {...rest}
     >
       {label}
-      {sorting?.key === sortKey && icon}
+      {sort?.key === sortKey && icon}
     </SelectableHeaderText>
   );
 };

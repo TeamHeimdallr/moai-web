@@ -1,32 +1,45 @@
-import { TokenMOAI, TokenROOT, TokenWETH, TokenXRP } from '~/assets/images';
+import {
+  imageTokenMOAI,
+  imageTokenROOT,
+  imageTokenUSDC,
+  imageTokenUSDT,
+  imageTokenWETH,
+  imageTokenXRP,
+} from '~/assets/images';
 
-import { GnbMenu } from '~/types';
+import { IGnbMenu } from '~/types';
 
-export enum TOKEN {
-  MOAI = 'MOAI',
-  WETH = 'WETH',
-  ROOT = 'ROOT',
-  XRP = 'XRP',
-  WXRP = 'WXRP',
-  MOI = 'MOI',
-}
-
+// TODO: change name TOKEN_IMAGE
 export const TOKEN_IMAGE_MAPPER: Record<string, string> = {
-  MOAI: TokenMOAI,
-  MOI: TokenMOAI,
-  WETH: TokenWETH,
-  ROOT: TokenROOT,
-  XRP: TokenXRP,
-  WXRP: TokenXRP,
+  MOAI: imageTokenMOAI,
+  MOI: imageTokenMOAI,
 
-  '50WETH-50XRP': TokenXRP, // TODO
-  '50WETH-50WXRP': TokenXRP, // TODO
-  '80MOAI-20WETH': TokenMOAI,
-  '50ROOT-50XRP': TokenROOT,
-  '50XRP-50MOI': TokenXRP,
+  ROOT: imageTokenROOT,
+
+  WETH: imageTokenWETH,
+  USDC: imageTokenUSDC,
+  USDT: imageTokenUSDT,
+
+  XRP: imageTokenXRP,
+  WXRP: imageTokenXRP,
 };
 
-export const GNB_MENU: GnbMenu[] = [
+// TODO: change name TOKEN_DESCRIPTION
+export const TOKEN_DESCRIPTION_MAPPER: Record<string, string> = {
+  WETH: 'Wrapped Ether',
+  MOAI: 'MOAI Finance Token',
+  MOI: 'MOAI Finance Token',
+  ROOT: 'The Root Network',
+  XRP: 'XRP',
+  WXRP: 'Wrapped XRP',
+
+  ROOT_XRP: '50ROOT-50XRP LP Token',
+  WETH_XRP: '50WETH-50XRP LP Token',
+  '50ROOT-50XRP': '50ROOT-50XRP LP Token',
+  '50WETH-50XRP': '50WETH-50XRP LP Token',
+};
+
+export const GNB_MENU: IGnbMenu[] = [
   {
     id: 'pool',
     text: 'Pool',
@@ -70,3 +83,5 @@ export const BREAKPOINT = {
   MEDIA_MD: '(min-width: 848px)',
   MEDIA_LG: '(min-width: 1280px)',
 };
+
+export const ASSET_URL = 'https://moai-finance-assets.s3.amazonaws.com';

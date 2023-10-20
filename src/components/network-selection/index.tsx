@@ -1,54 +1,41 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
-import { CHAIN_IMAGE_MAPPER, CHAIN_SELECT_LIST } from '~/constants';
+import { NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
 
-import { useSelectedNetworkStore } from '~/states/data/selected-network';
-import { TOOLTIP_ID } from '~/types';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { NETWORK } from '~/types';
 
 import { ButtonDropdown } from '../buttons/dropdown';
 import { DropdownList } from '../dropdown/dropdown-list';
 
 export const NetworkSelection = () => {
-  const hostname = window.location.hostname.split('.');
-  const subDomain = hostname[hostname.length - 1 - 2];
-
   const ref = useRef<HTMLDivElement>(null);
   const [opened, open] = useState(false);
 
-  const { selectedNetwork, selectNetwork } = useSelectedNetworkStore();
+  const { selectedNetwork, selectNetwork } = useNetwork();
 
   const toggle = () => open(!opened);
 
   useOnClickOutside(ref, () => open(false));
 
-  const selectedNetworkInfo = CHAIN_SELECT_LIST.find(chain => chain.name === selectedNetwork);
-  const name = selectedNetworkInfo?.name ?? 'EMPTY';
-  const text = selectedNetworkInfo?.text ?? 'Select network';
+  const selectedNetworkDetail =
+    NETWORK_SELECT.find(({ network }) => network === selectedNetwork) || NETWORK_SELECT[0];
 
-  const handleSelect = (name: string) => {
-    selectNetwork(name);
+  const handleSelect = (network: NETWORK) => {
+    selectNetwork(network);
     open(false);
-
-    window.location.replace(`https://${name.toLowerCase()}.moai-finance.xyz`);
   };
-
-  useEffect(() => {
-    if (subDomain) {
-      selectNetwork(name);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subDomain, name]);
 
   return (
     <>
       <Wrapper ref={ref}>
         <ButtonDropdown
-          image={CHAIN_IMAGE_MAPPER[name.toUpperCase()]}
-          imageAlt={text}
-          imageTitle={text}
-          text={text}
+          image={NETWORK_IMAGE_MAPPER[selectedNetwork]}
+          imageAlt={selectedNetworkDetail.text}
+          imageTitle={selectedNetworkDetail.text}
+          text={selectedNetworkDetail.text}
           selected={!!selectedNetwork}
           opened={opened}
           onClick={toggle}
@@ -59,20 +46,16 @@ export const NetworkSelection = () => {
             <Title>Network Selection</Title>
             <Divider />
             <ListWrapper>
-              {CHAIN_SELECT_LIST.map((chain, i) => (
+              {NETWORK_SELECT.map(({ network, text }) => (
                 <DropdownList
-                  key={`${chain.text}-${chain.name}-${i}`}
-                  id={chain.name}
-                  text={chain.text}
-                  image={CHAIN_IMAGE_MAPPER[chain.name]}
-                  imageAlt={chain.text}
-                  imageTitle={chain.text}
-                  selected={chain.name === selectedNetwork}
-                  handleSelect={handleSelect}
-                  disabled={chain.disabled}
-                  data-tooltip-id={
-                    chain.commingSoon ? TOOLTIP_ID.COMMING_SOON_NETWORK_SELECTION : undefined
-                  }
+                  key={`${network}-${text}`}
+                  id={network}
+                  text={text}
+                  image={NETWORK_IMAGE_MAPPER[network]}
+                  imageAlt={text}
+                  imageTitle={text}
+                  selected={network === selectedNetwork}
+                  handleSelect={() => handleSelect(network)}
                 />
               ))}
             </ListWrapper>

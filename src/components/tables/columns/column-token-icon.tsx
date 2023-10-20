@@ -7,6 +7,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: string[];
   width?: number | 'full';
 }
+// TODO: will be removed
 export const TableColumnTokenIcon = ({ tokens, width, ...rest }: Props) => {
   return (
     <Wrapper width={width} {...rest}>

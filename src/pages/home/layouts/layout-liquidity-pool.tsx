@@ -1,25 +1,32 @@
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { BASE_URL_SUBROUTE, TOKEN } from '~/constants';
-
-import { FilterChip } from '~/components/filter-chip';
+import { ButtonChipFilter } from '~/components/buttons/chip/filter';
 import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
 
-import { useTableLiquidityPool } from '../hooks/use-table-liquidity-pool';
+import { getNetworkAbbr } from '~/utils';
+import { useShowAllPoolsStore } from '~/states/pages';
+import { NETWORK } from '~/types';
 
+import { useTableLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool';
+
+interface Meta {
+  network: NETWORK;
+  id: string;
+}
 export const LiquidityPoolLayout = () => {
+  const navigate = useNavigate();
   const { data, columns } = useTableLiquidityPool();
+  const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
 
-  const handleRowClick = (chain: string, id: string) => {
-    window.open(`${BASE_URL_SUBROUTE(chain)}/pools/${id}`);
+  const handleRowClick = (meta?: Meta) => {
+    if (!meta) return;
+    navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.id}`);
   };
 
-  const tokens = [TOKEN.MOAI, TOKEN.XRP, TOKEN.ROOT, TOKEN.WETH];
-
-  // TODO : connect selecting all chian api
-  const [selectedAll, selectAll] = useState(true);
+  // TODO: pool 구성에 있는 토큰 리스트
+  const tokens = [{ symbol: 'MOAI' }, { symbol: 'XRP' }, { symbol: 'ROOT' }, { symbol: 'WETH' }];
 
   return (
     <Wrapper>
@@ -27,13 +34,13 @@ export const LiquidityPoolLayout = () => {
         <Title>Liquidity pools</Title>
         <AllChainToggle>
           All supported chains
-          <Toggle selected={selectedAll} onClick={() => selectAll(prev => !prev)} />
+          <Toggle selected={showAllPools} onClick={() => setShowAllPools(!showAllPools)} />
         </AllChainToggle>
       </TitleWrapper>
       <TableWrapper>
         <BadgeWrapper>
           {tokens.map(token => (
-            <FilterChip key={token} token={token} selected={false} />
+            <ButtonChipFilter key={token.symbol} token={token} selected={false} />
           ))}
         </BadgeWrapper>
         <Table data={data} columns={columns} handleRowClick={handleRowClick} />

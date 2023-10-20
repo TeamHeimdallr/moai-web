@@ -1,34 +1,29 @@
 import tw, { styled } from 'twin.macro';
 
-import bgMain from '~/assets/images/bg-main.png';
+import { ASSET_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
-import { usePopup } from '~/hooks/pages/use-popup';
-import { formatNumber } from '~/utils/number';
+import { usePopup } from '~/hooks/components/use-popup';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { POPUP_ID } from '~/types';
 
-import { useBalancesAll } from '~/moai-xrp-root/hooks/data/use-balance-all';
-import { TOKEN } from '~/moai-xrp-root/types/contracts';
-
 export const MainLayout = () => {
-  const { open, opened } = usePopup(POPUP_ID.WALLET);
+  const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
-  const { isConnected: isEvmConnected } = useConnectEvmWallet();
-  const { isConnected: isXrplConnected } = useConnectXrplWallet();
-  const isConnected = isEvmConnected || isXrplConnected;
-
-  const { balancesMap } = useBalancesAll();
-  const moaiBalance = balancesMap?.[TOKEN.MOAI];
+  const { evm, xrp } = useConnectedWallet();
+  const isConnected = !!evm.address || !!xrp.address;
 
   return (
-    <MainWrapper isConnected={isConnected} style={{ backgroundImage: `url(${bgMain})` }}>
+    <MainWrapper
+      isConnected={isConnected}
+      style={{ backgroundImage: `url(${ASSET_URL}/images/bg-main.png)` }}
+    >
       {isConnected ? (
         <>
           <Label>My Moai balance</Label>
-          <SubTitle>{`$${formatNumber(moaiBalance?.value ?? 0, 4)}`}</SubTitle>
+          {/* TODO: moai balance */}
+          <SubTitle>{`$0`}</SubTitle>
         </>
       ) : (
         <>

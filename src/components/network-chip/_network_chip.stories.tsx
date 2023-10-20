@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { NETWORK } from '~/types';
+
 import { NetworkChip } from '.';
 
 const meta = {
@@ -15,19 +17,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Xrpl: Story = {
-  args: {
-    network: 'XRPL',
-  },
+  args: { network: NETWORK.XRPL },
 };
 
 export const Root: Story = {
-  args: {
-    network: 'ROOT',
-  },
+  args: { network: NETWORK.THE_ROOT_NETWORK },
 };
 
 export const EVM: Story = {
-  args: {
-    network: 'EVM',
-  },
+  args: { network: NETWORK.EVM_SIDECHAIN },
 };

@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { ButtonPrimarySmall } from '.';
+import { ButtonPrimarySmallBlack } from '.';
 
 const meta = {
   title: 'Components/Buttons/ButtonPrimarySmallBlack',
-  component: ButtonPrimarySmall,
+  component: ButtonPrimarySmallBlack,
   tags: ['autodocs'],
   argTypes: {},
-} satisfies Meta<typeof ButtonPrimarySmall>;
+} satisfies Meta<typeof ButtonPrimarySmallBlack>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

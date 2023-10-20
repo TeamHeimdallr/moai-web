@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
-import logo from '~/assets/logos/logo-text.svg';
+import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { GNB_MENU } from '~/constants';
 
@@ -9,25 +9,24 @@ import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
-import { useConnectEvmWallet } from '~/hooks/data/use-connect-evm-wallet';
-import { useConnectXrplWallet } from '~/hooks/data/use-connect-xrpl-wallet';
-import { usePopup } from '~/hooks/pages/use-popup';
+import { usePopup } from '~/hooks/components/use-popup';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
-import { AccountProfile } from '../account-profile';
+import { Account } from '../account';
 import { NetworkSelection } from '../network-selection';
 
 export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { open, opened } = usePopup(POPUP_ID.WALLET);
-  const { isConnected: gemConnected, address: gemAddress } = useConnectXrplWallet();
-  const { isConnected: metamaskConnected, address: metamaskAddress } = useConnectEvmWallet();
+  const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
+
+  const { evm, xrp } = useConnectedWallet();
 
   return (
     <>
       <Wrapper>
-        <LogoWrapper src={logo} alt="Moai" onClick={() => navigate('/')} />
+        <LogoText height={28} onClick={() => navigate('/')} />
         <ContentWrapper>
           {GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
             <MenuWrapper
@@ -41,14 +40,10 @@ export const Gnb = () => {
             </MenuWrapper>
           ))}
           <ButtonWrapper>
-            {metamaskConnected || gemConnected ? (
+            {evm.address || xrp.address ? (
               <ConnectedButton>
                 <Notification />
-                <AccountProfile
-                  bothConnected={metamaskConnected && gemConnected}
-                  gemAddress={gemAddress}
-                  metamaskAddress={metamaskAddress}
-                />
+                <Account />
               </ConnectedButton>
             ) : (
               <ButtonPrimaryMedium
@@ -74,10 +69,6 @@ const Wrapper = styled.div(() => [
     background: rgba(28, 32, 51, 0.01);
   `,
 ]);
-
-const LogoWrapper = tw.img`
-  flex-center object-cover h-28
-`;
 
 const ContentWrapper = tw.div`
   flex items-center gap-40

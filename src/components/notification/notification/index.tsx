@@ -35,7 +35,7 @@ export const Notification = () => {
   ];
 
   const handleClear = () => {
-    console.log('clear transactions');
+    //
   };
 
   return (

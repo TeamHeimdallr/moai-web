@@ -1,54 +1,107 @@
-export { ReactComponent as IconAlert } from './icon-alert.svg';
-export { ReactComponent as IconArrowDown } from './icon-arrow-down.svg';
-export { ReactComponent as IconArrowNext } from './icon-arrow-next.svg';
-export { ReactComponent as IconArrowUp } from './icon-arrow-up.svg';
-export { ReactComponent as IconBack } from './icon-back.svg';
-export { ReactComponent as IconCalendar } from './icon-calendar.svg';
-export { ReactComponent as IconCancel } from './icon-cancel.svg';
-export { ReactComponent as IconCheck } from './icon-check.svg';
-export { ReactComponent as IconComment } from './icon-comment.svg';
-export { ReactComponent as IconCopy } from './icon-copy.svg';
-export { ReactComponent as IconDashboard } from './icon-dashboard.svg';
-export { ReactComponent as IconDiscord } from './icon-discord.svg';
-export { ReactComponent as IconDollarWithCircle } from './icon-dollar-with-circle.svg';
-export { ReactComponent as IconDollars } from './icon-dollars.svg';
-export { ReactComponent as IconDown } from './icon-down.svg';
-export { ReactComponent as IconDownFill } from './icon-down-fill.svg';
-export { ReactComponent as IconDownload } from './icon-download.svg';
-export { ReactComponent as IconFavorites } from './icon-favorites.svg';
-export { ReactComponent as IconFilter } from './icon-filter.svg';
-export { ReactComponent as IconGem } from './icon-gem.svg';
-export { ReactComponent as IconHeart } from './icon-heart.svg';
-export { ReactComponent as IconInfo } from './icon-info.svg';
-export { ReactComponent as IconLink } from './icon-link.svg';
-export { ReactComponent as IconLocked } from './icon-locked.svg';
-export { ReactComponent as IconLogout } from './icon-logout.svg';
-export { ReactComponent as IconMail } from './icon-mail.svg';
-export { ReactComponent as IconMenu } from './icon-menu.svg';
-export { ReactComponent as IconMetamask } from './icon-metamask.svg';
-export { ReactComponent as IconMinus } from './icon-minus.svg';
-export { ReactComponent as IconMore } from './icon-more.svg';
-export { ReactComponent as IconNetworkEvm } from './icon-network-evm.svg';
-export { ReactComponent as IconNetworkRoot } from './icon-network-root.svg';
-export { ReactComponent as IconNetworkXrpl } from './icon-network-xrpl.svg';
-export { ReactComponent as IconNew } from './icon-new.svg';
-export { ReactComponent as IconNext } from './icon-next.svg';
-export { ReactComponent as IconNoti } from './icon-noti.svg';
-export { ReactComponent as IconPaper } from './icon-paper.svg';
-export { ReactComponent as IconPlus } from './icon-plus.svg';
-export { ReactComponent as IconPrice } from './icon-price.svg';
-export { ReactComponent as IconProfileFill } from './icon-profile-fill.svg';
-export { ReactComponent as IconProfileStroke } from './icon-profile-stroke.svg';
-export { ReactComponent as IconRefresh } from './icon-refresh.svg';
-export { ReactComponent as IconSearch } from './icon-search.svg';
-export { ReactComponent as IconSetting } from './icon-setting.svg';
-export { ReactComponent as IconShare } from './icon-share.svg';
-export { ReactComponent as IconTelegram } from './icon-telegram.svg';
-export { ReactComponent as IconTime } from './icon-time.svg';
-export { ReactComponent as IconTokens } from './icon-tokens.svg';
-export { ReactComponent as IconTwitter } from './icon-twitter.svg';
-export { ReactComponent as IconUnlocked } from './icon-unlocked.svg';
-export { ReactComponent as IconUp } from './icon-up.svg';
-export { ReactComponent as IconUpFill } from './icon-up-fill.svg';
-export { ReactComponent as IconWallet } from './icon-wallet.svg';
-export { ReactComponent as IconWeb } from './icon-web.svg';
+import IconAlert from './icon-alert.svg?react';
+import IconArrowDown from './icon-arrow-down.svg?react';
+import IconArrowNext from './icon-arrow-next.svg?react';
+import IconArrowUp from './icon-arrow-up.svg?react';
+import IconBack from './icon-back.svg?react';
+import IconCalendar from './icon-calendar.svg?react';
+import IconCancel from './icon-cancel.svg?react';
+import IconCheck from './icon-check.svg?react';
+import IconComment from './icon-comment.svg?react';
+import IconCopy from './icon-copy.svg?react';
+import IconDashboard from './icon-dashboard.svg?react';
+import IconDiscord from './icon-discord.svg?react';
+import IconDollarWithCircle from './icon-dollar-with-circle.svg?react';
+import IconDollars from './icon-dollars.svg?react';
+import IconDown from './icon-down.svg?react';
+import IconDownFill from './icon-down-fill.svg?react';
+import IconDownload from './icon-download.svg?react';
+import IconFavorites from './icon-favorites.svg?react';
+import IconFilter from './icon-filter.svg?react';
+import IconHeart from './icon-heart.svg?react';
+import IconInfo from './icon-info.svg?react';
+import IconLink from './icon-link.svg?react';
+import IconLocked from './icon-locked.svg?react';
+import IconLogout from './icon-logout.svg?react';
+import IconMail from './icon-mail.svg?react';
+import IconMenu from './icon-menu.svg?react';
+import IconMinus from './icon-minus.svg?react';
+import IconMore from './icon-more.svg?react';
+import IconNetworkEvm from './icon-network-evm.svg?react';
+import IconNetworkRoot from './icon-network-root.svg?react';
+import IconNetworkXrpl from './icon-network-xrpl.svg?react';
+import IconNew from './icon-new.svg?react';
+import IconNext from './icon-next.svg?react';
+import IconNoti from './icon-noti.svg?react';
+import IconPaper from './icon-paper.svg?react';
+import IconPlus from './icon-plus.svg?react';
+import IconPrice from './icon-price.svg?react';
+import IconProfileFill from './icon-profile-fill.svg?react';
+import IconProfileStroke from './icon-profile-stroke.svg?react';
+import IconRefresh from './icon-refresh.svg?react';
+import IconSearch from './icon-search.svg?react';
+import IconSetting from './icon-setting.svg?react';
+import IconShare from './icon-share.svg?react';
+import IconTelegram from './icon-telegram.svg?react';
+import IconTime from './icon-time.svg?react';
+import IconTokens from './icon-tokens.svg?react';
+import IconTwitter from './icon-twitter.svg?react';
+import IconUnlocked from './icon-unlocked.svg?react';
+import IconUp from './icon-up.svg?react';
+import IconUpFill from './icon-up-fill.svg?react';
+import IconWallet from './icon-wallet.svg?react';
+import IconWeb from './icon-web.svg?react';
+
+export {
+  IconAlert,
+  IconArrowDown,
+  IconArrowNext,
+  IconArrowUp,
+  IconBack,
+  IconCalendar,
+  IconCancel,
+  IconCheck,
+  IconComment,
+  IconCopy,
+  IconDashboard,
+  IconDiscord,
+  IconDollars,
+  IconDollarWithCircle,
+  IconDown,
+  IconDownFill,
+  IconDownload,
+  IconFavorites,
+  IconFilter,
+  IconHeart,
+  IconInfo,
+  IconLink,
+  IconLocked,
+  IconLogout,
+  IconMail,
+  IconMenu,
+  IconMinus,
+  IconMore,
+  IconNetworkEvm,
+  IconNetworkRoot,
+  IconNetworkXrpl,
+  IconNew,
+  IconNext,
+  IconNoti,
+  IconPaper,
+  IconPlus,
+  IconPrice,
+  IconProfileFill,
+  IconProfileStroke,
+  IconRefresh,
+  IconSearch,
+  IconSetting,
+  IconShare,
+  IconTelegram,
+  IconTime,
+  IconTokens,
+  IconTwitter,
+  IconUnlocked,
+  IconUp,
+  IconUpFill,
+  IconWallet,
+  IconWeb,
+};

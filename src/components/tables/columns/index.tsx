@@ -1,5 +1,4 @@
-export { TableColumnBadge } from './column-badge';
-export { TableColumnIcon } from './column-icon';
+export { TableColumnIconText } from './column-icon-text';
 export { TableColumnLink } from './column-link';
 export { TableColumn } from './column-normal';
 export { TableColumnToken } from './column-token';

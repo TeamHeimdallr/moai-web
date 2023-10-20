@@ -10,11 +10,12 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: Record<string, number>;
   isNew?: boolean;
 }
+// will be removed
 export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
   return (
     <Wrapper {...rest}>
       {(Object.entries(tokens) as Entries<Record<string, number>>).map(([token, percentage]) => (
-        <Token key={token} token={token} percentage={percentage} image={false} type="small" />
+        <Token key={token} token={token} percentage={percentage} image={true} type="small" />
       ))}
       {isNew && <BadgeNew />}
     </Wrapper>

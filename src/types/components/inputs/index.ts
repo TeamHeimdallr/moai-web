@@ -1,3 +1,0 @@
-export enum HOOK_FORM_KEY {
-  NUMBER_INPUT_VALUE = 'NUMBER_INPUT_VALUE',
-}

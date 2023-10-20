@@ -1,8 +1,8 @@
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  value: string;
+  value: ReactNode;
 
   width?: number | 'full';
   align?: 'flex-start' | 'center' | 'flex-end';

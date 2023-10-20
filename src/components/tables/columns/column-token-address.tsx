@@ -55,7 +55,7 @@ const LogoWraper = tw.img`
 `;
 
 const TextWrapper = tw.div`
-  flex gap-4 items-center
+  flex gap-4 items-center address
 `;
 
 const IconWrapper = styled.div(() => [
