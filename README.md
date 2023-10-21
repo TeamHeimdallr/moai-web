@@ -2,10 +2,9 @@
 
 Official web for the Moai Finance - Your Universal Gateway to Multi-chain Liquidity
 
-![moai status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy.yml/badge.svg?branch=main)
-![moai root status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-root.yml/badge.svg?branch=deploy-root)
-![moai xrpl status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-xrpl.yml/badge.svg?branch=deploy-xrpl)
-![moai xrp evm status](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-xrpevm.yml/badge.svg?branch=deploy-xrpevm)
+![moai devnet](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-devnet.yml/badge.svg?branch=main)
+![moai testnet](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-testnet.yml/badge.svg?branch=deploy-xrpl)
+![moai mainnet](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-mainnet.yml/badge.svg?branch=deploy-root)
 
 ## Tech Stack
 
@@ -26,7 +25,11 @@ Official web for the Moai Finance - Your Universal Gateway to Multi-chain Liquid
 - [Viem](https://viem.sh/)
 - [Wagmi](https://wagmi.sh/)
 - [Balancer JS SDK](https://www.npmjs.com/package/@balancer-labs/balancer-js)
+
 - [Gem Wallet API](https://gemwallet.app/docs/user-guide/introduction)
+- [Crossmark Wallet API](https://docs.crossmark.io/)
+
+- [XRPL SDK](https://xrpl.org/docs.html)
 
 ## Project Structure
 
@@ -34,11 +37,11 @@ Official web for the Moai Finance - Your Universal Gateway to Multi-chain Liquid
 
 `dev`: The default branch used for project development.
 
-`main`: The branch used for deploying the Moai-web service.
+`mainnet`: Branch that deploy services to the mainnet environment of chains supported by moai-web
 
-`deploy-root`: The branch used for deploying the root network service of Moai-web.
+`testnet`: Branch that deploy services to the testnet environment of chains supported by moai-web
 
-`deploy-xrpl`: The branch used for deploying the XRP Ledger service of Moai-web.
+`devnet`: Branch that deploy services to the devnet environment of chains supported by moai-web
 
 ### Directory structure
 
@@ -46,29 +49,13 @@ Below is the overall project source code structure
 
 ```
 src
+├── api                 // core APIs
 ├── assets              // images, icons, logos, etc
 ├── components          // components used universally across the service
 ├── configs             // settings for polyfills, web3 wallet, and network configuration
 ├── constants           // constants
 ├── hocs                // higher order components
 ├── hooks               // react custom hooks used universally across the service
-├── moai-xrp-ledger     // codes for the moai-web on XRP-ledger
-│   ├── api             // core APIs for XRPL
-│   ├── components
-│   ├── constants
-│   ├── data
-│   ├── hooks
-│   ├── pages
-│   └── types
-├── moai-xrp-root       // codes for the moai-web on The Root Network
-│   ├── abi
-│   ├── api             // core APIs for TRN
-│   ├── components
-│   ├── constants
-│   ├── data
-│   ├── hooks
-│   ├── pages
-│   └── types
 ├── pages               // moai-web pages
 ├── states              // zustand global states
 ├── styles              // base css and compiled tailwind css
@@ -76,116 +63,110 @@ src
 └── utils               // util functions
 ```
 
-Codes that are used across all three networks, namely The Root Network, XRP Ledger, and EVM
-Sidechain, are located directly under src folder.
+There are three types of chains supported by Moai Finance: The Root Network, XRP Ledger, and Evm
+sidechain, and the same and seamless UI is provided for all chains. To make this possible, constant
+values, components, and types are implemented as chain agonistic for the supporting chains.
 
-Code that operates within the specific context of each network is contained in its respective
-network folder, such as `src/moai-xrp-ledger` and `src/moai-xrp-root`.
+To explain more about the folder structure,
 
-The `src/pages` directory, which is located directly under the `src` folder, is where the main page
-of the Moai-web service is implemented. This page is responsible for integrating and displaying
-pools deployed on various networks within the XRP ecosystem.
-
-The `api/` folder contains core code for communicating with each network, implemented in the form of
-custom hooks using React hooks and Wagmi. These hooks facilitate communication with the respective
-networks. Additionally, in the `hooks/` directory, the API responses are processed and customized to
-suit the needs of the user interface.
+The `/api` folder contains codes that communicate with contracts and the Moai server, and they are
+all written in the form of custom hooks and managed in a reusable form. The `/components` folder
+contains components used in the moai finance service. All components are implemented chain
+agonistically. The `/configs` folder contains chain configuration objects for The Root Network and
+EVM Sidechain. We connect to the rpc node through this object. In the `/hocs` folder, high order
+components such as error boundary and react query provider are implemented, and a web3 provider that
+enables communication with evm-based chains is also implemented. In the `/hooks` folder, the logic
+used throughout moai finance service is implemented in custom hook format. The moai finance service
+page is implemented in the `/pages` folder, and context-full components and custom hooks used in the
+page are also implemented internally. Global state objects are implemented in the `/states` folder.
 
 ## API Structure
 
 ### XRP Ledger
 
-Moai-web XRP Ledger uses the [xrpl.js](https://github.com/XRPLF/xrpl.js/blob/main/README.md) library
-to communicate with the AMM Devnet network through a WebSocket client. If the user needs to sign
-transactions, it is processed using the Gem Wallet API. Both of these interactions are encapsulated
-within React Query to manage rate limiting, errors, and loading status.
-
-Here are example codes for fetching AMM information with an `amm_info` request and adding liquidity
-to a pool with an `AMMDeposit` transaction:
+Moai finance implements and uses a function that integrates evm-based communication and xrpl-based
+communication to support chain agonistic contract communication supported by the service. Contract
+communication functions for evm-based chains are implemented in the `/apis/_evm` folder. All
+evm-based chains are managed using wagmi, viem, and ethersjs modules. The `/apis/_xrp` folder
+contains contract communication functions for the xrp ledger chain, and communicates using the xrpl
+sdk. We then implemented a custom hook that combines these to enable chain agonistic contract
+communication. In the example below, you can see the custom hook for the add liquidity function, and
+below that you can see the evm-based add liquidity function and the xrp-based add liquidity
+function, respectively. In the add liquidity custom hook, function calls are branched according to
+the pool chain currently being viewed or the selected chain environment, and the process of
+parameter pre-processing and post-processing of response data to ensure the same response data has
+been implemented.
 
 ```typescript
-// amm_info request
-const { client, isConnected } = useXrplStore();
-const amm = AMM[account];
+// add liquidity query hook
+interface Props {
+  id: string;
+  tokens: {
+    address?: string; // or issuer
+    currency?: string;
+    amount: string;
+  }[];
+  enabled?: boolean;
+}
 
-const request = {
-  command: 'amm_info',
-  asset: amm?.asset1,
-  asset2: amm?.asset2,
-  ledger_index: 'validated',
-} as BaseRequest;
+export const useAddLiquidity = ({ id, tokens, enabled }: Props) => {
+  const { isEvm } = useNetwork();
 
-const getAmm = async () => {
-  const info = await client.request<BaseRequest, AmmResponse>(request);
-  return info;
+  const resEvm = useAddLiquidityEvm({
+    poolId: id,
+    tokens: tokens?.map(t => t?.address ?? '') ?? [],
+    amountsIn: tokens?.map(t => BigInt(t?.amount || '0')) ?? [],
+    enabled,
+  });
+  const resXrp = useAddLiquidityXrp({
+    id,
+    token1: {
+      issuer: tokens?.[0]?.address ?? '',
+      amount: tokens?.[0]?.amount ?? '0',
+      currency: tokens?.[0]?.currency ?? '',
+    },
+    token2: {
+      issuer: tokens?.[1]?.address ?? '',
+      amount: tokens?.[1]?.amount ?? '0',
+      currency: tokens?.[1]?.currency ?? '',
+    },
+    enabled,
+  });
+
+  return isEvm ? resEvm : resXrp;
 };
 
-...
 
-const { data: ammInfoRawData } = useQuery(
-  [...QUERY_KEYS.AMM.GET_AMM_INFO, amm?.asset1.currency, amm?.asset2.currency],
-  getAmm,
-  { staleTime: 1000 * 60 * 5, enabled: isConnected && !!amm }
-);
+// add liquidity query hook for XRPL
+export const useAddLiquidity = ({ id, token1, token2, enabled }: Props) => {
+  ...
 
-...
-```
+  const txAssets = getTxRequestAssets();
+  const txRequest = {
+    TransactionType: 'AMMDeposit',
+    Account: address,
+    ...txAssets,
+    Fee: '100',
+    Flags: 1048576, // tfTwoAsset
+  };
 
-```typescript
-// AMMDeposit transactions
-const { address, isInstalled } = useConnectXrplWallet();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const submitTx = async () => await submitTransaction({ transaction: txRequest as any });
 
-...
+  const { data, isLoading, isSuccess, mutateAsync } = useMutation<SubmitTransactionResponse>(
+    QUERY_KEYS.AMM.ADD_LIQUIDITY,
+    submitTx
+  );
 
-const txAssets = getTxRequestAssets();
-const txRequest = {
-  TransactionType: 'AMMDeposit',
-  Account: address,
-  Fee: '100',
-  Flags: 1048576, // tfTwoAsset
-  ...txAssets,
+  ...
+  const writeAsync = async () => {
+    if (!ammExist || !address || !isXrp || !enabled) return;
+    await mutateAsync?.();
+  };
+
+  ...
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const submitTx = async () => await submitTransaction({ transaction: txRequest as any });
-const { data, isLoading, isSuccess, mutateAsync } = useMutation(
-  QUERY_KEYS.AMM.ADD_LIQUIDITY,
-  submitTx
-);
-```
-
-### The Root Network
-
-Since The Root Network is EVM-based, it uses Viem and Wagmi for network communication. These tools
-are essential for handling network interactions and transactions within The Root Network, leveraging
-the Ethereum Virtual Machine (EVM) compatibility.
-
-Below is the add liquidity transaction example code:
-
-```typescript
-// to minimize delays when a user triggers a transaction (e.g., by clicking a button), use a "prepare hook" to handle transaction-related logic like validation and initialization in advance.
-const { isLoading: prepareLoading, config } = usePrepareContractWrite({
-  address: CONTRACT_ADDRESS.VAULT,
-  abi: VAULT_ABI,
-  functionName: 'joinPool',
-  chainId: CHAIN_ID,
-
-  account: walletAddress,
-  args: [
-    poolId,
-    walletAddress,
-    walletAddress,
-    [
-      sortedTokens,
-      sortedAmountsIn,
-      WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
-      false,
-    ],
-  ],
-  enabled: enabled && isConnected,
-});
-
-const { data, writeAsync } = useContractWrite(config);
 ```
 
 ## How to Start
@@ -217,12 +198,16 @@ the Gem wallet extension.
 - [MetaMask](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn)
   (evm)
 - [Gem Wallet](https://chrome.google.com/webstore/detail/gemwallet/egebedonbdapoieedfcfkofloclfghab)
+  or
+  [Crossmark Wallet](https://chrome.google.com/webstore/detail/crossmark/canipghmckojpianfgiklhbgpfmhjkjg)
   (xrp)
 
 ## Roadmap
 
 - [x] Support XRP Ledger
 - [x] Support The Root Network
+- [x] Landing page
+- [x] Integrate all support chains
 - [ ] SDK for ui design system, contract interface and moai-backend
 - [ ] Responsive UI for mobile web browser, Skeleton UI for API loading
 - [ ] Support i18n and multi currency pricing for each token
@@ -231,15 +216,15 @@ the Gem wallet extension.
 
 - integrated pools within XRP ecosystem
 
-  <img src='https://assets.moai-finance-assets.xyz/images/image-readme-screenshot-1.png' width='800' />
+  <img src='https://assets.moai-finance.xyz/images/image-readme-screenshot-1.png' width='800' />
 
 - xrp ledger AMM pool detail
 
-  <img src='https://assets.moai-finance-assets.xyz/images/image-readme-screenshot-2.png' width='800' />
+  <img src='https://assets.moai-finance.xyz/images/image-readme-screenshot-2.png' width='800' />
 
 - add liquidity example
 
-  <img src='https://assets.moai-finance-assets.xyz/images/image-readme-screenshot-3.png' width='800' />
+  <img src='https://assets.moai-finance.xyz/images/image-readme-screenshot-3.png' width='800' />
 
 ## Authors
 

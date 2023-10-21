@@ -8,7 +8,7 @@ const convertSpacing = (spacing, withoutPx) =>
     return res;
   }, {});
 
-const ASSET_URL = 'https://assets.moai-finance-assets.xyz/';
+const ASSET_URL = 'https://assets.moai-finance.xyz/';
 
 module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
