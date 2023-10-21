@@ -231,15 +231,15 @@ the Gem wallet extension.
 
 - integrated pools within XRP ecosystem
 
-  <img src='https://moai-finance-assets.s3.amazonaws.com/images/image-readme-screenshot-1.png' width='800' />
+  <img src='https://assets.moai-finance-assets.xyz/images/image-readme-screenshot-1.png' width='800' />
 
 - xrp ledger AMM pool detail
 
-  <img src='https://moai-finance-assets.s3.amazonaws.com/images/image-readme-screenshot-2.png' width='800' />
+  <img src='https://assets.moai-finance-assets.xyz/images/image-readme-screenshot-2.png' width='800' />
 
 - add liquidity example
 
-  <img src='https://moai-finance-assets.s3.amazonaws.com/images/image-readme-screenshot-3.png' width='800' />
+  <img src='https://assets.moai-finance-assets.xyz/images/image-readme-screenshot-3.png' width='800' />
 
 ## Authors
 
