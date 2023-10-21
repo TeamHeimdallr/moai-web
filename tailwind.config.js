@@ -8,6 +8,8 @@ const convertSpacing = (spacing, withoutPx) =>
     return res;
   }, {});
 
+const ASSET_URL = 'https://assets.moai-finance-assets.xyz/';
+
 module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
@@ -111,7 +113,7 @@ module.exports = {
       }),
 
       backgroundImage: {
-        landing: "url('https://moai-finance-assets.s3.amazonaws.com/images/bg-landing.png')",
+        landing: `url('${ASSET_URL}/images/bg-landing.png')`,
       },
     },
   },

@@ -30,9 +30,26 @@ export default defineConfig({
     emptyOutDir: true,
     minify: true,
     sourcemap: false,
-    chunkSizeWarningLimit: 700,
+    chunkSizeWarningLimit: 10000,
     rollupOptions: {
       treeshake: 'safest',
+      onwarn() {
+        return;
+      },
+      output: {
+        manualChunks: id => {
+          const module = id.split('node_modules/').pop().split('/')[0];
+
+          const react = ['react', 'react-dom', 'react-router-dom'];
+          const evm = ['ethers', 'viem', 'wagmi', '@balancer-labs/sdk'];
+          const xrp = ['xrpl', '@gemwallet/api', '@crossmarkio/sdk'];
+
+          if (react.includes(module)) return 'vendor-react';
+          if (evm.includes(module)) return 'vendor-evm';
+          if (xrp.includes(module)) return 'vendor-xrp';
+          return 'vendor';
+        },
+      },
     },
   },
 
