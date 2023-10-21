@@ -2,7 +2,7 @@ import { imageNetworkEmpty, imageNetworkROOT, imageNetworkXRPL } from '~/assets/
 
 import { IAmm, IGnbChainList, NETWORK } from '~/types';
 
-import { IS_MAINNET } from '.';
+import { IS_MAINNET, IS_TESTNET } from '.';
 
 export const NETWORK_IMAGE_MAPPER: Record<string, string> = {
   [NETWORK.THE_ROOT_NETWORK]: imageNetworkROOT,
@@ -17,13 +17,29 @@ export const NETWORK_SELECT: IGnbChainList[] = [
   { network: NETWORK.EVM_SIDECHAIN, text: 'EVM Sidechain' },
 ];
 
-export const XRPL_JSON_RPC = IS_MAINNET ? '' : 'https://s.devnet.rippletest.net:51234/';
-export const XRPL_WSS = IS_MAINNET ? '' : 'wss://s.devnet.rippletest.net:51233/';
+export const XRPL_JSON_RPC = IS_MAINNET
+  ? 'https://s1.ripple.com:51234'
+  : IS_TESTNET
+  ? 'https://s.altnet.rippletest.net:51234'
+  : 'https://s.devnet.rippletest.net:51234';
+export const XRPL_WSS = IS_MAINNET
+  ? 'wss://s1.ripple.com'
+  : IS_TESTNET
+  ? 'wss://s.altnet.rippletest.net:51233'
+  : 'wss://s.devnet.rippletest.net:51233';
 
 export const SCANNER_URL = {
-  [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET ? '' : 'https://explorer.rootnet.cloud',
-  [NETWORK.EVM_SIDECHAIN]: IS_MAINNET ? '' : 'https://evm-sidechain.xrpl.org',
-  [NETWORK.XRPL]: IS_MAINNET ? '' : 'https://devnet.xrpl.org',
+  [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET
+    ? 'https://explorer.rootnet.live'
+    : 'https://explorer.rootnet.cloud',
+  [NETWORK.EVM_SIDECHAIN]: IS_MAINNET
+    ? 'https://evm-sidechain.xrpl.org'
+    : 'https://evm-sidechain.xrpl.org',
+  [NETWORK.XRPL]: IS_MAINNET
+    ? 'https://livenet.xrpl.org'
+    : IS_TESTNET
+    ? 'https://testnet.xrpl.org'
+    : 'https://devnet.xrpl.org',
 };
 
 export const EVM_CONTRACT_ADDRESS: Record<string, { VAULT: string }> = {
@@ -79,7 +95,7 @@ export const EVM_POOL: Record<string, Record<string, string>[]> = {
 
 export const XRP_AMM: IAmm[] = [
   {
-    id: IS_MAINNET ? '' : 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr',
+    id: IS_MAINNET ? '' : IS_TESTNET ? '' : 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr',
 
     lpTokenName: 'XRP_MOI',
     lpTokenCurrency: '03DECA00BD834D6F16685F645625D144108D4D57',
@@ -97,8 +113,8 @@ export const XRP_AMM: IAmm[] = [
 ];
 
 export const XRP_TOKEN_ISSUER = {
-  MOI: 'rKvd5hkFXvPcmLuF2yYFyN6RkgNcnYrjok',
-  XRP_MOI: 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr',
+  MOI: IS_MAINNET ? '' : IS_TESTNET ? '' : 'rKvd5hkFXvPcmLuF2yYFyN6RkgNcnYrjok',
+  XRP_MOI: IS_MAINNET ? '' : IS_TESTNET ? '' : 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr',
 };
 
 // TODO: connect to server
