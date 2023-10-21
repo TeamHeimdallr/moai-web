@@ -46,5 +46,5 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 sync dist s3://${{ vars.S3_BUCKET_TESTNET }}
-          aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_ID_TESTNET }}  --paths '/*'
+          aws s3 sync dist s3://${{ secrets.S3_BUCKET_TESTNET }}
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_ID_TESTNET }}  --paths '/*'
