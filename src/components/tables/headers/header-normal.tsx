@@ -39,15 +39,6 @@ const Wrapper = styled.div<WrapperProps>(({ width, align }) => [
     `,
 ]);
 
-export const TableHeaderAssets = () => (
-  <TableHeader
-    label="Assets"
-    icon={<IconTokens width={24} height={24} fill={COLOR.NEUTRAL[80]} />}
-    width={120}
-    align="flex-start"
-  />
-);
-
 export const TableHeaderComposition = () => (
   <TableHeader label="Composition" width="full" align="flex-start" />
 );

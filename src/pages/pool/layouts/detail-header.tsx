@@ -50,9 +50,6 @@ export const DetailHeader = () => {
           }
         />
       </TokenWrapper>
-      <Text>
-        Dynamic swap fees : Currently <Fee>{`0.3`}</Fee>%
-      </Text>
     </HeaderWrapper>
   );
 };
@@ -65,10 +62,4 @@ const Title = tw.div`
 `;
 const TokenWrapper = tw.div`
   flex gap-8 items-center
-`;
-const Fee = tw.div`
-  font-m-14
-`;
-const Text = tw.div`
-  font-r-14 text-neutral-60 inline-flex whitespace-pre
 `;

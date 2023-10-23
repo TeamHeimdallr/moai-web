@@ -5,10 +5,8 @@ import { NetworkChip } from '~/components/network-chip';
 import {
   TableColumn,
   TableColumnToken,
-  TableColumnTokenIcon,
   TableHeader,
   TableHeaderAPR,
-  TableHeaderAssets,
   TableHeaderComposition,
   TableHeaderSortable,
 } from '~/components/tables';
@@ -136,7 +134,6 @@ export const useTableLiquidityPool = () => {
             network: d.network,
           },
           network: <TableColumn value={<NetworkChip network={d.network} />} width={216} />,
-          assets: <TableColumnTokenIcon tokens={d.assets} />,
           compositions: <TableColumnToken tokens={tokens} />,
           poolValue: (
             <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} width={160} align="flex-end" />
@@ -157,11 +154,6 @@ export const useTableLiquidityPool = () => {
         header: () => <TableHeader width={216} label="Chain" />,
         cell: row => row.renderValue(),
         accessorKey: 'network',
-      },
-      {
-        header: () => <TableHeaderAssets />,
-        cell: row => row.renderValue(),
-        accessorKey: 'assets',
       },
       {
         header: () => <TableHeaderComposition />,
