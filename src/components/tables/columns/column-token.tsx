@@ -22,7 +22,7 @@ export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
           key={token}
           token={token}
           image={true}
-          selected={selectedTokens && selectedTokens.includes(token)}
+          selected={selectedTokens?.includes(token)}
           type="large"
         />
       ))}
