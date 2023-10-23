@@ -1,4 +1,9 @@
-import { imageNetworkEmpty, imageNetworkROOT, imageNetworkXRPL } from '~/assets/images';
+import {
+  imageNetworkEmpty,
+  imageNetworkEvm,
+  imageNetworkROOT,
+  imageNetworkXRPL,
+} from '~/assets/images';
 
 import { IAmm, IGnbChainList, NETWORK } from '~/types';
 
@@ -6,7 +11,7 @@ import { IS_MAINNET, IS_TESTNET } from '.';
 
 export const NETWORK_IMAGE_MAPPER: Record<string, string> = {
   [NETWORK.THE_ROOT_NETWORK]: imageNetworkROOT,
-  [NETWORK.EVM_SIDECHAIN]: imageNetworkXRPL,
+  [NETWORK.EVM_SIDECHAIN]: imageNetworkEvm,
   [NETWORK.XRPL]: imageNetworkXRPL,
   EMPTY: imageNetworkEmpty,
 };

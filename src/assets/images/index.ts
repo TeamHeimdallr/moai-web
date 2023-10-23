@@ -1,5 +1,6 @@
 import imageNetworkEmpty from './network-empty.png';
-import imageNetworkROOT from './network-evm.png';
+import imageNetworkEvm from './network-evm.png';
+import imageNetworkROOT from './network-root.png';
 import imageNetworkXRPL from './network-xrpl.png';
 import imageStepLoading from './step-loading.png';
 import imageTokenMOAI from './token-moai.png';
@@ -16,6 +17,7 @@ import imageWalletXumm from './wallet-xumm.png';
 
 export {
   imageNetworkEmpty,
+  imageNetworkEvm,
   imageNetworkROOT,
   imageNetworkXRPL,
   imageStepLoading,
