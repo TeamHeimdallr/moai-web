@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-import { goerli } from 'wagmi/dist/chains';
-import { MetaMaskConnector } from 'wagmi/dist/connectors/metaMask';
-import { publicProvider } from 'wagmi/dist/providers/public';
+import { goerli } from 'wagmi/chains';
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+import { publicProvider } from 'wagmi/providers/public';
 
 import { Account } from '.';
 
