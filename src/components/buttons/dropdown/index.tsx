@@ -4,7 +4,7 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonDrodDownProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   image?: string;
   imageAlt?: string;
   imageTitle?: string;
@@ -20,12 +20,11 @@ export const ButtonDropdown = ({
   imageAlt,
   imageTitle,
   text,
-  selected,
   opened,
   ...rest
-}: Props) => {
+}: ButtonDrodDownProps) => {
   return (
-    <Wrapper selected={selected} {...rest}>
+    <Wrapper opened={opened} {...rest}>
       {image && <Image src={image} alt={imageAlt} title={imageTitle} />}
       <IconTextWrapper>
         {text}
@@ -36,10 +35,10 @@ export const ButtonDropdown = ({
     </Wrapper>
   );
 };
-interface WrapperProps {
-  selected?: boolean;
+interface Props {
+  opened?: boolean;
 }
-const Wrapper = styled.button<WrapperProps>(({ selected }) => [
+const Wrapper = styled.button<Props>(({ opened }) => [
   tw`
     gap-6 p-8 rounded-10 flex-center text-neutral-100 bg-neutral-10 clickable
     hover:(text-primary-80 bg-neutral-20)
@@ -49,7 +48,7 @@ const Wrapper = styled.button<WrapperProps>(({ selected }) => [
       fill: ${COLOR.PRIMARY[80]};
     }
   `,
-  selected &&
+  opened &&
     css`
       & {
         color: ${COLOR.PRIMARY[60]};
@@ -68,10 +67,7 @@ const Wrapper = styled.button<WrapperProps>(({ selected }) => [
 
 const IconTextWrapper = tw.div`gap-4 flex-center font-m-14`;
 
-interface IconProps {
-  opened?: boolean;
-}
-const Icon = styled.div<IconProps>(({ opened }) => [
+const Icon = styled.div<Props>(({ opened }) => [
   tw`p-2 transition-transform flex-center`,
   css`
     transform: rotate(${opened ? '-180deg' : '0deg'});

@@ -36,7 +36,6 @@ export const NetworkSelection = () => {
           imageAlt={selectedNetworkDetail.text}
           imageTitle={selectedNetworkDetail.text}
           text={selectedNetworkDetail.text}
-          selected={!!selectedNetwork}
           opened={opened}
           onClick={toggle}
           style={{ minHeight: '40px' }}

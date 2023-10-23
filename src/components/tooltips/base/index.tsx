@@ -23,7 +23,7 @@ export const Tooltip = ({ id, children, ...rest }: Props) => {
 };
 
 const Wrapper = styled.div(() => [
-  tw`font-r-12 text-neutral-100`,
+  tw`font-m-14 text-neutral-100`,
   css`
     .react-tooltip {
       background-color: ${COLOR.NEUTRAL[30]};

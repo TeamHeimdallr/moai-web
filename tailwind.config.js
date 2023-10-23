@@ -366,7 +366,7 @@ module.exports = {
             'linear-gradient(0deg, #51565D, #51565D), linear-gradient(0deg, #F5FF83, #F5FF83)',
         },
         '.pop-up-shadow': {
-          'box-shadow': '0px 8px 60px 0px rgba(248, 255, 167, 0.30)',
+          'box-shadow': '0px 8px 60px 0px rgba(0, 0, 0, 0.60)',
         },
       });
     }),

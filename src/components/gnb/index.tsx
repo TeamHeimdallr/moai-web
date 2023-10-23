@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import tw, { css, styled } from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
 import LogoText from '~/assets/logos/logo-text.svg?react';
 
@@ -26,7 +26,7 @@ export const Gnb = () => {
   return (
     <>
       <Wrapper>
-        <LogoText height={28} onClick={() => navigate('/')} />
+        <LogoText width={88} height={20} onClick={() => navigate('/')} />
         <ContentWrapper>
           {GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
             <MenuWrapper
@@ -64,14 +64,11 @@ export const Gnb = () => {
 };
 
 const Wrapper = styled.div(() => [
-  tw`flex items-center justify-between w-full px-20 py-20 z-20`,
-  css`
-    background: rgba(28, 32, 51, 0.01);
-  `,
+  tw`flex items-center justify-between w-full px-24 py-20 z-20 bg-transparent`,
 ]);
 
 const ContentWrapper = tw.div`
-  flex items-center gap-40
+  flex items-center gap-24
 `;
 
 const ConnectedButton = tw.div`
