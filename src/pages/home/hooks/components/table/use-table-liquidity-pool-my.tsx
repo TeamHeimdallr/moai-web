@@ -6,7 +6,6 @@ import {
   TableColumn,
   TableColumnToken,
   TableColumnTokenIcon,
-  TableHeaderAssets,
   TableHeaderComposition,
   TableHeaderMyAPR,
   TableHeaderSortable,
@@ -59,11 +58,6 @@ export const useTableLiquidityMy = () => {
   const columns = useMemo(
     () => [
       { accessorKey: 'meta' },
-      {
-        header: () => <TableHeaderAssets />,
-        cell: row => row.renderValue(),
-        accessorKey: 'assets',
-      },
       {
         header: () => <TableHeaderComposition />,
         cell: row => row.renderValue(),
