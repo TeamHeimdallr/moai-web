@@ -64,7 +64,7 @@ export const Gnb = () => {
 };
 
 const Wrapper = styled.div(() => [
-  tw`flex items-center justify-between w-full px-40 py-20 z-20 bg-transparent`,
+  tw`flex items-center justify-between w-full px-24 py-20 z-20 bg-transparent`,
 ]);
 
 const ContentWrapper = tw.div`
