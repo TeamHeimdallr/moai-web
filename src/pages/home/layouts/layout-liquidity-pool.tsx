@@ -52,18 +52,15 @@ export const LiquidityPoolLayout = () => {
       const isASelected = selectedTokens.includes(a.symbol);
       const isBSelected = selectedTokens.includes(b.symbol);
 
-      if (isASelected && !isBSelected) {
-        return -1;
-      } else if (!isASelected && isBSelected) {
-        return 1;
-      } else {
-        return 0;
-      }
+      if (isASelected && !isBSelected) return -1;
+      if (!isASelected && isBSelected) return 1;
+      return 0;
     });
   };
 
   const sortedTokens = sortTokensBySelection(tokens, selectedTokens);
 
+  // useEffect for not showing toast popup when first mounted
   useEffect(() => {
     if (!isMounted.current) {
       isMounted.current = true;
