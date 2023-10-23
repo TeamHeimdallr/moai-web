@@ -38,7 +38,7 @@ const GnbWrapper = tw.div`
 `;
 
 const ContentWrapper = styled.div(() => [
-  tw`flex flex-col items-center gap-80 px-96`,
+  tw`flex flex-col items-center gap-80 px-80`,
   css`
     & > div {
       width: 100%;
