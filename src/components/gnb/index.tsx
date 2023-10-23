@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import tw, { css, styled } from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
 import LogoText from '~/assets/logos/logo-text.svg?react';
 
