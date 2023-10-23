@@ -11,7 +11,7 @@ interface Props extends Omit<ITooltip, 'id'> {
 export const TooltipCommingSoon = ({ id, ...rest }: Props) => {
   return (
     <Tooltip {...rest} id={id ?? TOOLTIP_ID.COMMING_SOON}>
-      Comming soon
+      Coming soon
     </Tooltip>
   );
 };
