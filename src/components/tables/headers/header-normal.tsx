@@ -1,9 +1,6 @@
 import { HTMLAttributes, ReactNode } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
-import { COLOR } from '~/assets/colors';
-import { IconTokens } from '~/assets/icons';
-
 interface Props extends HTMLAttributes<HTMLDivElement> {
   label: string;
   icon?: ReactNode;
