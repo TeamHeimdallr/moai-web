@@ -18,6 +18,7 @@ import {
   SCANNER_URL,
   TOKEN_IMAGE_MAPPER,
   XRP_AMM,
+  XRP_TOKEN_ISSUER,
 } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
@@ -86,6 +87,7 @@ export const SwapPopup = () => {
   } = useApprove({
     amount: Number(fromValue ?? 0),
     address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[fromToken] ?? '',
+    issuer: XRP_TOKEN_ISSUER?.[fromToken]?.symbol ?? '',
 
     spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
     currency: fromToken ?? '',

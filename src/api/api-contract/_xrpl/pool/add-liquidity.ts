@@ -1,8 +1,9 @@
-import { submitTransaction, SubmitTransactionResponse } from '@gemwallet/api';
 import { useMutation } from '@tanstack/react-query';
-import { xrpToDrops } from 'xrpl';
+import { parseUnits } from 'viem';
 
 import { QUERY_KEYS } from '~/api/utils/query-keys';
+
+import { TOKEN_DECIMAL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -36,7 +37,7 @@ export const useAddLiquidity = ({ id, token1, token2, enabled }: Props) => {
 
     if (xrp) {
       const asset1 = { currency: 'XRP' };
-      const amount1 = xrpToDrops(xrp.amount ?? 0);
+      const amount1 = parseUnits(xrp.amount ?? 0, TOKEN_DECIMAL.XRPL).toString();
 
       const remain = tokens.filter(t => t.currency !== 'XRP')?.[0];
       const asset2 = {
@@ -79,15 +80,15 @@ export const useAddLiquidity = ({ id, token1, token2, enabled }: Props) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const submitTx = async () => await submitTransaction({ transaction: txRequest as any });
+  const submitTx = async () => await xrp.submitTransaction(txRequest as any);
 
-  const { data, isLoading, isSuccess, mutateAsync } = useMutation<SubmitTransactionResponse>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, isLoading, isSuccess, mutateAsync } = useMutation<any>(
     QUERY_KEYS.AMM.ADD_LIQUIDITY,
     submitTx
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const txData = data?.result as any;
+  const txData = data?.result;
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = async () => {

@@ -1,4 +1,3 @@
-import { submitTransaction } from '@gemwallet/api';
 import { useMutation } from 'wagmi';
 import { PaymentFlags, xrpToDrops } from 'xrpl';
 
@@ -70,12 +69,11 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const submitTx = async () => await submitTransaction({ transaction: txRequest as any });
+  const submitTx = async () => await xrp.submitTransaction({ transaction: txRequest as any });
 
   const { data, isLoading, isSuccess, mutateAsync } = useMutation(QUERY_KEYS.SWAP.SWAP, submitTx);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const txData = data?.result as any;
+  const txData = data?.result;
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = async () => {

@@ -1,4 +1,3 @@
-import { submitTransaction } from '@gemwallet/api';
 import { useMutation } from '@tanstack/react-query';
 import { xrpToDrops } from 'xrpl';
 
@@ -77,15 +76,14 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const submitTx = async () => await submitTransaction({ transaction: txRequest as any });
+  const submitTx = async () => await xrp.submitTransaction({ transaction: txRequest as any });
 
   const { data, isLoading, isSuccess, mutateAsync } = useMutation(
     QUERY_KEYS.AMM.WITHDRAW_LIQUIDITY,
     submitTx
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const txData = data?.result as any;
+  const txData = data?.result;
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = async () => {

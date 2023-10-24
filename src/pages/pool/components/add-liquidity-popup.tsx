@@ -2,7 +2,6 @@ import { useEffect, useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
-import { parseUnits } from 'viem';
 import { Address } from 'wagmi';
 
 import { useLiquidityPoolTokenAmount } from '~/api/api-contract/_evm/pool/get-liquidity-pool-balance';
@@ -17,8 +16,8 @@ import {
   EVM_CONTRACT_ADDRESS,
   EVM_TOKEN_ADDRESS,
   SCANNER_URL,
-  TOKEN_DECIMAL,
   TOKEN_IMAGE_MAPPER,
+  XRP_TOKEN_ISSUER,
 } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
@@ -71,6 +70,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
   } = useApprove({
     amount: tokenInputs?.[0]?.amount ?? 0,
     address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[tokenInputs?.[0]?.symbol] ?? '',
+    issuer: XRP_TOKEN_ISSUER?.[tokenInputs?.[0]?.symbol] ?? '',
 
     spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
     currency: tokenInputs?.[0]?.symbol ?? '',
@@ -87,6 +87,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
   } = useApprove({
     amount: tokenInputs?.[1]?.amount ?? 0,
     address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[tokenInputs?.[1]?.symbol] ?? '',
+    issuer: XRP_TOKEN_ISSUER?.[tokenInputs?.[1]?.symbol] ?? '',
 
     spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
     currency: tokenInputs?.[1]?.symbol ?? '',
@@ -109,7 +110,8 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
       tokenInputs?.map(t => ({
         address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[t.symbol] ?? '',
         currency: t?.symbol ?? '',
-        amount: parseUnits(t.amount.toString(), TOKEN_DECIMAL[currentNetwork]).toString(),
+        issuer: XRP_TOKEN_ISSUER?.[t.symbol] ?? '',
+        amount: (t?.amount ?? 0).toString(),
       })) ?? [],
   });
 
