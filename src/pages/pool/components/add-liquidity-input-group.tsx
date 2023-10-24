@@ -9,6 +9,7 @@ import { useLiquidityPoolTokenAmount } from '~/api/api-contract/_evm/pool/get-li
 import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
 import { useTokenPrice } from '~/api/api-contract/token/price';
 
+import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { Token } from '~/components/token';
@@ -41,7 +42,6 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
   const tokens: IToken[] = compositions?.map(composition => {
     const data = balancesArray?.find(b => b.symbol === composition.symbol);
-
     if (!data) return { symbol: composition.symbol, balance: 0, price: 0, value: 0 };
     return {
       symbol: composition.symbol,
@@ -149,6 +149,12 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
       return sum + inputValue * tokenValue;
     }, 0) ?? 0;
 
+  const alertMessage = {
+    title: 'You have no pool tokens to join with.',
+    description:
+      'This option would usaully allow you to add pool tokens in any combination or proportionally to reduce price impact.',
+  };
+
   return (
     <Wrapper>
       <Header>
@@ -163,7 +169,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
         )} */}
       </Header>
       <InnerWrapper>
-        {tokens &&
+        {tokens.filter(token => token.balance).length !== 0 ? (
           tokens.map((token, idx) => {
             const tokenValue = (token?.price || 0) * (getInputValue(token?.symbol) || 0);
             return (
@@ -182,7 +188,10 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
                 formState={formState}
               />
             );
-          })}
+          })
+        ) : (
+          <AlertMessage {...alertMessage} type="warning" />
+        )}
         <Total>
           <TotalInnerWrapper>
             <TotalText>Total</TotalText>
