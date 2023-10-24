@@ -1,9 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
-import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
 import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
-import { useTokenPrice } from '~/api/api-contract/token/price';
 
 import { IconBack } from '~/assets/icons';
 
@@ -12,34 +10,17 @@ import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
 import { useRequirePrarams } from '~/hooks/utils/use-require-params';
-import { IToken } from '~/types';
 
-import { AddLiquidityBalances } from '../../components/add-liquidity-balances';
 import { AddLiquidityInputGroup } from '../../components/add-liquidity-input-group';
 
 const PoolDetailAddLiquidityPage = () => {
   const navigate = useNavigate();
-  const { getTokenPrice } = useTokenPrice();
 
   const { id } = useParams();
 
   useRequirePrarams([!!id], () => navigate(-1));
 
   const { pool } = useLiquidityPoolBalance(id ?? '');
-  const { balancesArray } = useTokenBalanceInPool();
-  const { compositions } = pool;
-
-  const tokens: IToken[] = compositions?.map(composition => {
-    const data = balancesArray?.find(b => b.symbol === composition.symbol);
-
-    if (!data) return { symbol: composition.symbol, balance: 0, price: 0, value: 0 };
-    return {
-      symbol: composition.symbol,
-      balance: data.balance,
-      price: getTokenPrice(composition.symbol),
-      value: data.value,
-    };
-  });
 
   return (
     <>
@@ -56,7 +37,6 @@ const PoolDetailAddLiquidityPage = () => {
             </Header>
 
             <LiquidityWrapper>
-              <AddLiquidityBalances tokens={tokens} />
               <AddLiquidityInputGroup pool={pool} />
             </LiquidityWrapper>
           </ContentWrapper>
@@ -86,7 +66,7 @@ const ContentWrapper = styled.div(() => [
   css`
     & > div {
       width: 100%;
-      max-width: 786px;
+      max-width: 455px;
     }
   `,
 ]);
