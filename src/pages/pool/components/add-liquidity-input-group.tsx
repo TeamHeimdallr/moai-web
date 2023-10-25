@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 import { Address } from 'wagmi';
 import * as yup from 'yup';
 
@@ -227,19 +227,32 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
               />
             </TotalValueWrapper>
           </TotalInnerWrapper>
-          <PriceImpact>{`Price impact  ${priceImpact}%`}</PriceImpact>
+          <PriceImpact error={priceImpactRaw >= 1}>{`Price impact  ${priceImpact}%`}</PriceImpact>
         </Total>
       </InnerWrapper>
 
       <CheckPriceImpact>
         <CheckboxWrapper>
-          <Checkbox onClick={() => checkPriceImpact(prev => !prev)} selected={checkedPriceImpact} />
+          <Checkbox
+            onClick={() => checkPriceImpact(prev => !prev)}
+            selected={checkedPriceImpact}
+            error={priceImpactRaw >= 1}
+          />
         </CheckboxWrapper>
-        I accept the high price impact from depositing, moving the market price base on the depth of
-        the market.
+        <TextWrapper>
+          I accept the high price impact from depositing, moving the market price base on the depth
+          of the market.
+          {priceImpactRaw >= 1 && (
+            <Text error={priceImpactRaw >= 1}>Price impact acknowledgement is required.</Text>
+          )}
+        </TextWrapper>
       </CheckPriceImpact>
 
-      <ButtonPrimaryLarge text="Preview" onClick={popupOpen} disabled={!isValid} />
+      <ButtonPrimaryLarge
+        text="Preview"
+        onClick={popupOpen}
+        disabled={!isValid || !checkedPriceImpact}
+      />
 
       {popupOpened && (
         <AddLiquidityPopup
@@ -296,10 +309,16 @@ const TotalValueWrapper = tw.div`
 const TotalValue = tw.div`
   text-neutral-100 font-m-20
 `;
+interface DivProps {
+  error?: boolean;
+}
+const PriceImpact = styled.div<DivProps>(({ error }) => [
+  tw`text-neutral-100 font-r-14 whitespace-pre-wrap`,
+  error && tw`text-red-50`,
+]);
 
-const PriceImpact = tw.div`
-  text-neutral-100 font-r-14 whitespace-pre-wrap
-`;
 const NoBalanceAlert = tw.div`font-r-14 text-neutral-70`;
 const CheckPriceImpact = tw.div`flex gap-16 font-r-14 text-neutral-100`;
 const CheckboxWrapper = tw.div``;
+const Text = styled.div<DivProps>(({ error }) => [error && tw`text-red-50`]);
+const TextWrapper = tw.div`flex flex-col gap-4`;
