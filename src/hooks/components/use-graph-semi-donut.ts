@@ -11,7 +11,9 @@ interface Props {
 
 export const useDoughnutGraph = ({ data }: Props) => {
   useEffect(() => {
-    const graph = document.getElementById('graph') as HTMLCanvasElement | undefined;
+    const graph = document.getElementById('moai-pool--doughnut-graph') as
+      | HTMLCanvasElement
+      | undefined;
     if (!graph) return;
 
     const ctx = graph.getContext('2d');
@@ -25,7 +27,7 @@ export const useDoughnutGraph = ({ data }: Props) => {
     gradient2.addColorStop(0, '#A3B6FF');
     gradient2.addColorStop(1, 'rgba(163, 182, 255, 0.1)');
 
-    new Chart(graph, {
+    const chart = new Chart(graph, {
       type: 'doughnut',
       data: {
         datasets: [
@@ -52,7 +54,11 @@ export const useDoughnutGraph = ({ data }: Props) => {
     });
 
     return () => {
-      const graph = document.getElementById('graph') as HTMLCanvasElement | undefined;
+      chart.destroy();
+
+      const graph = document.getElementById('moai-pool--doughnut-graph') as
+        | HTMLCanvasElement
+        | undefined;
       if (!graph) return;
 
       const ctx = graph.getContext('2d');

@@ -14,9 +14,9 @@ export const GraphSemiDonut = ({ data }: Props) => {
 
   return (
     <Wrapper>
-      <Canvas id="graph" />
+      <Canvas id="moai-pool--doughnut-graph" />
       <TotalValue>
-        <Amount>${formatNumberWithUnit(totalValue)}</Amount>
+        <Amount>${formatNumberWithUnit(totalValue, 1)}</Amount>
         <Title>Pool Value</Title>
       </TotalValue>
     </Wrapper>
