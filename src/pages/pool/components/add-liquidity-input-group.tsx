@@ -10,12 +10,12 @@ import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-bala
 import { useTokenPrice } from '~/api/api-contract/token/price';
 
 import { AlertMessage } from '~/components/alerts';
-import { ButtonPrimaryLarge } from '~/components/buttons';
+import { ButtonPrimaryLarge, ButtonPrimarySmall } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { Token } from '~/components/token';
 
 import { usePopup } from '~/hooks/components';
-import { formatFloat, formatNumber } from '~/utils';
+import { formatNumber } from '~/utils';
 import { IPool, IToken, POPUP_ID } from '~/types';
 
 import { AddLiquidityPopup } from './add-liquidity-popup';
@@ -75,8 +75,8 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
   const priceImpact = priceImpactRaw < 0.01 ? '< 0.01' : formatNumber(priceImpactRaw, 2);
 
   const getInputValue = (token: string) => {
-    if (token === tokens[0].symbol) return inputValue1;
-    if (token === tokens[1].symbol) return inputValue2;
+    if (token === tokens?.[0]?.symbol) return inputValue1;
+    if (token === tokens?.[1]?.symbol) return inputValue2;
     return 0;
   };
 
@@ -85,7 +85,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
   // useOnClickOutside([ref, iconRef], () => open(false));
 
-  const handleMax = () => {
+  const handleTotalMax = () => {
     const criteria = tokens.reduce((max, cur) =>
       (max?.value ?? 0) < (cur?.value ?? 0) ? max : cur
     );
@@ -94,11 +94,11 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
     const remainTokenPrice = remainToken?.price ?? 0;
     const expectedRemainToken = remainTokenPrice ? (criteria?.value ?? 0) / remainTokenPrice : 0;
 
-    if (criteria.symbol === tokens[0]?.symbol) {
+    if (criteria.symbol === tokens?.[0]?.symbol) {
       setInputValue1(criteria?.balance ?? 0);
       setInputValue2(expectedRemainToken);
     }
-    if (criteria.symbol === tokens[1]?.symbol) {
+    if (criteria.symbol === tokens?.[1]?.symbol) {
       setInputValue1(expectedRemainToken);
       setInputValue2(criteria?.balance ?? 0);
     }
@@ -107,12 +107,9 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
   const handleChange = (token: IToken, value: number | undefined, idx: number) => {
     const remainTokenPrice =
       getTokenPrice(tokens.filter(t => t.symbol !== token.symbol)?.[0]?.symbol) ?? 0;
-    const currentTokenTotalValue = Number(
-      formatFloat((value || 0) * getTokenPrice(token.symbol), 4)
-    );
-    const expectedRemainToken = remainTokenPrice
-      ? Number(formatFloat(currentTokenTotalValue / remainTokenPrice, 4))
-      : 0;
+    const currentTokenTotalValue = (value || 0) * (getTokenPrice(token.symbol) || 0);
+    // TODO : it must be fixed if weight is not 50:50
+    const expectedRemainToken = remainTokenPrice ? currentTokenTotalValue / remainTokenPrice : 0;
 
     if (idx === 0) {
       setInputValue1(value ?? 0);
@@ -144,10 +141,19 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
   const totalValue =
     tokens?.reduce((sum, token) => {
       const inputValue = getInputValue(token.symbol) || 0;
-      const tokenValue = token?.price ?? 0;
+      const tokenPrice = token?.price ?? 0;
 
-      return sum + inputValue * tokenValue;
+      return sum + inputValue * tokenPrice;
     }, 0) ?? 0;
+
+  // TODO : it must be fixed if weight is not 50:50
+  const totalValueMaxed =
+    (tokens.reduce(
+      (max, cur) => ((max?.value ?? 0) < (cur?.value ?? 0) ? max : cur),
+      tokens?.[0] ?? {}
+    )?.value ?? 0) *
+      2 ===
+    totalValue;
 
   const alertMessage = {
     title: 'You have no pool tokens to join with.',
@@ -169,26 +175,41 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
         )} */}
       </Header>
       <InnerWrapper>
-        {tokens.filter(token => token.balance).length !== 0 ? (
-          tokens.map((token, idx) => {
-            const tokenValue = (token?.price || 0) * (getInputValue(token?.symbol) || 0);
-            return (
-              <InputNumber
-                key={token.symbol + idx}
-                token={<Token token={token.symbol} />}
-                tokenName={token.symbol}
-                tokenValue={tokenValue}
-                balance={token.balance}
-                value={getInputValue(token.symbol)}
-                handleChange={val => handleChange(token, val, idx)}
-                slider={getInputValue(token.symbol) > 0}
-                name={`input${idx + 1}`}
-                control={control}
-                setValue={setValue}
-                formState={formState}
-              />
-            );
-          })
+        {tokens.filter(token => token.balance).length > 0 ? (
+          <>
+            {tokens
+              .filter(token => token.balance)
+              .map((token, idx) => {
+                const tokenValue = (token?.price || 0) * (getInputValue(token?.symbol) || 0);
+                return (
+                  <InputNumber
+                    key={token.symbol + idx}
+                    token={<Token token={token.symbol} />}
+                    tokenName={token.symbol}
+                    tokenValue={tokenValue}
+                    balance={token.balance}
+                    value={getInputValue(token.symbol)}
+                    handleChange={val => handleChange(token, val, idx)}
+                    slider={getInputValue(token.symbol) > 0}
+                    name={`input${idx + 1}`}
+                    control={control}
+                    setValue={setValue}
+                    formState={formState}
+                    maxButton={true}
+                  />
+                );
+              })}
+            {tokens.filter(token => token.balance).length === 1 &&
+              tokens
+                .filter(token => token.balance === 0)
+                .map(token => {
+                  return (
+                    <NoBalanceAlert key={token.symbol}>
+                      No wallet balance for some pool tokens: {token.symbol}
+                    </NoBalanceAlert>
+                  );
+                })}
+          </>
         ) : (
           <AlertMessage {...alertMessage} type="warning" />
         )}
@@ -196,8 +217,13 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
           <TotalInnerWrapper>
             <TotalText>Total</TotalText>
             <TotalValueWrapper>
-              <TotalValue>{`$${formatNumber(totalValue, 2)}`}</TotalValue>
-              <MaxButton onClick={handleMax}>Max</MaxButton>
+              <TotalValue>{`${totalValue}`}</TotalValue>
+              <ButtonPrimarySmall
+                text={totalValueMaxed ? 'Maxed' : 'Max'}
+                onClick={handleTotalMax}
+                style={{ width: 'auto' }}
+                disabled={totalValueMaxed}
+              />
             </TotalValueWrapper>
           </TotalInnerWrapper>
           <PriceImpact>{`Price impact  ${priceImpact}%`}</PriceImpact>
@@ -262,10 +288,7 @@ const TotalValue = tw.div`
   text-neutral-100 font-m-20
 `;
 
-const MaxButton = tw.div`
-  bg-neutral-10 gap-6 px-12 py-5 rounded-8 text-primary-60 font-m-12 non-clickable
-`;
-
 const PriceImpact = tw.div`
   text-neutral-100 font-r-14 whitespace-pre-wrap
 `;
+const NoBalanceAlert = tw.div`font-r-14 text-neutral-70`;

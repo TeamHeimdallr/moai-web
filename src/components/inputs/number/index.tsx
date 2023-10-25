@@ -129,9 +129,10 @@ export const InputNumber = ({
                 <BalanceValue>{formatNumber(currentBalance ?? 0, 2, 'floor')}</BalanceValue>
                 {maxButton && (
                   <ButtonPrimarySmall
-                    text="Max"
+                    text={handledValue === currentBalance ? 'Maxed' : 'Max'}
                     onClick={() => onValueChange(currentBalance)}
                     style={{ width: 'auto' }}
+                    disabled={handledValue === currentBalance}
                   />
                 )}
                 <TokenUSDValue>${formatNumber(tokenValue ?? 0, 2, 'floor')}</TokenUSDValue>
