@@ -13,7 +13,6 @@ import { ERC20_TOKEN_ABI } from '~/abi';
 
 interface Props {
   amount?: number;
-  symbol?: string;
   allowanceMin?: number;
   spender?: Address;
   tokenAddress?: Address;
@@ -22,7 +21,6 @@ interface Props {
 }
 export const useApprove = ({
   amount,
-  symbol,
   allowanceMin,
   spender,
   tokenAddress,
@@ -40,8 +38,7 @@ export const useApprove = ({
   const { evm } = useConnectedWallet();
   const { isConnected, address: walletAddress } = evm;
 
-  const isNativeXrp = symbol?.toLowerCase() === 'xrp';
-  const internalEnabled = enabled && !!walletAddress && !!spender && isEvm && !isNativeXrp;
+  const internalEnabled = enabled && !!walletAddress && !!spender && isEvm;
 
   const { isLoading: isReadLoading, refetch } = useContractRead({
     address: tokenAddress,
@@ -78,15 +75,6 @@ export const useApprove = ({
     await writeAsync?.();
   };
 
-  if (isNativeXrp) {
-    return {
-      isLoading: false,
-      isSuccess: true,
-      allowance: true,
-      refetch: () => {},
-      allow: () => {},
-    };
-  }
   return {
     isLoading: isLoading || isReadLoading || isPrepareLoading,
     isSuccess,

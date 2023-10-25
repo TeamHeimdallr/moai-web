@@ -111,13 +111,13 @@ export const SwapPopup = () => {
     address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[toToken] ?? '',
     issuer: XRP_TOKEN_ISSUER?.[toToken] ?? '',
 
-    spender: EVM_CONTRACT_ADDRESS?.[toToken]?.VAULT ?? '',
+    spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
     currency: toToken ?? '',
 
     enabled: !!toToken,
   });
 
-  const { txData, blockTimestamp, isLoading, isSuccess, swap } = useSwap({
+  const { txData, blockTimestamp, isLoading, isSuccess, isError, swap } = useSwap({
     id,
     fromToken,
     fromValue: Number(fromValue),
@@ -178,7 +178,12 @@ export const SwapPopup = () => {
       <ButtonPrimaryLarge buttonType="outlined" text="Close" onClick={handleSuccess} />
     </PrimaryButtonWrapper>
   ) : allowance1 && allowance2 ? (
-    <ButtonPrimaryLarge text="Confirm swap" isLoading={isLoading} onClick={swap} />
+    <ButtonPrimaryLarge
+      text="Confirm swap"
+      isLoading={isLoading}
+      disabled={isError}
+      onClick={swap}
+    />
   ) : (
     <ButtonPrimaryLarge
       text={`Approve ${approveTokenSymbol} for swapping`}
