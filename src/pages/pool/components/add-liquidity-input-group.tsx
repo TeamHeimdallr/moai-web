@@ -227,7 +227,12 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
               />
             </TotalValueWrapper>
           </TotalInnerWrapper>
-          <PriceImpact error={priceImpactRaw >= 1}>{`Price impact  ${priceImpact}%`}</PriceImpact>
+          <PriceImpact error={priceImpactRaw >= 1}>
+            {`Price impact  ${priceImpact}%`}
+            <ButtonWrapper>
+              <ButtonPrimarySmall text={'Optimize'} disabled={true} />
+            </ButtonWrapper>
+          </PriceImpact>
         </Total>
       </InnerWrapper>
 
@@ -306,7 +311,7 @@ interface DivProps {
   error?: boolean;
 }
 const PriceImpact = styled.div<DivProps>(({ error }) => [
-  tw`text-neutral-100 font-r-14 whitespace-pre-wrap`,
+  tw`flex justify-between items-center text-neutral-100 font-r-14 whitespace-pre-wrap`,
   error && tw`text-red-50`,
 ]);
 
@@ -314,3 +319,4 @@ const NoBalanceAlert = tw.div`font-r-14 text-neutral-70`;
 const CheckPriceImpact = tw.div`flex gap-16 font-r-14 text-neutral-100`;
 const CheckboxWrapper = tw.div``;
 const Text = styled.div<DivProps>(({ error }) => [error && tw`text-red-50`]);
+const ButtonWrapper = tw.div``;
