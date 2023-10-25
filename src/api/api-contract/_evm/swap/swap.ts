@@ -41,7 +41,11 @@ export const useSwap = ({
   const { address } = evm;
 
   const contractAddress = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
-  const { isLoading: prepareLoading, config } = usePrepareContractWrite({
+  const {
+    isLoading: prepareLoading,
+    config,
+    isError,
+  } = usePrepareContractWrite({
     address: contractAddress,
     abi: BALANCER_VAULT_ABI,
     functionName: 'swap',
@@ -80,6 +84,7 @@ export const useSwap = ({
   return {
     isLoading: prepareLoading || isLoading,
     isSuccess,
+    isError,
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     txData: txData as any,

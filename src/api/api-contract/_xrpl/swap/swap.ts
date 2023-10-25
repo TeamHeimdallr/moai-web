@@ -84,6 +84,7 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
   return {
     isLoading,
     isSuccess,
+    isError: !ammExist || !address || !isXrp,
 
     txData,
     blockTimestamp,

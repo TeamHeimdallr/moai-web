@@ -21,7 +21,6 @@ export const useApprove = ({ amount, address, issuer, spender, currency, enabled
 
   const resEvm = useApproveEvm({
     amount,
-    symbol: currency,
     allowanceMin: amount,
     spender: (spender ?? '0x0') as Address,
     tokenAddress: address as Address,
