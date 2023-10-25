@@ -7,7 +7,7 @@ import { useCrossmarkWalletStore } from '~/states/contexts/wallets/crossmark-wal
 import { useXrplWalletStore } from '~/states/contexts/wallets/gem-wallet';
 
 export const useConnectWithGemWallet = () => {
-  const { isInstalled, isConnected, address, setInfo } = useXrplWalletStore();
+  const { isInstalled, isConnected, address, setInfo, setInstalled } = useXrplWalletStore();
 
   const connect = async () => {
     const installed = (await gemIsInstalled())?.result?.isInstalled || window.gemWallet || false;
@@ -37,7 +37,7 @@ export const useConnectWithGemWallet = () => {
   useEffect(() => {
     const getInstalled = async () => {
       const isInstalled = (await gemIsInstalled())?.result?.isInstalled || false;
-      setInfo({ isInstalled });
+      setInstalled({ isInstalled });
     };
     getInstalled();
     // eslint-disable-next-line react-hooks/exhaustive-deps

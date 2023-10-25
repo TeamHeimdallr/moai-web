@@ -7,6 +7,9 @@ import {
   SubmitTransactionResponse,
 } from '@gemwallet/api';
 
+import { truncateAddress } from '~/utils/util-string';
+
+import { useFuturepassOf } from './use-futurepass-of';
 import { useConnectWithCrossmarkWallet, useConnectWithEvmWallet, useConnectWithGemWallet } from '.';
 
 interface ConnectedWallet {
@@ -24,6 +27,7 @@ interface UseConnectedWallet {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     submitTransaction: (tx: any) => Promise<any>;
   };
+  fpass: ConnectedWallet;
 }
 export const useConnectedWallet = (): UseConnectedWallet => {
   const {
@@ -82,8 +86,20 @@ export const useConnectedWallet = (): UseConnectedWallet => {
     truncatedAddress: truncatedEvmAddress,
   };
 
+  const { data } = useFuturepassOf({ enabled: !!evmAddress });
+
+  const fpass = {
+    isConnected: isEvmConnected,
+    connect: connectEvm,
+    disconnect: disconnectEvm,
+    connectedConnector: connectedEvmConnector,
+    address: data,
+    truncatedAddress: truncateAddress(data),
+  };
+
   return {
     evm,
     xrp,
+    fpass,
   };
 };

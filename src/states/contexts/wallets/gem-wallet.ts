@@ -11,6 +11,7 @@ interface Base {
 }
 interface State extends Base {
   setInfo: ({ isInstalled, isConnected, address }: Partial<Base>) => void;
+  setInstalled: ({ isInstalled }: Partial<Base>) => void;
 }
 
 export const useXrplWalletStore = create<State>()(
@@ -24,6 +25,8 @@ export const useXrplWalletStore = create<State>()(
 
         setInfo: ({ isInstalled, isConnected, address }: Partial<Base>) =>
           set({ isInstalled, isConnected, address }),
+
+        setInstalled: ({ isInstalled }: Partial<Base>) => set({ isInstalled }),
       }))
     ),
     { name: 'MOAI_GEM_WALLET' }

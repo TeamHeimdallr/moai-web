@@ -18,7 +18,7 @@ interface Wallet {
   image: string;
   onClick: () => void;
 }
-export const ConnectWallet = () => {
+export const ConnectWallet = ({ evm, xrpl }: { evm: boolean; xrpl: boolean }) => {
   const { close } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { connect: connectEvm } = useConnectWithEvmWallet();
   const { connect: connectXrpCrossmark } = useConnectWithCrossmarkWallet();
@@ -27,23 +27,26 @@ export const ConnectWallet = () => {
   const wallets: Wallet[] = [
     {
       name: 'Metamask',
-      description: 'Supports The root network and EVM Sidechain',
+      description: 'Supports The Root Network and EVM Sidechain',
       image: imageWalletMetamask,
       onClick: connectEvm,
+      type: 'evm',
     },
     {
       name: 'Crossmark Wallet',
       description: 'Supports XRPL network',
       image: imageWalletCrossmark,
       onClick: connectXrpCrossmark,
+      type: 'xrpl',
     },
     {
       name: 'Gem Wallet',
       description: 'Supports XRPL network',
       image: imageWalletGem,
       onClick: connectXrpGem,
+      type: 'xrpl',
     },
-  ];
+  ].filter(w => (w.type === 'evm' && evm) || (w.type === 'xrpl' && xrpl));
 
   return (
     <Popup id={POPUP_ID.CONNECT_WALLET} title="Connect wallet">
