@@ -9,22 +9,23 @@ import { useGraphTotalComposition } from '../hooks/components/graph/use-graph-to
 
 interface TokenInfoProps {
   symbol: string;
-  balance: string;
-  value: string;
-  index: number;
+  balance: number;
+  value: number;
 }
-const TokenInfo = ({ token }: { token: TokenInfoProps }) => {
+const TokenInfo = ({ token, index }: { token: TokenInfoProps; index: number }) => {
   return (
     <TokenInfoWrapper>
       <TokenSymbolWrapper>
-        <TokenColorCircle index={token.index} />
+        <TokenColorCircle index={index} />
         <TokenSymbolText>Total {token.symbol}</TokenSymbolText>
       </TokenSymbolWrapper>
       <TokenValueWrapper>
         <TokenBalance>
-          {token.balance} {token.symbol}
+          {formatNumberWithComma(Math.trunc(token.balance))}
+          {` `}
+          {token.symbol}
         </TokenBalance>
-        <TokenValue>{token.value}</TokenValue>
+        <TokenValue>${formatNumberWithComma(Math.trunc(token.value))}</TokenValue>
       </TokenValueWrapper>
     </TokenInfoWrapper>
   );
@@ -35,43 +36,22 @@ interface Props {
 export const PoolCompositions = ({ pool }: Props) => {
   const { poolData } = useGraphTotalComposition(pool.id);
 
-  const data: ITokenComposition[] = [
-    {
-      symbol: poolData[0].symbol,
-      weight: poolData[0].weight,
-      value: poolData[0].value,
-      balance: poolData[0].balance,
-    },
-    {
-      symbol: poolData[1].symbol,
-      weight: poolData[1].weight,
-      value: poolData[1].value,
-      balance: poolData[1].balance,
-    },
-  ];
+  const graphData: ITokenComposition[] = poolData.map(data => ({
+    symbol: data.symbol,
+    weight: data.weight,
+    value: data.value,
+    balance: data.balance,
+  }));
+
   return (
     <Wrapper>
       <Title>Pool composition</Title>
       <ContentsWrapper>
-        <TokenInfo
-          token={{
-            symbol: poolData[0].symbol,
-            balance: formatNumberWithComma(Math.trunc(poolData[0].balance)),
-            value: `$${formatNumberWithComma(Math.trunc(poolData[0].value))}`,
-            index: 0,
-          }}
-        />
+        <TokenInfo token={poolData[0]} index={0} />
         <GraphWrapper>
-          <GraphSemiDonut data={data} />
+          <GraphSemiDonut data={graphData} />
         </GraphWrapper>
-        <TokenInfo
-          token={{
-            symbol: poolData[1].symbol,
-            balance: formatNumberWithComma(Math.trunc(poolData[1].balance)),
-            value: `$${formatNumberWithComma(Math.trunc(poolData[1].value))}`,
-            index: 1,
-          }}
-        />
+        <TokenInfo token={poolData[1]} index={1} />
       </ContentsWrapper>
     </Wrapper>
   );
