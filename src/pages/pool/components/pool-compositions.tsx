@@ -36,12 +36,13 @@ interface Props {
 export const PoolCompositions = ({ pool }: Props) => {
   const { poolData } = useGraphTotalComposition(pool.id);
 
-  const graphData: ITokenComposition[] = poolData.map(data => ({
-    symbol: data.symbol,
-    weight: data.weight,
-    value: data.value,
-    balance: data.balance,
-  }));
+  const graphData: ITokenComposition[] =
+    poolData?.map(data => ({
+      symbol: data?.symbol ?? '',
+      weight: data?.weight ?? 0,
+      value: data?.value ?? 0,
+      balance: data?.balance ?? 0,
+    })) ?? [];
 
   return (
     <Wrapper>
@@ -79,7 +80,7 @@ const ContentsWrapper = tw.div`
   flex items-center justify-between
 `;
 
-const GraphWrapper = tw.div`-my-90`;
+const GraphWrapper = tw.div`h-190 flex-center overflow-hidden`;
 
 const Title = tw.div`
   font-b-20 text-primary-60
