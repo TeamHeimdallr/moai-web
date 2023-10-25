@@ -233,19 +233,12 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
       <CheckPriceImpact>
         <CheckboxWrapper>
-          <Checkbox
-            onClick={() => checkPriceImpact(prev => !prev)}
-            selected={checkedPriceImpact}
-            error={priceImpactRaw >= 1}
-          />
+          <Checkbox onClick={() => checkPriceImpact(prev => !prev)} selected={checkedPriceImpact} />
         </CheckboxWrapper>
-        <TextWrapper>
+        <Text>
           I accept the high price impact from depositing, moving the market price base on the depth
           of the market.
-          {priceImpactRaw >= 1 && (
-            <Text error={priceImpactRaw >= 1}>Price impact acknowledgement is required.</Text>
-          )}
-        </TextWrapper>
+        </Text>
       </CheckPriceImpact>
 
       <ButtonPrimaryLarge
@@ -321,4 +314,3 @@ const NoBalanceAlert = tw.div`font-r-14 text-neutral-70`;
 const CheckPriceImpact = tw.div`flex gap-16 font-r-14 text-neutral-100`;
 const CheckboxWrapper = tw.div``;
 const Text = styled.div<DivProps>(({ error }) => [error && tw`text-red-50`]);
-const TextWrapper = tw.div`flex flex-col gap-4`;
