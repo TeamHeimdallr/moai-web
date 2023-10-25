@@ -53,11 +53,14 @@ export const WithdrawLiquidityPopup = ({
 
   const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useWithdrawLiquidity({
     id: pool.id,
-    tokens: compositions.map(c => ({
+    tokens: compositions.map((c, i) => ({
       address: c.address ?? '',
+      issuer: c.address ?? '',
       currency: c.symbol,
-      amount: '0',
+      // token out expected value
+      amount: amountsOut?.[i] ?? 0,
     })),
+    // input value
     amount: parseUnits(`${inputValue}`, TOKEN_DECIMAL_WITHDRAW[currentNetwork]),
   });
 
@@ -108,7 +111,7 @@ export const WithdrawLiquidityPopup = ({
         <List title={`You're providing`}>
           <TokenList
             type="large"
-            title={`${formatNumber(lpTokenBalance, 2)}`}
+            title={`${formatNumber(inputValue, 2)}`}
             subTitle={`${pool.lpTokenName}`}
             description={`$${formatNumber(totalValue)} (${withdrawRatio}%)`}
             image={TOKEN_IMAGE_MAPPER?.[pool.lpTokenName] || TOKEN_IMAGE_MAPPER.MOAI}

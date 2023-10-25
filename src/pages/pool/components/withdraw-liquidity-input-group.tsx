@@ -2,10 +2,9 @@ import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
-import { Address } from 'wagmi';
 import * as yup from 'yup';
 
-import { useWithdrawTokenAmounts } from '~/api/api-contract/_evm/pool/get-liquidity-pool-balance';
+import { useWithdrawTokenAmounts } from '~/api/api-contract/pool/withdraw-liquidity';
 
 import { TOKEN_DESCRIPTION_MAPPER, TOKEN_IMAGE_MAPPER } from '~/constants';
 
@@ -50,8 +49,8 @@ export const WithdrawLiquidityInputGroup = ({
   const { selectedTab, selectTab } = useWithdrawLiquidityInputGroupTabStore();
 
   const { amountsOut, priceImpact: priceImpactRaw } = useWithdrawTokenAmounts({
-    id: pool.id as Address,
-    bptIn: inputValue ?? 0,
+    id: pool.id,
+    amountIn: inputValue ?? 0,
   });
 
   const priceImpact = priceImpactRaw < 0.01 ? '< 0.01' : formatNumber(priceImpactRaw, 2);
