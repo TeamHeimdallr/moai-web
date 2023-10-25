@@ -6,12 +6,14 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID } from '~/types';
 
 export const MainLayout = () => {
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { evm, xrp } = useConnectedWallet();
+  const { setWalletType } = useWalletTypeStore();
   const isConnected = !!evm.address || !!xrp.address;
 
   return (
@@ -33,7 +35,10 @@ export const MainLayout = () => {
               text="Connect wallet"
               buttonType="outlined"
               isLoading={!!opened}
-              onClick={open}
+              onClick={() => {
+                setWalletType({ xrpl: true, evm: true });
+                open();
+              }}
             />
           </ButtonWrapper>
         </>

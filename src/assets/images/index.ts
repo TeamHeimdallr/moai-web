@@ -11,6 +11,7 @@ import imageTokenWETH from './token-weth.png';
 import imageTokenXRP from './token-xrp.png';
 import imageWalletCrossmark from './wallet-crossmark.png';
 import imageWalletDcent from './wallet-dcent.png';
+import imageWalletFuturepass from './wallet-futurepass.png';
 import imageWalletGem from './wallet-gem.png';
 import imageWalletMetamask from './wallet-metamask.png';
 import imageWalletXumm from './wallet-xumm.png';
@@ -29,6 +30,7 @@ export {
   imageTokenXRP,
   imageWalletCrossmark,
   imageWalletDcent,
+  imageWalletFuturepass,
   imageWalletGem,
   imageWalletMetamask,
   imageWalletXumm,

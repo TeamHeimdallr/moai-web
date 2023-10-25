@@ -11,6 +11,7 @@ import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { Account } from '../account';
@@ -22,6 +23,7 @@ export const Gnb = () => {
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { evm, xrp } = useConnectedWallet();
+  const { setWalletType } = useWalletTypeStore();
 
   return (
     <>
@@ -50,7 +52,10 @@ export const Gnb = () => {
                 style={{ padding: '9px 24px' }}
                 text="Connect wallet"
                 isLoading={!!opened}
-                onClick={open}
+                onClick={() => {
+                  setWalletType({ xrpl: true, evm: true });
+                  open();
+                }}
               />
             )}
             <NetworkSelection />

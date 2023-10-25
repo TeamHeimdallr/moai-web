@@ -3,7 +3,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
-import { imageWalletGem, imageWalletMetamask } from '~/assets/images';
+import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
 
 import { useConnectedWallet } from '~/hooks/wallets';
 import { truncateAddress } from '~/utils/util-string';
@@ -26,13 +26,16 @@ export const Account = () => {
       <Banner opened={opened} onClick={toggle}>
         {bothConnected ? (
           <BothConnectedWrapper>
+            <ConnectedXrp>
+              {xrp.connectedConnector === 'crossmark' ? (
+                <Image src={imageWalletCrossmark} alt="crossmark wallet" />
+              ) : (
+                <Image src={imageWalletGem} alt="gem wallet" />
+              )}
+            </ConnectedXrp>
             <ConnectedEvm>
               <Image src={imageWalletMetamask} alt="metamask" />
             </ConnectedEvm>
-            <ConnectedXrp>
-              {/* TODO: change to connected wallet icon */}
-              <Image src={imageWalletGem} alt="gem wallet" />
-            </ConnectedXrp>
           </BothConnectedWrapper>
         ) : (
           <AccountWrapper>
@@ -83,8 +86,8 @@ const BothConnectedWrapper = tw.div`
 const ConnectedBase = tw.div`
   absolute flex-center w-28 h-28 bg-neutral-20 border-1 border-neutral-15 border-solid rounded-14
 `;
-const ConnectedEvm = tw(ConnectedBase)`left-9`;
-const ConnectedXrp = tw(ConnectedBase)`right-9`;
+const ConnectedEvm = tw(ConnectedBase)`right-9`;
+const ConnectedXrp = tw(ConnectedBase)`left-9`;
 
 const Image = tw.img`
   w-24 h-24 object-cover flex-center
