@@ -60,8 +60,8 @@ export const SwapInputGroup = () => {
 
   // TODO: 3 pool case
   // TODO: swap, 내부 브릿지 통합
-  const fromReserve = pool?.compositions?.[0]?.balance ?? 0;
-  const toReserve = pool?.compositions?.[1]?.balance ?? 0;
+  const fromReserve = pool?.compositions?.find(c => c.symbol === fromToken)?.balance ?? 0;
+  const toReserve = pool?.compositions?.find(c => c.symbol === toToken)?.balance ?? 0;
 
   const fromTokenBalance = balancesArray?.find(b => b.symbol === fromToken)?.balance ?? 0;
   const toTokenBalance = balancesArray?.find(b => b.symbol === toToken)?.balance ?? 0;
@@ -71,7 +71,7 @@ export const SwapInputGroup = () => {
 
   const schema = yup.object().shape({
     from: yup.number().min(0).max(fromTokenBalance, 'Exceeds wallet balance').required(),
-    to: yup.number().min(0).max(toTokenBalance, 'Exceeds wallet balance').required(),
+    to: yup.number().min(0).required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
     resolver: yupResolver(schema),
@@ -85,24 +85,27 @@ export const SwapInputGroup = () => {
   );
   const { opened: swapPopupOpened, open: openSwapPopup } = usePopup(POPUP_ID.SWAP);
 
-  const address = evm?.address ?? xrp?.address;
+  const address = evm?.address || xrp?.address;
 
   // TODO: fee 하드코딩 제거
   const fee = 0.003;
 
-  const toValue = fromValue
-    ? Number(
-        formatFloat(
-          toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee))),
-          8
-        )
-      )
-    : undefined;
+  const toValue =
+    fromToken && toToken
+      ? fromValue
+        ? Number(
+            formatFloat(
+              toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee))),
+              8
+            )
+          )
+        : undefined
+      : undefined;
 
   const swapRatio =
-    fromValue == 0 || toValue == 0
-      ? toReserve - toReserve * (fromReserve / (fromReserve + (1 - fee)))
-      : (toValue ?? 0) / Number(fromValue === 0 ? 0.0001 : fromValue);
+    fromValue && toValue
+      ? (toValue || 0) / (Number(fromValue || 0) === 0 ? 0.0001 : Number(fromValue || 0))
+      : toReserve - toReserve * (fromReserve / (fromReserve + (1 - fee)));
 
   const validToSwap =
     !!address &&
@@ -161,8 +164,8 @@ export const SwapInputGroup = () => {
                     <Token token="" title="Select token" icon={<IconDown />} />
                   )
                 }
-                tokenValue={toTokenPrice * (Number(toValue) || 0)}
                 balance={toTokenBalance}
+                tokenValue={toTokenPrice * (Number(toValue) || 0)}
                 value={toValue}
                 focus={false}
                 handleTokenClick={openSelectTokenToPopup}
@@ -172,7 +175,9 @@ export const SwapInputGroup = () => {
                 formState={formState}
               />
             </InputInnerWrapper>
-            <InputLabel>{`1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`}</InputLabel>
+            {fromToken && toToken && (
+              <InputLabel>{`1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`}</InputLabel>
+            )}
           </InputWrapper>
         ) : (
           // TODO: component 수정

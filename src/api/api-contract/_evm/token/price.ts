@@ -50,7 +50,7 @@ export const useTokenPrice = () => {
 
   const tokenAddress = EVM_POOL?.[currentNetwork]?.[0]?.id;
 
-  const address = EVM_CONTRACT_ADDRESS[currentNetwork]?.VAULT as Address;
+  const address = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
   const { data } = useContractRead({
     address,
     abi: BALANCER_VAULT_ABI,
@@ -66,6 +66,7 @@ export const useTokenPrice = () => {
 
   const getTokenPrice = (name?: string) => {
     if (name?.toLowerCase() === 'weth' || name?.toLowerCase() === 'root') return price;
+    if (name?.toLowerCase() === 'moi') return TOKEN_PRICE?.MOAI || 0;
 
     return (TOKEN_PRICE?.[name || ''] as number) || 0;
   };

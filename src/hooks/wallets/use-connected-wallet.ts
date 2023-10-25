@@ -3,9 +3,9 @@ import { SignAndSubmitFullResponse } from '@crossmarkio/sdk/dist/src/typings/cro
 import { AllTransactionRequest } from '@crossmarkio/sdk/dist/src/typings/crossmark/models/common/tx';
 import {
   submitTransaction as gemSubmitTransaction,
-  SubmitTransactionRequest,
   SubmitTransactionResponse,
 } from '@gemwallet/api';
+import { Transaction } from 'xrpl';
 
 import { truncateAddress } from '~/utils/util-string';
 
@@ -73,8 +73,8 @@ export const useConnectedWallet = (): UseConnectedWallet => {
         address: xrpGemAddress,
         truncatedAddress: truncatedXrpGemAddress,
         connectedConnector: 'gem',
-        submitTransaction: async (tx: SubmitTransactionRequest) =>
-          (await gemSubmitTransaction(tx)) as SubmitTransactionResponse,
+        submitTransaction: async (tx: Transaction) =>
+          (await gemSubmitTransaction({ transaction: tx })) as SubmitTransactionResponse,
       };
 
   const evm = {

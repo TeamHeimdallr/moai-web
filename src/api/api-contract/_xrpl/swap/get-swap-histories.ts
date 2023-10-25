@@ -85,7 +85,7 @@ export const useGetSwapHistories = ({ id }: UseGetSwapHistories) => {
     if (typeof amount === 'string') {
       const affectedNode = AffectedNodes?.find(
         node => (node as any)?.ModifiedNode?.LedgerEntryType === 'RippleState'
-      )?.[0];
+      );
 
       const afterBalance = (affectedNode as any)?.ModifiedNode?.FinalFields?.Balance?.value ?? 0;
       const beforeBalance =
@@ -109,7 +109,7 @@ export const useGetSwapHistories = ({ id }: UseGetSwapHistories) => {
         value: moiBalance * moiPrice,
       } as IToken;
 
-      return [token1, token2];
+      return [token2, token1];
     }
   };
 
@@ -134,7 +134,7 @@ export const useGetSwapHistories = ({ id }: UseGetSwapHistories) => {
       isError,
     };
 
-  const provisions = txData?.map(({ tx, meta }) => {
+  const histories = txData?.map(({ tx, meta }) => {
     const trader = tx?.Account ?? '';
     const time = (tx?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
     const txHash = tx?.hash ?? '';
@@ -161,7 +161,7 @@ export const useGetSwapHistories = ({ id }: UseGetSwapHistories) => {
   });
 
   return {
-    data: provisions,
+    data: histories,
     isLoading,
     isSuccess,
     isError,

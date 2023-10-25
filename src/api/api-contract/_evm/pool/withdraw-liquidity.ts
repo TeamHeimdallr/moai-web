@@ -20,8 +20,8 @@ import { BALANCER_VAULT_ABI } from '~/abi';
 
 interface Props {
   poolId: string;
-  tokens: string[];
-  amount: bigint;
+  tokens: string[]; // token symbol
+  amount: bigint; // withdraw lp token amount. amounts out are calculated by exitExactBPTInForTokensOut function
 
   enabled?: boolean;
 }
@@ -51,7 +51,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
     .sort((a, b) => handleNativeXrp(a).localeCompare(handleNativeXrp(b)));
 
   // TODO: connect to server. get vault address according to network and pool id
-  const vault = EVM_CONTRACT_ADDRESS[currentNetwork]?.VAULT as Address;
+  const vault = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: vault,
     abi: BALANCER_VAULT_ABI,

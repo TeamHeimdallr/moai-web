@@ -1,8 +1,9 @@
-import { submitTransaction } from '@gemwallet/api';
 import { useMutation } from '@tanstack/react-query';
-import { xrpToDrops } from 'xrpl';
+import { parseUnits } from 'viem';
 
 import { QUERY_KEYS } from '~/api/utils/query-keys';
+
+import { TOKEN_DECIMAL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -34,7 +35,9 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
 
     if (xrp) {
       const asset1 = { currency: 'XRP' };
-      const amount1 = xrpToDrops(xrp.amount ?? 0);
+      const amount1 = Number(
+        Number(parseUnits(xrp.amount ?? 0, TOKEN_DECIMAL.XRPL).toString()).toFixed(6)
+      ).toString();
 
       const remain = tokens.filter(t => t.currency !== 'XRP')?.[0];
       const asset2 = {
@@ -43,7 +46,7 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
       };
       const amount2 = {
         ...asset2,
-        value: remain.amount ?? 0,
+        value: Number(Number(remain.amount ?? 0).toFixed(6)).toString(),
       };
 
       return {
@@ -55,9 +58,9 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
     }
 
     const asset1 = { issuer: token1?.issuer ?? '', currency: token1?.currency ?? '' };
-    const amount1 = { ...asset1, value: token1?.amount ?? 0 };
+    const amount1 = { ...asset1, value: Number(Number(token1?.amount ?? 0).toFixed(6)).toString() };
     const asset2 = { issuer: token2?.issuer ?? '', currency: token2?.currency ?? '' };
-    const amount2 = { ...asset2, value: token2?.amount ?? 0 };
+    const amount2 = { ...asset2, value: Number(Number(token2?.amount ?? 0).toFixed(6)).toString() };
 
     return {
       Amount: amount1,
@@ -77,15 +80,14 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const submitTx = async () => await submitTransaction({ transaction: txRequest as any });
+  const submitTx = async () => await xrp.submitTransaction(txRequest as any);
 
   const { data, isLoading, isSuccess, mutateAsync } = useMutation(
     QUERY_KEYS.AMM.WITHDRAW_LIQUIDITY,
     submitTx
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const txData = data?.result as any;
+  const txData = data?.result;
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = async () => {

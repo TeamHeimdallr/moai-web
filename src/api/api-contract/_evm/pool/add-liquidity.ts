@@ -52,7 +52,7 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
   const sortedAmountsIn = sortedIndex.map(index => amountsIn[index]);
 
   // TODO: connect to server. get vault address according to network and pool id
-  const vault = EVM_CONTRACT_ADDRESS[currentNetwork].VAULT as Address;
+  const vault = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: vault,

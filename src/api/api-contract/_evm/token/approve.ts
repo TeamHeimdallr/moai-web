@@ -13,6 +13,7 @@ import { ERC20_TOKEN_ABI } from '~/abi';
 
 interface Props {
   amount?: number;
+  symbol?: string;
   allowanceMin?: number;
   spender?: Address;
   tokenAddress?: Address;
@@ -21,6 +22,7 @@ interface Props {
 }
 export const useApprove = ({
   amount,
+  symbol,
   allowanceMin,
   spender,
   tokenAddress,
@@ -38,13 +40,16 @@ export const useApprove = ({
   const { evm } = useConnectedWallet();
   const { isConnected, address: walletAddress } = evm;
 
+  const isNativeXrp = symbol?.toLowerCase() === 'xrp';
+  const internalEnabled = enabled && !!walletAddress && !!spender && isEvm && !isNativeXrp;
+
   const { isLoading: isReadLoading, refetch } = useContractRead({
     address: tokenAddress,
     abi: ERC20_TOKEN_ABI,
     functionName: 'allowance',
     chainId,
     args: [walletAddress, spender],
-    enabled: enabled && !!walletAddress && !!spender && isEvm,
+    enabled: internalEnabled,
 
     onSuccess: (data: string) => {
       return setAllowance(
@@ -62,7 +67,7 @@ export const useApprove = ({
     chainId,
     account: walletAddress as Address,
     args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
-    enabled: enabled && !!walletAddress && !!spender && isEvm,
+    enabled: internalEnabled,
   });
 
   const { isLoading, isSuccess, writeAsync } = useContractWrite(config);
@@ -73,6 +78,15 @@ export const useApprove = ({
     await writeAsync?.();
   };
 
+  if (isNativeXrp) {
+    return {
+      isLoading: false,
+      isSuccess: true,
+      allowance: true,
+      refetch: () => {},
+      allow: () => {},
+    };
+  }
   return {
     isLoading: isLoading || isReadLoading || isPrepareLoading,
     isSuccess,

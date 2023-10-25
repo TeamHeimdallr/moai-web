@@ -105,8 +105,11 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
   };
 
   const handleChange = (token: IToken, value: number | undefined, idx: number) => {
-    const remainTokenPrice = tokens.filter(t => t.symbol !== token.symbol)?.[0]?.price ?? 0;
-    const currentTokenTotalValue = Number(formatFloat((value || 0) * (token?.price || 0), 4));
+    const remainTokenPrice =
+      getTokenPrice(tokens.filter(t => t.symbol !== token.symbol)?.[0]?.symbol) ?? 0;
+    const currentTokenTotalValue = Number(
+      formatFloat((value || 0) * getTokenPrice(token.symbol), 4)
+    );
     const expectedRemainToken = remainTokenPrice
       ? Number(formatFloat(currentTokenTotalValue / remainTokenPrice, 4))
       : 0;

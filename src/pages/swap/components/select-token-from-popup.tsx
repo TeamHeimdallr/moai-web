@@ -17,7 +17,7 @@ import { POPUP_ID } from '~/types';
 export const SelectFromTokenPopup = () => {
   const { balancesArray } = useTokenBalanceInPool();
 
-  const { fromToken, setFromToken } = useSwapStore();
+  const { toToken, fromToken, setFromToken } = useSwapStore();
   const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_FROM);
 
   return (
@@ -27,30 +27,32 @@ export const SelectFromTokenPopup = () => {
       style={{ backgroundColor: COLOR.NEUTRAL[10] }}
     >
       <Wrapper>
-        {balancesArray?.map((balanceInfo, idx) => {
-          if (!balanceInfo) return <></>;
+        {balancesArray
+          ?.filter(t => t.symbol !== toToken)
+          ?.map((balanceInfo, idx) => {
+            if (!balanceInfo) return <></>;
 
-          const { symbol, value, balance } = balanceInfo;
-          const formattedTokenBalance = (balance ?? 0) > 0 ? formatNumber(balance, 2) : undefined;
-          const formattedTokenValue = (value ?? 0) > 0 ? '$' + formatNumber(value, 2) : undefined;
+            const { symbol, value, balance } = balanceInfo;
+            const formattedTokenBalance = (balance ?? 0) > 0 ? formatNumber(balance, 2) : undefined;
+            const formattedTokenValue = (value ?? 0) > 0 ? '$' + formatNumber(value, 2) : undefined;
 
-          const handleClick = () => {
-            setFromToken(symbol ?? '');
-            close();
-          };
-          return (
-            <TokenList
-              key={symbol + idx}
-              title={symbol}
-              image={TOKEN_IMAGE_MAPPER[symbol] ?? ''}
-              type={'selectable'}
-              balance={formattedTokenBalance}
-              value={formattedTokenValue}
-              selected={fromToken === (symbol ?? '')}
-              onClick={handleClick}
-            />
-          );
-        })}
+            const handleClick = () => {
+              setFromToken(symbol ?? '');
+              close();
+            };
+            return (
+              <TokenList
+                key={symbol + idx}
+                title={symbol}
+                image={TOKEN_IMAGE_MAPPER[symbol] ?? ''}
+                type={'selectable'}
+                balance={formattedTokenBalance}
+                value={formattedTokenValue}
+                selected={fromToken === (symbol ?? '')}
+                onClick={handleClick}
+              />
+            );
+          })}
       </Wrapper>
     </Popup>
   );

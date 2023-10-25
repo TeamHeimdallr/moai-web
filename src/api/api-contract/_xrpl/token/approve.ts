@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { submitTransaction } from '@gemwallet/api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AccountLinesRequest } from 'xrpl';
 
@@ -20,6 +18,8 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
   const { address } = xrp;
+
+  const isNativeXrp = currency?.toLowerCase() === 'xrp';
 
   const getTrustLinesRequest = {
     command: 'account_lines',
@@ -55,7 +55,8 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
     },
   };
 
-  const setTrustLines = async () => await submitTransaction({ transaction: txRequest as any });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const setTrustLines = async () => await xrp.submitTransaction({ transaction: txRequest as any });
 
   const { isLoading, isSuccess, mutateAsync } = useMutation(
     QUERY_KEYS.TOKEN.SET_TRUST_LINE,
@@ -63,11 +64,20 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
   );
 
   const allow = async () => {
-    if (!isXrp) return;
+    if (!isXrp || !issuer || isNativeXrp) return;
 
     await mutateAsync();
   };
 
+  if (isNativeXrp) {
+    return {
+      isLoading: false,
+      isSuccess: true,
+      allowance: true,
+      refetch: () => {},
+      allow: () => {},
+    };
+  }
   return {
     isLoading: isLoading || isReadLoading,
     isSuccess,

@@ -40,7 +40,7 @@ export const useSwap = ({
   const { evm } = useConnectedWallet();
   const { address } = evm;
 
-  const contractAddress = EVM_CONTRACT_ADDRESS[currentNetwork]?.VAULT as Address;
+  const contractAddress = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: contractAddress,
     abi: BALANCER_VAULT_ABI,

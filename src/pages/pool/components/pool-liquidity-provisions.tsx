@@ -16,7 +16,7 @@ interface Props {
 export const PoolLiquidityProvisions = ({ pool }: Props) => {
   const { selectedTab, selectTab } = useTablePoolLiquidityProvisionSelectTabStore();
   const { evm, xrp } = useConnectedWallet();
-  const address = evm?.address ?? xrp?.address;
+  const address = evm?.address || xrp?.address;
 
   const tabs = address
     ? [

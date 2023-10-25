@@ -43,7 +43,9 @@ export const useTokenPrice = () => {
   const price = moiBalance ? TOKEN_PRICE.XRP * (xrpBalance / moiBalance) : 0;
 
   const getTokenPrice = (name?: string) => {
-    if (name?.toLowerCase() === 'xrp' || name?.toLowerCase() === 'wxrp') return price;
+    if (name?.toLowerCase() === 'xrp' || name?.toLowerCase() === 'wxrp')
+      return TOKEN_PRICE?.XRP || 0;
+    if (name?.toLowerCase() === 'moi') return price;
 
     return (TOKEN_PRICE?.[name || ''] as number) || 0;
   };

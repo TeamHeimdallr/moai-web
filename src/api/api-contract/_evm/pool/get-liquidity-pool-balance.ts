@@ -187,7 +187,7 @@ export const useLiquidityPoolTokenAmount = ({ id, amountsIn }: LiquidityPoolToke
 };
 
 interface WithdrawPriceImpactProp {
-  id?: Address;
+  id: Address;
   bptIn: number;
 }
 export const useWithdrawTokenAmounts = ({ id, bptIn }: WithdrawPriceImpactProp) => {
@@ -208,7 +208,7 @@ export const useWithdrawTokenAmounts = ({ id, bptIn }: WithdrawPriceImpactProp) 
 
   if (!isEvm)
     return {
-      amountsOut: [],
+      amountsOut: [0, 0],
       priceImpact: 0,
     };
 
@@ -286,7 +286,7 @@ export const usePoolTokens = ({ id }: UsePoolTokens) => {
   const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
-  const address = EVM_CONTRACT_ADDRESS[currentNetwork]?.VAULT as Address;
+  const address = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
   const chainId = useNetworkId(currentNetwork);
 
   const { data: res, ...rest } = useContractRead({
