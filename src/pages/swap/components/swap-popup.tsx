@@ -55,23 +55,28 @@ export const SwapPopup = () => {
     resetAll,
   } = useSwapStore();
 
-  const fromReserve = pool?.compositions?.[0]?.balance ?? 0;
-  const toReserve = pool?.compositions?.[1]?.balance ?? 0;
+  const fromReserve = pool?.compositions?.find(c => c.symbol === fromToken)?.balance ?? 0;
+  const toReserve = pool?.compositions?.find(c => c.symbol === toToken)?.balance ?? 0;
 
   // TODO: fee 하드코딩 제거
   const fee = 0.003;
-  const toValue = fromValue
-    ? Number(
-        formatFloat(
-          toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee))),
-          8
-        )
-      )
-    : undefined;
+
+  const toValue =
+    fromToken && toToken
+      ? fromValue
+        ? Number(
+            formatFloat(
+              toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee))),
+              8
+            )
+          )
+        : undefined
+      : undefined;
+
   const swapRatio =
-    fromValue == 0 || toValue == 0
-      ? toReserve - toReserve * (fromReserve / (fromReserve + (1 - fee)))
-      : (toValue ?? 0) / Number(fromValue === 0 ? 0.0001 : fromValue);
+    fromValue && toValue
+      ? (toValue || 0) / (Number(fromValue || 0) === 0 ? 0.0001 : Number(fromValue || 0))
+      : toReserve - toReserve * (fromReserve / (fromReserve + (1 - fee)));
 
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippage } = useSlippageStore();
@@ -79,20 +84,37 @@ export const SwapPopup = () => {
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
 
   const {
-    allow: allowToken,
-    allowance: allowance,
-    isLoading: allowLoading,
-    isSuccess: allowSuccess,
-    refetch: refetchAllowance,
+    allow: allowToken1,
+    allowance: allowance1,
+    isLoading: allowLoading1,
+    isSuccess: allowSuccess1,
+    refetch: refetchAllowance1,
   } = useApprove({
     amount: Number(fromValue ?? 0),
     address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[fromToken] ?? '',
-    issuer: XRP_TOKEN_ISSUER?.[fromToken]?.symbol ?? '',
+    issuer: XRP_TOKEN_ISSUER?.[fromToken] ?? '',
 
     spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
     currency: fromToken ?? '',
 
     enabled: !!fromToken,
+  });
+
+  const {
+    allow: allowToken2,
+    allowance: allowance2,
+    isLoading: allowLoading2,
+    isSuccess: allowSuccess2,
+    refetch: refetchAllowance2,
+  } = useApprove({
+    amount: Number(toValue ?? 0),
+    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[toToken] ?? '',
+    issuer: XRP_TOKEN_ISSUER?.[toToken] ?? '',
+
+    spender: EVM_CONTRACT_ADDRESS?.[toToken]?.VAULT ?? '',
+    currency: toToken ?? '',
+
+    enabled: !!toToken,
   });
 
   const { txData, blockTimestamp, isLoading, isSuccess, swap } = useSwap({
@@ -104,10 +126,12 @@ export const SwapPopup = () => {
   });
 
   useEffect(() => {
-    if (allowSuccess) {
-      refetchAllowance();
-    }
-  }, [allowSuccess, refetchAllowance]);
+    if (allowSuccess1) refetchAllowance1();
+  }, [allowSuccess1, refetchAllowance1]);
+
+  useEffect(() => {
+    if (allowSuccess2) refetchAllowance2();
+  }, [allowSuccess2, refetchAllowance2]);
 
   const handleLink = () => {
     window.open(`${SCANNER_URL[currentNetwork]}/tx/${txData?.hash ?? ''}`);
@@ -126,6 +150,8 @@ export const SwapPopup = () => {
   const totalAfterFee = (1 - 0.005) * (currentValue ?? 0);
   const slippageText = (slippage * 100).toFixed(1);
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
+
+  const approveTokenSymbol = allowance1 ? toToken : fromToken;
 
   const handleSuccess = () => {
     close();
@@ -151,13 +177,16 @@ export const SwapPopup = () => {
       )}
       <ButtonPrimaryLarge buttonType="outlined" text="Close" onClick={handleSuccess} />
     </PrimaryButtonWrapper>
-  ) : allowance ? (
+  ) : allowance1 && allowance2 ? (
     <ButtonPrimaryLarge text="Confirm swap" isLoading={isLoading} onClick={swap} />
   ) : (
     <ButtonPrimaryLarge
-      text={`Approve ${fromToken} for swapping`}
-      isLoading={allowLoading}
-      onClick={allowToken}
+      text={`Approve ${approveTokenSymbol} for swapping`}
+      isLoading={allowLoading1 || allowLoading2}
+      onClick={() => {
+        if (!allowance1) allowToken1?.();
+        if (!allowance2) allowToken2?.();
+      }}
     />
   );
 

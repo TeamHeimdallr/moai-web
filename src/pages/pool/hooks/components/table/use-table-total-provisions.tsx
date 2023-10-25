@@ -27,7 +27,7 @@ import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/component
 
 export const useTableTotalProvision = (id: string) => {
   const { evm, xrp } = useConnectedWallet();
-  const address = evm?.address ?? xrp?.address;
+  const address = evm?.address || xrp?.address;
 
   const { data } = useGetLiquidityPoolProvisions({ id });
 

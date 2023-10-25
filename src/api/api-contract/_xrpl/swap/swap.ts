@@ -31,10 +31,10 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
           Amount: {
             currency: toToken,
             issuer: XRP_TOKEN_ISSUER[toToken],
-            value: (toValue * 1.01).toFixed(6),
+            value: toValue.toFixed(6),
           },
         }
-      : { Amount: xrpToDrops((toValue * 1.01).toFixed(6)) };
+      : { Amount: xrpToDrops(toValue.toFixed(6)) };
 
   const deliverMin =
     fromToken === 'XRP'
@@ -42,10 +42,10 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
           DeliverMin: {
             currency: toToken,
             issuer: XRP_TOKEN_ISSUER[toToken],
-            value: toValue.toFixed(6),
+            value: (toValue * 0.99).toFixed(6),
           },
         }
-      : { DeliverMin: xrpToDrops(toValue.toFixed(6)) };
+      : { DeliverMin: xrpToDrops((toValue * 0.99).toFixed(6)) };
 
   const sendMax =
     fromToken === 'XRP'
@@ -69,7 +69,7 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const submitTx = async () => await xrp.submitTransaction({ transaction: txRequest as any });
+  const submitTx = async () => await xrp.submitTransaction(txRequest as any);
 
   const { data, isLoading, isSuccess, mutateAsync } = useMutation(QUERY_KEYS.SWAP.SWAP, submitTx);
 
