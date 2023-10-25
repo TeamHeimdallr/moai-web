@@ -11,7 +11,7 @@ import { useTokenPrice } from '~/api/api-contract/token/price';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge, ButtonPrimarySmall } from '~/components/buttons';
-import { InputNumber } from '~/components/inputs';
+import { Checkbox, InputNumber } from '~/components/inputs';
 import { Token } from '~/components/token';
 
 import { usePopup } from '~/hooks/components';
@@ -33,6 +33,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
   const [inputValue1, setInputValue1] = useState<number>(0);
   const [inputValue2, setInputValue2] = useState<number>(0);
+  const [checkedPriceImpact, checkPriceImpact] = useState(false);
 
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
 
@@ -230,6 +231,14 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
         </Total>
       </InnerWrapper>
 
+      <CheckPriceImpact>
+        <CheckboxWrapper>
+          <Checkbox onClick={() => checkPriceImpact(prev => !prev)} selected={checkedPriceImpact} />
+        </CheckboxWrapper>
+        I accept the high price impact from depositing, moving the market price base on the depth of
+        the market.
+      </CheckPriceImpact>
+
       <ButtonPrimaryLarge text="Preview" onClick={popupOpen} disabled={!isValid} />
 
       {popupOpened && (
@@ -292,3 +301,5 @@ const PriceImpact = tw.div`
   text-neutral-100 font-r-14 whitespace-pre-wrap
 `;
 const NoBalanceAlert = tw.div`font-r-14 text-neutral-70`;
+const CheckPriceImpact = tw.div`flex gap-16 font-r-14 text-neutral-100`;
+const CheckboxWrapper = tw.div``;
