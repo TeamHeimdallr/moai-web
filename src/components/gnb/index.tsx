@@ -28,7 +28,9 @@ export const Gnb = () => {
   return (
     <>
       <Wrapper>
-        <LogoText width={88} height={20} onClick={() => navigate('/')} />
+        <LogoWrapper>
+          <LogoText width={88} height={20} onClick={() => navigate('/')} />
+        </LogoWrapper>
         <ContentWrapper>
           {GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
             <MenuWrapper
@@ -71,6 +73,8 @@ export const Gnb = () => {
 const Wrapper = styled.div(() => [
   tw`flex items-center justify-between w-full px-24 py-20 z-20 bg-transparent`,
 ]);
+
+const LogoWrapper = tw.div`clickable h-20`;
 
 const ContentWrapper = tw.div`
   flex items-center gap-24
