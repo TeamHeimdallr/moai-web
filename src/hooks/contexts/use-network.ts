@@ -13,6 +13,7 @@ export const useNetwork = () => {
   const isEvm =
     selectedNetwork === NETWORK.EVM_SIDECHAIN || selectedNetwork === NETWORK.THE_ROOT_NETWORK;
   const isXrp = selectedNetwork === NETWORK.XRPL;
+  const isFpass = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const name = useMemo(() => {
     if (selectedNetwork === NETWORK.THE_ROOT_NETWORK) return 'The Root Network';
@@ -25,6 +26,7 @@ export const useNetwork = () => {
     selectNetwork,
     isEvm,
     isXrp,
+    isFpass,
     name,
   };
 };

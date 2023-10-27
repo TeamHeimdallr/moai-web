@@ -1,15 +1,12 @@
-import { useParams } from 'react-router-dom';
-import { Address, parseUnits } from 'viem';
+import { Address } from 'viem';
 
+import { useWithdrawLiquidity as useWithdrawLiquidityFpass } from '~/api/api-contract/_evm/pool/fpass-withdraw-liquidity';
 import { useWithdrawTokenAmounts as useWithdrawTokenAmountsEvm } from '~/api/api-contract/_evm/pool/get-liquidity-pool-balance';
 import { useWithdrawLiquidity as useWithdrawLiquidityEvm } from '~/api/api-contract/_evm/pool/withdraw-liquidity';
 import { useWithdrawTokenAmounts as useWithdrawTokenAmountsXrp } from '~/api/api-contract/_xrpl/pool/get-liquidity-pool-balance';
 import { useWithdrawLiquidity as useWithdrawLiquidityXrp } from '~/api/api-contract/_xrpl/pool/withdraw-liquidity';
 
-import { TOKEN_DECIMAL } from '~/constants';
-
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { getNetworkFull } from '~/utils';
 
 interface Props {
   id: string;
@@ -23,14 +20,18 @@ interface Props {
 }
 
 export const useWithdrawLiquidity = ({ id, tokens, amount }: Props) => {
-  const { network } = useParams();
-  const { selectedNetwork, isEvm } = useNetwork();
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const { isEvm, isFpass } = useNetwork();
 
   const resEvm = useWithdrawLiquidityEvm({
     poolId: id,
     tokens: tokens?.map(t => t?.address ?? '') ?? [],
-    amount: parseUnits((amount || '0').toString(), TOKEN_DECIMAL[currentNetwork]),
+    amount: amount ?? BigInt(0),
+  });
+
+  const resFpass = useWithdrawLiquidityFpass({
+    poolId: id,
+    tokens: tokens?.map(t => t?.address ?? '') ?? [],
+    amount: amount ?? BigInt(0),
   });
 
   const resXrp = useWithdrawLiquidityXrp({
@@ -47,7 +48,7 @@ export const useWithdrawLiquidity = ({ id, tokens, amount }: Props) => {
     },
   });
 
-  return isEvm ? resEvm : resXrp;
+  return isFpass ? resFpass : isEvm ? resEvm : resXrp;
 };
 
 interface UseWithdrawTokenAmounts {

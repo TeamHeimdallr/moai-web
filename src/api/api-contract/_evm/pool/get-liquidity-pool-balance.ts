@@ -31,13 +31,13 @@ interface UseLiquidityPoolBalance {
   id: Address;
 }
 export const useLiquidityPoolBalance = ({ id }: UseLiquidityPoolBalance) => {
-  const { selectedNetwork } = useNetwork();
+  const { selectedNetwork, isFpass } = useNetwork();
   const { network } = useParams();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
-  const { evm } = useConnectedWallet();
-  const { address: walletAddress } = evm;
+  const { evm, fpass } = useConnectedWallet();
+  const { address: walletAddress } = isFpass ? fpass : evm;
 
   const { getTokenPrice } = useTokenPrice();
 
