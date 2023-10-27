@@ -144,5 +144,7 @@ export const useTableTotalProvision = (id: string) => {
   return {
     columns,
     data: tableData,
+
+    filteredData,
   };
 };
