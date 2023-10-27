@@ -5,7 +5,7 @@ import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-p
 
 import { IconLink } from '~/assets/icons';
 
-import { SCANNER_URL } from '~/constants';
+import { SCANNER_URL, TOKEN_IMAGE_MAPPER } from '~/constants';
 
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
@@ -30,8 +30,19 @@ export const DetailHeader = () => {
 
   return (
     <HeaderWrapper>
-      {/* TODO: change title */}
-      <Title>{`${tokens?.[0]}-${tokens?.[1]} Pool`}</Title>
+      <TitleWrapper>
+        <BadgeWrapper style={{ width: tokens.length * 28 + 12 }}>
+          {tokens.map((token, idx) => {
+            return (
+              <Badge key={token + idx} style={{ left: idx * 28 }}>
+                <Image src={TOKEN_IMAGE_MAPPER[token]} />
+              </Badge>
+            );
+          })}
+        </BadgeWrapper>
+        <Title>{`${tokens?.[0]}/${tokens?.[1]}`}</Title>
+      </TitleWrapper>
+
       <TokenWrapper>
         {compositions?.map((composition, i) => (
           <Token
@@ -57,8 +68,19 @@ export const DetailHeader = () => {
 const HeaderWrapper = tw.div`
   flex flex-col gap-12 gap-12
 `;
+const TitleWrapper = tw.div`flex inline-flex gap-16`;
+const BadgeWrapper = tw.div`
+  flex inline-flex items-center relative h-40
+`;
+const Badge = tw.div`
+  w-40 h-40 absolute flex-center
+`;
+const Image = tw.img`
+  w-40 h-40 object-cover flex-center
+`;
+
 const Title = tw.div`
-  font-b-28 text-neutral-100
+  right-0 font-b-28 text-neutral-100
 `;
 const TokenWrapper = tw.div`
   flex gap-8 items-center
