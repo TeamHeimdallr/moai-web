@@ -11,7 +11,6 @@ import { ButtonPrimarySmall } from '~/components/buttons/primary';
 
 import { formatNumber } from '~/utils';
 
-// TODO: focus 이슈 수정
 type OmitType = 'type' | 'onChange' | 'onBlur';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   balance?: number;
@@ -26,6 +25,8 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   defaultValue?: number;
 
   focus?: boolean;
+  blured?: boolean;
+  blurAll?: (focused: boolean) => void;
 
   maxButton?: boolean;
   slider?: boolean;
@@ -49,6 +50,8 @@ export const InputNumber = ({
   value,
   handleChange,
   handleTokenClick,
+  blured,
+  blurAll,
 
   name = '',
   control,
@@ -68,9 +71,11 @@ export const InputNumber = ({
 
   useEffect(() => {
     if (!focus) return;
-    if (!handledValue) setFocus(false);
-    else setFocus(handledValue > 0);
-  }, [handledValue, focus]);
+    if (!handledValue || blured) setFocus(false);
+    else {
+      setFocus(handledValue > 0);
+    }
+  }, [handledValue, focus, blured]);
 
   useEffect(() => {
     setValue?.(name ?? '', Number(value || 0), {
@@ -113,11 +118,15 @@ export const InputNumber = ({
                   onValueChange={values => onValueChange(values.floatValue)}
                   customInput={CustomInput}
                   onFocus={() => {
-                    if (focus) setFocus(true);
+                    if (focus) {
+                      setFocus(true);
+                      blurAll?.(false);
+                    }
                   }}
                   onBlur={() => {
                     onBlur();
                     setFocus(false);
+                    blurAll?.(true);
                   }}
                   {...rest}
                 />

@@ -146,6 +146,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
       return sum + inputValue * tokenPrice;
     }, 0) ?? 0;
+  const [blured, blurAll] = useState(false);
 
   // TODO : it must be fixed if weight is not 50:50
   const totalValueMaxed =
@@ -197,6 +198,8 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
                     setValue={setValue}
                     formState={formState}
                     maxButton={true}
+                    blurAll={blurAll}
+                    blured={blured}
                   />
                 );
               })}
