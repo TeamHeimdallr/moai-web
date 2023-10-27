@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -18,12 +18,12 @@ interface Props {
 export const NetworkAlertPopup = ({ onClickButton }: Props) => {
   const navigate = useNavigate();
   const { close } = usePopup(POPUP_ID.NETWORK_ALERT);
-  const isDetailPage = window.location.pathname.includes('pools');
-  const poolText = isDetailPage ? 'network' : "pool's network";
+  const { network, id } = useParams();
+  const poolText = network && id ? 'network' : "pool's network";
 
   const handleClickSwitchButton = () => {
     onClickButton();
-    isDetailPage && navigate('/');
+    network && id && navigate('/');
     close();
   };
   return (
