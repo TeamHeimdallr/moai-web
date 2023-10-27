@@ -4,17 +4,22 @@ import { useOnClickOutside } from 'usehooks-ts';
 
 import { NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
 
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { NETWORK } from '~/types';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { ButtonDropdown } from '../buttons/dropdown';
 import { DropdownList } from '../dropdown/dropdown-list';
+import NetworkAlertPopup from '../popup/network-alert';
 
 export const NetworkSelection = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [opened, open] = useState(false);
 
   const { selectedNetwork, selectNetwork } = useNetwork();
+  const [targetNetwork, setTargetNetwork] = useState<NETWORK>(selectedNetwork);
+
+  const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
 
   const toggle = () => open(!opened);
 
@@ -24,7 +29,8 @@ export const NetworkSelection = () => {
     NETWORK_SELECT.find(({ network }) => network === selectedNetwork) || NETWORK_SELECT[0];
 
   const handleSelect = (network: NETWORK) => {
-    selectNetwork(network);
+    setTargetNetwork(network);
+    if (network !== selectedNetwork) popupOpen();
     open(false);
   };
 
@@ -61,6 +67,7 @@ export const NetworkSelection = () => {
           </ListOuterWrapper>
         )}
       </Wrapper>
+      {popupOpened && <NetworkAlertPopup onClickButton={() => selectNetwork(targetNetwork)} />}
     </>
   );
 };

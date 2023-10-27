@@ -63,6 +63,7 @@ export const LiquidityPoolLayout = () => {
   // useEffect for not showing toast popup when first mounted
   useEffect(() => {
     if (!isMounted.current) {
+      setShowAllPools(false);
       isMounted.current = true;
       return;
     }
@@ -72,6 +73,7 @@ export const LiquidityPoolLayout = () => {
         setShowToastPopup(false);
       }, 3000);
     }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showAllPools]);
 
   return (
