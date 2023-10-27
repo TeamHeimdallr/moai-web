@@ -124,13 +124,13 @@ export const useLiquidityPoolBalance = ({ id }: UseLiquidityPoolBalance) => {
     formattedValue: '$' + formatNumber(poolTotalValue, 2),
     formattedVolume: '$' + formatNumber(poolVolume, 2),
     formattedApr: formatNumber(apr, 2) + '%',
-    formattedFees: '$' + formatNumber(poolVolume * 0.003, 2),
+    formattedFees: '0.3%',
 
     balance: poolTotalBalance,
     value: poolTotalValue,
     volume: poolVolume,
     apr: apr,
-    fees: poolVolume * 0.003,
+    fees: 0.003,
   };
 
   return {
