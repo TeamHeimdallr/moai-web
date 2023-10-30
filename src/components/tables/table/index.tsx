@@ -43,7 +43,7 @@ export const Table = <T extends object>({
   });
 
   return (
-    <StyledTable>
+    <StyledTable type={type}>
       <Header>
         {table.getHeaderGroups().map((headerGroup, i) => (
           <HeaderInnerWrapper key={headerGroup.id + i} type={type}>
@@ -94,10 +94,13 @@ export const Table = <T extends object>({
   );
 };
 
-const StyledTable = tw.div`
-  w-full bg-neutral-10 rounded-12 flex flex-col
-`;
-
+interface TypeProps {
+  type?: 'poolWithChain' | 'poolWithoutChain' | 'provision' | 'swap';
+}
+const StyledTable = styled.div<TypeProps>(({ type }) => [
+  tw`w-full bg-neutral-10 rounded-12 flex flex-col`,
+  (type === 'provision' || type === 'swap') && tw`bg-neutral-15`,
+]);
 const Header = tw.div`
   px-24 py-20 items-center font-m-16 text-neutral-80
 `;
@@ -106,11 +109,7 @@ const Body = tw.div`
   flex flex-col items-center font-r-16 text-neutral-100 
 `;
 
-interface THProps {
-  type?: 'poolWithChain' | 'poolWithoutChain' | 'provision' | 'swap';
-}
-
-const HeaderInnerWrapper = styled.div<THProps>(({ type }) => [
+const HeaderInnerWrapper = styled.div<TypeProps>(({ type }) => [
   tw`grid w-full h-full gap-16`,
   type === 'poolWithChain'
     ? tw`grid-cols-[2fr 1fr 1fr 1fr 1fr]`
@@ -132,7 +131,7 @@ const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, type }) => [
     ? tw`grid-cols-[2fr 1fr 1fr 1fr 1fr]`
     : type === 'poolWithoutChain'
     ? tw`grid-cols-[2fr 1fr 1fr 1fr]`
-    : tw`grid-cols-[2fr 3fr 2fr 2fr]`,
+    : tw`grid-cols-[2fr 3fr 2fr 2fr] hover:(bg-neutral-20)`,
 ]);
 
 const Divider = tw.div`
