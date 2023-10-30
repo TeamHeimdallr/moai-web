@@ -1,6 +1,9 @@
-import { useEffect } from 'react';
-import tw from 'twin.macro';
+import { useState } from 'react';
+import tw, { css, styled } from 'twin.macro';
 
+import { IconDown } from '~/assets/icons';
+
+import { ButtonIconLarge } from '~/components/buttons';
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
 
@@ -18,33 +21,48 @@ export const PoolLiquidityProvisions = ({ pool }: Props) => {
   const { evm, xrp } = useConnectedWallet();
   const address = evm?.address || xrp?.address;
 
-  const tabs = address
-    ? [
-        { key: 'total-provision', name: 'All liquidity provision' },
-        { key: 'my-provision', name: 'My liquidity' },
-      ]
-    : [{ key: 'total-provision', name: 'All liquidity provision' }];
+  const [opened, open] = useState(false);
 
-  const { data, columns } = useTableTotalProvision(pool.id);
-
-  useEffect(() => {
-    if (!address) selectTab('total-provision');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
+  const tabs = [
+    { key: 'total-provision', name: 'All liquidity provision' },
+    { key: 'my-provision', name: 'My liquidity' },
+  ];
+  const { data, columns, filteredData } = useTableTotalProvision(pool.id);
+  const hasLiquidity = filteredData.filter(data => data.liquidityProvider === address).length > 0;
 
   return (
-    <Wrapper>
-      <Title>Liquidity Provision</Title>
-      <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />
-      <Table data={data} columns={columns} />
+    <Wrapper opened={opened}>
+      <TitleWrapper>
+        <Title>Liquidity Provision</Title>
+        <Icon opened={opened} onClick={() => open(prev => !prev)}>
+          <ButtonIconLarge icon={<IconDown />} />
+        </Icon>
+      </TitleWrapper>
+      {opened && (
+        <>
+          {hasLiquidity && <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />}
+          <Table data={data} columns={columns} />
+        </>
+      )}
     </Wrapper>
   );
 };
 
-const Wrapper = tw.div`
-  flex flex-col gap-24
-`;
-
+interface DivProps {
+  opened?: boolean;
+}
+const Wrapper = styled.div<DivProps>(({ opened }) => [
+  opened ? tw`pb-24` : tw`pb-20`,
+  tw`flex flex-col gap-24 bg-neutral-10 rounded-12 px-24`,
+]);
+const TitleWrapper = tw.div`flex justify-between pt-20 items-center`;
 const Title = tw.div`
   font-b-20 text-neutral-100
 `;
+
+const Icon = styled.div<DivProps>(({ opened }) => [
+  tw`p-2 transition-transform flex-center clickable`,
+  css`
+    transform: rotate(${opened ? '-180deg' : '0deg'});
+  `,
+]);

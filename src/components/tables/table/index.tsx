@@ -88,7 +88,7 @@ export const Table = <T extends object>({
 };
 
 const StyledTable = tw.div`
-  w-full bg-neutral-10 rounded-10 flex flex-col
+  w-full bg-neutral-15 rounded-12 flex flex-col
 `;
 
 const Header = tw.div`

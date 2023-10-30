@@ -35,5 +35,5 @@ export const DetailLeft = () => {
 };
 
 const Wrapper = tw.div`
-  w-full flex flex-col gap-80
+  w-full flex flex-col gap-24
 `;

@@ -124,6 +124,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
   const isValid =
     tokens
+      ?.filter(token => token.balance)
       ?.map((token, i) => {
         const currentValue = getInputValue(token.symbol);
         const isFormError = formState?.errors?.[`input${i + 1}`] !== undefined;
