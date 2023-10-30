@@ -36,7 +36,7 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
     data: trustLines,
     refetch,
   } = useQuery([...QUERY_KEYS.TOKEN.GET_TRUST_LINES, address], getTrustLines, {
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
     enabled: !!client && isConnected && isXrp,
   });
 
@@ -51,7 +51,7 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
     LimitAmount: {
       currency,
       issuer,
-      value: (Number(amount) + Number(line?.balance ?? 0)).toFixed(6),
+      value: (Number(amount) + Number(line?.balance ?? 0) + 1).toFixed(6),
     },
   } as TrustSet;
 
