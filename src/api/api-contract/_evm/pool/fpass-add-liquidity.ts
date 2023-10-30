@@ -33,7 +33,7 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
   const { fpass } = useConnectedWallet();
   const { isConnected, address: walletAddress, signer } = fpass;
 
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isFpass } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const chainId = useNetworkId(currentNetwork);
@@ -56,21 +56,23 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
   // TODO: connect to server. get vault address according to network and pool id
   const vault = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
 
-  const encodedData = encodeFunctionData({
-    abi: BALANCER_VAULT_ABI,
-    functionName: 'joinPool',
-    args: [
-      poolId,
-      walletAddress,
-      walletAddress,
-      [
-        sortedTokens,
-        sortedAmountsIn,
-        WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
-        false,
-      ],
-    ],
-  });
+  const encodedData = isFpass
+    ? encodeFunctionData({
+        abi: BALANCER_VAULT_ABI,
+        functionName: 'joinPool',
+        args: [
+          poolId,
+          walletAddress,
+          walletAddress,
+          [
+            sortedTokens,
+            sortedAmountsIn,
+            WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+            false,
+          ],
+        ],
+      })
+    : '0x0';
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: walletAddress,
@@ -81,7 +83,7 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
     chainId,
     value: BigInt(0),
     args: [1, vault, BigInt(0), encodedData],
-    enabled: enabled && isConnected && isEvm && !!walletAddress,
+    enabled: enabled && isConnected && isFpass && !!walletAddress,
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);
@@ -92,11 +94,11 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
     data: txData,
   } = useWaitForTransaction({
     hash: data?.hash,
-    enabled: !!data?.hash && isEvm,
+    enabled: !!data?.hash && isFpass,
   });
 
   const getBlockTimestamp = async () => {
-    if (!txData || !txData.blockNumber || !isEvm) return;
+    if (!txData || !txData.blockNumber || !isFpass) return;
 
     const { timestamp } = await publicClient.getBlock({ blockNumber: txData.blockNumber });
     setBlockTimestamp(Number(timestamp) * 1000);
