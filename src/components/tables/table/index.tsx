@@ -13,6 +13,7 @@ interface ReactTableProps<T extends object> {
   emptyText?: string;
   hasMore?: boolean;
   isLoading?: boolean;
+  type: 'poolWithChain' | 'poolWithoutChain' | 'provision' | 'swap';
 
   handleMoreClick?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,6 +27,8 @@ export const Table = <T extends object>({
   emptyText,
   hasMore,
   isLoading,
+
+  type,
 
   handleMoreClick,
   handleRowClick,
@@ -43,7 +46,7 @@ export const Table = <T extends object>({
     <StyledTable>
       <Header>
         {table.getHeaderGroups().map((headerGroup, i) => (
-          <HeaderInnerWrapper key={headerGroup.id + i}>
+          <HeaderInnerWrapper key={headerGroup.id + i} type={type}>
             {headerGroup.headers.map(header => (
               <Fragment key={header.id}>
                 {header.isPlaceholder
@@ -59,22 +62,26 @@ export const Table = <T extends object>({
         <EmptyText>{emptyText ?? 'Empty table'}</EmptyText>
       ) : (
         <Body>
-          {table.getRowModel().rows.map((row, i) => (
-            <BodyInnerWrapper
-              key={row.id + i}
-              rounded={!hasMore && !isLoading}
-              onClick={() => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                handleRowClick?.(row.getValue('meta'));
-              }}
-            >
-              {row.getVisibleCells().map((cell, i) => (
-                <Fragment key={cell.id + i}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </Fragment>
-              ))}
-            </BodyInnerWrapper>
-          ))}
+          {table.getRowModel().rows.map(
+            (row, i) =>
+              row && (
+                <BodyInnerWrapper
+                  key={row.id + i}
+                  type={type}
+                  rounded={!hasMore && !isLoading}
+                  onClick={() => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    handleRowClick?.(row.getValue('meta'));
+                  }}
+                >
+                  {row.getVisibleCells().map((cell, i) => (
+                    <Fragment key={cell.id + i}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </Fragment>
+                  ))}
+                </BodyInnerWrapper>
+              )
+          )}
           {hasMore && (
             <More onClick={handleMoreClick}>
               Load more <IconDown />
@@ -88,30 +95,44 @@ export const Table = <T extends object>({
 };
 
 const StyledTable = tw.div`
-  w-full bg-neutral-15 rounded-12 flex flex-col
+  w-full bg-neutral-10 rounded-12 flex flex-col
 `;
 
 const Header = tw.div`
-  flex gap-16 px-24 py-20 items-center font-m-16 text-neutral-80
+  px-24 py-20 items-center font-m-16 text-neutral-80
 `;
 
 const Body = tw.div`
-  flex flex-col items-center font-r-16 text-neutral-100
+  flex flex-col items-center font-r-16 text-neutral-100 
 `;
 
-const HeaderInnerWrapper = tw.div`
-  flex w-full h-full gap-16
-`;
+interface THProps {
+  type?: 'poolWithChain' | 'poolWithoutChain' | 'provision' | 'swap';
+}
+
+const HeaderInnerWrapper = styled.div<THProps>(({ type }) => [
+  tw`grid w-full h-full gap-16`,
+  type === 'poolWithChain'
+    ? tw`grid-cols-[2fr 1fr 1fr 1fr 1fr]`
+    : type === 'poolWithoutChain'
+    ? tw`grid-cols-[2fr 1fr 1fr 1fr]`
+    : tw`grid-cols-[2fr 3fr 2fr 2fr]`,
+]);
 
 interface BTRProps {
   rounded?: boolean;
+  type?: 'poolWithChain' | 'poolWithoutChain' | 'provision' | 'swap';
 }
-const BodyInnerWrapper = styled.div<BTRProps>(({ rounded }) => [
+const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, type }) => [
   tw`
-    flex w-full h-full px-24 py-20 clickable gap-16
-    hover:(bg-neutral-15)
+    grid w-full h-full px-24 py-20 clickable gap-16 hover:bg-neutral-15
   `,
   rounded && tw`last:(rounded-b-10)`,
+  type === 'poolWithChain'
+    ? tw`grid-cols-[2fr 1fr 1fr 1fr 1fr]`
+    : type === 'poolWithoutChain'
+    ? tw`grid-cols-[2fr 1fr 1fr 1fr]`
+    : tw`grid-cols-[2fr 3fr 2fr 2fr]`,
 ]);
 
 const Divider = tw.div`
