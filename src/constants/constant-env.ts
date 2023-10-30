@@ -19,3 +19,5 @@ export const BASE_URL = IS_MAINNET
   : IS_DEVNET
   ? 'https://app-devnet.moai-finance.xyz'
   : 'http://localhost:3000';
+
+export const API_URL = IS_MAINNET ? '' : IS_TESTNET ? '' : IS_DEVNET ? '' : 'http://localhost:8080';
