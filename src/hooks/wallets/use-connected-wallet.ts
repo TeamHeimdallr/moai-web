@@ -5,6 +5,7 @@ import {
   submitTransaction as gemSubmitTransaction,
   SubmitTransactionResponse,
 } from '@gemwallet/api';
+import { zeroAddress } from 'viem';
 import { Transaction } from 'xrpl';
 
 import { truncateAddress } from '~/utils/util-string';
@@ -95,8 +96,8 @@ export const useConnectedWallet = (): UseConnectedWallet => {
     connect: connectEvm,
     disconnect: disconnectEvm,
     connectedConnector: connectedEvmConnector,
-    address: data,
-    truncatedAddress: truncateAddress(data),
+    address: data === zeroAddress ? '' : data,
+    truncatedAddress: data === zeroAddress ? '' : truncateAddress(data),
     signer: evmAddress,
   };
 

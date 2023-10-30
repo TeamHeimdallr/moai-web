@@ -8,20 +8,26 @@ import { TOKEN_IMAGE_MAPPER } from '~/constants';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
 
+import { usePopup } from '~/hooks/components';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useRequirePrarams } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber } from '~/utils/util-number';
-import { IToken } from '~/types';
+import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
+import { IToken, POPUP_ID } from '~/types';
 
 export const UserPoolBalances = () => {
   const navigate = useNavigate();
+  const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { setWalletType } = useWalletTypeStore();
 
   const { network, id } = useParams();
   useRequirePrarams([!!id, !!network], () => navigate(-1));
+  const { isFpass, isEvm } = useNetwork();
 
-  const { evm, xrp } = useConnectedWallet();
+  const { evm, xrp, fpass } = useConnectedWallet();
 
-  const address = evm.address || xrp.address;
+  const address = isFpass ? fpass.address : isEvm ? evm.address : xrp.address;
 
   const { pool, lpTokenBalance } = useLiquidityPoolBalance(id ?? '');
   const { compositions, lpTokenTotalSupply } = pool;
@@ -72,11 +78,32 @@ export const UserPoolBalances = () => {
       </TokenLists>
       <Footer>
         <ButtonWrapper>
-          <ButtonPrimaryLarge
-            text="Add liquidity"
-            onClick={handleAddLiquidity}
-            disabled={!address}
-          />
+          {address ? (
+            <ButtonPrimaryLarge
+              text="Add liquidity"
+              onClick={handleAddLiquidity}
+              disabled={!address}
+            />
+          ) : isFpass && !fpass.address && evm.address ? (
+            <ButtonPrimaryLarge
+              style={{ padding: '9px 24px' }}
+              text="Create Futurepass"
+              isLoading={!!opened}
+              onClick={() => {
+                window.open('https://futurepass.futureverse.app/');
+              }}
+            />
+          ) : (
+            <ButtonPrimaryLarge
+              style={{ padding: '9px 24px' }}
+              text="Connect wallet"
+              isLoading={!!opened}
+              onClick={() => {
+                setWalletType({ xrpl: !isEvm, evm: isEvm });
+                open();
+              }}
+            />
+          )}
           {totalBalance > 0 && (
             <ButtonPrimaryLarge
               buttonType="outlined"
