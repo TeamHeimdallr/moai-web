@@ -19,6 +19,8 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { formatNumber } from '~/utils';
 import { IPool, IToken, POPUP_ID } from '~/types';
 
+import { useHandleInput } from '../hooks/contexts/use-handle-input';
+
 import { AddLiquidityPopup } from './add-liquidity-popup';
 
 interface InputFormState {
@@ -88,64 +90,8 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
   // useOnClickOutside([ref, iconRef], () => open(false));
 
-  const handleTotalMax = () => {
-    if (!isXrp) {
-      setInputValue1(tokens?.[0]?.balance ?? 0);
-      setInputValue2(tokens?.[1]?.balance ?? 0);
-      return;
-    }
-    const criteria = tokens.reduce((max, cur) =>
-      (max?.value ?? 0) < (cur?.value ?? 0) ? max : cur
-    );
-
-    const remainToken = tokens.filter(t => t.symbol !== criteria.symbol)?.[0];
-    const remainTokenPrice = remainToken?.price ?? 0;
-    const expectedRemainToken = remainTokenPrice ? (criteria?.value ?? 0) / remainTokenPrice : 0;
-
-    if (criteria.symbol === tokens?.[0]?.symbol) {
-      setInputValue1(criteria?.balance ?? 0);
-      setInputValue2(expectedRemainToken);
-    }
-    if (criteria.symbol === tokens?.[1]?.symbol) {
-      setInputValue1(expectedRemainToken);
-      setInputValue2(criteria?.balance ?? 0);
-    }
-  };
-  const handleChange = (token: IToken, value: number | undefined, idx: number) => {
-    if (!isXrp) {
-      if (idx === 0) setInputValue1(value ?? 0);
-      else setInputValue2(value ?? 0);
-      return;
-    }
-
-    const remainTokenPrice =
-      getTokenPrice(tokens.filter(t => t.symbol !== token.symbol)?.[0]?.symbol) ?? 0;
-    const currentTokenTotalValue = (value || 0) * (getTokenPrice(token.symbol) || 0);
-    // TODO : it must be fixed if weight is not 50:50
-    const expectedRemainToken = remainTokenPrice ? currentTokenTotalValue / remainTokenPrice : 0;
-    if (idx === 0) {
-      setInputValue1(value ?? 0);
-      setInputValue2(expectedRemainToken ?? 0);
-    }
-    if (idx === 1) {
-      setInputValue1(expectedRemainToken ?? 0);
-      setInputValue2(value ?? 0);
-    }
-  };
-
-  const isValid =
-    ((isXrp ? tokens?.filter(token => token.balance)?.length === tokens?.length : true) &&
-      tokens
-        ?.filter(token => token.balance)
-        ?.map((token, i) => {
-          const currentValue = getInputValue(token.symbol);
-          const isFormError = formState?.errors?.[`input${i + 1}`] !== undefined;
-
-          if (isFormError) return false;
-          return (token?.balance ?? 0) >= currentValue;
-        })
-        ?.every(v => v)) ||
-    false;
+  const { handleChange, handleTotalMax, isValid, totalValueMaxed, handleTotalMaxAuto } =
+    useHandleInput(tokens, setInputValue1, setInputValue2, getInputValue, formState);
 
   const tokenInputs =
     tokens?.map(token => ({
@@ -160,43 +106,14 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
       return sum + inputValue * tokenPrice;
     }, 0) ?? 0;
-  const totalValueMaxed = !isXrp
-    ? tokens.reduce((acc, cur) => acc + (cur?.value ?? 0), 0) === totalValue
-    : (tokens.reduce(
-        (max, cur) => ((max?.value ?? 0) < (cur?.value ?? 0) ? max : cur),
-        tokens?.[0] ?? {}
-      )?.value ?? 0) *
-        2 ===
-      totalValue;
+
   const alertMessage = {
     title: 'Insufficient balance',
     description:
       'One or either token balance is insufficient to add liquidity. You need both tokens in order to add liqudiity.',
   };
-  const optimize = () => {
-    if (isXrp) return;
-    const criteria = tokens.reduce((max, cur) =>
-      (max?.value ?? 0) < (cur?.value ?? 0) ? max : cur
-    );
-
-    const remainToken = tokens.filter(t => t.symbol !== criteria.symbol)?.[0];
-    const remainTokenPrice = remainToken?.price ?? 0;
-    const expectedRemainToken = remainTokenPrice ? (criteria?.value ?? 0) / remainTokenPrice : 0;
-
-    if (criteria.symbol === tokens?.[0]?.symbol) {
-      setInputValue1(criteria?.balance ?? 0);
-      setInputValue2(expectedRemainToken);
-    }
-    if (criteria.symbol === tokens?.[1]?.symbol) {
-      setInputValue1(expectedRemainToken);
-      setInputValue2(criteria?.balance ?? 0);
-    }
-
-    blurAll(false);
-  };
 
   const [blured, blurAll] = useState(false);
-  console.log(!isXrp);
 
   return (
     <Wrapper>
@@ -231,7 +148,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
                   tokenName={token.symbol}
                   tokenValue={tokenValue}
                   balance={token.balance}
-                  handleChange={val => handleChange(token, val, idx)}
+                  handleChange={value => handleChange({ token, value, idx })}
                   value={getInputValue(token.symbol)}
                   slider={getInputValue(token.symbol) > 0}
                   name={`input${idx + 1}`}
@@ -265,7 +182,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
           <PriceImpact error={priceImpactRaw >= 1}>
             {`Price impact  ${priceImpact}%`}
             <ButtonWrapper>
-              <ButtonPrimarySmall disabled={isXrp} text={'Optimize'} onClick={optimize} />
+              <ButtonPrimarySmall disabled={isXrp} text={'Optimize'} onClick={handleTotalMaxAuto} />
             </ButtonWrapper>
           </PriceImpact>
         </Total>
