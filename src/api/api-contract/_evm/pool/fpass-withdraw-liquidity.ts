@@ -55,21 +55,23 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
   // TODO: connect to server. get vault address according to network and pool id
   const vault = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
 
-  const encodedData = encodeFunctionData({
-    abi: BALANCER_VAULT_ABI,
-    functionName: 'exitPool',
-    args: [
-      poolId,
-      walletAddress,
-      walletAddress,
-      [
-        sortedTokens,
-        tokens.map(() => 0n),
-        WeightedPoolEncoder.exitExactBPTInForTokensOut(amount),
-        false,
-      ],
-    ],
-  });
+  const encodedData = isFpass
+    ? encodeFunctionData({
+        abi: BALANCER_VAULT_ABI,
+        functionName: 'exitPool',
+        args: [
+          poolId,
+          walletAddress,
+          walletAddress,
+          [
+            sortedTokens,
+            tokens.map(() => 0n),
+            WeightedPoolEncoder.exitExactBPTInForTokensOut(amount),
+            false,
+          ],
+        ],
+      })
+    : '0x0';
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: walletAddress,

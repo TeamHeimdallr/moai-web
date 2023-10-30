@@ -44,11 +44,13 @@ export const useSwap = ({
 
   const contractAddress = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
 
-  const encodedData = encodeFunctionData({
-    abi: BALANCER_VAULT_ABI,
-    functionName: 'swap',
-    args: [singleSwap, fundManagement, limit, deadline],
-  });
+  const encodedData = isFpass
+    ? encodeFunctionData({
+        abi: BALANCER_VAULT_ABI,
+        functionName: 'swap',
+        args: [singleSwap, fundManagement, limit, deadline],
+      })
+    : '0x0';
 
   const {
     isLoading: prepareLoading,

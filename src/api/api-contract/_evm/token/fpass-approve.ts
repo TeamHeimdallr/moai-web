@@ -39,7 +39,8 @@ export const useApprove = ({
   const { fpass } = useConnectedWallet();
   const { isConnected, address: walletAddress, signer } = fpass;
 
-  const internalEnabled = enabled && !!walletAddress && !!spender && isEvm && isFpass;
+  const internalEnabled =
+    enabled && !!walletAddress && !!spender && isEvm && isFpass && !!tokenAddress;
 
   const { isLoading: isReadLoading, refetch } = useContractRead({
     address: tokenAddress,
@@ -58,11 +59,13 @@ export const useApprove = ({
     onError: () => setAllowance(false),
   });
 
-  const encodedData = encodeFunctionData({
-    abi: ERC20_TOKEN_ABI,
-    functionName: 'approve',
-    args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
-  });
+  const encodedData = internalEnabled
+    ? encodeFunctionData({
+        abi: ERC20_TOKEN_ABI,
+        functionName: 'approve',
+        args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
+      })
+    : '0x0';
 
   const { isLoading: isPrepareLoading, config } = usePrepareContractWrite({
     address: walletAddress,
