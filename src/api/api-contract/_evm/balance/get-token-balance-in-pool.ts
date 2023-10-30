@@ -14,14 +14,14 @@ import { useTokenPrice } from '../token/price';
 // TODO: change to get all balances. using fetchBalance in wagmi/core
 export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
   const { network } = useParams();
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
-  const { evm } = useConnectedWallet();
+  const { evm, fpass } = useConnectedWallet();
   const { getTokenPrice } = useTokenPrice();
 
-  const { address } = evm;
+  const { address } = isFpass ? fpass : evm;
 
   const tokenAddress =
     currentNetwork === NETWORK.THE_ROOT_NETWORK

@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { parseUnits } from 'viem';
 import { Address } from 'wagmi';
 
+import { useSwap as useSwapFpass } from '~/api/api-contract/_evm/swap/fpass-swap';
 import { useSwap as useSwapEvm } from '~/api/api-contract/_evm/swap/swap';
 import { useSwap as useSwapXrp } from '~/api/api-contract/_xrpl/swap/swap';
 
@@ -23,12 +24,13 @@ interface Props {
 }
 export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) => {
   const { network } = useParams();
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
-  const { evm } = useConnectedWallet();
+  const { evm, fpass } = useConnectedWallet();
   const evmAddress = evm?.address ?? '';
+  const fpassAddress = fpass?.address ?? '';
 
   const evmFromToken = () => {
     if (currentNetwork !== NETWORK.EVM_SIDECHAIN)
@@ -62,6 +64,18 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
     fundManagement: [evmAddress, false, evmAddress, false],
   });
 
+  const resFpass = useSwapFpass({
+    singleSwap: [
+      id as Address, // pool id
+      SwapKind.GivenIn,
+      evmFromToken(),
+      evmToToken(),
+      parseUnits(`${fromValue ?? 0}`, TOKEN_DECIMAL[currentNetwork]),
+      '0x0',
+    ],
+    fundManagement: [fpassAddress, false, fpassAddress, false],
+  });
+
   const resXrp = useSwapXrp({
     id,
     fromToken,
@@ -70,5 +84,5 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
     toValue: toValue ?? 0,
   });
 
-  return isEvm ? resEvm : resXrp;
+  return isFpass ? resFpass : isEvm ? resEvm : resXrp;
 };

@@ -27,7 +27,9 @@ interface UseConnectedWallet {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     submitTransaction: (tx: any) => Promise<any>;
   };
-  fpass: ConnectedWallet;
+  fpass: ConnectedWallet & {
+    signer: string; // owner
+  };
 }
 export const useConnectedWallet = (): UseConnectedWallet => {
   const {
@@ -95,6 +97,7 @@ export const useConnectedWallet = (): UseConnectedWallet => {
     connectedConnector: connectedEvmConnector,
     address: data,
     truncatedAddress: truncateAddress(data),
+    signer: evmAddress,
   };
 
   return {

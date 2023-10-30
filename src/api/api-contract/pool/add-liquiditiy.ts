@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { parseUnits } from 'viem';
 
 import { useAddLiquidity as useAddLiquidityEvm } from '~/api/api-contract/_evm/pool/add-liquidity';
+import { useAddLiquidity as useAddLiquidityFpass } from '~/api/api-contract/_evm/pool/fpass-add-liquidity';
 import { useAddLiquidity as useAddLiquidityXrp } from '~/api/api-contract/_xrpl/pool/add-liquidity';
 
 import { TOKEN_DECIMAL } from '~/constants';
@@ -22,10 +23,17 @@ interface Props {
 
 export const useAddLiquidity = ({ id, tokens, enabled }: Props) => {
   const { network } = useParams();
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const resEvm = useAddLiquidityEvm({
+    poolId: id,
+    tokens: tokens?.map(t => t?.address ?? '') ?? [],
+    amountsIn: tokens?.map(t => parseUnits(t?.amount || '0', TOKEN_DECIMAL[currentNetwork])) ?? [],
+    enabled,
+  });
+
+  const resFpass = useAddLiquidityFpass({
     poolId: id,
     tokens: tokens?.map(t => t?.address ?? '') ?? [],
     amountsIn: tokens?.map(t => parseUnits(t?.amount || '0', TOKEN_DECIMAL[currentNetwork])) ?? [],
@@ -47,5 +55,5 @@ export const useAddLiquidity = ({ id, tokens, enabled }: Props) => {
     enabled,
   });
 
-  return isEvm ? resEvm : resXrp;
+  return isFpass ? resFpass : isEvm ? resEvm : resXrp;
 };
