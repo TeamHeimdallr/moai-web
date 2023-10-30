@@ -7,6 +7,7 @@ import { XRP_TOKEN_ISSUER } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { useSlippageStore } from '~/states/data';
 
 import { useAmmInfo } from '../amm/get-amm-info';
 
@@ -24,6 +25,7 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
   const { ammExist } = useAmmInfo(id);
   const { xrp } = useConnectedWallet();
   const { address } = xrp;
+  const { slippage } = useSlippageStore();
 
   const amount =
     fromToken === 'XRP'
@@ -42,10 +44,10 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
           DeliverMin: {
             currency: toToken,
             issuer: XRP_TOKEN_ISSUER[toToken],
-            value: (toValue * 0.99).toFixed(6),
+            value: (toValue * (1 - slippage / 100)).toFixed(6),
           },
         }
-      : { DeliverMin: xrpToDrops((toValue * 0.99).toFixed(6)) };
+      : { DeliverMin: xrpToDrops((toValue * (1 - slippage / 100)).toFixed(6)) };
 
   const sendMax =
     fromToken === 'XRP'

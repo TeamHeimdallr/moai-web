@@ -37,7 +37,7 @@ import { SwapArrowDown } from './swap-arrow-down';
 
 export const SwapPopup = () => {
   const { network } = useParams();
-  const { selectedNetwork } = useNetwork();
+  const { selectedNetwork, isEvm } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
@@ -177,7 +177,7 @@ export const SwapPopup = () => {
       )}
       <ButtonPrimaryLarge buttonType="outlined" text="Close" onClick={handleSuccess} />
     </PrimaryButtonWrapper>
-  ) : allowance1 && allowance2 ? (
+  ) : allowance1 && (allowance2 || isEvm) ? (
     <ButtonPrimaryLarge
       text="Confirm swap"
       isLoading={isLoading}
