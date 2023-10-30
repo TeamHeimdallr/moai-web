@@ -11,6 +11,7 @@ import { EVM_TOKEN_ADDRESS, TOKEN_DECIMAL } from '~/constants';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
+import { useSlippageStore } from '~/states/data';
 import { NETWORK, SwapKind } from '~/types';
 
 interface Props {
@@ -25,6 +26,7 @@ interface Props {
 export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const { slippage } = useSlippageStore();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
@@ -62,6 +64,7 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
       '0x0',
     ],
     fundManagement: [evmAddress, false, evmAddress, false],
+    limit: parseUnits(`${(toValue ?? 0) * (1 - slippage / 100)}`, TOKEN_DECIMAL[currentNetwork]),
   });
 
   const resFpass = useSwapFpass({
@@ -74,6 +77,7 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
       '0x0',
     ],
     fundManagement: [fpassAddress, false, fpassAddress, false],
+    limit: parseUnits(`${(toValue ?? 0) * (1 - slippage / 100)}`, TOKEN_DECIMAL[currentNetwork]),
   });
 
   const resXrp = useSwapXrp({

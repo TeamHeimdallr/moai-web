@@ -22,13 +22,13 @@ import { FUTUREPASS_ABI } from '~/abi/futurepass';
 interface Props {
   singleSwap: SwapSingleSwapInput;
   fundManagement: SwapFundManagementInput;
-  limit?: number;
+  limit?: bigint;
   deadline?: number;
 }
 export const useSwap = ({
   singleSwap,
   fundManagement,
-  limit = 10,
+  limit = BigInt(10),
   deadline = 2000000000,
 }: Props) => {
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);

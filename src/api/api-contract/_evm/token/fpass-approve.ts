@@ -82,7 +82,7 @@ export const useApprove = ({
   const { isLoading, isSuccess, writeAsync } = useContractWrite(config);
 
   const allow = async () => {
-    if (!isEvm || !fpass) return;
+    if (!isEvm || !isFpass) return;
 
     await writeAsync?.();
   };

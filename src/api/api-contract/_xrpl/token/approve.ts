@@ -56,7 +56,7 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const setTrustLines = async () => await xrp.submitTransaction({ transaction: txRequest as any });
+  const setTrustLines = async () => await xrp.submitTransaction(txRequest as any);
 
   const { isLoading, isSuccess, mutateAsync } = useMutation(
     QUERY_KEYS.TOKEN.SET_TRUST_LINE,
