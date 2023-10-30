@@ -35,7 +35,7 @@ interface InputFormState {
 }
 export const SwapInputGroup = () => {
   const { network } = useParams();
-  const { selectedNetwork } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
@@ -43,7 +43,7 @@ export const SwapInputGroup = () => {
   const id = EVM_POOL?.[currentNetwork]?.[0]?.id || XRP_AMM?.[0]?.id || '';
 
   const { pool } = useLiquidityPoolBalance(id);
-  const { evm, xrp } = useConnectedWallet();
+  const { evm, xrp, fpass } = useConnectedWallet();
   const { balancesArray } = useTokenBalanceInPool();
   const { getTokenPrice } = useTokenPrice();
 
@@ -85,7 +85,7 @@ export const SwapInputGroup = () => {
   );
   const { opened: swapPopupOpened, open: openSwapPopup } = usePopup(POPUP_ID.SWAP);
 
-  const address = evm?.address || xrp?.address;
+  const address = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
 
   // TODO: fee 하드코딩 제거
   const fee = 0.003;
@@ -181,7 +181,11 @@ export const SwapInputGroup = () => {
           </InputWrapper>
         ) : (
           // TODO: component 수정
-          <Empty>please connect wallet</Empty>
+          <Empty>
+            {isFpass && evm.address && !address
+              ? 'please create futurepass first'
+              : 'please connect wallet'}
+          </Empty>
         )}
         <ButtonPrimaryLarge text="Preview" disabled={!validToSwap} onClick={openSwapPopup} />
       </Wrapper>
