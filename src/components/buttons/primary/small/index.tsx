@@ -8,6 +8,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
 
   isLoading?: boolean;
+  isGrayScale?: boolean;
 }
 
 export const ButtonPrimarySmall = ({ text, isLoading, disabled, ...rest }: Props) => {
@@ -38,17 +39,21 @@ export const ButtonPrimarySmall = ({ text, isLoading, disabled, ...rest }: Props
 
 interface WrapperProps {
   isLoading?: boolean;
+  isGrayScale?: boolean;
 }
-const Wrapper = styled.button<WrapperProps>(({ isLoading }) => [
+const Wrapper = styled.button<WrapperProps>(({ isLoading, isGrayScale }) => [
   tw`
-    gap-6 px-12 py-4 inline-flex-center rounded-8 clickable font-m-12 text-primary-60 relative transition-colors w-full
+    gap-6 px-12 py-4 inline-flex-center rounded-8 clickable font-m-12 relative transition-colors w-full
 
     bg-neutral-10
-    hover:(bg-primary-50 text-neutral-0)
-
+    
     disabled:(bg-neutral-5 text-neutral-40 non-clickable)
     disabled:hover:(bg-neutral-5 text-neutral-40)
   `,
+  isGrayScale
+    ? tw`text-neutral-100 hover:(bg-neutral-100 text-neutral-0)`
+    : tw`text-primary-60 hover:(bg-primary-50 text-neutral-0)`,
+
   isLoading &&
     tw`
       text-transparent bg-primary-60 non-clickable
