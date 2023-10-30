@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { AccountLinesRequest } from 'xrpl';
+import { AccountLinesRequest, TrustSet } from 'xrpl';
 
 import { QUERY_KEYS } from '~/api/utils/query-keys';
 
@@ -53,7 +53,7 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
       issuer,
       value: (Number(amount) + Number(line?.balance ?? 0)).toFixed(6),
     },
-  };
+  } as TrustSet;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setTrustLines = async () => await xrp.submitTransaction(txRequest as any);
