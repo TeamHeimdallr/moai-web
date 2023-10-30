@@ -5,12 +5,11 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   label: string;
   icon?: ReactNode;
 
-  width?: number | 'full';
   align?: 'flex-start' | 'center' | 'flex-end';
 }
-export const TableHeader = ({ label, icon, width, align, ...rest }: Props) => {
+export const TableHeader = ({ label, icon, align, ...rest }: Props) => {
   return (
-    <Wrapper width={width} align={align} {...rest}>
+    <Wrapper align={align} {...rest}>
       {icon}
       {label}
     </Wrapper>
@@ -18,17 +17,10 @@ export const TableHeader = ({ label, icon, width, align, ...rest }: Props) => {
 };
 
 interface WrapperProps {
-  width?: number | 'full';
   align?: 'flex-start' | 'center' | 'flex-end';
 }
-const Wrapper = styled.div<WrapperProps>(({ width, align }) => [
-  tw`flex items-center justify-start flex-shrink-0 gap-6 w-120 font-m-16 text-neutral-80`,
-
-  width === 'full' && tw`flex-1 w-full`,
-  typeof width === 'number' &&
-    css`
-      width: ${width}px;
-    `,
+const Wrapper = styled.div<WrapperProps>(({ align }) => [
+  tw`flex items-center justify-start w-full gap-6 w-120 font-m-16 text-neutral-80`,
 
   align &&
     css`
@@ -36,10 +28,8 @@ const Wrapper = styled.div<WrapperProps>(({ width, align }) => [
     `,
 ]);
 
-export const TableHeaderComposition = () => (
-  <TableHeader label="Composition" width="full" align="flex-start" />
-);
+export const TableHeaderComposition = () => <TableHeader label="Composition" align="flex-start" />;
 
-export const TableHeaderAPR = () => <TableHeader label="APR" width={160} align="flex-end" />;
+export const TableHeaderAPR = () => <TableHeader label="APR" align="flex-end" />;
 
-export const TableHeaderMyAPR = () => <TableHeader label="My APR" width={160} align="flex-end" />;
+export const TableHeaderMyAPR = () => <TableHeader label="My APR" align="flex-end" />;

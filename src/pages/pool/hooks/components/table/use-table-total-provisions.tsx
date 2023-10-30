@@ -94,16 +94,14 @@ export const useTableTotalProvision = (id: string) => {
                 <IconMinus width={20} height={20} fill={COLOR.RED[50]} />
               )
             }
-            width={160}
           />
         ),
         tokens: <TableColumnTokenPair tokens={d.tokens} />,
-        value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
+        value: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
         time: (
           <TableColumnLink
             token={`${elapsedTime(d.time)}`}
             align="flex-end"
-            width={160}
             link={`${SCANNER_URL[currentNetwork]}/transactions/${d.txHash}`}
           />
         ),
@@ -115,17 +113,17 @@ export const useTableTotalProvision = (id: string) => {
     () => [
       { accessorKey: 'id' },
       {
-        header: () => <TableHeader label="Action" width={160} align="flex-start" />,
+        header: () => <TableHeader label="Action" align="flex-start" />,
         cell: row => row.renderValue(),
         accessorKey: 'action',
       },
       {
-        header: () => <TableHeader label="Tokens" width="full" align="flex-start" />,
+        header: () => <TableHeader label="Tokens" align="flex-start" />,
         cell: row => row.renderValue(),
         accessorKey: 'tokens',
       },
       {
-        header: () => <TableHeader label="Value" width={120} align="flex-end" />,
+        header: () => <TableHeader label="Value" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'value',
       },
