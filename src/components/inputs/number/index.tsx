@@ -11,7 +11,7 @@ import { ButtonPrimarySmall } from '~/components/buttons/primary';
 
 import { formatNumber } from '~/utils';
 
-type OmitType = 'type' | 'onChange' | 'onBlur';
+type OmitType = 'type' | 'onChange' | 'onBlur' | 'autoFocus';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   balance?: number;
   handleChange?: (value?: number) => void;
@@ -27,6 +27,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   focus?: boolean;
   blured?: boolean;
   blurAll?: (focused: boolean) => void;
+  autoFocus?: boolean;
 
   maxButton?: boolean;
   slider?: boolean;
@@ -52,6 +53,7 @@ export const InputNumber = ({
   handleTokenClick,
   blured,
   blurAll,
+  autoFocus = false,
 
   name = '',
   control,
@@ -71,11 +73,14 @@ export const InputNumber = ({
 
   useEffect(() => {
     if (!focus) return;
-    if (!handledValue || blured) setFocus(false);
-    else {
+    if (!handledValue || blured) {
+      setFocus(false);
+      return;
+    }
+    if (autoFocus) {
       setFocus(handledValue > 0);
     }
-  }, [handledValue, focus, blured]);
+  }, [handledValue, focus, blured, autoFocus]);
 
   useEffect(() => {
     setValue?.(name ?? '', Number(value || 0), {
@@ -96,6 +101,7 @@ export const InputNumber = ({
         const { onChange, onBlur, name } = field;
 
         const onValueChange = (handledValue?: number) => {
+          setFocus(true);
           onChange(handledValue);
           handleChange?.(handledValue);
         };
@@ -139,7 +145,10 @@ export const InputNumber = ({
                 {maxButton && (
                   <ButtonPrimarySmall
                     text={handledValue === currentBalance ? 'Maxed' : 'Max'}
-                    onClick={() => onValueChange(currentBalance)}
+                    onClick={() => {
+                      onValueChange(currentBalance);
+                      blurAll?.(false);
+                    }}
                     style={{ width: 'auto' }}
                     disabled={handledValue === currentBalance}
                   />
