@@ -90,8 +90,13 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
 
   // useOnClickOutside([ref, iconRef], () => open(false));
 
-  const { handleChange, handleTotalMax, isValid, totalValueMaxed, handleTotalMaxAuto } =
-    useHandleInput(tokens, setInputValue1, setInputValue2, getInputValue, formState);
+  const { handleChange, handleTotalMax, isValid, totalValueMaxed, handleOptimize } = useHandleInput(
+    tokens,
+    setInputValue1,
+    setInputValue2,
+    getInputValue,
+    formState
+  );
 
   const tokenInputs =
     tokens?.map(token => ({
@@ -182,7 +187,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
           <PriceImpact error={priceImpactRaw >= 1}>
             {`Price impact  ${priceImpact}%`}
             <ButtonWrapper>
-              <ButtonPrimarySmall disabled={isXrp} text={'Optimize'} onClick={handleTotalMaxAuto} />
+              <ButtonPrimarySmall disabled={isXrp} text={'Optimize'} onClick={handleOptimize} />
             </ButtonWrapper>
           </PriceImpact>
         </Total>

@@ -1,8 +1,10 @@
 import { FormState } from 'react-hook-form';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import { useTokenPrice } from '~/api/api-contract/token/price';
+import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useRequirePrarams } from '~/hooks/utils';
 import { IToken } from '~/types';
 
 interface Input {
@@ -17,16 +19,21 @@ interface InputFormState {
 }
 
 export const useHandleInput = (
-  tokens: IToken[],
+  myTokens: IToken[],
   setInputValue1: (value: number) => void,
   setInputValue2: (value: number) => void,
   getInputValue: (token: string) => number,
   formState: FormState<InputFormState>
 ) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  useRequirePrarams([!!id], () => navigate(-1));
+  const { pool } = useLiquidityPoolBalance(id ?? '');
+  const tokens = pool.compositions;
+
   const { isXrp } = useNetwork();
-  const { getTokenPrice } = useTokenPrice();
   const totalValue =
-    tokens?.reduce((sum, token) => {
+    myTokens?.reduce((sum, token) => {
       const inputValue = getInputValue(token.symbol) || 0;
       const tokenPrice = token?.price ?? 0;
 
@@ -40,13 +47,13 @@ export const useHandleInput = (
   };
 
   const handleTotalMax = () => {
-    setInputValue1(tokens?.[0]?.balance ?? 0);
-    setInputValue2(tokens?.[1]?.balance ?? 0);
+    setInputValue1(myTokens?.[0]?.balance ?? 0);
+    setInputValue2(myTokens?.[1]?.balance ?? 0);
     return;
   };
 
   const isValid =
-    tokens
+    myTokens
       ?.filter(token => token.balance)
       ?.map((token, i) => {
         const currentValue = getInputValue(token.symbol);
@@ -57,46 +64,47 @@ export const useHandleInput = (
       })
       ?.every(v => v) || false;
 
-  const totalValueMaxed = tokens.reduce((acc, cur) => acc + (cur?.value ?? 0), 0) === totalValue;
+  const totalValueMaxed = myTokens.reduce((acc, cur) => acc + (cur?.value ?? 0), 0) === totalValue;
 
   const handleChangeAuto = (data: Input) => {
     const { token, value, idx } = data;
     if (!token) return;
-    const remainTokenPrice =
-      getTokenPrice(tokens.filter(t => t.symbol !== token.symbol)?.[0]?.symbol) ?? 0;
-    const currentTokenTotalValue = (value || 0) * (getTokenPrice(token.symbol) || 0);
-    const expectedRemainToken = remainTokenPrice ? currentTokenTotalValue / remainTokenPrice : 0;
+    const currnetToken = tokens.filter(t => t.symbol === token.symbol)?.[0];
+    const remainedToken = tokens.filter(t => t.symbol !== token.symbol)?.[0];
+    const expectedRemainedTokenValue =
+      ((remainedToken?.balance ?? 0) * (value ?? 0)) / (currnetToken?.balance ?? 0 ?? 0);
     if (idx === 0) {
       setInputValue1(value ?? 0);
-      setInputValue2(expectedRemainToken ?? 0);
+      setInputValue2(expectedRemainedTokenValue ?? 0);
     }
     if (idx === 1) {
-      setInputValue1(expectedRemainToken ?? 0);
+      setInputValue1(expectedRemainedTokenValue ?? 0);
       setInputValue2(value ?? 0);
     }
   };
-  const handleTotalMaxAuto = () => {
-    const criteria = tokens.reduce((max, cur) =>
+  const handleOptimize = () => {
+    const criteria = myTokens.reduce((max, cur) =>
       (max?.value ?? 0) < (cur?.value ?? 0) ? max : cur
     );
-    const idx = tokens.indexOf(criteria);
+    const idx = myTokens.indexOf(criteria);
     handleChangeAuto({ token: criteria, value: criteria.balance, idx });
   };
 
-  const isValidXrp = tokens?.filter(token => token.balance)?.length === tokens?.length && isValid;
+  const isValidXrp =
+    myTokens?.filter(token => token.balance)?.length === myTokens?.length && isValid;
 
   const totalValueMaxedXrp =
-    (tokens.reduce(
+    (myTokens.reduce(
       (max, cur) => ((max?.value ?? 0) < (cur?.value ?? 0) ? max : cur),
-      tokens?.[0] ?? {}
+      myTokens?.[0] ?? {}
     )?.value ?? 0) *
       2 ===
     totalValue;
 
   return {
-    handleTotalMaxAuto,
+    handleOptimize,
     handleChange: isXrp ? handleChangeAuto : handleChange,
-    handleTotalMax: isXrp ? handleTotalMaxAuto : handleTotalMax,
+    handleTotalMax: isXrp ? handleOptimize : handleTotalMax,
     isValid: isXrp ? isValidXrp : isValid,
     totalValueMaxed: isXrp ? totalValueMaxedXrp : totalValueMaxed,
   };
