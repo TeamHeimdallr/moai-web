@@ -16,7 +16,7 @@ export const Gnb = () => {
           text="Get started"
           buttonType="filled"
           icon={<IconLink />}
-          onClick={() => window.open('https://moai-finance.xyz/')}
+          onClick={() => window.open('https://app.moai-finance.xyz/')}
         />
       </ButtonWrapper>
     </Wrapper>

@@ -8,6 +8,11 @@ export const IS_DEVNET = import.meta.env.VITE_BLOCKCHAIN_ENV === 'devnet';
 export const CHAIN = import.meta.env.VITE_CHAIN_ENV;
 
 /**
+ * @description 랜딩페이지 여부
+ */
+export const IS_LANDING = import.meta.env.VITE_IS_LANDING;
+
+/**
  * @description WEB3 관련 KEY / RPC PROVIDER ENDPOINT
  */
 export const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;

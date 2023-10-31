@@ -36,7 +36,7 @@ export const Contents = () => {
             text="Get started"
             buttonType={'outlined'}
             icon={<IconLink />}
-            onClick={() => window.open('https://moai-finance.xyz/')}
+            onClick={() => window.open('https://app.moai-finance.xyz/')}
           />
         </ButtonWrapper>
       </BottomWrapper>
