@@ -34,7 +34,7 @@ export const AccountDetail = () => {
   const { createFuturepass } = useCreateFuturepass();
 
   const xrpComponent = (
-    <>
+    <AccountWrapper key="xrp">
       {xrp.address ? (
         <Account>
           <Logo>
@@ -72,11 +72,11 @@ export const AccountDetail = () => {
           </IconButton>
         </AccountNotConnected>
       )}
-    </>
+    </AccountWrapper>
   );
 
   const fpassComponent = (
-    <>
+    <AccountWrapper key="fpass">
       {fpass.address && fpass.address !== zeroAddress ? (
         <Account>
           <Logo>
@@ -120,11 +120,11 @@ export const AccountDetail = () => {
           </IconButton>
         </AccountNotConnected>
       )}
-    </>
+    </AccountWrapper>
   );
 
   const evmComponent = (
-    <>
+    <AccountWrapper key="evm">
       {evm.address ? (
         <Account>
           <Logo>
@@ -159,7 +159,7 @@ export const AccountDetail = () => {
           </IconButton>
         </AccountNotConnected>
       )}
-    </>
+    </AccountWrapper>
   );
 
   const components = () => {
@@ -204,7 +204,7 @@ const Wrapper = tw.div`
 const InnerWrapper = tw.div`
   flex-center
 `;
-
+const AccountWrapper = tw.div`w-full`;
 const Panel = tw.div`
   flex flex-col items-start bg-neutral-15 rounded-8
 `;
