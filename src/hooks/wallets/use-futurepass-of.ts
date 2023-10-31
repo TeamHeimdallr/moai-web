@@ -12,7 +12,11 @@ interface Props {
 export const useFuturepassOf = ({ enabled }: Props) => {
   const { address: walletAddress } = useAccount();
 
-  const { data: _data, ...rest } = useContractRead({
+  const {
+    data: _data,
+    refetch,
+    ...rest
+  } = useContractRead({
     address: EVM_CONTRACT_ADDRESS[NETWORK.THE_ROOT_NETWORK].FUTUREPASS_REGISTER,
     abi: FUTUREPASS_REGISTER_ABI,
     functionName: 'futurepassOf',
@@ -23,5 +27,5 @@ export const useFuturepassOf = ({ enabled }: Props) => {
 
   const data = _data as `0x${string}` | undefined;
 
-  return { data, ...rest };
+  return { data, refetch, ...rest };
 };

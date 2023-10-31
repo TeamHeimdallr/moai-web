@@ -2,6 +2,8 @@ import copy from 'copy-to-clipboard';
 import tw from 'twin.macro';
 import { zeroAddress } from 'viem';
 
+import { useCreateFuturepass } from '~/api/api-contract/_evm/substrate/create-futurepass';
+
 import { COLOR } from '~/assets/colors';
 import { IconCopy, IconLogout, IconNext } from '~/assets/icons';
 import {
@@ -29,6 +31,7 @@ export const AccountDetail = () => {
   const { setWalletType } = useWalletTypeStore();
 
   const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { createFuturepass } = useCreateFuturepass();
 
   const xrpComponent = (
     <>
@@ -94,10 +97,10 @@ export const AccountDetail = () => {
         </Account>
       ) : (
         <AccountNotConnected
-          onClick={() => {
+          onClick={async () => {
             if (evm.address) {
-              // TODO: create futurepass
-              window.open('https://futurepass.futureverse.app/');
+              await createFuturepass();
+              fpass.refetch();
             } else {
               setWalletType({ xrpl: false, evm: true });
               openConnectWallet();
@@ -108,7 +111,7 @@ export const AccountDetail = () => {
             <InnerLogo src={imageWalletFuturepass} alt="futurepass" />
           </Logo>
           {evm.address ? (
-            <ConnectText>No Futurepass Found</ConnectText>
+            <ConnectText>Create Futurepass</ConnectText>
           ) : (
             <ConnectText>Connect with Futurepass</ConnectText>
           )}
