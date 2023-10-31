@@ -30,6 +30,7 @@ interface UseConnectedWallet {
   };
   fpass: ConnectedWallet & {
     signer: string; // owner
+    refetch: () => void;
   };
 }
 export const useConnectedWallet = (): UseConnectedWallet => {
@@ -89,7 +90,7 @@ export const useConnectedWallet = (): UseConnectedWallet => {
     truncatedAddress: truncatedEvmAddress,
   };
 
-  const { data } = useFuturepassOf({ enabled: !!evmAddress });
+  const { data, refetch } = useFuturepassOf({ enabled: !!evmAddress });
 
   const fpass = {
     isConnected: isEvmConnected,
@@ -99,6 +100,7 @@ export const useConnectedWallet = (): UseConnectedWallet => {
     address: data === zeroAddress ? '' : data,
     truncatedAddress: data === zeroAddress ? '' : truncateAddress(data),
     signer: evmAddress,
+    refetch,
   };
 
   return {
