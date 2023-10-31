@@ -21,26 +21,26 @@ interface PoolsResponse {
   metadata: {
     // pagination params를 넣어서 호출한 경우
     pagination: {
-      cursor: number;
-      take: number;
-      totalCount: number;
-      totalPage: number;
-      hasNextPage: number;
+      cursor?: number;
+      take?: number;
+      totalCount?: number;
+      totalPage?: number;
+      hasNextPage?: number;
     };
     // sort params를 넣어서 호출한 경우
     sort: {
-      property: string;
-      direction: string;
+      property?: string;
+      direction?: string;
     };
     // filter params를 넣어서 호출한 경우
     filter: {
-      property: string;
-      rule: string;
-      value: string;
+      property?: string;
+      rule?: string;
+      value?: string;
     };
     // token filter params를 넣어서 호출한 경우
-    tokens: string[];
-    totalPoolTokenCount: number;
+    tokens?: string[];
+    totalPoolTokenCount?: number;
   };
 }
 
@@ -56,7 +56,7 @@ interface PoolByIdResponse {
 }
 
 const getPoolsByIdAxios = async (networkAbbr: string, poolId: string) =>
-  (await api.get<PoolByIdResponse>(`/pool/:${networkAbbr}/:${poolId}`)).data;
+  (await api.get<PoolByIdResponse>(`/pool/${networkAbbr}/${poolId}`)).data;
 export const useGetPoolsByIdQuery = (
   networkAbbr: string,
   poolId: string,
