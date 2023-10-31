@@ -29,9 +29,15 @@ export const NetworkSelection = () => {
     NETWORK_SELECT.find(({ network }) => network === selectedNetwork) || NETWORK_SELECT[0];
 
   const handleSelect = (network: NETWORK) => {
-    setTargetNetwork(network);
-    if (network !== selectedNetwork) popupOpen();
     open(false);
+    if (!window.location.href.includes('pools')) {
+      selectNetwork(network);
+      return;
+    }
+    if (network !== selectedNetwork) {
+      setTargetNetwork(network);
+      popupOpen();
+    }
   };
 
   return (
