@@ -97,7 +97,7 @@ export const useConnectedWallet = (): UseConnectedWallet => {
     connect: connectEvm,
     disconnect: disconnectEvm,
     connectedConnector: connectedEvmConnector,
-    address: data === zeroAddress ? '' : data,
+    address: data === zeroAddress ? '' : data ?? '',
     truncatedAddress: data === zeroAddress ? '' : truncateAddress(data),
     signer: evmAddress,
     refetch,
