@@ -47,6 +47,14 @@ export interface IPoolList {
   isNew?: boolean;
 }
 
+/**
+ * @description 전체 Pool에서 Pool들을 구성하는 토큰 리스트. 필터링을 위해 사용
+ */
+export interface IPoolTokenList {
+  symbol: string; // token symbol
+  image?: string; // token image
+}
+
 export interface IPoolLiquidityProvisions {
   id: string;
   type: 'deposit' | 'withdraw';
