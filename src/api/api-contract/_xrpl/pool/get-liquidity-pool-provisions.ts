@@ -76,7 +76,7 @@ export const useGetLiquidityPoolProvisions = (account: string) => {
     isSuccess,
     isError,
   } = useQuery([...QUERY_KEYS.AMM.GET_TRANSACTIONS, account], getTxs, {
-    staleTime: 3000,
+    staleTime: 2 * 1000,
     enabled: isConnected && isXrp,
   });
 

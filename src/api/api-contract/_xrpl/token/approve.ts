@@ -51,7 +51,8 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
     LimitAmount: {
       currency,
       issuer,
-      value: (Number(amount) + Number(line?.balance ?? 0) + 1).toFixed(6),
+      // value: (Number(amount) + Number(line?.balance ?? 0) + 1).toFixed(6),
+      value: (10 ** 10).toFixed(6),
     },
   } as TrustSet;
 
