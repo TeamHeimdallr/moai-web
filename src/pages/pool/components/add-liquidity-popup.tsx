@@ -166,14 +166,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
   return (
     <Popup
       id={POPUP_ID.ADD_LP}
-      icon={
-        isSuccess && (
-          <IconWrapper>
-            <IconCheck />
-          </IconWrapper>
-        )
-      }
-      title={isSuccess ? 'Add liquidity confirmed!' : 'Add liquidity preview'}
+      title={isSuccess ? '' : 'Add liquidity preview'}
       button={
         <ButtonWrapper onClick={() => handleButton()}>
           <ButtonPrimaryLarge
@@ -195,22 +188,32 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
       }
     >
       <Wrapper>
-        <List title={`You're providing`}>
-          {tokenInputs.map(({ symbol, amount }, idx) => (
-            <div key={idx}>
-              <TokenList
-                key={`token-${idx}`}
-                type="large"
-                title={`${amount}`}
-                subTitle={`${symbol}`}
-                description={`$${formatNumber(amount * getTokenPrice(symbol), 2)}`}
-                image={TOKEN_IMAGE_MAPPER[symbol]}
-                leftAlign={true}
-              />
-              {idx !== tokenInputs.length - 1 && <Divider key={`divider-${idx}`} />}
-            </div>
-          ))}
-        </List>
+        {isSuccess ? (
+          <SuccessWrapper>
+            <IconWrapper>
+              <IconCheck width={40} height={40} />
+            </IconWrapper>
+            <SuccessTitle>Add liquidity confirmed!</SuccessTitle>
+            <SuccessSubTitle>{`Successfully added liquidity to ${lpTokenName} Pool`}</SuccessSubTitle>
+          </SuccessWrapper>
+        ) : (
+          <List title={`You're providing`}>
+            {tokenInputs.map(({ symbol, amount }, idx) => (
+              <div key={idx}>
+                <TokenList
+                  key={`token-${idx}`}
+                  type="large"
+                  title={`${amount}`}
+                  subTitle={`${symbol}`}
+                  description={`$${formatNumber(amount * getTokenPrice(symbol), 2)}`}
+                  image={TOKEN_IMAGE_MAPPER[symbol]}
+                  leftAlign={true}
+                />
+                {idx !== tokenInputs.length - 1 && <Divider key={`divider-${idx}`} />}
+              </div>
+            ))}
+          </List>
+        )}
 
         <List title={`You're expected to receive`}>
           <TokenList
@@ -229,37 +232,38 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
             leftAlign={true}
           />
         </List>
-
-        <List title={`Summary`}>
-          <Summary>
-            <SummaryTextTitle>Total</SummaryTextTitle>
-            <SummaryText>{`$${formatNumber(totalValue)}`}</SummaryText>
-          </Summary>
-          <Summary>
-            <SummaryTextTitle>Price impact</SummaryTextTitle>
-            <SummaryText>{priceImpact}%</SummaryText>
-          </Summary>
-        </List>
-
-        <LoadingStep
-          totalSteps={tokenInputs.length + 1}
-          step={step}
-          isLoading={
-            step === 1
-              ? allowLoading1
-              : step === 2 && tokenInputs.length > 1
-              ? allowLoading2
-              : isLoading
-          }
-          isDone={isSuccess}
-        />
-
-        {isSuccess && (
+        {isSuccess ? (
           <Scanner onClick={() => handleLink()}>
             <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
             <ScannerText>{txDate.toString()}</ScannerText>
             <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
+        ) : (
+          <>
+            <List title={`Summary`}>
+              <Summary>
+                <SummaryTextTitle>Total</SummaryTextTitle>
+                <SummaryText>{`$${formatNumber(totalValue)}`}</SummaryText>
+              </Summary>
+              <Summary>
+                <SummaryTextTitle>Price impact</SummaryTextTitle>
+                <SummaryText>{priceImpact}%</SummaryText>
+              </Summary>
+            </List>
+
+            <LoadingStep
+              totalSteps={tokenInputs.length + 1}
+              step={step}
+              isLoading={
+                step === 1
+                  ? allowLoading1
+                  : step === 2 && tokenInputs.length > 1
+                  ? allowLoading2
+                  : isLoading
+              }
+              isDone={isSuccess}
+            />
+          </>
         )}
       </Wrapper>
     </Popup>
@@ -274,8 +278,20 @@ const Wrapper = tw.div`
   flex flex-col gap-24 px-24 py-0
 `;
 
+const SuccessTitle = tw.div`
+  text-neutral-100 font-b-24
+`;
+
+const SuccessSubTitle = tw.div`
+  text-neutral-80 font-r-16
+`;
+
+const SuccessWrapper = tw.div`
+  flex-center flex-col gap-12
+`;
+
 const IconWrapper = tw.div`
-  flex-center w-32 h-32 rounded-full bg-green-50
+  flex-center w-48 h-48 rounded-full bg-green-50
 `;
 
 const Summary = tw.div`
