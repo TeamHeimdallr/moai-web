@@ -163,7 +163,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
                   maxButton={true}
                   blurAll={blurAll}
                   blured={blured}
-                  autoFocus={!isXrp}
+                  autoFocus={isXrp}
                 />
               );
             })}

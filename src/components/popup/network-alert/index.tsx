@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -18,13 +18,16 @@ interface Props {
 export const NetworkAlertPopup = ({ onClickButton }: Props) => {
   const navigate = useNavigate();
   const { close } = usePopup(POPUP_ID.NETWORK_ALERT);
-  const { network, id } = useParams();
-  const poolText = network && id ? 'network' : "pool's network";
+  const text = window.location.href.includes('pools')
+    ? 'The current pool’s network and the selected network do not match. Would you like to change the network and return to the home?'
+    : "The current network and the selected pool's network do not match. Would you like to change the network to view the details of the selected pool?";
 
   const handleClickSwitchButton = () => {
     onClickButton();
-    network && id && navigate('/');
     close();
+    if (window.location.href.includes('pools')) {
+      navigate('/');
+    }
   };
   return (
     <Popup
@@ -35,10 +38,7 @@ export const NetworkAlertPopup = ({ onClickButton }: Props) => {
       <Wrapper>
         <IconAlert width={60} height={60} fill={COLOR.RED[50]} />
         <Title>The network does not match</Title>
-        <Text>
-          {`The current ${poolText} and the selected pool's ${poolText} do not match. Would you like to change
-        the network to view the details of the selected pool?`}
-        </Text>
+        <Text>{text}</Text>
       </Wrapper>
     </Popup>
   );
