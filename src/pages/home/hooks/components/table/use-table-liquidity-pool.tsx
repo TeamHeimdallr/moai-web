@@ -18,7 +18,11 @@ import { useTableLiquidityPoolSortStore } from '~/states/components';
 import { useShowAllPoolsStore } from '~/states/pages';
 import { NETWORK } from '~/types';
 
-export const useTableLiquidityPool = () => {
+interface Props {
+  showNetworkColumn?: boolean;
+}
+
+export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
   const { showAllPools } = useShowAllPoolsStore();
 
   const { network } = useParams();
@@ -133,28 +137,31 @@ export const useTableLiquidityPool = () => {
             id: d.id,
             network: d.network,
           },
-          network: <TableColumn value={<NetworkChip network={d.network} />} width={216} />,
+          network: showNetworkColumn ? (
+            <TableColumn value={<NetworkChip network={d.network} />} />
+          ) : null,
           compositions: <TableColumnToken tokens={tokens} />,
-          poolValue: (
-            <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} width={160} align="flex-end" />
-          ),
-          volume: (
-            <TableColumn value={`$${formatNumber(d.volume, 2)}`} width={160} align="flex-end" />
-          ),
-          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} width={160} align="flex-end" />,
+          poolValue: <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} align="flex-end" />,
+          volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
+          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
         };
       }),
-    [sortedData]
+    [sortedData, showNetworkColumn]
   );
 
   const columns = useMemo(
     () => [
       { accessorKey: 'meta' },
-      {
-        header: () => <TableHeader width={216} label="Chain" />,
-        cell: row => row.renderValue(),
-        accessorKey: 'network',
-      },
+      showNetworkColumn
+        ? {
+            header: () => <TableHeader label="Chain" />,
+            cell: row => row.renderValue(),
+            accessorKey: 'network',
+          }
+        : {
+            header: () => <></>,
+            accessorKey: 'null',
+          },
       {
         header: () => <TableHeaderComposition />,
         cell: row => row.renderValue(),
@@ -191,7 +198,7 @@ export const useTableLiquidityPool = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sort]
+    [sort, showNetworkColumn]
   );
 
   return {

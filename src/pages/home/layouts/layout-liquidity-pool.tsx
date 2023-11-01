@@ -24,10 +24,9 @@ export const LiquidityPoolLayout = () => {
   const navigate = useNavigate();
   const { name } = useNetwork();
 
-  const { data, columns } = useTableLiquidityPool();
-
   const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
   const { selectedTokens, setSelectedTokens } = useTablePoolCompositionSelectTokenStore();
+  const { data, columns } = useTableLiquidityPool({ showNetworkColumn: showAllPools });
 
   const [showToastPopup, setShowToastPopup] = useState<boolean>(false);
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
@@ -111,7 +110,13 @@ export const LiquidityPoolLayout = () => {
             />
           ))}
         </BadgeWrapper>
-        <Table data={data} columns={columns} handleRowClick={handleRowClick} />
+        <Table
+          data={data}
+          columns={columns}
+          ratio={showAllPools ? [1, 2, 1, 1, 1] : [2, 1, 1, 1]}
+          type="darker"
+          handleRowClick={handleRowClick}
+        />
       </TableWrapper>
       {popupOpened && <NetworkAlertPopup onClickButton={() => selectNetwork(targetNetwork)} />}
     </Wrapper>

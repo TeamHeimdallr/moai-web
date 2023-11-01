@@ -43,13 +43,9 @@ export const useTableLiquidityMy = () => {
           },
           assets: <TableColumnTokenIcon tokens={d.assets} />,
           compositions: <TableColumnToken tokens={tokens} isNew={d.isNew} />,
-          balance: (
-            <TableColumn value={`$${formatNumber(d.balance, 2)}`} width={160} align="flex-end" />
-          ),
-          poolValue: (
-            <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} width={160} align="flex-end" />
-          ),
-          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} width={160} align="flex-end" />,
+          balance: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
+          poolValue: <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} align="flex-end" />,
+          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
         };
       }),
     [sortedData]

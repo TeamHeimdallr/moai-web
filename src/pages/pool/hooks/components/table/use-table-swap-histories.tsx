@@ -67,19 +67,17 @@ export const useTableSwapHistories = (id: string) => {
         id: d.id,
         trader: (
           <TableColumnIconText
-            width={160}
             text={truncateAddress(d.trader, 4)}
             icon={<Jazzicon diameter={24} seed={jsNumberForAddress(d.trader ?? '')} />}
             address
           />
         ),
         tradeDetail: <TableColumnTokenSwap tokens={d.tradeDetail} />,
-        value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
+        value: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
         time: (
           <TableColumnLink
             token={`${elapsedTime(d.time)}`}
             align="flex-end"
-            width={160}
             link={`${SCANNER_URL[currentNetwork]}/tx/${d.txHash}`}
           />
         ),
@@ -91,17 +89,17 @@ export const useTableSwapHistories = (id: string) => {
     () => [
       { accessorKey: 'id' },
       {
-        header: () => <TableHeader label="Trader" width={160} align="flex-start" />,
+        header: () => <TableHeader label="Trader" align="flex-start" />,
         cell: row => row.renderValue(),
         accessorKey: 'trader',
       },
       {
-        header: () => <TableHeader label="Trade details" width="full" align="flex-start" />,
+        header: () => <TableHeader label="Trade details" align="flex-start" />,
         cell: row => row.renderValue(),
         accessorKey: 'tradeDetail',
       },
       {
-        header: () => <TableHeader label="Value" width={120} align="flex-end" />,
+        header: () => <TableHeader label="Value" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'value',
       },

@@ -51,21 +51,14 @@ export const useTableTotalComposition = (id: string) => {
         token: (
           <TableColumnTokenAddress
             token={d.symbol}
-            width={216}
             onClick={() => window.open(`${SCANNER_URL[currentNetwork]}/address/${d.address ?? ''}`)}
           />
         ),
-        weight: <TableColumn value={`${d.weight.toFixed(2)}%`} width={120} align="flex-end" />,
-        balance: (
-          <TableColumn value={`${formatNumber(d.balance, 2)}`} width={120} align="flex-end" />
-        ),
-        value: <TableColumn value={`$${formatNumber(d.value, 2)}`} width={120} align="flex-end" />,
+        weight: <TableColumn value={`${d.weight.toFixed(2)}%`} align="flex-end" />,
+        balance: <TableColumn value={`${formatNumber(d.balance, 2)}`} align="flex-end" />,
+        value: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
         currentWeight: (
-          <TableColumn
-            value={`${formatNumber(d.currentWeight, 2)}%`}
-            width={120}
-            align="flex-end"
-          />
+          <TableColumn value={`${formatNumber(d.currentWeight, 2)}%`} align="flex-end" />
         ),
       })),
     [currentNetwork, poolData]
@@ -75,27 +68,27 @@ export const useTableTotalComposition = (id: string) => {
     () => [
       { accessorKey: 'id' },
       {
-        header: () => <TableHeader label="Token" width={216} align="flex-start" />,
+        header: () => <TableHeader label="Token" align="flex-start" />,
         cell: row => row.renderValue(),
         accessorKey: 'token',
       },
       {
-        header: () => <TableHeader label="Weight" width={120} align="flex-end" />,
+        header: () => <TableHeader label="Weight" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'weight',
       },
       {
-        header: () => <TableHeader label="Balance" width={120} align="flex-end" />,
+        header: () => <TableHeader label="Balance" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'balance',
       },
       {
-        header: () => <TableHeader label="Value" width={120} align="flex-end" />,
+        header: () => <TableHeader label="Value" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'value',
       },
       {
-        header: () => <TableHeader label="Token %" width={120} align="flex-end" />,
+        header: () => <TableHeader label="Token %" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'currentWeight',
       },
