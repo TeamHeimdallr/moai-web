@@ -22,7 +22,9 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
   const { address } = xrpWallet;
 
   const { id } = useParams();
-  const { pool } = useLiquidityPoolBalance({ id: id ?? '' });
+
+  // TODO: only for swap
+  const { pool } = useLiquidityPoolBalance({ id: id ?? XRP_AMM[0].id });
   const { compositions } = pool;
 
   const xrpBalanceData = async () => {

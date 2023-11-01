@@ -6,6 +6,7 @@ import { Address, useQuery } from 'wagmi';
 import { QUERY_KEYS } from '~/api/utils/query-keys';
 
 import { EVM_TOKEN_ADDRESS } from '~/constants';
+import { EVM_POOL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -24,7 +25,11 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
   const { evm, fpass } = useConnectedWallet();
 
   const { id } = useParams();
-  const { pool } = useLiquidityPoolBalance({ id: id as `0x${string}` });
+
+  // TODO: only for swap
+  const { pool } = useLiquidityPoolBalance({
+    id: (id ?? EVM_POOL?.[currentNetwork][0].id) as `0x${string}`,
+  });
   const { compositions } = pool;
 
   const { address } = isFpass ? fpass : evm;
