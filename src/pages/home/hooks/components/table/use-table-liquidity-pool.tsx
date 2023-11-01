@@ -19,10 +19,10 @@ import { useShowAllPoolsStore } from '~/states/pages';
 import { NETWORK } from '~/types';
 
 interface Props {
-  isChain?: boolean;
+  showNetworkColumn?: boolean;
 }
 
-export const useTableLiquidityPool = ({ isChain }: Props) => {
+export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
   const { showAllPools } = useShowAllPoolsStore();
 
   const { network } = useParams();
@@ -137,20 +137,22 @@ export const useTableLiquidityPool = ({ isChain }: Props) => {
             id: d.id,
             network: d.network,
           },
-          network: isChain ? <TableColumn value={<NetworkChip network={d.network} />} /> : null,
+          network: showNetworkColumn ? (
+            <TableColumn value={<NetworkChip network={d.network} />} />
+          ) : null,
           compositions: <TableColumnToken tokens={tokens} />,
           poolValue: <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} align="flex-end" />,
           volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
           apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
         };
       }),
-    [sortedData, isChain]
+    [sortedData, showNetworkColumn]
   );
 
   const columns = useMemo(
     () => [
       { accessorKey: 'meta' },
-      isChain
+      showNetworkColumn
         ? {
             header: () => <TableHeader label="Chain" />,
             cell: row => row.renderValue(),
@@ -196,7 +198,7 @@ export const useTableLiquidityPool = ({ isChain }: Props) => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sort, isChain]
+    [sort, showNetworkColumn]
   );
 
   return {

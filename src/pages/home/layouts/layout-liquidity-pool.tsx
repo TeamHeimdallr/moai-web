@@ -26,7 +26,7 @@ export const LiquidityPoolLayout = () => {
 
   const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
   const { selectedTokens, setSelectedTokens } = useTablePoolCompositionSelectTokenStore();
-  const { data, columns } = useTableLiquidityPool({ isChain: showAllPools });
+  const { data, columns } = useTableLiquidityPool({ showNetworkColumn: showAllPools });
 
   const [showToastPopup, setShowToastPopup] = useState<boolean>(false);
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
