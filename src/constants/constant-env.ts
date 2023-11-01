@@ -10,7 +10,7 @@ export const CHAIN = import.meta.env.VITE_CHAIN_ENV;
 /**
  * @description 랜딩페이지 여부
  */
-export const IS_LANDING = import.meta.env.VITE_IS_LANDING;
+export const IS_LANDING = import.meta.env.VITE_IS_LANDING === 'true';
 
 /**
  * @description WEB3 관련 KEY / RPC PROVIDER ENDPOINT

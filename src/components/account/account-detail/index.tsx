@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import copy from 'copy-to-clipboard';
 import tw from 'twin.macro';
 import { zeroAddress } from 'viem';
@@ -36,7 +37,7 @@ export const AccountDetail = () => {
   const xrpComponent = (
     <AccountWrapper key="xrp">
       {xrp.address ? (
-        <Account>
+        <Account key="xrpl">
           <Logo>
             <InnerLogo
               src={xrp.connectedConnector === 'crossmark' ? imageWalletCrossmark : imageWalletGem}
@@ -62,6 +63,7 @@ export const AccountDetail = () => {
             setWalletType({ xrpl: true, evm: false });
             openConnectWallet();
           }}
+          key="xrpl-not-connected"
         >
           <Logo>
             <InnerLogo src={imageNetworkXRPL} alt="xrpl" />
@@ -78,7 +80,7 @@ export const AccountDetail = () => {
   const fpassComponent = (
     <AccountWrapper key="fpass">
       {fpass.address && fpass.address !== zeroAddress ? (
-        <Account>
+        <Account key="fpass">
           <Logo>
             <InnerLogo src={imageWalletFuturepass} alt="futurepass" />
           </Logo>
@@ -106,6 +108,7 @@ export const AccountDetail = () => {
               openConnectWallet();
             }
           }}
+          key="fpass-not-connected"
         >
           <Logo>
             <InnerLogo src={imageWalletFuturepass} alt="futurepass" />
@@ -126,7 +129,7 @@ export const AccountDetail = () => {
   const evmComponent = (
     <AccountWrapper key="evm">
       {evm.address ? (
-        <Account>
+        <Account key="evm">
           <Logo>
             <InnerLogo src={imageWalletMetamask} alt="metamask" />
           </Logo>
@@ -149,6 +152,7 @@ export const AccountDetail = () => {
             setWalletType({ xrpl: false, evm: true });
             openConnectWallet();
           }}
+          key="evm-not-connected"
         >
           <Logo>
             <InnerLogo src={imageNetworkEvm} alt="evm" />
@@ -182,7 +186,9 @@ export const AccountDetail = () => {
           <TitleText>Account</TitleText>
         </Title>
         <Divider />
-        {components().map(c => c)}
+        {components().map((c, i) => (
+          <Fragment key={i}>{c}</Fragment>
+        ))}
         <Divider />
         <Slippage />
         <Divider />

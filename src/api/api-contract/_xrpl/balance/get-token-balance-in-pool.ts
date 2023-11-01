@@ -55,7 +55,6 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     [...QUERY_KEYS.TOKEN.GET_XRP_BALANCE, address],
     xrpBalanceData,
     {
-      staleTime: 1000 * 60 * 5,
       enabled: !!address && !!client && isConnected && isXrp,
     }
   );
@@ -64,7 +63,6 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     [...QUERY_KEYS.TOKEN.GET_MOI_BALANCE, address],
     moiBalanceData,
     {
-      staleTime: 1000 * 60 * 5,
       enabled: !!address && !!client && isConnected && isXrp,
     }
   );
@@ -129,7 +127,6 @@ export const useLiquidityTokenBalances = (id: string): number => {
     [...QUERY_KEYS.TOKEN.GET_LIQUIDITY_TOKEN_BALANCE, address],
     getLiquidityTokenBalanceData,
     {
-      staleTime: 1000 * 60 * 5,
       enabled: !!address && !!client && isConnected && isXrp,
     }
   );

@@ -119,7 +119,7 @@ export const useGetSwapHistories = ({ id }: UseGetSwapHistories) => {
     isSuccess,
     isError,
   } = useQuery([...QUERY_KEYS.AMM.GET_TRANSACTIONS, id], getTxs, {
-    staleTime: 3000,
+    staleTime: 2 * 1000,
     enabled: isConnected && isXrp,
   });
 
