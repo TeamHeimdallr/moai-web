@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
@@ -18,38 +19,53 @@ export const useCreateFuturepass = () => {
   const { evm } = useConnectedWallet();
   const address = evm.address ?? '';
   const { isFpass } = useNetwork();
+  const [isError, setIsError] = useState(false);
+  const [errorCode, setErrorCode] = useState<number | string>(0);
 
   const createFuturepass = async () => {
     if (!isFpass) return;
 
-    const [api] = await Promise.all([
-      getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
-    ]);
+    try {
+      const [api] = await Promise.all([
+        getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
+      ]);
 
-    const extrinsic = api.tx.futurepass.create(address) as Extrinsic;
+      const extrinsic = api.tx.futurepass.create(address) as Extrinsic;
 
-    const [payload, ethPayload] = await createExtrinsicPayload(
-      api as ApiPromise,
-      address ?? '',
-      extrinsic.method
-    );
+      const [payload, ethPayload] = await createExtrinsicPayload(
+        api as ApiPromise,
+        address ?? '',
+        extrinsic.method
+      );
 
-    const signature = await window.ethereum.request({
-      method: 'personal_sign',
-      params: [ethPayload, address],
-    });
+      const signature = await window.ethereum.request({
+        method: 'personal_sign',
+        params: [ethPayload, address],
+      });
 
-    const signedExtrinsic = extrinsic.addSignature(
-      address ?? '',
-      signature as `0x${string}`,
-      payload.toPayload()
-    ) as Extrinsic;
+      const signedExtrinsic = extrinsic.addSignature(
+        address ?? '',
+        signature as `0x${string}`,
+        payload.toPayload()
+      ) as Extrinsic;
 
-    const _result = await sendExtrinsicWithSignature(signedExtrinsic);
-    // console.log(`Extrinsic Result: `, _result);
+      const result = await sendExtrinsicWithSignature(signedExtrinsic);
+      setIsError(false);
+      return result.extrinsicHash;
+    } catch (err) {
+      setIsError(true);
+      const error = err as { code?: number; message?: string };
+      if (error.code) {
+        setErrorCode(error.code);
+      } else {
+        setErrorCode(error.message ?? '');
+      }
+    }
   };
 
   return {
     createFuturepass,
+    isError,
+    errorCode,
   };
 };

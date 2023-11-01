@@ -3,8 +3,6 @@ import copy from 'copy-to-clipboard';
 import tw from 'twin.macro';
 import { zeroAddress } from 'viem';
 
-import { useCreateFuturepass } from '~/api/api-contract/_evm/substrate/create-futurepass';
-
 import { COLOR } from '~/assets/colors';
 import { IconCopy, IconLogout, IconNext } from '~/assets/icons';
 import {
@@ -24,6 +22,7 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID } from '~/types';
 
+import { FuturepassCreatePopup } from '../futurepass-create-popup';
 import { Slippage } from '../slippage';
 
 export const AccountDetail = () => {
@@ -32,7 +31,9 @@ export const AccountDetail = () => {
   const { setWalletType } = useWalletTypeStore();
 
   const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
-  const { createFuturepass } = useCreateFuturepass();
+  const { open: openFuturepassCreate, opened: futurepassCreateOpened } = usePopup(
+    POPUP_ID.FUTUREPASS_CREATE
+  );
 
   const xrpComponent = (
     <AccountWrapper key="xrp">
@@ -99,10 +100,9 @@ export const AccountDetail = () => {
         </Account>
       ) : (
         <AccountNotConnected
-          onClick={async () => {
+          onClick={() => {
             if (evm.address) {
-              await createFuturepass();
-              fpass.refetch();
+              openFuturepassCreate();
             } else {
               setWalletType({ xrpl: false, evm: true });
               openConnectWallet();
@@ -200,6 +200,7 @@ export const AccountDetail = () => {
           </CurrentNetwork>
         </NetworkWrapper>
       </Panel>
+      {futurepassCreateOpened && <FuturepassCreatePopup />}
     </Wrapper>
   );
 };
