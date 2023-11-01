@@ -36,8 +36,8 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
 
   const getTokenBalanceData = async () => {
     return Promise.all(
-      compositions.map(async token => {
-        return await fetchBalance({
+      compositions.map(token => {
+        return fetchBalance({
           address: address as Address,
           token: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[token.symbol] as Address,
         });
@@ -49,7 +49,6 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     [...QUERY_KEYS.TOKEN.GET_EVM_BALANCE, address],
     getTokenBalanceData,
     {
-      staleTime: 1000 * 60 * 5,
       enabled:
         isEvm &&
         !!address &&
