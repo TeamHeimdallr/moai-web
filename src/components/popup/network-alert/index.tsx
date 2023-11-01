@@ -4,6 +4,8 @@ import tw from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconAlert } from '~/assets/icons';
 
+import { BASE_URL } from '~/constants';
+
 import { ButtonPrimaryLarge } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
@@ -18,14 +20,15 @@ interface Props {
 export const NetworkAlertPopup = ({ onClickButton }: Props) => {
   const navigate = useNavigate();
   const { close } = usePopup(POPUP_ID.NETWORK_ALERT);
-  const text = window.location.href.includes('pools')
-    ? 'The current pool’s network and the selected network do not match. Would you like to change the network and return to the home?'
-    : "The current network and the selected pool's network do not match. Would you like to change the network to view the details of the selected pool?";
+  const text =
+    window.location.href !== BASE_URL
+      ? 'The current pool’s network and the selected network do not match. Would you like to change the network and return to the home?'
+      : "The current network and the selected pool's network do not match. Would you like to change the network to view the details of the selected pool?";
 
   const handleClickSwitchButton = () => {
     onClickButton();
     close();
-    if (window.location.href.includes('pools')) {
+    if (window.location.href !== BASE_URL) {
       navigate('/');
     }
   };

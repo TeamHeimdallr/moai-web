@@ -25,7 +25,6 @@ const PoolDetailWithdrawLiquidityPage = () => {
 
   return (
     <>
-      {/* {needSwitchNetwork && <SwitchNetwork />} */}
       <Wrapper>
         <GnbWrapper>
           <Gnb />

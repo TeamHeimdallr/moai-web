@@ -11,7 +11,6 @@ import { DetailRight } from '../../layouts/detail-right';
 const PoolDetailMainPage = () => {
   return (
     <>
-      {/* {needSwitchNetwork && <SwitchNetwork />} */}
       <Wrapper>
         <GnbWrapper>
           <Gnb />

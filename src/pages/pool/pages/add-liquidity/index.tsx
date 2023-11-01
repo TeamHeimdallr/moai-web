@@ -24,7 +24,6 @@ const PoolDetailAddLiquidityPage = () => {
 
   return (
     <>
-      {/* {needSwitchNetwork && <SwitchNetwork />} */}
       <Wrapper>
         <GnbWrapper>
           <Gnb />
