@@ -25,7 +25,9 @@ export const PoolSwapHistories = ({ pool }: Props) => {
           <ButtonIconLarge icon={<IconDown />} />
         </Icon>
       </TitleWrapper>
-      {opened && <Table data={data} columns={columns} ratio="2322" type="lighter" />}
+      {opened && (
+        <Table data={data} columns={columns} ratio={['2', '3', '2', '2']} type="lighter" />
+      )}
     </Wrapper>
   );
 };

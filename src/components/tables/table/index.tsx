@@ -10,7 +10,7 @@ interface ReactTableProps<T extends object> {
   data: T[];
   columns: ColumnDef<T, ReactNode>[];
 
-  ratio: string;
+  ratio: string[];
 
   emptyText?: string;
   hasMore?: boolean;
@@ -45,10 +45,7 @@ export const Table = <T extends object>({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const tableRatio = ratio
-    .split('')
-    .map(num => `${num}fr`)
-    .join(' ');
+  const tableRatio = ratio.map(num => `${num}fr`).join(' ');
 
   return (
     <StyledTable type={type}>

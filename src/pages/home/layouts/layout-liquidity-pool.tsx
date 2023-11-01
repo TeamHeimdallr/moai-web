@@ -113,7 +113,7 @@ export const LiquidityPoolLayout = () => {
         <Table
           data={data}
           columns={columns}
-          ratio={showAllPools ? '12111' : '2111'}
+          ratio={showAllPools ? ['1', '2', '1', '1', '1'] : ['2', '1', '1', '1']}
           type="darker"
           handleRowClick={handleRowClick}
         />
