@@ -10,17 +10,19 @@ import { EVM_POOL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
-import { ITokenbalanceInPool } from '~/types';
+import { ITokenbalanceInPool, NETWORK } from '~/types';
 
 import { useLiquidityPoolBalance } from '../pool/get-liquidity-pool-balance';
 
 // TODO: implement new hook for swap
 export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
-  const { network } = useParams();
-  const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const { isEvm, isFpass } = useNetwork();
 
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetwork = isEvm
+    ? NETWORK.EVM_SIDECHAIN
+    : isFpass
+    ? NETWORK.THE_ROOT_NETWORK
+    : NETWORK.XRPL;
 
   const { evm, fpass } = useConnectedWallet();
 
@@ -28,7 +30,7 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
 
   // TODO: only for swap
   const { pool } = useLiquidityPoolBalance({
-    id: (id ?? EVM_POOL?.[currentNetwork][0].id) as `0x${string}`,
+    id: (id ?? EVM_POOL?.[currentNetwork]?.[0].id) as `0x${string}`,
   });
   const { compositions } = pool;
 
@@ -58,7 +60,7 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
 
   const success = evmTokensData !== undefined;
 
-  if (!success)
+  if (!success || (!isEvm && !isFpass))
     return {
       balancesMap: undefined,
       balancesArray: undefined,
