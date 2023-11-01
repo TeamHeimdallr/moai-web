@@ -41,7 +41,7 @@ export const PoolLiquidityProvisions = ({ pool }: Props) => {
       {opened && (
         <>
           {hasLiquidity && <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />}
-          <Table data={data} columns={columns} ratio={['2', '3', '2', '2']} type="lighter" />
+          <Table data={data} columns={columns} ratio={[2, 3, 2, 2]} type="lighter" />
         </>
       )}
     </Wrapper>

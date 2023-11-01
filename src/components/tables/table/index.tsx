@@ -10,7 +10,7 @@ interface ReactTableProps<T extends object> {
   data: T[];
   columns: ColumnDef<T, ReactNode>[];
 
-  ratio: string[];
+  ratio: number[];
 
   emptyText?: string;
   hasMore?: boolean;

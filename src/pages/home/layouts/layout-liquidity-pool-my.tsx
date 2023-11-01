@@ -22,7 +22,7 @@ export const MyLiquidityLayout = () => {
       <Table
         data={data}
         columns={columns}
-        ratio={['2', '1', '1', '1']}
+        ratio={[2, 1, 1, 1]}
         type="darker"
         handleRowClick={handleRowClick}
       />
