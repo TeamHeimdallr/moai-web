@@ -158,12 +158,6 @@ export const SwapPopup = () => {
     resetAll();
   };
 
-  const SuccessIcon = (
-    <SuccessIconWrapper>
-      <IconCheck />
-    </SuccessIconWrapper>
-  );
-
   const Button = isSuccess ? (
     <PrimaryButtonWrapper>
       {blockTimestamp > 0 && (
@@ -175,7 +169,11 @@ export const SwapPopup = () => {
           </ClickableIcon>
         </TimeWrapper>
       )}
-      <ButtonPrimaryLarge buttonType="outlined" text="Close" onClick={handleSuccess} />
+      <ButtonPrimaryLarge
+        buttonType="outlined"
+        text="Return to swap page"
+        onClick={handleSuccess}
+      />
     </PrimaryButtonWrapper>
   ) : allowance1 && (allowance2 || isEvm) ? (
     <ButtonPrimaryLarge
@@ -196,66 +194,88 @@ export const SwapPopup = () => {
   );
 
   return (
-    <Popup
-      id={POPUP_ID.SWAP}
-      title="Preview swap"
-      icon={isSuccess ? SuccessIcon : undefined}
-      button={Button}
-    >
+    <Popup id={POPUP_ID.SWAP} title={isSuccess ? '' : 'Swap preview'} button={Button}>
       <Wrapper>
-        <ListWrapper>
-          <List title={`Effective price: ${effectivePrice}`}>
-            <TokenList
-              title={`${fromValue} ${fromToken}`}
-              description={`$${formatNumber(fromUSDValue, 2)}`}
-              image={TOKEN_IMAGE_MAPPER[fromToken]}
-              type="large"
-              leftAlign
-            />
-            <Divider />
-            <IconWrapper>
-              <SwapArrowDown />
-            </IconWrapper>
-            <TokenList
-              title={`${toValue} ${toToken}`}
-              description={`$${formatNumber(toUSDValue, 2)}`}
-              image={TOKEN_IMAGE_MAPPER[toToken]}
-              type="large"
-              leftAlign
-            />
-          </List>
-        </ListWrapper>
+        {isSuccess ? (
+          <>
+            <SuccessWrapper>
+              <SuccessIconWrapper>
+                <IconCheck width={40} height={40} />
+              </SuccessIconWrapper>
+              <SuccessTitle>Swap confirmed!</SuccessTitle>
+              <SuccessSubTitle>{`Successfully swapped ${fromValue} ${fromToken} to ${toValue} ${toToken}`}</SuccessSubTitle>
+            </SuccessWrapper>
 
-        <DetailWrapper>
-          <DetailTitleWrapper>
-            {`Swap from ${fromToken} details`}
-            <DetailButtonWrapper>
-              <ButtonChipSmall
-                text="TOKEN"
-                selected={selectedDetailInfo === 'TOKEN'}
-                onClick={() => selectDetailInfo('TOKEN')}
+            <List title={`Total`}>
+              <TokenList
+                title={`${toValue} ${toToken}`}
+                description={`$${formatNumber(toUSDValue, 2)}`}
+                image={TOKEN_IMAGE_MAPPER[toToken]}
+                type="large"
+                leftAlign
               />
-              <ButtonChipSmall
-                text="USD"
-                selected={selectedDetailInfo === 'USD'}
-                onClick={() => selectDetailInfo('USD')}
-              />
-            </DetailButtonWrapper>
-          </DetailTitleWrapper>
-          <DetailInfoWrapper>
-            <DetailInfoTextWrapper>
-              <DetailInfoText>Total expected after fees</DetailInfoText>
-              <DetailInfoText>{`${formatNumber(totalAfterFee, 6)} ${currentUnit}`}</DetailInfoText>
-            </DetailInfoTextWrapper>
-            <DetailInfoTextWrapper>
-              <DetailInfoSubtext>{`The least you'll get at ${slippageText}% slippage`}</DetailInfoSubtext>
-              <DetailInfoSubtext>{`${formatNumber(
-                totalAfterSlippage,
-                6
-              )} ${currentUnit}`}</DetailInfoSubtext>
-            </DetailInfoTextWrapper>
-          </DetailInfoWrapper>
-        </DetailWrapper>
+            </List>
+          </>
+        ) : (
+          <>
+            <ListWrapper>
+              <List title={`Effective price: ${effectivePrice}`}>
+                <TokenList
+                  title={`${fromValue} ${fromToken}`}
+                  description={`$${formatNumber(fromUSDValue, 2)}`}
+                  image={TOKEN_IMAGE_MAPPER[fromToken]}
+                  type="large"
+                  leftAlign
+                />
+                <Divider />
+                <IconWrapper>
+                  <SwapArrowDown />
+                </IconWrapper>
+                <TokenList
+                  title={`${toValue} ${toToken}`}
+                  description={`$${formatNumber(toUSDValue, 2)}`}
+                  image={TOKEN_IMAGE_MAPPER[toToken]}
+                  type="large"
+                  leftAlign
+                />
+              </List>
+            </ListWrapper>
+
+            <DetailWrapper>
+              <DetailTitleWrapper>
+                {`Swap from ${fromToken} details`}
+                <DetailButtonWrapper>
+                  <ButtonChipSmall
+                    text="TOKEN"
+                    selected={selectedDetailInfo === 'TOKEN'}
+                    onClick={() => selectDetailInfo('TOKEN')}
+                  />
+                  <ButtonChipSmall
+                    text="USD"
+                    selected={selectedDetailInfo === 'USD'}
+                    onClick={() => selectDetailInfo('USD')}
+                  />
+                </DetailButtonWrapper>
+              </DetailTitleWrapper>
+              <DetailInfoWrapper>
+                <DetailInfoTextWrapper>
+                  <DetailInfoText>Total expected after fees</DetailInfoText>
+                  <DetailInfoText>{`${formatNumber(
+                    totalAfterFee,
+                    6
+                  )} ${currentUnit}`}</DetailInfoText>
+                </DetailInfoTextWrapper>
+                <DetailInfoTextWrapper>
+                  <DetailInfoSubtext>{`The least you'll get at ${slippageText}% slippage`}</DetailInfoSubtext>
+                  <DetailInfoSubtext>{`${formatNumber(
+                    totalAfterSlippage,
+                    6
+                  )} ${currentUnit}`}</DetailInfoSubtext>
+                </DetailInfoTextWrapper>
+              </DetailInfoWrapper>
+            </DetailWrapper>
+          </>
+        )}
       </Wrapper>
     </Popup>
   );
@@ -263,6 +283,22 @@ export const SwapPopup = () => {
 
 const Wrapper = tw.div`
   px-24 pb-24 flex flex-col gap-24
+`;
+
+const SuccessTitle = tw.div`
+  text-neutral-100 font-b-24
+`;
+
+const SuccessSubTitle = tw.div`
+  text-neutral-80 font-r-16
+`;
+
+const SuccessWrapper = tw.div`
+  flex-center flex-col gap-12
+`;
+
+const SuccessIconWrapper = tw.div`
+  flex-center w-48 h-48 rounded-full bg-green-50
 `;
 
 const ListWrapper = tw.div`
@@ -303,17 +339,6 @@ const DetailInfoSubtext = tw.div`
 const Divider = tw.div`
   w-full h-1 bg-neutral-20 flex-shrink-0
 `;
-
-const SuccessIconWrapper = styled.div(() => [
-  tw`w-32 h-32 rounded-full flex-center bg-green-50`,
-  css`
-    & svg {
-      width: 20px;
-      height: 20px;
-      fill: ${COLOR.NEUTRAL[100]};
-    }
-  `,
-]);
 
 const PrimaryButtonWrapper = tw.div`
   w-full flex flex-col gap-16

@@ -89,14 +89,7 @@ export const WithdrawLiquidityPopup = ({
   return (
     <Popup
       id={POPUP_ID.WITHDRAW_LP}
-      icon={
-        isSuccess && (
-          <IconWrapper>
-            <IconCheck />
-          </IconWrapper>
-        )
-      }
-      title={isSuccess ? 'Withdrawal confirmed!' : 'Withdrawal preview'}
+      title={isSuccess ? '' : 'Withdrawal preview'}
       button={
         <ButtonWrapper onClick={() => handleButton()}>
           <ButtonPrimaryLarge
@@ -108,16 +101,26 @@ export const WithdrawLiquidityPopup = ({
       }
     >
       <Wrapper>
-        <List title={`You're providing`}>
-          <TokenList
-            type="large"
-            title={`${formatNumber(inputValue, 2)}`}
-            subTitle={`${pool.lpTokenName}`}
-            description={`$${formatNumber(totalValue)} (${withdrawRatio}%)`}
-            image={TOKEN_IMAGE_MAPPER?.[pool.lpTokenName] || TOKEN_IMAGE_MAPPER.MOAI}
-            leftAlign={true}
-          />
-        </List>
+        {isSuccess ? (
+          <SuccessWrapper>
+            <IconWrapper>
+              <IconCheck width={40} height={40} />
+            </IconWrapper>
+            <SuccessTitle>Withdrawal confirmed!</SuccessTitle>
+            <SuccessSubTitle>{`Successfully withdrawned from ${pool.lpTokenName} Pool`}</SuccessSubTitle>
+          </SuccessWrapper>
+        ) : (
+          <List title={`You're providing`}>
+            <TokenList
+              type="large"
+              title={`${formatNumber(inputValue, 2)}`}
+              subTitle={`${pool.lpTokenName}`}
+              description={`$${formatNumber(totalValue)} (${withdrawRatio}%)`}
+              image={TOKEN_IMAGE_MAPPER?.[pool.lpTokenName] || TOKEN_IMAGE_MAPPER.MOAI}
+              leftAlign={true}
+            />
+          </List>
+        )}
 
         <List title={`You're expected to receive`}>
           {compositions.map(({ address, symbol, weight }, i) => (
@@ -134,23 +137,23 @@ export const WithdrawLiquidityPopup = ({
           ))}
         </List>
 
-        <List title={`Summary`}>
-          <Summary>
-            <SummaryTextTitle>Total</SummaryTextTitle>
-            <SummaryText>{`$${formatNumber(totalValue)}`}</SummaryText>
-          </Summary>
-          <Summary>
-            <SummaryTextTitle>Price impact</SummaryTextTitle>
-            <SummaryText>{priceImpact}%</SummaryText>
-          </Summary>
-        </List>
-
-        {isSuccess && (
+        {isSuccess ? (
           <Scanner onClick={() => handleLink()}>
             <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
             <ScannerText>{txDate.toString()}</ScannerText>
             <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
+        ) : (
+          <List title={`Summary`}>
+            <Summary>
+              <SummaryTextTitle>Total</SummaryTextTitle>
+              <SummaryText>{`$${formatNumber(totalValue)}`}</SummaryText>
+            </Summary>
+            <Summary>
+              <SummaryTextTitle>Price impact</SummaryTextTitle>
+              <SummaryText>{priceImpact}%</SummaryText>
+            </Summary>
+          </List>
         )}
       </Wrapper>
     </Popup>
@@ -165,8 +168,20 @@ const Wrapper = tw.div`
   flex flex-col gap-24 px-24 py-0
 `;
 
+const SuccessTitle = tw.div`
+  text-neutral-100 font-b-24
+`;
+
+const SuccessSubTitle = tw.div`
+  text-neutral-80 font-r-16
+`;
+
+const SuccessWrapper = tw.div`
+  flex-center flex-col gap-12
+`;
+
 const IconWrapper = tw.div`
-  flex-center w-32 h-32 rounded-full bg-green-50
+  flex-center w-48 h-48 rounded-full bg-green-50
 `;
 
 const Summary = tw.div`
