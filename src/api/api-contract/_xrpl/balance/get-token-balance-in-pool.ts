@@ -14,7 +14,7 @@ import { IAmm, ITokenbalanceInPool } from '~/types';
 
 import { useLiquidityPoolBalance } from '../pool/get-liquidity-pool-balance';
 
-// TODO: change to get all balances. using gateway balances promise all
+// TODO: implement new hook for swap
 export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
   const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
@@ -70,7 +70,7 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
   };
 
   const { data: xrplTokensData } = useQuery(
-    [...QUERY_KEYS.TOKEN.GET_MOI_BALANCE, address],
+    [...QUERY_KEYS.TOKEN.GET_XRPL_BALANCE, address],
     getTokenBalanceData,
     {
       staleTime: 1000 * 60 * 5,

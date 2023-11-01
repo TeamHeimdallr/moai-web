@@ -5,6 +5,8 @@ export const QUERY_KEYS = {
 
     GET_XRP_BALANCE: ['xrp', 'ledger', 'token', 'balance', 'xrp'],
     GET_MOI_BALANCE: ['xrp', 'ledger', 'token', 'balance', 'moi'],
+    GET_XRPL_BALANCE: ['xrp', 'ledger', 'token', 'balance'],
+    GET_EVM_BALANCE: ['evm', 'ledger', 'token', 'balance'],
     GET_LIQUIDITY_TOKEN_BALANCE: ['xrp', 'ledger', 'token', 'balance', 'liquidity'],
     GET_TRUST_LINES: ['xrp', 'ledger', 'token', 'trust-lines'],
     SET_TRUST_LINE: ['mutate', 'xrp', 'ledger', 'token', 'trust-lines'],
