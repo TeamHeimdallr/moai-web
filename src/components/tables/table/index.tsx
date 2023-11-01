@@ -10,10 +10,12 @@ interface ReactTableProps<T extends object> {
   data: T[];
   columns: ColumnDef<T, ReactNode>[];
 
+  ratio: string;
+
   emptyText?: string;
   hasMore?: boolean;
   isLoading?: boolean;
-  type: 'poolWithChain' | 'poolWithoutChain' | 'provision' | 'swap';
+  type?: 'darker' | 'lighter';
 
   handleMoreClick?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,10 +26,11 @@ export const Table = <T extends object>({
   data = [],
   columns,
 
+  ratio,
+
   emptyText,
   hasMore,
   isLoading,
-
   type,
 
   handleMoreClick,
@@ -42,11 +45,16 @@ export const Table = <T extends object>({
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const tableRatio = ratio
+    .split('')
+    .map(num => `${num}fr`)
+    .join(' ');
+
   return (
     <StyledTable type={type}>
       <Header>
         {table.getHeaderGroups().map((headerGroup, i) => (
-          <HeaderInnerWrapper key={headerGroup.id + i} type={type}>
+          <HeaderInnerWrapper key={headerGroup.id + i} ratio={tableRatio}>
             {headerGroup.headers.map(header => (
               <Fragment key={header.id}>
                 {header.isPlaceholder
@@ -57,7 +65,7 @@ export const Table = <T extends object>({
           </HeaderInnerWrapper>
         ))}
       </Header>
-      <Divider />
+      <Divider type={type} />
       {table.getRowModel().rows.length === 0 ? (
         <EmptyText>{emptyText ?? 'Empty table'}</EmptyText>
       ) : (
@@ -67,6 +75,7 @@ export const Table = <T extends object>({
               row && (
                 <BodyInnerWrapper
                   key={row.id + i}
+                  ratio={tableRatio}
                   type={type}
                   rounded={!hasMore && !isLoading}
                   onClick={() => {
@@ -94,12 +103,13 @@ export const Table = <T extends object>({
   );
 };
 
-interface TypeProps {
-  type?: 'poolWithChain' | 'poolWithoutChain' | 'provision' | 'swap';
+interface TableProps {
+  ratio?: string;
+  type?: 'darker' | 'lighter';
 }
-const StyledTable = styled.div<TypeProps>(({ type }) => [
+const StyledTable = styled.div<TableProps>(({ type }) => [
   tw`w-full bg-neutral-10 rounded-12 flex flex-col`,
-  (type === 'provision' || type === 'swap') && tw`bg-neutral-15`,
+  type === 'lighter' && tw`bg-neutral-15`,
 ]);
 const Header = tw.div`
   px-24 py-20 items-center font-m-16 text-neutral-80
@@ -109,34 +119,40 @@ const Body = tw.div`
   flex flex-col items-center font-r-16 text-neutral-100 
 `;
 
-const HeaderInnerWrapper = styled.div<TypeProps>(({ type }) => [
+const HeaderInnerWrapper = styled.div<TableProps>(({ ratio }) => [
   tw`grid w-full h-full gap-16`,
-  type === 'poolWithChain'
-    ? tw`grid-cols-[2fr 1fr 1fr 1fr 1fr]`
-    : type === 'poolWithoutChain'
-    ? tw`grid-cols-[2fr 1fr 1fr 1fr]`
-    : tw`grid-cols-[2fr 3fr 2fr 2fr]`,
+  css`
+    & {
+      grid-template-columns: ${ratio};
+    }
+  `,
 ]);
 
 interface BTRProps {
   rounded?: boolean;
-  type?: 'poolWithChain' | 'poolWithoutChain' | 'provision' | 'swap';
+  ratio: string;
+  type?: 'darker' | 'lighter';
 }
-const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, type }) => [
+const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio, type }) => [
   tw`
     grid w-full h-full px-24 py-20 clickable gap-16 hover:bg-neutral-15
   `,
   rounded && tw`last:(rounded-b-10)`,
-  type === 'poolWithChain'
-    ? tw`grid-cols-[2fr 1fr 1fr 1fr 1fr]`
-    : type === 'poolWithoutChain'
-    ? tw`grid-cols-[2fr 1fr 1fr 1fr]`
-    : tw`grid-cols-[2fr 3fr 2fr 2fr] hover:(bg-neutral-20)`,
+  type === 'lighter' && tw`hover:bg-neutral-20`,
+  css`
+    & {
+      grid-template-columns: ${ratio};
+    }
+  `,
 ]);
 
-const Divider = tw.div`
-  w-full h-1 flex-shrink-0 bg-neutral-15
-`;
+interface DividerProps {
+  type?: 'darker' | 'lighter';
+}
+const Divider = styled.div<DividerProps>(({ type }) => [
+  tw`w-full h-1 flex-shrink-0 bg-neutral-15`,
+  type === 'lighter' && tw`bg-neutral-20`,
+]);
 
 const More = styled.div(() => [
   tw`

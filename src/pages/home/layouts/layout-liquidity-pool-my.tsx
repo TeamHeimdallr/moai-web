@@ -19,7 +19,13 @@ export const MyLiquidityLayout = () => {
       <TitleWrapper>
         <Title>My liquidity in Moai pools</Title>
       </TitleWrapper>
-      <Table data={data} columns={columns} handleRowClick={handleRowClick} />
+      <Table
+        data={data}
+        columns={columns}
+        ratio="2111"
+        type="darker"
+        handleRowClick={handleRowClick}
+      />
     </Wrapper>
   );
 };

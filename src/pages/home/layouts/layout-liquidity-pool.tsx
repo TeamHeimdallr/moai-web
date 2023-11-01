@@ -113,7 +113,8 @@ export const LiquidityPoolLayout = () => {
         <Table
           data={data}
           columns={columns}
-          type={showAllPools ? 'poolWithChain' : 'poolWithoutChain'}
+          ratio={showAllPools ? '12111' : '2111'}
+          type="darker"
           handleRowClick={handleRowClick}
         />
       </TableWrapper>
