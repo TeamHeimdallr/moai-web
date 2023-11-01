@@ -48,6 +48,12 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     }
   );
 
+  const xrp = {
+    symbol: 'XRP',
+    balance: xrpData ?? 0,
+    value: (xrpData ?? 0) * TOKEN_PRICE.XRP,
+  };
+
   const getTokenBalanceData = async () => {
     if (!isXrp) return;
 
@@ -87,17 +93,13 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
       balancesArray: undefined,
     };
 
-  const xrp = {
-    symbol: 'XRP',
-    balance: xrpData ?? 0,
-    value: (xrpData ?? 0) * TOKEN_PRICE.XRP,
-  };
+  const xrplTokensDataWithXRP =
+    compositions.filter(token => token.symbol === 'XRP').length > 0
+      ? [xrp, ...xrplTokensData]
+      : xrplTokensData;
 
-  const balancesMap = {
-    Token: xrp,
-  };
-
-  xrplTokensData.forEach(token => {
+  const balancesMap = {};
+  xrplTokensDataWithXRP.forEach(token => {
     const price = compositions.find(t => t.symbol === token.symbol)?.price;
 
     balancesMap[token.symbol] = {
@@ -107,18 +109,15 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     };
   });
 
-  const balancesArray = [
-    xrp,
-    ...xrplTokensData.map(token => {
-      const price = compositions.find(t => t.symbol === token.symbol)?.price;
+  const balancesArray = xrplTokensDataWithXRP.map(token => {
+    const price = compositions.find(t => t.symbol === token.symbol)?.price;
 
-      return {
-        symbol: token.symbol,
-        balance: token.balance ?? 0,
-        value: (token.balance ?? 0) * (price ?? 0),
-      };
-    }),
-  ];
+    return {
+      symbol: token.symbol,
+      balance: token.balance ?? 0,
+      value: (token.balance ?? 0) * (price ?? 0),
+    };
+  });
 
   return {
     balancesMap,
