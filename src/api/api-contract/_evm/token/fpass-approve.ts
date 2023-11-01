@@ -68,7 +68,7 @@ export const useApprove = ({
     : '0x0';
 
   const { isLoading: isPrepareLoading, config } = usePrepareContractWrite({
-    address: walletAddress,
+    address: walletAddress as Address,
     abi: FUTUREPASS_ABI,
     functionName: 'proxyCall',
 
