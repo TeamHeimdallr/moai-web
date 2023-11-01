@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { formatUnits } from 'viem';
 import { AccountInfoRequest, GatewayBalancesRequest } from 'xrpl';
@@ -11,16 +12,20 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { IAmm, ITokenbalanceInPool } from '~/types';
 
-import { useTokenPrice } from '../token/price';
+import { useLiquidityPoolBalance } from '../pool/get-liquidity-pool-balance';
 
-// TODO: change to get all balances. using gateway balances promise all
+// TODO: implement new hook for swap
 export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
   const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
   const { xrp: xrpWallet } = useConnectedWallet();
   const { address } = xrpWallet;
 
-  const { price: moiPrice } = useTokenPrice();
+  const { id } = useParams();
+
+  // TODO: only for swap
+  const { pool } = useLiquidityPoolBalance({ id: id ?? XRP_AMM[0].id });
+  const { compositions } = pool;
 
   const xrpBalanceData = async () => {
     if (!isXrp) return 0;
@@ -36,21 +41,6 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     return Number(formatUnits(BigInt(res), 6));
   };
 
-  const moiBalanceData = async () => {
-    if (!isXrp) return 0;
-
-    const res =
-      (
-        await client.request({
-          command: 'gateway_balances',
-          account: address,
-        } as GatewayBalancesRequest)
-      )?.result?.assets?.[XRP_TOKEN_ISSUER.MOI]?.find(asset => asset?.currency === 'MOI')?.value ||
-      0;
-
-    return Number(res);
-  };
-
   const { data: xrpData } = useQuery(
     [...QUERY_KEYS.TOKEN.GET_XRP_BALANCE, address],
     xrpBalanceData,
@@ -59,15 +49,43 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
     }
   );
 
-  const { data: moiData } = useQuery(
-    [...QUERY_KEYS.TOKEN.GET_MOI_BALANCE, address],
-    moiBalanceData,
+  const xrp = {
+    symbol: 'XRP',
+    balance: xrpData ?? 0,
+    value: (xrpData ?? 0) * TOKEN_PRICE.XRP,
+  };
+
+  const getTokenBalanceData = async () => {
+    if (!isXrp) return;
+
+    return await Promise.all(
+      compositions
+        .filter(token => token.symbol !== 'XRP')
+        .map(async token => {
+          const res = (
+            await client.request({
+              command: 'gateway_balances',
+              account: address,
+            } as GatewayBalancesRequest)
+          )?.result?.assets?.[XRP_TOKEN_ISSUER[token.symbol]]?.find(
+            asset => asset?.currency === token.symbol
+          );
+
+          return { symbol: res?.currency ?? '', balance: Number(res?.value) ?? 0 };
+        })
+    );
+  };
+
+  const { data: xrplTokensData } = useQuery(
+    [...QUERY_KEYS.TOKEN.GET_XRPL_BALANCE, address],
+    getTokenBalanceData,
     {
       enabled: !!address && !!client && isConnected && isXrp,
     }
   );
 
-  const success = xrpData !== undefined && moiData !== undefined;
+  const success =
+    xrpData !== undefined && xrplTokensData !== undefined && xrplTokensData.length !== 0;
 
   if (!success || !isXrp)
     return {
@@ -75,23 +93,31 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
       balancesArray: undefined,
     };
 
-  const xrp = {
-    symbol: 'XRP',
-    balance: xrpData ?? 0,
-    value: (xrpData ?? 0) * TOKEN_PRICE.XRP,
-  };
+  const xrplTokensDataWithXRP =
+    compositions.filter(token => token.symbol === 'XRP').length > 0
+      ? [xrp, ...xrplTokensData]
+      : xrplTokensData;
 
-  const moi = {
-    symbol: 'MOI',
-    balance: moiData ?? 0,
-    value: (moiData ?? 0) * moiPrice,
-  };
-  const balancesMap = {
-    Token: xrp,
-    MOI: moi,
-  };
+  const balancesMap = {};
+  xrplTokensDataWithXRP.forEach(token => {
+    const price = compositions.find(t => t.symbol === token.symbol)?.price;
 
-  const balancesArray = [xrp, moi];
+    balancesMap[token.symbol] = {
+      symbol: token.symbol,
+      balance: token.balance ?? 0,
+      value: (token.balance ?? 0) * (price ?? 0),
+    };
+  });
+
+  const balancesArray = xrplTokensDataWithXRP.map(token => {
+    const price = compositions.find(t => t.symbol === token.symbol)?.price;
+
+    return {
+      symbol: token.symbol,
+      balance: token.balance ?? 0,
+      value: (token.balance ?? 0) * (price ?? 0),
+    };
+  });
 
   return {
     balancesMap,
