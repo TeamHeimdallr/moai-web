@@ -44,7 +44,7 @@ interface Props {
 
 export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }: Props) => {
   const { network } = useParams();
-  const { selectedNetwork } = useNetwork();
+  const { selectedNetwork, isXrp } = useNetwork();
   const { getTokenPrice } = useTokenPrice();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
@@ -160,7 +160,10 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
   }, [allowSuccess1, allowSuccess2, refetchAllowance1, refetchAllowance2]);
 
   const handleLink = () => {
-    window.open(`${SCANNER_URL[currentNetwork]}/tx/${txData?.transactionHash}`);
+    const txHash = isXrp ? txData?.hash : txData?.transactionHash;
+    const url =
+      `${SCANNER_URL[currentNetwork]}` + (isXrp ? '/transactions/' : 'tx') + `${txHash ?? ''}`;
+    window.open(url);
   };
 
   return (

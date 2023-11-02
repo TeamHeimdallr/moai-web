@@ -24,9 +24,16 @@ export const DetailHeader = () => {
   const { compositions, lpTokenAddress } = pool;
   const tokens = compositions?.map(composition => composition.symbol);
 
-  const { selectedNetwork } = useNetwork();
+  const { selectedNetwork, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const handleLink = () => {
+    const url =
+      `${SCANNER_URL[currentNetwork]}/address/${lpTokenAddress}` +
+      (isFpass ? 'tab=erc20_transfers' : '');
+
+    window.open(url);
+  };
 
   return (
     <HeaderWrapper>
@@ -52,14 +59,7 @@ export const DetailHeader = () => {
             type="small"
           />
         ))}
-        <ButtonIconMedium
-          icon={<IconLink />}
-          onClick={() =>
-            window.open(
-              `${SCANNER_URL[currentNetwork]}/address/${lpTokenAddress}?tab=erc20_transfers`
-            )
-          }
-        />
+        <ButtonIconMedium icon={<IconLink />} onClick={handleLink} />
       </TokenWrapper>
     </HeaderWrapper>
   );
