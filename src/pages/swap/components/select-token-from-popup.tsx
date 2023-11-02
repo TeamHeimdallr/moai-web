@@ -28,6 +28,7 @@ export const SelectFromTokenPopup = () => {
     >
       <Wrapper>
         {balancesArray
+          ?.filter(t => (t.balance ?? 0) > 0)
           ?.filter(t => t.symbol !== toToken)
           ?.map((balanceInfo, idx) => {
             if (!balanceInfo) return <></>;
