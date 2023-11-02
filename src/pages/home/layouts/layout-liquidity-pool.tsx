@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { ButtonChipFilter } from '~/components/buttons/chip/filter';
-import NetworkAlertPopup from '~/components/popup/network-alert';
 import { Table } from '~/components/tables';
 import { Toggle } from '~/components/toggle';
 
@@ -29,9 +28,8 @@ export const LiquidityPoolLayout = () => {
   const { data, columns } = useTableLiquidityPool({ showNetworkColumn: showAllPools });
 
   const [showToastPopup, setShowToastPopup] = useState<boolean>(false);
-  const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
-  const { selectedNetwork, selectNetwork } = useNetwork();
-  const [targetNetwork, setTargetNetwork] = useState<NETWORK>(selectedNetwork);
+  const { open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
+  const { selectedNetwork, setTargetNetwork } = useNetwork();
 
   const isMounted = useRef(false);
 
@@ -39,7 +37,7 @@ export const LiquidityPoolLayout = () => {
     if (!meta) return;
     if (selectedNetwork !== meta.network) {
       popupOpen();
-      setTargetNetwork(meta.network);
+      setTargetNetwork(meta.network as NETWORK);
       return;
     }
     navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.id}`);
@@ -118,7 +116,6 @@ export const LiquidityPoolLayout = () => {
           handleRowClick={handleRowClick}
         />
       </TableWrapper>
-      {popupOpened && <NetworkAlertPopup onClickButton={() => selectNetwork(targetNetwork)} />}
     </Wrapper>
   );
 };
