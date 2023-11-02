@@ -91,6 +91,7 @@ export const SwapPopup = () => {
     allow,
     isLoading: isLoadingAllowance,
     isSuccess: isSuccessAllowance,
+    allowance,
   } = useApprove({
     amount: Number(wantToAllowAmount ?? 0),
     address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[wantToAllowToken] ?? '',
@@ -122,9 +123,9 @@ export const SwapPopup = () => {
     if (isSuccess) {
       return 3;
     }
-    if (!isSuccessAllowance) return 1;
-    return 2;
-  }, [isSuccessAllowance, isSuccess]);
+    if (isSuccessAllowance || allowance) return 2;
+    return 1;
+  }, [isSuccess, isSuccessAllowance, allowance]);
 
   const numFromValue = Number(fromValue) || 0;
   const numToValue = Number(toValue) || 0;
@@ -180,7 +181,7 @@ export const SwapPopup = () => {
         </ButtonWrapper>
       }
     >
-      <Wrapper>
+      <Wrapper style={{ gap: isSuccess ? 40 : 24 }}>
         {isSuccess ? (
           <>
             <SuccessWrapper>
@@ -283,7 +284,7 @@ export const SwapPopup = () => {
 };
 
 const Wrapper = tw.div`
-  px-24 pb-24 flex flex-col gap-24
+  px-24 pb-24 flex flex-col
 `;
 
 const SuccessTitle = tw.div`
