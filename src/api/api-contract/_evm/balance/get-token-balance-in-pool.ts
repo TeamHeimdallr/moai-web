@@ -3,6 +3,7 @@ import { fetchBalance } from '@wagmi/core';
 import { formatUnits } from 'viem';
 import { Address, useQuery } from 'wagmi';
 
+import { isNativeToken } from '~/api/utils/native-token';
 import { QUERY_KEYS } from '~/api/utils/query-keys';
 
 import { EVM_TOKEN_ADDRESS } from '~/constants';
@@ -35,7 +36,9 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
       compositions.map(token => {
         return fetchBalance({
           address: address as Address,
-          token: EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[token.symbol] as Address,
+          token: isNativeToken({ symbol: token.symbol, network: selectedNetwork })
+            ? undefined
+            : (EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[token.symbol] as Address),
         });
       })
     );
@@ -48,7 +51,11 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
       enabled:
         isEvm &&
         !!address &&
-        compositions.every(token => !!EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[token.symbol]),
+        compositions.every(
+          token =>
+            isNativeToken({ symbol: token.symbol, network: selectedNetwork }) ||
+            !!EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[token.symbol]
+        ),
     }
   );
 

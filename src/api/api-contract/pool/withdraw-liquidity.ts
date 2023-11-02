@@ -1,12 +1,14 @@
-import { Address } from 'viem';
+import { Address, zeroAddress } from 'viem';
 
 import { useWithdrawLiquidity as useWithdrawLiquidityFpass } from '~/api/api-contract/_evm/pool/fpass-withdraw-liquidity';
 import { useWithdrawTokenAmounts as useWithdrawTokenAmountsEvm } from '~/api/api-contract/_evm/pool/get-liquidity-pool-balance';
 import { useWithdrawLiquidity as useWithdrawLiquidityEvm } from '~/api/api-contract/_evm/pool/withdraw-liquidity';
 import { useWithdrawTokenAmounts as useWithdrawTokenAmountsXrp } from '~/api/api-contract/_xrpl/pool/get-liquidity-pool-balance';
 import { useWithdrawLiquidity as useWithdrawLiquidityXrp } from '~/api/api-contract/_xrpl/pool/withdraw-liquidity';
+import { getWrappedTokenAddress } from '~/api/utils/native-token';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { NETWORK } from '~/types';
 
 interface Props {
   id: string;
@@ -24,7 +26,12 @@ export const useWithdrawLiquidity = ({ id, tokens, amount }: Props) => {
 
   const resEvm = useWithdrawLiquidityEvm({
     poolId: id,
-    tokens: tokens?.map(t => t?.address ?? '') ?? [],
+    tokens:
+      tokens?.map(t =>
+        t?.address && t?.address === getWrappedTokenAddress(NETWORK.EVM_SIDECHAIN)
+          ? zeroAddress
+          : t?.address ?? ''
+      ) ?? [],
     amount: amount ?? BigInt(0),
   });
 

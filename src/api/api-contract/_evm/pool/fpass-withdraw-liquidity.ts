@@ -74,7 +74,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
     : '0x0';
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
-    address: walletAddress,
+    address: walletAddress as Address,
     abi: FUTUREPASS_ABI,
     functionName: 'proxyCall',
 

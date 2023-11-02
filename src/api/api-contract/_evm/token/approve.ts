@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { Address, parseUnits } from 'viem';
 import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
 
+import { isNativeToken } from '~/api/utils/native-token';
+
 import { TOKEN_DECIMAL } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
@@ -38,7 +40,12 @@ export const useApprove = ({
   const { evm } = useConnectedWallet();
   const { isConnected, address: walletAddress } = evm;
 
-  const internalEnabled = enabled && !!walletAddress && !!spender && isEvm;
+  const internalEnabled =
+    enabled &&
+    !!walletAddress &&
+    !!spender &&
+    isEvm &&
+    !isNativeToken({ address: tokenAddress, network: currentNetwork });
 
   const { isLoading: isReadLoading, refetch } = useContractRead({
     address: tokenAddress,
@@ -78,7 +85,9 @@ export const useApprove = ({
   return {
     isLoading: isLoading || isReadLoading || isPrepareLoading,
     isSuccess,
-    allowance: isConnected && allowance,
+    allowance:
+      (isConnected && allowance) ||
+      isNativeToken({ address: tokenAddress, network: currentNetwork }),
     refetch,
     allow,
   };
