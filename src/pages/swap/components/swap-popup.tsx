@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
 
@@ -38,8 +38,7 @@ import { SwapArrowDown } from './swap-arrow-down';
 
 export const SwapPopup = () => {
   const { network } = useParams();
-  const { selectedNetwork, isEvm, isXrp } = useNetwork();
-  const navigate = useNavigate();
+  const { selectedNetwork, isXrp } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
@@ -90,7 +89,6 @@ export const SwapPopup = () => {
 
   const {
     allow,
-    allowance,
     isLoading: isLoadingAllowance,
     isSuccess: isSuccessAllowance,
   } = useApprove({
@@ -114,7 +112,10 @@ export const SwapPopup = () => {
   });
 
   const handleLink = () => {
-    window.open(`${SCANNER_URL[currentNetwork]}/tx/${txData?.hash ?? ''}`);
+    const txHash = isXrp ? txData?.hash : txData?.transactionHash;
+    const url =
+      `${SCANNER_URL[currentNetwork]}` + (isXrp ? '/transactions/' : 'tx') + `${txHash ?? ''}`;
+    window.open(url);
   };
 
   const step = useMemo(() => {
@@ -124,8 +125,6 @@ export const SwapPopup = () => {
     if (!isSuccessAllowance) return 1;
     return 2;
   }, [isSuccessAllowance, isSuccess]);
-
-  console.log(allowance, step);
 
   const numFromValue = Number(fromValue) || 0;
   const numToValue = Number(toValue) || 0;
@@ -143,7 +142,7 @@ export const SwapPopup = () => {
 
   const handleButton = async () => {
     if (isSuccess) {
-      navigate(-1);
+      resetAll();
       close();
       return;
     }
@@ -176,6 +175,7 @@ export const SwapPopup = () => {
             }
             isLoading={isLoading || isLoadingAllowance}
             buttonType={isSuccess ? 'outlined' : 'filled'}
+            disabled={!isLoading && !isLoadingAllowance && step == 2 && isError}
           />
         </ButtonWrapper>
       }
@@ -261,6 +261,22 @@ export const SwapPopup = () => {
             </DetailWrapper>
           </>
         )}
+        {step < 3 ? (
+          <LoadingStep
+            totalSteps={2}
+            step={step}
+            isLoading={step === 1 ? isLoadingAllowance : isLoading}
+            isDone={isSuccess}
+          />
+        ) : (
+          <TimeWrapper>
+            <IconTime />
+            {format(new Date(blockTimestamp), DATE_FORMATTER.FULL)}
+            <ClickableIcon onClick={handleLink}>
+              <IconLink />
+            </ClickableIcon>
+          </TimeWrapper>
+        )}
       </Wrapper>
     </Popup>
   );
@@ -326,5 +342,24 @@ const Divider = tw.div`
 `;
 
 const ButtonWrapper = tw.div`
-  w-full flex flex-col gap-16
+  w-full
 `;
+const TimeWrapper = styled.div(() => [
+  tw`flex items-center gap-4 text-neutral-60`,
+  css`
+    & svg {
+      width: 20px;
+      height: 20px;
+      fill: ${COLOR.NEUTRAL[60]};
+    }
+  `,
+]);
+
+const ClickableIcon = styled.div(() => [
+  tw` clickable flex-center`,
+  css`
+    &:hover svg {
+      fill: ${COLOR.NEUTRAL[80]};
+    }
+  `,
+]);
