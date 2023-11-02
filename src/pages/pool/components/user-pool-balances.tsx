@@ -5,6 +5,7 @@ import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-p
 
 import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
+import { FuturepassCreatePopup } from '~/components/account/futurepass-create-popup';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
 
@@ -24,6 +25,10 @@ export const UserPoolBalances = () => {
   const { network, id } = useParams();
   useRequirePrarams([!!id, !!network], () => navigate(-1));
   const { isFpass, isEvm } = useNetwork();
+
+  const { open: openFuturepassCreate, opened: futurepassCreateOpened } = usePopup(
+    POPUP_ID.FUTUREPASS_CREATE
+  );
 
   const { evm, xrp, fpass } = useConnectedWallet();
 
@@ -90,7 +95,7 @@ export const UserPoolBalances = () => {
               text="Create Futurepass"
               isLoading={!!opened}
               onClick={() => {
-                window.open('https://futurepass.futureverse.app/');
+                openFuturepassCreate();
               }}
             />
           ) : (
@@ -114,6 +119,7 @@ export const UserPoolBalances = () => {
           )}
         </ButtonWrapper>
       </Footer>
+      {futurepassCreateOpened && <FuturepassCreatePopup />}
     </Wrapper>
   );
 };

@@ -57,7 +57,7 @@ export const useSwap = ({
     config,
     isError,
   } = usePrepareContractWrite({
-    address: address,
+    address: address as Address,
     abi: FUTUREPASS_ABI,
     functionName: 'proxyCall',
 
