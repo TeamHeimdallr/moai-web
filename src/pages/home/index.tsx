@@ -1,31 +1,21 @@
 import tw, { css, styled } from 'twin.macro';
 
-import { AlertBanner } from '~/components/alerts/banner';
-import { ButtonPrimarySmallBlack } from '~/components/buttons';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
 import { usePopup } from '~/hooks/components';
 import { POPUP_ID } from '~/types';
 
-import { useBanner } from './hooks/components/alert-wallet/use-banner';
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MainLayout } from './layouts/layout-main';
 
 const HomePage = () => {
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
-  const { text, connectWallet } = useBanner();
 
   return (
     <>
       <Wrapper>
         <GnbWrapper banner={!!opened}>
-          {opened && (
-            <AlertBanner
-              text={text}
-              button={<ButtonPrimarySmallBlack text="Connect wallet" onClick={connectWallet} />}
-            />
-          )}
           <Gnb />
         </GnbWrapper>
         <InnerWrapper>
@@ -47,6 +37,7 @@ const Wrapper = tw.div`
 const InnerWrapper = tw.div`
   flex flex-col gap-40 pb-120
 `;
+
 interface DivProps {
   banner?: boolean;
 }

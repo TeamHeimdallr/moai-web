@@ -3,16 +3,20 @@ import tw, { css, styled } from 'twin.macro';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { usePopup } from '~/hooks/components';
+import { POPUP_ID } from '~/types';
+
 import { SwapInputGroup } from './components/swap-input-group';
 
 const SwapPage = () => {
+  const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   return (
     <>
       <Wrapper>
-        <GnbWrapper>
+        <GnbWrapper banner={!!opened}>
           <Gnb />
         </GnbWrapper>
-        <InnerWrapper>
+        <InnerWrapper banner={!!opened}>
           <ContentWrapper>
             <Title>Swap</Title>
 
@@ -31,13 +35,22 @@ const Wrapper = tw.div`
   relative flex flex-col justify-between w-full h-full
 `;
 
-const GnbWrapper = tw.div`
-  w-full h-80 flex-center
-`;
+interface DivProps {
+  banner?: boolean;
+}
+const GnbWrapper = styled.div<DivProps>(({ banner }) => [
+  tw`
+    w-full absolute top-0 left-0 flex-center flex-col z-10
+  `,
+  banner ? tw`h-140` : tw`h-80`,
+]);
 
-const InnerWrapper = tw.div`
-  flex flex-col gap-40 pt-40 pb-120
-`;
+const InnerWrapper = styled.div<DivProps>(({ banner }) => [
+  tw`  
+    flex flex-col gap-40 pb-120
+  `,
+  banner ? tw`pt-180` : tw`pt-120`,
+]);
 
 const ContentWrapper = styled.div(() => [
   tw`flex flex-col items-center gap-40`,
