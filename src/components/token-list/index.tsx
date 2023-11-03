@@ -58,7 +58,10 @@ interface DivProps {
 }
 const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
   tw`flex items-center justify-between gap-10`,
-
+  backgroundColor &&
+    css`
+      background-color: ${backgroundColor};
+    `,
   type === 'selectable'
     ? tw`border-transparent border-solid px-11 py-7 rounded-8 border-1 hover:bg-neutral-20 clickable`
     : type === 'medium'
@@ -67,12 +70,7 @@ const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
   type === 'selectable' &&
     (selected
       ? tw`border-solid border-1 border-primary-60 bg-primary-20 hover:bg-primary-20`
-      : tw`bg-neutral-10`),
-
-  backgroundColor &&
-    css`
-      background-color: ${backgroundColor};
-    `,
+      : tw``),
 ]);
 const LeftWrapper = tw.div`flex-center gap-12`;
 const Image = tw.img`w-36 h-36 rounded-18`;
