@@ -9,7 +9,9 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { EVM_CONTRACT_ADDRESS, EVM_TOKEN_ADDRESS } from '~/constants';
+import { getWrappedTokenAddress, isNativeToken } from '~/api/utils/native-token';
+
+import { EVM_CONTRACT_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -41,8 +43,8 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
   const handleNativeXrp = (token: string) => {
     if (currentNetwork !== NETWORK.EVM_SIDECHAIN) return token;
 
-    if (token === EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO)
-      return EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP;
+    if (isNativeToken({ address: token as Address, network: currentNetwork }))
+      return getWrappedTokenAddress(currentNetwork) ?? token;
     return token;
   };
   const sortedTokens = tokens
@@ -50,6 +52,9 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
     .sort((a, b) => handleNativeXrp(a).localeCompare(handleNativeXrp(b)));
   const sortedIndex = sortedTokens.map(token => tokens.findIndex(t => t === token));
   const sortedAmountsIn = sortedIndex.map(index => amountsIn[index]);
+  const nativeIndex = sortedTokens.findIndex(token =>
+    isNativeToken({ address: token as Address, network: currentNetwork })
+  );
 
   // TODO: connect to server. get vault address according to network and pool id
   const vault = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
@@ -61,6 +66,7 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
 
     account: walletAddress as Address,
     chainId,
+    value: nativeIndex === -1 ? 0n : sortedAmountsIn[nativeIndex],
     args: [
       poolId,
       walletAddress,

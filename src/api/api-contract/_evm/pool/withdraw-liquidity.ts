@@ -9,7 +9,9 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { EVM_CONTRACT_ADDRESS, EVM_TOKEN_ADDRESS } from '~/constants';
+import { getWrappedTokenAddress, isNativeToken } from '~/api/utils/native-token';
+
+import { EVM_CONTRACT_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -42,8 +44,8 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
   const handleNativeXrp = (token: string) => {
     if (currentNetwork !== NETWORK.EVM_SIDECHAIN) return token;
 
-    if (token === EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO)
-      return EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP;
+    if (isNativeToken({ address: token as Address, network: currentNetwork }))
+      return getWrappedTokenAddress(currentNetwork) ?? token;
     return token;
   };
   const sortedTokens = tokens

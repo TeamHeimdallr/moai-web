@@ -19,7 +19,7 @@ export const getTokenSymbol = async (client: PublicClient, network: NETWORK, add
     functionName: 'symbol',
   });
 
-  return (symbol as string) || '';
+  return (symbol === 'WXRP' ? 'XRP' : (symbol as string)) || '';
 };
 
 export const useTokenSymbols = (addresses: Address[]) => {
@@ -40,6 +40,6 @@ export const useTokenSymbols = (addresses: Address[]) => {
   });
 
   return {
-    data: res?.map(d => (d?.result ?? '') as string) ?? [],
+    data: res?.map(d => (d?.result === 'WXRP' ? 'XRP' : d?.result ?? '') as string) ?? [],
   };
 };
