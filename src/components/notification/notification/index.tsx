@@ -68,13 +68,9 @@ const UpperWrapper = tw.div`
   flex flex-col items-end gap-20 relative z-10
 `;
 
-interface WrapperProps {
-  isMD?: boolean;
-}
-const Wrapper = styled.div<WrapperProps>(({ isMD }) => [
-  tw`min-w-294 max-h-640 min-h-136 bg-neutral-15 rounded-8 absolute top-60 right-0 box-shadow-default`,
-  isMD ? tw`top-60` : tw`top-48`,
-]);
+const Wrapper = tw.div`
+  min-w-294 max-h-640 min-h-136 bg-neutral-15 rounded-8 absolute top-48 md:top-60 right-0 box-shadow-default
+`;
 
 interface Props {
   opened: boolean;

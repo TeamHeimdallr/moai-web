@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import copy from 'copy-to-clipboard';
-import tw, { styled } from 'twin.macro';
+import tw from 'twin.macro';
 import { zeroAddress } from 'viem';
 
 import { COLOR } from '~/assets/colors';
@@ -205,13 +205,9 @@ export const AccountDetail = () => {
   );
 };
 
-interface WrapperProps {
-  isMD?: boolean;
-}
-const Wrapper = styled.div<WrapperProps>(({ isMD }) => [
-  tw`min-w-290 bg-neutral-15 rounded-8 absolute top-60 right-0 box-shadow-default`,
-  isMD ? tw`top-60` : tw`top-48`,
-]);
+const Wrapper = tw.div`
+  min-w-290 bg-neutral-15 rounded-8 absolute top-48 md:top-60 right-0 box-shadow-default
+`;
 const InnerWrapper = tw.div`
   flex-center
 `;
