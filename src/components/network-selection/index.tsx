@@ -7,6 +7,7 @@ import { NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useMediaQuery } from '~/hooks/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { ButtonDropdown } from '../buttons/dropdown';
@@ -55,7 +56,7 @@ export const NetworkSelection = () => {
           style={{ minHeight: '40px' }}
         />
         {opened && (
-          <ListOuterWrapper>
+          <ListOuterWrapper isMD={isMD}>
             <Title>Network Selection</Title>
             <Divider />
             <ListWrapper>
@@ -84,9 +85,13 @@ const Wrapper = tw.div`
   flex flex-col items-end gap-20 relative z-10 flex-shrink-0
 `;
 
-const ListOuterWrapper = tw.div`
-  min-w-290 bg-neutral-15 rounded-8 absolute top-60 right-0 box-shadow-default
-`;
+interface ListOuterWrapperProps {
+  isMD?: boolean;
+}
+const ListOuterWrapper = styled.div<ListOuterWrapperProps>(({ isMD }) => [
+  tw`min-w-290 bg-neutral-15 rounded-8 absolute right-0 box-shadow-default`,
+  isMD ? tw`top-60` : tw`top-48`,
+]);
 
 const ListWrapper = tw.div`
   flex flex-col gap-2 p-8

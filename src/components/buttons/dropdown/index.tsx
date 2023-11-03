@@ -4,6 +4,8 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
+import { useMediaQuery } from '~/hooks/utils';
+
 interface ButtonDrodDownProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   image?: string;
   imageAlt?: string;
@@ -23,11 +25,12 @@ export const ButtonDropdown = ({
   opened,
   ...rest
 }: ButtonDrodDownProps) => {
+  const { isMD } = useMediaQuery();
   return (
     <Wrapper opened={opened} {...rest}>
-      {image && <Image src={image} alt={imageAlt} title={imageTitle} />}
+      {image && <Image src={image} alt={imageAlt} title={imageTitle} isMD={isMD} />}
       <IconTextWrapper>
-        {text}
+        {isMD && <Text>{text}</Text>}
         <Icon opened={opened}>
           <IconDown width={16} height={16} fill={COLOR.NEUTRAL[60]} />
         </Icon>
@@ -65,15 +68,21 @@ const Wrapper = styled.button<Props>(({ opened }) => [
     `,
 ]);
 
-const IconTextWrapper = tw.div`gap-4 flex-center font-m-14`;
+const IconTextWrapper = tw.div`gap-4 flex-center`;
 
 const Icon = styled.div<Props>(({ opened }) => [
-  tw`p-2 transition-transform flex-center`,
+  tw`py-2 transition-transform flex-center`,
   css`
     transform: rotate(${opened ? '-180deg' : '0deg'});
   `,
 ]);
 
-const Image = tw.img`
-  w-24 h-24 flex-center object-cover
-`;
+const Text = tw.div`font-m-14`;
+
+interface ImageProps {
+  isMD?: boolean;
+}
+const Image = styled.img<ImageProps>(({ isMD }) => [
+  tw`flex-center object-cover`,
+  isMD ? tw`w-24 h-24` : tw`w-20 h-20`,
+]);
