@@ -14,23 +14,19 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/components/table/tab';
-import { IPool, NETWORK } from '~/types';
+import { IPool } from '~/types';
 
 interface Props {
   pool: IPool;
 }
 export const PoolLiquidityProvisions = ({ pool }: Props) => {
   const { selectedTab, selectTab } = useTablePoolLiquidityProvisionSelectTabStore();
-  const { evm, xrp, fpass } = useConnectedWallet();
+
   const { selectedNetwork } = useNetwork();
   const { network } = useParams();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-  const address =
-    currentNetwork === NETWORK.THE_ROOT_NETWORK
-      ? fpass?.address
-      : currentNetwork === NETWORK.EVM_SIDECHAIN
-      ? evm?.address
-      : xrp?.address;
+
+  const { currentAddress } = useConnectedWallet(currentNetwork);
 
   const [opened, open] = useState(false);
 
@@ -40,7 +36,7 @@ export const PoolLiquidityProvisions = ({ pool }: Props) => {
   ];
   const { data, columns, filteredData } = useTableTotalProvision(pool.id);
   const hasLiquidity =
-    (filteredData?.filter(data => data.liquidityProvider === address)?.length ?? 0) > 0;
+    (filteredData?.filter(data => data.liquidityProvider === currentAddress)?.length ?? 0) > 0;
 
   return (
     <Wrapper opened={opened}>

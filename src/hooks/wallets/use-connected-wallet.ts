@@ -9,6 +9,7 @@ import { zeroAddress } from 'viem';
 import { Transaction } from 'xrpl';
 
 import { truncateAddress } from '~/utils/util-string';
+import { NETWORK } from '~/types';
 
 import { useFuturepassOf } from './use-futurepass-of';
 import { useConnectWithCrossmarkWallet, useConnectWithEvmWallet, useConnectWithGemWallet } from '.';
@@ -32,8 +33,10 @@ interface UseConnectedWallet {
     signer: string; // owner
     refetch: () => void;
   };
+
+  currentAddress: string | undefined;
 }
-export const useConnectedWallet = (): UseConnectedWallet => {
+export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
   const {
     isConnected: isEvmConnected,
     connect: connectEvm,
@@ -103,9 +106,18 @@ export const useConnectedWallet = (): UseConnectedWallet => {
     refetch,
   };
 
+  const currentAddress =
+    network === NETWORK.THE_ROOT_NETWORK
+      ? fpass?.address
+      : network === NETWORK.EVM_SIDECHAIN
+      ? evm?.address
+      : xrp?.address;
+
   return {
     evm,
     xrp,
     fpass,
+
+    currentAddress,
   };
 };
