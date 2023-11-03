@@ -26,18 +26,17 @@ import { useTableLiquidityPoolProvisionSortStore } from '~/states/components';
 import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/components/table/tab';
 
 export const useTableTotalProvision = (id: string) => {
-  const { evm, xrp } = useConnectedWallet();
-  const address = evm?.address || xrp?.address;
+  const { network } = useParams();
 
   const { data } = useGetLiquidityPoolProvisions({ id });
 
   const { selectedTab } = useTablePoolLiquidityProvisionSelectTabStore();
   const { sort, setSort } = useTableLiquidityPoolProvisionSortStore();
 
-  const { network } = useParams();
   const { selectedNetwork, isXrp } = useNetwork();
-
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
+  const { currentAddress } = useConnectedWallet(currentNetwork);
 
   const isMyProvision = selectedTab === 'my-provision';
 
@@ -76,8 +75,8 @@ export const useTableTotalProvision = (id: string) => {
   });
 
   const filteredData =
-    isMyProvision && address
-      ? sortedData?.filter(d => d.liquidityProvider === address)
+    isMyProvision && currentAddress
+      ? sortedData?.filter(d => d.liquidityProvider === currentAddress)
       : sortedData;
 
   const tableData = useMemo(

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
 import { IconDown } from '~/assets/icons';
@@ -9,7 +10,9 @@ import { Table } from '~/components/tables';
 
 import { useTableTotalProvision } from '~/pages/pool/hooks/components/table/use-table-total-provisions';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkFull } from '~/utils';
 import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/components/table/tab';
 import { IPool } from '~/types';
 
@@ -18,8 +21,12 @@ interface Props {
 }
 export const PoolLiquidityProvisions = ({ pool }: Props) => {
   const { selectedTab, selectTab } = useTablePoolLiquidityProvisionSelectTabStore();
-  const { evm, xrp } = useConnectedWallet();
-  const address = evm?.address || xrp?.address;
+
+  const { selectedNetwork } = useNetwork();
+  const { network } = useParams();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
+  const { currentAddress } = useConnectedWallet(currentNetwork);
 
   const [opened, open] = useState(false);
 
@@ -28,7 +35,8 @@ export const PoolLiquidityProvisions = ({ pool }: Props) => {
     { key: 'my-provision', name: 'My liquidity' },
   ];
   const { data, columns, filteredData } = useTableTotalProvision(pool.id);
-  const hasLiquidity = filteredData.filter(data => data.liquidityProvider === address).length > 0;
+  const hasLiquidity =
+    (filteredData?.filter(data => data.liquidityProvider === currentAddress)?.length ?? 0) > 0;
 
   return (
     <Wrapper opened={opened}>
