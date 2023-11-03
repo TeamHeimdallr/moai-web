@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
-import { BASE_URL, NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
+import { NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -16,8 +17,7 @@ export const NetworkSelection = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [opened, open] = useState(false);
 
-  const { selectedNetwork, selectNetwork } = useNetwork();
-  const [targetNetwork, setTargetNetwork] = useState<NETWORK>(selectedNetwork);
+  const { selectedNetwork, selectNetwork, setTargetNetwork } = useNetwork();
 
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
 
@@ -27,11 +27,12 @@ export const NetworkSelection = () => {
 
   const selectedNetworkDetail =
     NETWORK_SELECT.find(({ network }) => network === selectedNetwork) || NETWORK_SELECT[0];
+  const { pathname } = useLocation();
 
   const handleSelect = (network: NETWORK) => {
     open(false);
 
-    if (window.location.href === BASE_URL) {
+    if (pathname === '/') {
       selectNetwork(network);
       return;
     }
@@ -74,7 +75,7 @@ export const NetworkSelection = () => {
           </ListOuterWrapper>
         )}
       </Wrapper>
-      {popupOpened && <NetworkAlertPopup onClickButton={() => selectNetwork(targetNetwork)} />}
+      {popupOpened && <NetworkAlertPopup />}
     </>
   );
 };

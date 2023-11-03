@@ -11,6 +11,7 @@ import { POPUP_ID } from '~/types';
 
 export const MainLayout = () => {
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
 
   const { evm, xrp } = useConnectedWallet();
   const { setWalletType } = useWalletTypeStore();
@@ -18,7 +19,7 @@ export const MainLayout = () => {
 
   return (
     <MainWrapper
-      isConnected={isConnected}
+      isConnected={!openedBanner}
       style={{ backgroundImage: `url(${ASSET_URL}/images/bg-main.png)` }}
     >
       {isConnected ? (
@@ -51,7 +52,7 @@ interface MainWrapperProps {
   isConnected?: boolean;
 }
 const MainWrapper = styled.div<MainWrapperProps>(({ isConnected }) => [
-  tw`flex-col w-full gap-24 bg-center bg-no-repeat bg-cover pt-240 pb-160 flex-center`,
+  tw`flex-col w-full gap-24 bg-center bg-no-repeat bg-cover pt-220 pb-160 flex-center`,
   isConnected && tw`gap-12 pt-160 pb-120`,
 ]);
 

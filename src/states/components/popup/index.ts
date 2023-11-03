@@ -21,7 +21,9 @@ export const usePopupStore = create<State>()(
       open: (id?: string) =>
         set(
           produce<State>(state => {
-            if (id) state.opened.push(id);
+            if (id && !state.opened.includes(id)) {
+              state.opened.push(id);
+            }
           })
         ),
       close: (id?: string) =>

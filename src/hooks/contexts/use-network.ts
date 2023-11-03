@@ -8,7 +8,8 @@ import { NETWORK } from '~/types';
 import { theRootNetworkTestnet, xrpEvmSidechainTestnet } from '~/configs/evm-network';
 
 export const useNetwork = () => {
-  const { selectedNetwork, selectNetwork } = useSelecteNetworkStore();
+  const { selectedNetwork, selectNetwork, targetNetwork, setTargetNetwork, resetTarget } =
+    useSelecteNetworkStore();
 
   const isEvm =
     selectedNetwork === NETWORK.EVM_SIDECHAIN || selectedNetwork === NETWORK.THE_ROOT_NETWORK;
@@ -24,6 +25,9 @@ export const useNetwork = () => {
   return {
     selectedNetwork,
     selectNetwork,
+    targetNetwork,
+    setTargetNetwork,
+    resetTarget,
     isEvm,
     isXrp,
     isFpass,

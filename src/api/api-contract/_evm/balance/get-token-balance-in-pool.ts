@@ -11,21 +11,23 @@ import { EVM_POOL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkFull } from '~/utils';
 import { ITokenbalanceInPool } from '~/types';
 
 import { useLiquidityPoolBalance } from '../pool/get-liquidity-pool-balance';
 
 // TODO: implement new hook for swap
 export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
+  const { id, network } = useParams();
+
   const { isEvm, isFpass, selectedNetwork } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { evm, fpass } = useConnectedWallet();
 
-  const { id } = useParams();
-
   // TODO: only for swap
   const { pool } = useLiquidityPoolBalance({
-    id: (id ?? EVM_POOL?.[selectedNetwork]?.[0].id) as `0x${string}`,
+    id: (id ?? EVM_POOL?.[currentNetwork]?.[0].id) as `0x${string}`,
   });
   const { compositions } = pool;
 
@@ -36,9 +38,9 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
       compositions.map(token => {
         return fetchBalance({
           address: address as Address,
-          token: isNativeToken({ symbol: token.symbol, network: selectedNetwork })
+          token: isNativeToken({ symbol: token.symbol, network: currentNetwork })
             ? undefined
-            : (EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[token.symbol] as Address),
+            : (EVM_TOKEN_ADDRESS?.[currentNetwork]?.[token.symbol] as Address),
         });
       })
     );
@@ -53,8 +55,8 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
         !!address &&
         compositions.every(
           token =>
-            isNativeToken({ symbol: token.symbol, network: selectedNetwork }) ||
-            !!EVM_TOKEN_ADDRESS?.[selectedNetwork]?.[token.symbol]
+            isNativeToken({ symbol: token.symbol, network: currentNetwork }) ||
+            !!EVM_TOKEN_ADDRESS?.[currentNetwork]?.[token.symbol]
         ),
     }
   );
