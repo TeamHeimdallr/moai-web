@@ -65,7 +65,7 @@ export const Gnb = () => {
                   {text}
                 </MenuWrapper>
               ))}
-            <ButtonWrapper isMD={isMD}>
+            <ButtonWrapper>
               {evm.address || xrp.address ? (
                 <ConnectedButton>
                   <Notification />
@@ -97,9 +97,6 @@ export const Gnb = () => {
     </>
   );
 };
-interface ResponsiveProps {
-  isMD?: boolean;
-}
 
 const Wrapper = styled.div(() => [tw`flex items-center flex-col w-full z-20 bg-transparent`]);
 const BannerWrapper = tw.div`w-full`;
@@ -110,10 +107,7 @@ const ContentWrapper = tw.div`
   flex items-center gap-24
 `;
 
-const ConnectedButton = styled.div<ResponsiveProps>(({ isMD }) => [
-  tw`flex`,
-  isMD ? tw`gap-8` : tw`gap-4`,
-]);
+const ConnectedButton = tw.div`flex sm:gap-4 md:gap-8`;
 
 interface MenuProps {
   selected: boolean;
@@ -125,9 +119,6 @@ const MenuWrapper = styled.div(({ selected, disabled }: MenuProps) => [
   !disabled && selected && tw`text-primary-60`,
 ]);
 
-const ButtonWrapper = styled.div<ResponsiveProps>(({ isMD }) => [
-  tw`flex`,
-  isMD ? tw`gap-8` : tw`gap-4`,
-]);
+const ButtonWrapper = styled.div`flex sm:gap-4 md:gap-8`;
 
 const HamburgerWrapper = tw.div`flex-center p-8 rounded-10 bg-neutral-10 clickable hover:(bg-neutral-20)`;

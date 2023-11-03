@@ -41,7 +41,7 @@ export const Account = () => {
             </ConnectedEvm>
           </BothConnectedWrapper>
         ) : (
-          <AccountWrapper isMD={isMD}>
+          <AccountWrapper>
             <InnerWrapper>
               {/* TODO: icon */}
               <Jazzicon diameter={24} seed={jsNumberForAddress(evm.address || xrp.address || '')} />
@@ -76,13 +76,12 @@ const Banner = styled.div<WrapperProps>(({ opened }) => [
   opened && tw`bg-neutral-20 hover:bg-neutral-20`,
 ]);
 
-interface AccountWrapperProps {
-  isMD?: boolean;
-}
-const AccountWrapper = styled.div<AccountWrapperProps>(({ isMD }) => [
-  tw`flex-center w-136 gap-6 px-8 py-9`,
-  isMD ? tw`w-136` : tw`w-40`,
-]);
+const AccountWrapper = tw.div`
+  flex-center gap-6 px-8 py-9
+  sm:w-40 
+  md:w-136
+`;
+
 const ContentWrapper = styled.div<WrapperProps>(({ opened }) => [
   tw`
     w-full h-full text-center truncate clickable text-neutral-100 font-m-14 address

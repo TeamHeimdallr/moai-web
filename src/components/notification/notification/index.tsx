@@ -69,7 +69,9 @@ const UpperWrapper = tw.div`
 `;
 
 const Wrapper = tw.div`
-  min-w-294 max-h-640 min-h-136 bg-neutral-15 rounded-8 absolute top-48 md:top-60 right-0 box-shadow-default
+  min-w-294 max-h-640 min-h-136 bg-neutral-15 rounded-8 absolute right-0 box-shadow-default
+  sm:top-48 
+  md:top-60
 `;
 
 interface Props {

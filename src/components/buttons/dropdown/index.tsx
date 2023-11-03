@@ -28,7 +28,7 @@ export const ButtonDropdown = ({
   const { isMD } = useMediaQuery();
   return (
     <Wrapper opened={opened} {...rest}>
-      {image && <Image src={image} alt={imageAlt} title={imageTitle} isMD={isMD} />}
+      {image && <Image src={image} alt={imageAlt} title={imageTitle} />}
       <IconTextWrapper>
         {isMD && <Text>{text}</Text>}
         <Icon opened={opened}>
@@ -79,10 +79,8 @@ const Icon = styled.div<Props>(({ opened }) => [
 
 const Text = tw.div`font-m-14`;
 
-interface ImageProps {
-  isMD?: boolean;
-}
-const Image = styled.img<ImageProps>(({ isMD }) => [
-  tw`flex-center object-cover`,
-  isMD ? tw`w-24 h-24` : tw`w-20 h-20`,
-]);
+const Image = styled.img`
+  flex-center object-cover 
+  sm:(w-20 h-20) 
+  md:(w-24 h-24)
+`;
