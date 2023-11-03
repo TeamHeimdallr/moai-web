@@ -24,20 +24,26 @@ import { formatNumber } from '~/utils/util-number';
 import { elapsedTime } from '~/utils/util-time';
 import { useTableLiquidityPoolProvisionSortStore } from '~/states/components';
 import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/components/table/tab';
+import { NETWORK } from '~/types';
 
 export const useTableTotalProvision = (id: string) => {
-  const { evm, xrp } = useConnectedWallet();
-  const address = evm?.address || xrp?.address;
+  const { evm, xrp, fpass } = useConnectedWallet();
+  const { network } = useParams();
 
   const { data } = useGetLiquidityPoolProvisions({ id });
 
   const { selectedTab } = useTablePoolLiquidityProvisionSelectTabStore();
   const { sort, setSort } = useTableLiquidityPoolProvisionSortStore();
 
-  const { network } = useParams();
   const { selectedNetwork, isXrp } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const address =
+    currentNetwork === NETWORK.THE_ROOT_NETWORK
+      ? fpass?.address
+      : currentNetwork === NETWORK.EVM_SIDECHAIN
+      ? evm?.address
+      : xrp?.address;
 
   const isMyProvision = selectedTab === 'my-provision';
 
