@@ -26,7 +26,7 @@ export const useTableSwapHistories = (id: string) => {
   const { data } = useGetSwapHistories({ id });
 
   const { network } = useParams();
-  const { selectedNetwork } = useNetwork();
+  const { selectedNetwork, isXrp } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { sort, setSort } = useTableSwapHistoriesStore();
@@ -78,11 +78,11 @@ export const useTableSwapHistories = (id: string) => {
           <TableColumnLink
             token={`${elapsedTime(d.time)}`}
             align="flex-end"
-            link={`${SCANNER_URL[currentNetwork]}/tx/${d.txHash}`}
+            link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${d.txHash}`}
           />
         ),
       })),
-    [currentNetwork, sortedData]
+    [currentNetwork, isXrp, sortedData]
   );
 
   const columns = useMemo(

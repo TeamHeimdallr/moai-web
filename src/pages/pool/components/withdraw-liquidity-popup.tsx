@@ -47,7 +47,7 @@ export const WithdrawLiquidityPopup = ({
   const navigate = useNavigate();
   const { compositions } = pool;
   const { network } = useParams();
-  const { selectedNetwork } = useNetwork();
+  const { selectedNetwork, isXrp } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
@@ -83,7 +83,10 @@ export const WithdrawLiquidityPopup = ({
   };
 
   const handleLink = () => {
-    window.open(`${SCANNER_URL[currentNetwork]}/tx/${txData?.transactionHash}`);
+    const txHash = isXrp ? txData?.hash : txData?.transactionHash;
+    const url =
+      `${SCANNER_URL[currentNetwork]}` + (isXrp ? '/transactions/' : 'tx') + `${txHash ?? ''}`;
+    window.open(url);
   };
 
   return (
