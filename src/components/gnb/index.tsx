@@ -130,4 +130,4 @@ const ButtonWrapper = styled.div<ResponsiveProps>(({ isMD }) => [
   isMD ? tw`gap-8` : tw`gap-4`,
 ]);
 
-const HamburgerWrapper = tw.div`flex-center p-8 rounded-10 bg-neutral-10`;
+const HamburgerWrapper = tw.div`flex-center p-8 rounded-10 bg-neutral-10 clickable hover:(bg-neutral-20)`;
