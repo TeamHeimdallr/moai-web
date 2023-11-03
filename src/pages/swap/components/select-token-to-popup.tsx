@@ -33,8 +33,8 @@ export const SelectToTokenPopup = () => {
             if (!balanceInfo) return <></>;
 
             const { symbol, value, balance } = balanceInfo;
-            const formattedTokenBalance = (balance ?? 0) > 0 ? formatNumber(balance, 2) : undefined;
-            const formattedTokenValue = (value ?? 0) > 0 ? '$' + formatNumber(value, 2) : undefined;
+            const formattedTokenBalance = (balance ?? 0) > 0 ? formatNumber(balance, 2) : '0';
+            const formattedTokenValue = (value ?? 0) > 0 ? '$' + formatNumber(value, 2) : '$0';
 
             const handleClick = () => {
               setToToken(symbol ?? '');

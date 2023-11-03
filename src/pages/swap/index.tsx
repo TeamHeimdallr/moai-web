@@ -4,12 +4,10 @@ import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
 import { SwapInputGroup } from './components/swap-input-group';
-import { UserSwapBalances } from './components/user-swap-balances';
 
 const SwapPage = () => {
   return (
     <>
-      {/* {needSwitchNetwork && <SwitchNetwork />} */}
       <Wrapper>
         <GnbWrapper>
           <Gnb />
@@ -19,7 +17,6 @@ const SwapPage = () => {
             <Title>Swap</Title>
 
             <SwapWrapper>
-              <UserSwapBalances />
               <SwapInputGroup />
             </SwapWrapper>
           </ContentWrapper>
@@ -47,7 +44,7 @@ const ContentWrapper = styled.div(() => [
   css`
     & > div {
       width: 100%;
-      max-width: 786px;
+      max-width: 455px;
     }
   `,
 ]);

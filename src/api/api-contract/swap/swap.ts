@@ -22,8 +22,9 @@ interface Props {
 
   toToken: string; // token symbol
   toValue?: number;
+  proxyEnabled?: boolean;
 }
-export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) => {
+export const useSwap = ({ id, fromToken, fromValue, toToken, toValue, proxyEnabled }: Props) => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { slippage } = useSlippageStore();
@@ -78,6 +79,7 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
     ],
     fundManagement: [fpassAddress, false, fpassAddress, false],
     limit: parseUnits(`${(toValue ?? 0) * (1 - slippage / 100)}`, TOKEN_DECIMAL[currentNetwork]),
+    proxyEnabled,
   });
 
   const resXrp = useSwapXrp({

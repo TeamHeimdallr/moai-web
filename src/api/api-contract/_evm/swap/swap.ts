@@ -86,8 +86,7 @@ export const useSwap = ({
     isSuccess,
     isError,
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    txData: txData as any,
+    txData,
     blockTimestamp,
 
     swap: writeAsync,

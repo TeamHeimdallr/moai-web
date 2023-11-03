@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Address, encodeFunctionData, parseUnits } from 'viem';
-import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import {
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from 'wagmi';
 
 import { TOKEN_DECIMAL } from '~/constants';
 
@@ -68,7 +73,7 @@ export const useApprove = ({
     : '0x0';
 
   const { isLoading: isPrepareLoading, config } = usePrepareContractWrite({
-    address: walletAddress,
+    address: walletAddress as Address,
     abi: FUTUREPASS_ABI,
     functionName: 'proxyCall',
 
@@ -79,7 +84,12 @@ export const useApprove = ({
     enabled: internalEnabled,
   });
 
-  const { isLoading, isSuccess, writeAsync } = useContractWrite(config);
+  const { data, writeAsync } = useContractWrite(config);
+
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+    enabled: !!data?.hash && isFpass,
+  });
 
   const allow = async () => {
     if (!isEvm || !isFpass) return;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
@@ -23,6 +23,7 @@ import {
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
+import { LoadingStep } from '~/components/loadings';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 
@@ -37,7 +38,7 @@ import { SwapArrowDown } from './swap-arrow-down';
 
 export const SwapPopup = () => {
   const { network } = useParams();
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isXrp } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
@@ -83,38 +84,23 @@ export const SwapPopup = () => {
 
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
 
-  const {
-    allow: allowToken1,
-    allowance: allowance1,
-    isLoading: allowLoading1,
-    isSuccess: allowSuccess1,
-    refetch: refetchAllowance1,
-  } = useApprove({
-    amount: Number(fromValue ?? 0),
-    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[fromToken] ?? '',
-    issuer: XRP_TOKEN_ISSUER?.[fromToken] ?? '',
-
-    spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
-    currency: fromToken ?? '',
-
-    enabled: !!fromToken,
-  });
+  const wantToAllowToken = isXrp ? toToken : fromToken;
+  const wantToAllowAmount = isXrp ? toValue : fromValue;
 
   const {
-    allow: allowToken2,
-    allowance: allowance2,
-    isLoading: allowLoading2,
-    isSuccess: allowSuccess2,
-    refetch: refetchAllowance2,
+    allow,
+    isLoading: isLoadingAllowance,
+    isSuccess: isSuccessAllowance,
+    allowance,
   } = useApprove({
-    amount: Number(toValue ?? 0),
-    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[toToken] ?? '',
-    issuer: XRP_TOKEN_ISSUER?.[toToken] ?? '',
+    amount: Number(wantToAllowAmount ?? 0),
+    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[wantToAllowToken] ?? '',
+    issuer: XRP_TOKEN_ISSUER?.[wantToAllowToken] ?? '',
 
     spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
-    currency: toToken ?? '',
+    currency: wantToAllowToken ?? '',
 
-    enabled: !!toToken,
+    enabled: !!wantToAllowToken,
   });
 
   const { txData, blockTimestamp, isLoading, isSuccess, isError, swap } = useSwap({
@@ -123,19 +109,23 @@ export const SwapPopup = () => {
     fromValue: Number(fromValue),
     toToken,
     toValue,
+    proxyEnabled: isSuccessAllowance,
   });
 
-  useEffect(() => {
-    if (allowSuccess1) refetchAllowance1();
-  }, [allowSuccess1, refetchAllowance1]);
-
-  useEffect(() => {
-    if (allowSuccess2) refetchAllowance2();
-  }, [allowSuccess2, refetchAllowance2]);
-
   const handleLink = () => {
-    window.open(`${SCANNER_URL[currentNetwork]}/tx/${txData?.hash ?? ''}`);
+    const txHash = isXrp ? txData?.hash : txData?.transactionHash;
+    const url =
+      `${SCANNER_URL[currentNetwork]}` + (isXrp ? '/transactions/' : 'tx') + `${txHash ?? ''}`;
+    window.open(url);
   };
+
+  const step = useMemo(() => {
+    if (isSuccess) {
+      return 3;
+    }
+    if (isSuccessAllowance || allowance) return 2;
+    return 1;
+  }, [isSuccess, isSuccessAllowance, allowance]);
 
   const numFromValue = Number(fromValue) || 0;
   const numToValue = Number(toValue) || 0;
@@ -151,51 +141,47 @@ export const SwapPopup = () => {
   const slippageText = (slippage * 100).toFixed(1);
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
 
-  const approveTokenSymbol = allowance1 ? toToken : fromToken;
+  const handleButton = async () => {
+    if (isSuccess) {
+      resetAll();
+      close();
+      return;
+    }
 
-  const handleSuccess = () => {
-    close();
-    resetAll();
+    if (step === 1) {
+      await allow?.();
+      return;
+    }
+    if (step === 2) {
+      await swap?.();
+      return;
+    }
   };
 
-  const Button = isSuccess ? (
-    <PrimaryButtonWrapper>
-      {blockTimestamp > 0 && (
-        <TimeWrapper>
-          <IconTime />
-          {format(new Date(blockTimestamp), DATE_FORMATTER.FULL)}
-          <ClickableIcon onClick={handleLink}>
-            <IconLink />
-          </ClickableIcon>
-        </TimeWrapper>
-      )}
-      <ButtonPrimaryLarge
-        buttonType="outlined"
-        text="Return to swap page"
-        onClick={handleSuccess}
-      />
-    </PrimaryButtonWrapper>
-  ) : allowance1 && (allowance2 || isEvm) ? (
-    <ButtonPrimaryLarge
-      text="Confirm swap"
-      isLoading={isLoading}
-      disabled={isError}
-      onClick={swap}
-    />
-  ) : (
-    <ButtonPrimaryLarge
-      text={`Approve ${approveTokenSymbol} for swapping`}
-      isLoading={allowLoading1 || allowLoading2}
-      onClick={() => {
-        if (!allowance1) allowToken1?.();
-        if (!allowance2) allowToken2?.();
-      }}
-    />
-  );
-
   return (
-    <Popup id={POPUP_ID.SWAP} title={isSuccess ? '' : 'Swap preview'} button={Button}>
-      <Wrapper>
+    <Popup
+      id={POPUP_ID.SWAP}
+      title={isSuccess ? '' : 'Swap preview'}
+      button={
+        <ButtonWrapper onClick={() => handleButton()}>
+          <ButtonPrimaryLarge
+            text={
+              isLoading || isLoadingAllowance
+                ? 'Confirming'
+                : isSuccess
+                ? 'Return to swap page'
+                : step === 1
+                ? `Approve ${wantToAllowToken} for swap`
+                : 'Confirm swap'
+            }
+            isLoading={isLoading || isLoadingAllowance}
+            buttonType={isSuccess ? 'outlined' : 'filled'}
+            disabled={!isLoading && !isLoadingAllowance && step == 2 && isError}
+          />
+        </ButtonWrapper>
+      }
+    >
+      <Wrapper style={{ gap: isSuccess ? 40 : 24 }}>
         {isSuccess ? (
           <>
             <SuccessWrapper>
@@ -276,13 +262,29 @@ export const SwapPopup = () => {
             </DetailWrapper>
           </>
         )}
+        {step < 3 ? (
+          <LoadingStep
+            totalSteps={2}
+            step={step}
+            isLoading={step === 1 ? isLoadingAllowance : isLoading}
+            isDone={isSuccess}
+          />
+        ) : (
+          <TimeWrapper>
+            <IconTime />
+            {format(new Date(blockTimestamp), DATE_FORMATTER.FULL)}
+            <ClickableIcon onClick={handleLink}>
+              <IconLink />
+            </ClickableIcon>
+          </TimeWrapper>
+        )}
       </Wrapper>
     </Popup>
   );
 };
 
 const Wrapper = tw.div`
-  px-24 pb-24 flex flex-col gap-24
+  px-24 pb-24 flex flex-col
 `;
 
 const SuccessTitle = tw.div`
@@ -340,10 +342,9 @@ const Divider = tw.div`
   w-full h-1 bg-neutral-20 flex-shrink-0
 `;
 
-const PrimaryButtonWrapper = tw.div`
-  w-full flex flex-col gap-16
+const ButtonWrapper = tw.div`
+  w-full
 `;
-
 const TimeWrapper = styled.div(() => [
   tw`flex items-center gap-4 text-neutral-60`,
   css`

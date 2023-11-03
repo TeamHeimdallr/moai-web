@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
-import { NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
+import { BASE_URL, NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -30,7 +30,8 @@ export const NetworkSelection = () => {
 
   const handleSelect = (network: NETWORK) => {
     open(false);
-    if (!window.location.href.includes('pools')) {
+
+    if (window.location.href === BASE_URL) {
       selectNetwork(network);
       return;
     }

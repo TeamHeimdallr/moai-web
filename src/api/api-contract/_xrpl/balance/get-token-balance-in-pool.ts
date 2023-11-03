@@ -99,23 +99,23 @@ export const useTokenBalanceInPool = (): ITokenbalanceInPool => {
       : xrplTokensData;
 
   const balancesMap = {};
-  xrplTokensDataWithXRP.forEach(token => {
-    const price = compositions.find(t => t.symbol === token.symbol)?.price;
+  compositions.forEach(token => {
+    const balance = xrplTokensDataWithXRP.find(t => t.symbol === token.symbol)?.balance ?? 0;
 
     balancesMap[token.symbol] = {
       symbol: token.symbol,
-      balance: token.balance ?? 0,
-      value: (token.balance ?? 0) * (price ?? 0),
+      balance,
+      value: (balance ?? 0) * (token.price ?? 0),
     };
   });
 
-  const balancesArray = xrplTokensDataWithXRP.map(token => {
-    const price = compositions.find(t => t.symbol === token.symbol)?.price;
+  const balancesArray = compositions.map(token => {
+    const balance = xrplTokensDataWithXRP.find(t => t.symbol === token.symbol)?.balance ?? 0;
 
     return {
       symbol: token.symbol,
-      balance: token.balance ?? 0,
-      value: (token.balance ?? 0) * (price ?? 0),
+      balance,
+      value: (balance ?? 0) * (token.price ?? 0),
     };
   });
 

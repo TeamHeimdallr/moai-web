@@ -24,12 +24,14 @@ interface Props {
   fundManagement: SwapFundManagementInput;
   limit?: bigint;
   deadline?: number;
+  proxyEnabled?: boolean;
 }
 export const useSwap = ({
   singleSwap,
   fundManagement,
   limit = BigInt(10),
   deadline = 2000000000,
+  proxyEnabled,
 }: Props) => {
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
   const { network } = useParams();
@@ -65,7 +67,8 @@ export const useSwap = ({
     chainId,
     value: BigInt(0),
     args: [1, contractAddress, BigInt(0), encodedData],
-    enabled: !!contractAddress && !!singleSwap && !!fundManagement && !!address && isFpass,
+    enabled:
+      proxyEnabled && !!contractAddress && !!singleSwap && !!fundManagement && !!address && isFpass,
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);
@@ -101,7 +104,7 @@ export const useSwap = ({
     isError,
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    txData: txData as any,
+    txData,
     blockTimestamp,
 
     swap: writeAsync,
