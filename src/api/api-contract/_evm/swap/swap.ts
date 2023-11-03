@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { zeroAddress } from 'viem';
 import {
   Address,
   useContractWrite,
@@ -50,6 +51,7 @@ export const useSwap = ({
     abi: BALANCER_VAULT_ABI,
     functionName: 'swap',
     chainId,
+    value: singleSwap[2] === zeroAddress ? singleSwap[4] : 0n,
     args: [singleSwap, fundManagement, limit, deadline],
     enabled: !!contractAddress && !!singleSwap && !!fundManagement && !!address && isEvm,
   });
