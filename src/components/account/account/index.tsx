@@ -5,6 +5,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 
 import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
 
+import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { truncateAddress } from '~/utils/util-string';
 
@@ -12,6 +13,8 @@ import { AccountDetail } from '../account-detail';
 
 export const Account = () => {
   const ref = useRef<HTMLDivElement>(null);
+
+  const { isMD } = useMediaQuery();
 
   const [opened, open] = useState(false);
   const toggle = () => open(!opened);
@@ -43,9 +46,11 @@ export const Account = () => {
               {/* TODO: icon */}
               <Jazzicon diameter={24} seed={jsNumberForAddress(evm.address || xrp.address || '')} />
             </InnerWrapper>
-            <ContentWrapper opened={opened}>
-              {truncateAddress(evm.address || xrp.address || '', 4)}
-            </ContentWrapper>
+            {isMD && (
+              <ContentWrapper opened={opened}>
+                {truncateAddress(evm.address || xrp.address || '', 4)}
+              </ContentWrapper>
+            )}
           </AccountWrapper>
         )}
       </Banner>
@@ -70,9 +75,13 @@ const Banner = styled.div<WrapperProps>(({ opened }) => [
   opened ? tw`text-neutral-0` : tw`hover:text-primary-80`,
   opened && tw`bg-neutral-20 hover:bg-neutral-20`,
 ]);
+
 const AccountWrapper = tw.div`
-  flex-center w-136 gap-6 px-8 py-9
+  flex-center gap-6 px-8 py-9
+  sm:w-40 
+  md:w-136
 `;
+
 const ContentWrapper = styled.div<WrapperProps>(({ opened }) => [
   tw`
     w-full h-full text-center truncate clickable text-neutral-100 font-m-14 address

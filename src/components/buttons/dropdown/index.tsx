@@ -4,6 +4,8 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
+import { useMediaQuery } from '~/hooks/utils';
+
 interface ButtonDrodDownProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   image?: string;
   imageAlt?: string;
@@ -23,11 +25,12 @@ export const ButtonDropdown = ({
   opened,
   ...rest
 }: ButtonDrodDownProps) => {
+  const { isMD } = useMediaQuery();
   return (
     <Wrapper opened={opened} {...rest}>
       {image && <Image src={image} alt={imageAlt} title={imageTitle} />}
       <IconTextWrapper>
-        {text}
+        {isMD && <Text>{text}</Text>}
         <Icon opened={opened}>
           <IconDown width={16} height={16} fill={COLOR.NEUTRAL[60]} />
         </Icon>
@@ -65,15 +68,19 @@ const Wrapper = styled.button<Props>(({ opened }) => [
     `,
 ]);
 
-const IconTextWrapper = tw.div`gap-4 flex-center font-m-14`;
+const IconTextWrapper = tw.div`gap-4 flex-center`;
 
 const Icon = styled.div<Props>(({ opened }) => [
-  tw`p-2 transition-transform flex-center`,
+  tw`py-2 transition-transform flex-center`,
   css`
     transform: rotate(${opened ? '-180deg' : '0deg'});
   `,
 ]);
 
+const Text = tw.div`font-m-14`;
+
 const Image = tw.img`
-  w-24 h-24 flex-center object-cover
+  flex-center object-cover 
+  sm:(w-20 h-20) 
+  md:(w-24 h-24)
 `;

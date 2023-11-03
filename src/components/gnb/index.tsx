@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
+import { IconMenu } from '~/assets/icons';
 import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { GNB_MENU } from '~/constants';
@@ -12,6 +13,7 @@ import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 import { useBanner } from '~/pages/home/hooks/components/alert-wallet/use-banner';
 
 import { usePopup } from '~/hooks/components/use-popup';
+import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
@@ -23,6 +25,7 @@ import { NetworkSelection } from '../network-selection';
 export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isMD } = useMediaQuery();
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
 
@@ -43,20 +46,25 @@ export const Gnb = () => {
         </BannerWrapper>
         <NavWrapper>
           <LogoWrapper>
-            <LogoText width={88} height={20} onClick={() => navigate('/')} />
+            <LogoText
+              width={isMD ? 88 : 70}
+              height={isMD ? 20 : 16}
+              onClick={() => navigate('/')}
+            />
           </LogoWrapper>
           <ContentWrapper>
-            {GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
-              <MenuWrapper
-                key={id}
-                onClick={() => navigate(path)}
-                selected={location.pathname === path}
-                disabled={!!disabled}
-                data-tooltip-id={commingSoon ? TOOLTIP_ID.COMMING_SOON : undefined}
-              >
-                {text}
-              </MenuWrapper>
-            ))}
+            {isMD &&
+              GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
+                <MenuWrapper
+                  key={id}
+                  onClick={() => navigate(path)}
+                  selected={location.pathname === path}
+                  disabled={!!disabled}
+                  data-tooltip-id={commingSoon ? TOOLTIP_ID.COMMING_SOON : undefined}
+                >
+                  {text}
+                </MenuWrapper>
+              ))}
             <ButtonWrapper>
               {evm.address || xrp.address ? (
                 <ConnectedButton>
@@ -65,7 +73,7 @@ export const Gnb = () => {
                 </ConnectedButton>
               ) : (
                 <ButtonPrimaryMedium
-                  style={{ padding: '9px 24px' }}
+                  style={{ padding: isMD ? '9px 24px' : '9px 16px' }}
                   text="Connect wallet"
                   isLoading={!!opened}
                   onClick={() => {
@@ -75,6 +83,11 @@ export const Gnb = () => {
                 />
               )}
               <NetworkSelection />
+              {!isMD && (
+                <HamburgerWrapper>
+                  <IconMenu width={24} />
+                </HamburgerWrapper>
+              )}
             </ButtonWrapper>
           </ContentWrapper>
         </NavWrapper>
@@ -95,7 +108,9 @@ const ContentWrapper = tw.div`
 `;
 
 const ConnectedButton = tw.div`
-  flex gap-8
+  flex 
+  sm:gap-4 
+  md:gap-8
 `;
 
 interface MenuProps {
@@ -109,5 +124,9 @@ const MenuWrapper = styled.div(({ selected, disabled }: MenuProps) => [
 ]);
 
 const ButtonWrapper = tw.div`
-  flex gap-8
+  flex 
+  sm:(gap-4) 
+  md:(gap-8)
 `;
+
+const HamburgerWrapper = tw.div`flex-center p-8 rounded-10 bg-neutral-10 clickable hover:(bg-neutral-20)`;
