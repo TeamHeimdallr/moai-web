@@ -107,7 +107,11 @@ const ContentWrapper = tw.div`
   flex items-center gap-24
 `;
 
-const ConnectedButton = tw.div`flex sm:gap-4 md:gap-8`;
+const ConnectedButton = tw.div`
+  flex 
+  sm:gap-4 
+  md:gap-8
+`;
 
 interface MenuProps {
   selected: boolean;
@@ -119,6 +123,10 @@ const MenuWrapper = styled.div(({ selected, disabled }: MenuProps) => [
   !disabled && selected && tw`text-primary-60`,
 ]);
 
-const ButtonWrapper = styled.div`flex sm:gap-4 md:gap-8`;
+const ButtonWrapper = tw.div`
+  flex 
+  sm:(gap-4) 
+  md:(gap-8)
+`;
 
 const HamburgerWrapper = tw.div`flex-center p-8 rounded-10 bg-neutral-10 clickable hover:(bg-neutral-20)`;

@@ -79,7 +79,7 @@ const Icon = styled.div<Props>(({ opened }) => [
 
 const Text = tw.div`font-m-14`;
 
-const Image = styled.img`
+const Image = tw.img`
   flex-center object-cover 
   sm:(w-20 h-20) 
   md:(w-24 h-24)
