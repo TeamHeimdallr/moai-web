@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
@@ -20,6 +21,7 @@ import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { Account } from '../account';
 import { AlertBanner } from '../alerts/banner';
+import { MobileMenu } from '../menu-mobile';
 import { NetworkSelection } from '../network-selection';
 
 export const Gnb = () => {
@@ -32,6 +34,8 @@ export const Gnb = () => {
   const { evm, xrp } = useConnectedWallet();
   const { setWalletType } = useWalletTypeStore();
   const { text, connectWallet } = useBanner();
+
+  const [mobileMenuOpened, mobileMenuOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -84,16 +88,16 @@ export const Gnb = () => {
               )}
               <NetworkSelection />
               {!isMD && (
-                <HamburgerWrapper>
+                <HamburgerWrapper onClick={() => mobileMenuOpen(true)}>
                   <IconMenu width={24} />
                 </HamburgerWrapper>
               )}
             </ButtonWrapper>
           </ContentWrapper>
         </NavWrapper>
+        {mobileMenuOpened && <MobileMenu open={mobileMenuOpen} />}
       </Wrapper>
-      <TooltipCommingSoon />
-      <TooltipCommingSoon place="bottom" id={TOOLTIP_ID.COMMING_SOON_NETWORK_SELECTION} />
+      <TooltipCommingSoon place="bottom" id={TOOLTIP_ID.COMMING_SOON} />
     </>
   );
 };

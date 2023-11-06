@@ -15,10 +15,12 @@ import IconDollars from './icon-dollars.svg?react';
 import IconDown from './icon-down.svg?react';
 import IconDownFill from './icon-down-fill.svg?react';
 import IconDownload from './icon-download.svg?react';
+import IconEnglish from './icon-english.svg?react';
 import IconFavorites from './icon-favorites.svg?react';
 import IconFilter from './icon-filter.svg?react';
 import IconHeart from './icon-heart.svg?react';
 import IconInfo from './icon-info.svg?react';
+import IconKorean from './icon-korean.svg?react';
 import IconLink from './icon-link.svg?react';
 import IconLocked from './icon-locked.svg?react';
 import IconLogout from './icon-logout.svg?react';
@@ -71,10 +73,12 @@ export {
   IconDown,
   IconDownFill,
   IconDownload,
+  IconEnglish,
   IconFavorites,
   IconFilter,
   IconHeart,
   IconInfo,
+  IconKorean,
   IconLink,
   IconLocked,
   IconLogout,
