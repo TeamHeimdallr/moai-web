@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
 import * as yup from 'yup';
@@ -42,9 +43,11 @@ export const WithdrawLiquidityInputGroup = ({
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.WITHDRAW_LP);
   const { compositions } = pool;
 
+  const { t } = useTranslation();
+
   const tabs = [
-    { key: 'proportional', name: 'Proportional pool tokens' },
-    { key: 'single', name: 'Single token', disabled: true },
+    { key: 'proportional', name: t('Proportional pool tokens') },
+    { key: 'single', name: t('Single token'), disabled: true },
   ];
   const { selectedTab, selectTab } = useWithdrawLiquidityInputGroupTabStore();
 
@@ -66,7 +69,7 @@ export const WithdrawLiquidityInputGroup = ({
     input1: yup
       .number()
       .min(0)
-      .max(lpTokenBalance ?? 0, 'Exceeds wallet balance')
+      .max(lpTokenBalance ?? 0, t('Exceeds wallet balance'))
       .required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
@@ -91,7 +94,7 @@ export const WithdrawLiquidityInputGroup = ({
       </Header>
       <InnerWrapper>
         <ContentWrapper>
-          <SubTitle>You provide</SubTitle>
+          <SubTitle>{t('You provide')}</SubTitle>
           <InputNumber
             token={<Token token={pool.lpTokenName} />}
             tokenName={pool.lpTokenName}
@@ -109,7 +112,7 @@ export const WithdrawLiquidityInputGroup = ({
           />
         </ContentWrapper>
         <ContentWrapper>
-          <SubTitle>You receive</SubTitle>
+          <SubTitle>{t('You receive')}</SubTitle>
           <TokenListWrapper>
             {compositions.map(({ symbol, weight }, i) => (
               <Fragment key={symbol + i}>
@@ -126,12 +129,12 @@ export const WithdrawLiquidityInputGroup = ({
           </TokenListWrapper>
         </ContentWrapper>
         <PriceImpaceWrapper>
-          <PriceImpact>Price impact</PriceImpact>
+          <PriceImpact>{t('Price impact')}</PriceImpact>
           <PriceImpact>{`${priceImpact}%`}</PriceImpact>
         </PriceImpaceWrapper>
       </InnerWrapper>
 
-      <ButtonPrimaryLarge text="Preview" onClick={popupOpen} disabled={!isValid} />
+      <ButtonPrimaryLarge text={t('Preview')} onClick={popupOpen} disabled={!isValid} />
 
       {popupOpened && (
         <WithdrawLiquidityPopup

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
 import { ASSET_URL } from '~/constants';
@@ -17,6 +18,8 @@ export const MainLayout = () => {
   const { setWalletType } = useWalletTypeStore();
   const isConnected = !!evm.address || !!xrp.address;
 
+  const { t } = useTranslation();
+
   return (
     <MainWrapper
       isConnected={!openedBanner}
@@ -24,7 +27,7 @@ export const MainLayout = () => {
     >
       {isConnected ? (
         <>
-          <Label>My Moai balance</Label>
+          <Label>{t('My Moai balance')}</Label>
           {/* TODO: moai balance */}
           <SubTitle>{`$0`}</SubTitle>
         </>
@@ -33,7 +36,7 @@ export const MainLayout = () => {
           <Title>Your Universal Gateway to Multi-chain Liquidity</Title>
           <ButtonWrapper>
             <ButtonPrimaryLarge
-              text="Connect wallet"
+              text={t('Connect wallet')}
               buttonType="outlined"
               isLoading={!!opened}
               onClick={() => {

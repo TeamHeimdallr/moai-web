@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import copy from 'copy-to-clipboard';
 import tw, { css, styled } from 'twin.macro';
 
@@ -24,13 +25,14 @@ export const FuturepassCreatePopup = () => {
   const { close } = usePopup(POPUP_ID.FUTUREPASS_CREATE);
   const { fpass } = useConnectedWallet();
   const { createFuturepass, isError, errorCode } = useCreateFuturepass();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(0);
   const [checked, check] = useState(false);
 
   const button = () => {
     if (step === 0) {
-      return <ButtonPrimaryLarge onClick={() => setStep(1)} text="Continue" />;
+      return <ButtonPrimaryLarge onClick={() => setStep(1)} text={t`Continue`} />;
     } else if (step === 1) {
       return (
         <ButtonPrimaryLarge
@@ -43,11 +45,12 @@ export const FuturepassCreatePopup = () => {
             setIsLoading(false);
             setStep(2);
           }}
-          text={isLoading ? 'Creating your futurepass...' : 'Create Futurepass'}
+          text={isLoading ? t`Creating your futurepass...` : t`Futurepass Create`}
         />
       );
     } else {
-      return <ButtonPrimaryLarge onClick={() => close()} text="Confirm" />;
+      if (isError) return <ButtonPrimaryLarge onClick={() => close()} text={t`Try again`} />;
+      else return <ButtonPrimaryLarge onClick={() => close()} text={t`Confirm`} />;
     }
   };
 
@@ -55,20 +58,16 @@ export const FuturepassCreatePopup = () => {
     <Popup id={POPUP_ID.FUTUREPASS_CREATE} title="" button={button()}>
       {step === 0 ? (
         <Wrapper>
-          <Title>Create Futurepass</Title>
-          <Text>
-            {
-              'To connect the Futurepass, your agreement to the terms of service and privacy policy is required.'
-            }
-          </Text>
+          <Title>{t`Create FuturePass`}</Title>
+          <Text>{t`futurepass-connect-notice`}</Text>
         </Wrapper>
       ) : step === 1 ? (
         <Wrapper>
-          <Title>Terms and conditions</Title>
+          <Title>{t`Terms and conditions`}</Title>
           <Scroll>{termsAndConditions}</Scroll>
           <CheckTerm>
             <Checkbox onClick={() => check(prev => !prev)} selected={checked} />
-            <CheckText>I have read and agreed to the Terms and conditions.</CheckText>
+            <CheckText>{t`futurepass-agree`}</CheckText>
           </CheckTerm>
         </Wrapper>
       ) : fpass.address ? (
@@ -76,9 +75,9 @@ export const FuturepassCreatePopup = () => {
           <IconWrapper>
             <IconCheck width={40} height={40} />
           </IconWrapper>
-          <Title>Creation Confirmed!</Title>
-          <Text>{'You have successfully created your Futurepass account.'}</Text>
-          <List title={`Your FuturePass address`}>
+          <Title>{t`Creation Confirmed!`}</Title>
+          <Text>{t`You have successfully created your Futurepass account.`}</Text>
+          <List title={t`Your FuturePass address`}>
             <Account>
               <Logo>
                 <InnerLogo src={imageWalletFuturepass} alt="futurepass" />
@@ -106,26 +105,21 @@ export const FuturepassCreatePopup = () => {
       ) : isError && errorCode === 1010 ? (
         <Wrapper>
           <IconAlert width={60} height={60} fill={COLOR.RED[50]} />
-          <Title>Insufficient $XRP tokens</Title>
-          <Text>
-            To proceed with the transaction, make sure you have enough $XRP tokens in your wallet.
-          </Text>
+          <Title>{t`Insufficient $XRP tokens`}</Title>
+          <Text>{t`futurepass-not-enough-xrp`}</Text>
+          <Text></Text>
         </Wrapper>
       ) : isError && errorCode.toString().includes('InsufficientBalance') ? (
         <Wrapper>
           <IconAlert width={60} height={60} fill={COLOR.RED[50]} />
-          <Title>Insufficient $ROOT tokens</Title>
-          <Text>
-            To proceed with the transaction, make sure you have enough $ROOT tokens in your wallet.
-          </Text>
+          <Title>{t`Insufficient $ROOT tokens`}</Title>
+          <Text>{t`futurepass-not-enough-root`}</Text>
         </Wrapper>
       ) : isError ? (
         <Wrapper>
           <IconAlert width={60} height={60} fill={COLOR.RED[50]} />
-          <Title>Failed to creating account</Title>
-          <Text>
-            FuturePass account creation has failed. Please go back to previous page and try again.
-          </Text>
+          <Title>{t`Failed to creating account`}</Title>
+          <Text>{t`futurepass-fail-message`}</Text>
         </Wrapper>
       ) : (
         <></>

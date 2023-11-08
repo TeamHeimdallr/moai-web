@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
@@ -46,6 +47,7 @@ export const SwapInputGroup = () => {
   const { evm, xrp, fpass } = useConnectedWallet();
   const { balancesArray } = useTokenBalanceInPool();
   const { getTokenPrice } = useTokenPrice();
+  const { t } = useTranslation();
 
   const {
     fromToken,
@@ -70,7 +72,7 @@ export const SwapInputGroup = () => {
   const toTokenPrice = getTokenPrice(toToken);
 
   const schema = yup.object().shape({
-    from: yup.number().min(0).max(fromTokenBalance, 'Exceeds wallet balance').required(),
+    from: yup.number().min(0).max(fromTokenBalance, t('Exceeds wallet balance')).required(),
     to: yup.number().min(0).required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
@@ -137,7 +139,7 @@ export const SwapInputGroup = () => {
                   fromToken ? (
                     <Token token={fromToken} icon={<IconDown />} />
                   ) : (
-                    <Token token="" title="Select token" icon={<IconDown />} />
+                    <Token token="" title={t('Select token')} icon={<IconDown />} />
                   )
                 }
                 balance={fromTokenBalance}
@@ -161,7 +163,7 @@ export const SwapInputGroup = () => {
                   toToken ? (
                     <Token token={toToken} icon={<IconDown />} />
                   ) : (
-                    <Token token="" title="Select token" icon={<IconDown />} />
+                    <Token token="" title={t('Select token')} icon={<IconDown />} />
                   )
                 }
                 balance={toTokenBalance}
@@ -183,11 +185,11 @@ export const SwapInputGroup = () => {
           // TODO: component 수정
           <Empty>
             {isFpass && evm.address && !address
-              ? 'please create futurepass first'
-              : 'please connect wallet'}
+              ? t('please create futurepass first')
+              : t('please connect wallet')}
           </Empty>
         )}
-        <ButtonPrimaryLarge text="Preview" disabled={!validToSwap} onClick={openSwapPopup} />
+        <ButtonPrimaryLarge text={t('Preview')} disabled={!validToSwap} onClick={openSwapPopup} />
       </Wrapper>
       {address && selectTokenFromPopupOpened && <SelectFromTokenPopup />}
       {address && selectTokenToPopupOpened && <SelectToTokenPopup />}

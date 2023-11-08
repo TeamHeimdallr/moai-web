@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
 import { GraphSemiDonut } from '~/components/graph';
@@ -13,11 +14,14 @@ interface TokenInfoProps {
   value: number;
 }
 const TokenInfo = ({ token, index }: { token: TokenInfoProps; index: number }) => {
+  const { t } = useTranslation();
   return (
     <TokenInfoWrapper>
       <TokenSymbolWrapper>
         <TokenColorCircle index={index} />
-        <TokenSymbolText>Total {token.symbol}</TokenSymbolText>
+        <TokenSymbolText>
+          {t('Total')} {token.symbol}
+        </TokenSymbolText>
       </TokenSymbolWrapper>
       <TokenValueWrapper>
         <TokenBalance>
@@ -35,6 +39,7 @@ interface Props {
 }
 export const PoolCompositions = ({ pool }: Props) => {
   const { poolData } = useGraphTotalComposition(pool.id);
+  const { t } = useTranslation();
 
   const graphData: ITokenComposition[] =
     poolData?.map(data => ({
@@ -46,7 +51,7 @@ export const PoolCompositions = ({ pool }: Props) => {
 
   return (
     <Wrapper>
-      <Title>Pool composition</Title>
+      <Title>{t('Pool composition')}</Title>
       <ContentsWrapper>
         <TokenInfo token={poolData[0]} index={0} />
         <GraphWrapper>

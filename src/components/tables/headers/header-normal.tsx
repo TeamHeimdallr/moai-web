@@ -1,4 +1,5 @@
 import { HTMLAttributes, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -7,11 +8,13 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
   align?: 'flex-start' | 'center' | 'flex-end';
 }
+
 export const TableHeader = ({ label, icon, align, ...rest }: Props) => {
+  const { t } = useTranslation();
   return (
     <Wrapper align={align} {...rest}>
       {icon}
-      {label}
+      {t(label)}
     </Wrapper>
   );
 };

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { InputHTMLAttributes, ReactNode, useCallback, useEffect, useState } from 'react';
 import { Control, Controller, FormState, UseFormSetValue } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { NumericFormat } from 'react-number-format';
 import ReactSlider from 'react-slider';
 import tw, { css, styled } from 'twin.macro';
@@ -63,6 +64,8 @@ export const InputNumber = ({
   ...rest
 }: Props) => {
   const [focused, setFocus] = useState(false);
+
+  const { t } = useTranslation();
 
   const errorMessage = (formState?.errors?.[name ?? '']?.message ?? '') as string;
   const numValue = Number(value) || 0;
@@ -140,7 +143,7 @@ export const InputNumber = ({
             </TokenInputWrapper>
             <BalanceOuterWrapper>
               <BalanceWrapper>
-                <BalanceLabel>Balance</BalanceLabel>
+                <BalanceLabel>{t('Balance')}</BalanceLabel>
                 <BalanceValue>{formatNumber(currentBalance ?? 0, 2, 'floor')}</BalanceValue>
                 {maxButton && (
                   <ButtonPrimarySmall

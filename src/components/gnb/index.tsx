@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
@@ -20,6 +21,7 @@ import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { Account } from '../account';
 import { AlertBanner } from '../alerts/banner';
+import { LanguageChange } from '../language-change';
 import { MobileMenu } from '../menu-mobile';
 import { NetworkSelection } from '../network-selection';
 
@@ -33,6 +35,8 @@ export const Gnb = () => {
   const { evm, xrp } = useConnectedWallet();
   const { text, connectWallet } = useBanner();
 
+  const { t } = useTranslation();
+
   const [mobileMenuOpened, mobileMenuOpen] = useState<boolean>(false);
 
   return (
@@ -42,7 +46,9 @@ export const Gnb = () => {
           {openedBanner && (
             <AlertBanner
               text={text}
-              button={<ButtonPrimarySmallBlack text="Connect wallet" onClick={connectWallet} />}
+              button={
+                <ButtonPrimarySmallBlack text={t('Connect wallet')} onClick={connectWallet} />
+              }
             />
           )}
         </BannerWrapper>
@@ -76,12 +82,13 @@ export const Gnb = () => {
               ) : (
                 <ButtonPrimaryMedium
                   style={{ padding: isMD ? '9px 24px' : '9px 16px' }}
-                  text="Connect wallet"
+                  text={t('Connect wallet')}
                   isLoading={!!opened}
                   onClick={() => open()}
                 />
               )}
               <NetworkSelection />
+              <LanguageChange />
               {!isMD && (
                 <HamburgerWrapper onClick={() => mobileMenuOpen(true)}>
                   <IconMenu width={24} />

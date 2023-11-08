@@ -64,7 +64,7 @@ export const Table = <T extends object>({
       </Header>
       <Divider type={type} />
       {table.getRowModel().rows.length === 0 ? (
-        <EmptyText>{emptyText ?? 'Empty table'}</EmptyText>
+        <EmptyText>{emptyText ?? 'No result'}</EmptyText>
       ) : (
         <Body>
           {table.getRowModel().rows.map(

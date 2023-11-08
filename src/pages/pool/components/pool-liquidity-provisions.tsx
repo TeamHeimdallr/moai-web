@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
@@ -22,6 +23,8 @@ interface Props {
 export const PoolLiquidityProvisions = ({ pool }: Props) => {
   const { selectedTab, selectTab } = useTablePoolLiquidityProvisionSelectTabStore();
 
+  const { t } = useTranslation();
+
   const { selectedNetwork } = useNetwork();
   const { network } = useParams();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
@@ -41,7 +44,7 @@ export const PoolLiquidityProvisions = ({ pool }: Props) => {
   return (
     <Wrapper opened={opened}>
       <TitleWrapper>
-        <Title>Liquidity Provision</Title>
+        <Title>{t('Liquidity provision')}</Title>
         <Icon opened={opened} onClick={() => open(prev => !prev)}>
           <ButtonIconLarge icon={<IconDown />} />
         </Icon>

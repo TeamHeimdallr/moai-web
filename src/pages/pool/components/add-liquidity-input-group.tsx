@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw, { styled } from 'twin.macro';
 import { Address } from 'wagmi';
@@ -45,6 +46,8 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
   const { getTokenPrice } = useTokenPrice();
   const { compositions } = pool;
 
+  const { t } = useTranslation();
+
   const tokens: IToken[] = compositions?.map(composition => {
     const data = balancesArray?.find(b => b.symbol === composition.symbol);
     if (!data) return { symbol: composition.symbol, balance: 0, price: 0, value: 0 };
@@ -60,12 +63,12 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
     input1: yup
       .number()
       .min(0)
-      .max(tokens?.[0]?.balance ?? 0, 'Exceeds wallet balance')
+      .max(tokens?.[0]?.balance ?? 0, t('Exceeds wallet balance'))
       .required(),
     input2: yup
       .number()
       .min(0)
-      .max(tokens?.[1]?.balance ?? 0, 'Exceeds wallet balance')
+      .max(tokens?.[1]?.balance ?? 0, t('Exceeds wallet balance'))
       .required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
@@ -113,9 +116,8 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
     }, 0) ?? 0;
 
   const alertMessage = {
-    title: 'Insufficient balance',
-    description:
-      'One or either token balance is insufficient to add liquidity. You need both tokens in order to add liqudiity.',
+    title: t(`Insufficient balance`),
+    description: t(`insufficient-balance-message`),
   };
 
   const [blured, blurAll] = useState(false);
@@ -123,7 +125,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
   return (
     <Wrapper>
       <Header>
-        <Title>Enter liquidity amount</Title>
+        <Title>{t('Enter liquidity amount')}</Title>
         {/* <IconWrapper onClick={toggle} ref={iconRef}>
           <IconSetting fill={opened ? '#F5FF83' : '#9296AD'} width={20} height={20} />
         </IconWrapper>
@@ -142,7 +144,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
               if (token.balance === 0) {
                 return (
                   <NoBalanceAlert key={token.symbol}>
-                    No wallet balance for some pool tokens: {token.symbol}
+                    {t('No wallet balance for some pool tokens')} {token.symbol}
                   </NoBalanceAlert>
                 );
               }
@@ -173,7 +175,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
         )}
         <Total>
           <TotalInnerWrapper>
-            <TotalText>Total</TotalText>
+            <TotalText>{t`Total liquidity`}</TotalText>
             <TotalValueWrapper>
               <TotalValue>{`${totalValue}`}</TotalValue>
               <ButtonPrimarySmall
@@ -185,7 +187,7 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
             </TotalValueWrapper>
           </TotalInnerWrapper>
           <PriceImpact error={priceImpactRaw >= 1}>
-            {`Price impact  ${priceImpact}%`}
+            {`${t('Price impact')} ${priceImpact}%`}
             <ButtonWrapper>
               <ButtonPrimarySmall disabled={isXrp} text={'Optimize'} onClick={handleOptimize} />
             </ButtonWrapper>
@@ -197,14 +199,11 @@ export const AddLiquidityInputGroup = ({ pool }: Props) => {
         <CheckboxWrapper>
           <Checkbox onClick={() => checkPriceImpact(prev => !prev)} selected={checkedPriceImpact} />
         </CheckboxWrapper>
-        <Text>
-          I accept the high price impact from depositing, moving the market price base on the depth
-          of the market.
-        </Text>
+        <Text>{t('accept-high-price-impact-message')}</Text>
       </CheckPriceImpact>
 
       <ButtonPrimaryLarge
-        text="Preview"
+        text={t('Preview')}
         onClick={popupOpen}
         disabled={!isValid || !checkedPriceImpact}
       />

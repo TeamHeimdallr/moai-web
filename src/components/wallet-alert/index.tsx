@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -9,14 +10,15 @@ import { ButtonPrimarySmall } from '../buttons';
 
 export const WalletAlert = () => {
   const { name } = useNetwork();
+  const { t } = useTranslation();
   return (
     <Wrapper>
       <TextWrapper>
         <IconAlert width={20} height={20} color={COLOR.NEUTRAL[100]} />
-        {`Please connect to ${name} wallet`}
+        {t('wallet-alert-message', { network: name })}
       </TextWrapper>
       <ButtonWrapper>
-        <ButtonPrimarySmall text="Connect wallet" isGrayScale={true} />
+        <ButtonPrimarySmall text={t('Connect wallet')} isGrayScale={true} />
       </ButtonWrapper>
     </Wrapper>
   );

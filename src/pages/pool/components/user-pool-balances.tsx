@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
@@ -21,6 +22,7 @@ export const UserPoolBalances = () => {
   const navigate = useNavigate();
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { setWalletType } = useWalletTypeStore();
+  const { t } = useTranslation();
 
   const { network, id } = useParams();
   useRequirePrarams([!!id, !!network], () => navigate(-1));
@@ -75,7 +77,7 @@ export const UserPoolBalances = () => {
   return (
     <Wrapper>
       <Header>
-        My pool balance <Balance>${formatNumber(totalBalance || 0, 2)}</Balance>
+        {t('My liquidity')} <Balance>${formatNumber(totalBalance || 0, 2)}</Balance>
       </Header>
       <Divider />
       <TokenLists>
@@ -85,7 +87,7 @@ export const UserPoolBalances = () => {
         <ButtonWrapper>
           {address ? (
             <ButtonPrimaryLarge
-              text="Add liquidity"
+              text={t('Add liquidity')}
               onClick={handleAddLiquidity}
               disabled={!address}
             />
@@ -101,7 +103,7 @@ export const UserPoolBalances = () => {
           ) : (
             <ButtonPrimaryLarge
               style={{ padding: '9px 24px' }}
-              text="Connect wallet"
+              text={t('Connect wallet')}
               isLoading={!!opened}
               onClick={() => {
                 setWalletType({ xrpl: !isEvm, evm: isEvm });
@@ -112,7 +114,7 @@ export const UserPoolBalances = () => {
           {totalBalance > 0 && (
             <ButtonPrimaryLarge
               buttonType="outlined"
-              text="Withdraw"
+              text={t('Withdraw')}
               disabled={!address}
               onClick={handleWithdrawLiquidity}
             />

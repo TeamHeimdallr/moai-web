@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { parseUnits } from 'viem';
@@ -48,6 +49,7 @@ export const WithdrawLiquidityPopup = ({
   const { compositions } = pool;
   const { network } = useParams();
   const { selectedNetwork, isXrp } = useNetwork();
+  const { t } = useTranslation();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
@@ -92,11 +94,13 @@ export const WithdrawLiquidityPopup = ({
   return (
     <Popup
       id={POPUP_ID.WITHDRAW_LP}
-      title={isSuccess ? '' : 'Withdrawal preview'}
+      title={isSuccess ? '' : t('Withdrawal preview')}
       button={
         <ButtonWrapper onClick={() => handleButton()}>
           <ButtonPrimaryLarge
-            text={isLoading ? 'Confirming' : isSuccess ? 'Return to pool page' : 'Withdraw'}
+            text={
+              isLoading ? t('Confirming') : isSuccess ? t('Return to pool page') : t('Withdraw')
+            }
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
           />
@@ -109,11 +113,13 @@ export const WithdrawLiquidityPopup = ({
             <IconWrapper>
               <IconCheck width={40} height={40} />
             </IconWrapper>
-            <SuccessTitle>Withdrawal confirmed!</SuccessTitle>
-            <SuccessSubTitle>{`Successfully withdrawned from ${pool.lpTokenName} Pool`}</SuccessSubTitle>
+            <SuccessTitle>{t('Withdrawal confirmed!')}</SuccessTitle>
+            <SuccessSubTitle>
+              {t('withdraw-success-message', { pool: pool.lpTokenName })}
+            </SuccessSubTitle>
           </SuccessWrapper>
         ) : (
-          <List title={`You're providing`}>
+          <List title={t`You're providing`}>
             <TokenList
               type="large"
               title={`${formatNumber(inputValue, 2)}`}
@@ -125,7 +131,7 @@ export const WithdrawLiquidityPopup = ({
           </List>
         )}
 
-        <List title={`You're expected to receive`}>
+        <List title={t`You're expected to receive`}>
           {compositions.map(({ address, symbol, weight }, i) => (
             <div key={`${address || symbol}-${i}`}>
               <TokenList
@@ -147,13 +153,13 @@ export const WithdrawLiquidityPopup = ({
             <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
         ) : (
-          <List title={`Summary`}>
+          <List title={t(`Summary`)}>
             <Summary>
-              <SummaryTextTitle>Total</SummaryTextTitle>
+              <SummaryTextTitle>{t('Total withdrawal')}</SummaryTextTitle>
               <SummaryText>{`$${formatNumber(totalValue)}`}</SummaryText>
             </Summary>
             <Summary>
-              <SummaryTextTitle>Price impact</SummaryTextTitle>
+              <SummaryTextTitle>{t`Price impact`}</SummaryTextTitle>
               <SummaryText>{priceImpact}%</SummaryText>
             </Summary>
           </List>

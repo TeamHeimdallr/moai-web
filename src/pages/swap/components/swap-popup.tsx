@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
@@ -47,6 +48,8 @@ export const SwapPopup = () => {
 
   const { pool } = useLiquidityPoolBalance(id);
   const { getTokenPrice } = useTokenPrice();
+
+  const { t } = useTranslation();
 
   const {
     fromToken,
@@ -161,18 +164,18 @@ export const SwapPopup = () => {
   return (
     <Popup
       id={POPUP_ID.SWAP}
-      title={isSuccess ? '' : 'Swap preview'}
+      title={isSuccess ? '' : t('Swap preview')}
       button={
         <ButtonWrapper onClick={() => handleButton()}>
           <ButtonPrimaryLarge
             text={
               isLoading || isLoadingAllowance
-                ? 'Confirming'
+                ? t('Confirming')
                 : isSuccess
-                ? 'Return to swap page'
+                ? t('Return to swap page')
                 : step === 1
-                ? `Approve ${wantToAllowToken} for swap`
-                : 'Confirm swap'
+                ? t('approve-swap-message', { token: wantToAllowToken })
+                : t('Confirm swap')
             }
             isLoading={isLoading || isLoadingAllowance}
             buttonType={isSuccess ? 'outlined' : 'filled'}
@@ -188,11 +191,18 @@ export const SwapPopup = () => {
               <SuccessIconWrapper>
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
-              <SuccessTitle>Swap confirmed!</SuccessTitle>
-              <SuccessSubTitle>{`Successfully swapped ${fromValue} ${fromToken} to ${toValue} ${toToken}`}</SuccessSubTitle>
+              <SuccessTitle>{t('Swap confirmed!')}</SuccessTitle>
+              <SuccessSubTitle>
+                {t('swap-success-message', {
+                  fromValue: fromValue,
+                  fromToken: fromToken,
+                  toValue: toValue,
+                  toToken: toToken,
+                })}
+              </SuccessSubTitle>
             </SuccessWrapper>
 
-            <List title={`Total`}>
+            <List title={t`Total swap`}>
               <TokenList
                 title={`${toValue} ${toToken}`}
                 description={`$${formatNumber(toUSDValue, 2)}`}
@@ -205,7 +215,7 @@ export const SwapPopup = () => {
         ) : (
           <>
             <ListWrapper>
-              <List title={`Effective price: ${effectivePrice}`}>
+              <List title={`${t('Effective price')}: ${effectivePrice}`}>
                 <TokenList
                   title={`${fromValue} ${fromToken}`}
                   description={`$${formatNumber(fromUSDValue, 2)}`}
@@ -229,7 +239,7 @@ export const SwapPopup = () => {
 
             <DetailWrapper>
               <DetailTitleWrapper>
-                {`Swap from ${fromToken} details`}
+                {t('swap-detail', { token: fromToken })}
                 <DetailButtonWrapper>
                   <ButtonChipSmall
                     text="TOKEN"
@@ -245,14 +255,16 @@ export const SwapPopup = () => {
               </DetailTitleWrapper>
               <DetailInfoWrapper>
                 <DetailInfoTextWrapper>
-                  <DetailInfoText>Total expected after fees</DetailInfoText>
+                  <DetailInfoText>{t('Total expected after fees')}</DetailInfoText>
                   <DetailInfoText>{`${formatNumber(
                     totalAfterFee,
                     6
                   )} ${currentUnit}`}</DetailInfoText>
                 </DetailInfoTextWrapper>
                 <DetailInfoTextWrapper>
-                  <DetailInfoSubtext>{`The least you'll get at ${slippageText}% slippage`}</DetailInfoSubtext>
+                  <DetailInfoSubtext>
+                    {t('least-user-get-message', { slippage: slippageText })}
+                  </DetailInfoSubtext>
                   <DetailInfoSubtext>{`${formatNumber(
                     totalAfterSlippage,
                     6
@@ -328,7 +340,7 @@ const DetailInfoWrapper = tw.div`
 `;
 
 const DetailInfoTextWrapper = tw.div`
-  flex gap-10
+  flex gap-10 justify-between
 `;
 
 const DetailInfoText = tw.div`

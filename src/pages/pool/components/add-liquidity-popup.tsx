@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
@@ -46,6 +47,8 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
   const { network } = useParams();
   const { selectedNetwork, isXrp } = useNetwork();
   const { getTokenPrice } = useTokenPrice();
+
+  const { t } = useTranslation();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
@@ -169,20 +172,20 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
   return (
     <Popup
       id={POPUP_ID.ADD_LP}
-      title={isSuccess ? '' : 'Add liquidity preview'}
+      title={isSuccess ? '' : t('Add liquidity preview')}
       button={
         <ButtonWrapper onClick={() => handleButton()}>
           <ButtonPrimaryLarge
             text={
               isLoading
-                ? 'Confirming'
+                ? t('Confirming')
                 : isSuccess
-                ? 'Return to pool page'
+                ? t('Return to pool page')
                 : step === 1
-                ? `Approve ${tokenInputs[0]?.symbol} for adding liquidity`
+                ? t('approve-token-message', { token: tokenInputs[0]?.symbol })
                 : step === 2 && tokenInputs.length > 1
-                ? `Approve ${tokenInputs[1]?.symbol} for adding liquidity`
-                : 'Add liquidity'
+                ? t('approve-token-message', { token: tokenInputs[1]?.symbol })
+                : t('Add liquidity')
             }
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
@@ -196,11 +199,13 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
             <IconWrapper>
               <IconCheck width={40} height={40} />
             </IconWrapper>
-            <SuccessTitle>Add liquidity confirmed!</SuccessTitle>
-            <SuccessSubTitle>{`Successfully added liquidity to ${lpTokenName} Pool`}</SuccessSubTitle>
+            <SuccessTitle>{t('Add liquidity confirmed!')}</SuccessTitle>
+            <SuccessSubTitle>
+              {t('add-liquidity-success-message', { pool: lpTokenName })}
+            </SuccessSubTitle>
           </SuccessWrapper>
         ) : (
-          <List title={`You're providing`}>
+          <List title={t`You're providing`}>
             {tokenInputs.map(({ symbol, amount }, idx) => (
               <div key={idx}>
                 <TokenList
@@ -218,7 +223,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
           </List>
         )}
 
-        <List title={`You're expected to receive`}>
+        <List title={t`You're expected to receive`}>
           <TokenList
             type="large"
             title={`${lpTokenAmount}`}
@@ -243,13 +248,13 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
           </Scanner>
         ) : (
           <>
-            <List title={`Summary`}>
+            <List title={t`Summary`}>
               <Summary>
-                <SummaryTextTitle>Total</SummaryTextTitle>
+                <SummaryTextTitle>{t('Total liquidity')}</SummaryTextTitle>
                 <SummaryText>{`$${formatNumber(totalValue)}`}</SummaryText>
               </Summary>
               <Summary>
-                <SummaryTextTitle>Price impact</SummaryTextTitle>
+                <SummaryTextTitle>{t('Price impact')}</SummaryTextTitle>
                 <SummaryText>{priceImpact}%</SummaryText>
               </Summary>
             </List>

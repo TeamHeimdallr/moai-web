@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
 import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
@@ -21,10 +22,12 @@ export const SelectToTokenPopup = () => {
   const { toToken, fromToken, setToToken } = useSwapStore();
   const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_TO);
 
+  const { t } = useTranslation();
+
   return (
     <Popup
       id={POPUP_ID.SWAP_SELECT_TOKEN_TO}
-      title="Select token"
+      title={t('Select token')}
       style={{ backgroundColor: COLOR.NEUTRAL[10] }}
     >
       <Wrapper>
