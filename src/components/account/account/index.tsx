@@ -3,7 +3,12 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
-import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
+import {
+  imageWalletCrossmark,
+  imageWalletFuturepass,
+  imageWalletGem,
+  imageWalletMetamask,
+} from '~/assets/images';
 
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -21,24 +26,35 @@ export const Account = () => {
 
   useOnClickOutside(ref, () => open(false));
 
-  const { evm, xrp } = useConnectedWallet();
-  const bothConnected = evm.address && xrp.address;
+  const { evm, fpass, xrp } = useConnectedWallet();
+
+  const connectedWalletCount =
+    (evm.address ? 1 : 0) + (xrp.address ? 1 : 0) + (fpass.address ? 1 : 0);
 
   return (
     <Wrapper ref={ref}>
       <Banner opened={opened} onClick={toggle}>
-        {bothConnected ? (
-          <BothConnectedWrapper>
-            <ConnectedXrp>
-              {xrp.connectedConnector === 'crossmark' ? (
-                <Image src={imageWalletCrossmark} alt="crossmark wallet" />
-              ) : (
-                <Image src={imageWalletGem} alt="gem wallet" />
-              )}
-            </ConnectedXrp>
-            <ConnectedEvm>
-              <Image src={imageWalletMetamask} alt="metamask" />
-            </ConnectedEvm>
+        {connectedWalletCount > 1 ? (
+          <BothConnectedWrapper style={{ width: connectedWalletCount === 3 ? 88 : 66 }}>
+            {xrp.address && (
+              <ConnectedXrp>
+                {xrp.connectedConnector === 'crossmark' ? (
+                  <Image src={imageWalletCrossmark} alt="crossmark wallet" />
+                ) : (
+                  <Image src={imageWalletGem} alt="gem wallet" />
+                )}
+              </ConnectedXrp>
+            )}
+            {fpass.address && (
+              <ConnectedRoot>
+                <Image src={imageWalletFuturepass} alt="futurepass" />
+              </ConnectedRoot>
+            )}
+            {evm.address && (
+              <ConnectedEvm>
+                <Image src={imageWalletMetamask} alt="metamask" />
+              </ConnectedEvm>
+            )}
           </BothConnectedWrapper>
         ) : (
           <AccountWrapper>
@@ -90,13 +106,14 @@ const ContentWrapper = styled.div<WrapperProps>(({ opened }) => [
 ]);
 
 const BothConnectedWrapper = tw.div`
-  flex inline-flex items-center bg-neutral-10 py-9 px-8 rounded-10 relative w-66 h-40
+  flex inline-flex items-center bg-neutral-10 py-9 px-8 rounded-10 relative h-40
 `;
 const ConnectedBase = tw.div`
-  absolute flex-center w-28 h-28 bg-neutral-20 border-1 border-neutral-15 border-solid rounded-14
+  absolute flex-center w-28 h-28 bg-neutral-0 border-1 border-neutral-10 border-solid rounded-14
 `;
 const ConnectedEvm = tw(ConnectedBase)`right-9`;
 const ConnectedXrp = tw(ConnectedBase)`left-9`;
+const ConnectedRoot = tw(ConnectedBase)`absolute-center`;
 
 const Image = tw.img`
   w-24 h-24 object-cover flex-center

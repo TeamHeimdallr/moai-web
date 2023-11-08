@@ -36,7 +36,7 @@ interface SlippageWrapperProps {
   shadow?: boolean;
 }
 const SlippageWrapper = styled.div<SlippageWrapperProps>(({ shadow }) => [
-  tw`gap-20 px-16 py-12 bg-neutral-15 w-294`,
+  tw`gap-20 px-16 py-12 bg-neutral-15 w-290`,
   shadow && tw`box-shadow-default rounded-8`,
 ]);
 

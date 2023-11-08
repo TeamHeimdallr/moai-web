@@ -20,7 +20,7 @@ interface WrapperProps {
 }
 const Wrapper = styled.button<WrapperProps>(({ selected }) => [
   tw`
-    p-2 flex-center rounded-full clickable transition-colors
+    p-4 flex-center rounded-full clickable transition-colors
 
     bg-transparent
     hover:(bg-neutral-10)
