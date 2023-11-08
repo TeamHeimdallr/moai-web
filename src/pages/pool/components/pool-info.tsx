@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
 interface Props {
@@ -24,9 +25,10 @@ interface PoolInfoCardProps {
   value: string;
 }
 const PoolInfoCard = ({ name, value }: PoolInfoCardProps) => {
+  const { t } = useTranslation();
   return (
     <Wrapper>
-      <Name>{name}</Name>
+      <Name>{t(name)}</Name>
       <Value>{value}</Value>
     </Wrapper>
   );

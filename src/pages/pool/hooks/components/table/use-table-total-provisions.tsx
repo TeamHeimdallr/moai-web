@@ -42,7 +42,7 @@ export const useTableTotalProvision = (id: string) => {
 
   const poolData = data?.map(d => {
     const id = d?.id ?? '';
-    const label = d?.type === 'deposit' ? 'Add tokens' : d?.type === 'withdraw' ? 'Withdraw' : '';
+    const label = d?.type === 'deposit' ? 'Add tokens' : d?.type === 'withdraw' ? 'Withdrawal' : '';
 
     const action = { key: d?.type ?? '', label };
 

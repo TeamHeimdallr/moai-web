@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
 import { IconDown } from '~/assets/icons';
@@ -17,10 +18,12 @@ export const PoolSwapHistories = ({ pool }: Props) => {
   const [opened, open] = useState(false);
   const { data, columns } = useTableSwapHistories(pool.id);
 
+  const { t } = useTranslation();
+
   return (
     <Wrapper opened={opened}>
       <TitleWrapper>
-        <Title>Swaps</Title>
+        <Title>{t('Swaps')}</Title>
         <Icon opened={opened} onClick={() => open(prev => !prev)}>
           <ButtonIconLarge icon={<IconDown />} />
         </Icon>
