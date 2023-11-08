@@ -1,10 +1,10 @@
 import { Fragment } from 'react';
 import copy from 'copy-to-clipboard';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 import { zeroAddress } from 'viem';
 
 import { COLOR } from '~/assets/colors';
-import { IconCopy, IconLogout, IconNext } from '~/assets/icons';
+import { IconCopy, IconDepth, IconLink, IconLogout, IconNext } from '~/assets/icons';
 import {
   imageNetworkEvm,
   imageNetworkXRPL,
@@ -27,7 +27,7 @@ import { Slippage } from '../slippage';
 
 export const AccountDetail = () => {
   const { evm, xrp, fpass } = useConnectedWallet();
-  const { name } = useNetwork();
+  const { name, isEvm, isFpass, isXrp } = useNetwork();
   const { setWalletType } = useWalletTypeStore();
 
   const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
@@ -36,7 +36,7 @@ export const AccountDetail = () => {
   );
 
   const xrpComponent = (
-    <AccountWrapper key="xrp">
+    <AccountWrapper key="xrp" isConnected={isXrp}>
       {xrp.address ? (
         <Account key="xrpl">
           <Logo>
@@ -69,17 +69,15 @@ export const AccountDetail = () => {
           <Logo>
             <InnerLogo src={imageNetworkXRPL} alt="xrpl" />
           </Logo>
-          <ConnectText>Connect with XRP Wallet</ConnectText>
-          <IconButton>
-            <IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />
-          </IconButton>
+          <ConnectText>Connect wallet</ConnectText>
+          <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
         </AccountNotConnected>
       )}
     </AccountWrapper>
   );
 
   const fpassComponent = (
-    <AccountWrapper key="fpass">
+    <AccountWrapper key="fpass" isConnected={isFpass}>
       {fpass.address && fpass.address !== zeroAddress ? (
         <Account key="fpass">
           <Logo>
@@ -91,11 +89,26 @@ export const AccountDetail = () => {
               <InnerWrapper>
                 {/* TODO: Copied! 문구 2초 노출 */}
                 <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(fpass.address)} />
+                <ButtonIconSmall
+                  icon={<IconLink />}
+                  onClick={() => window.open('https://futurepass.futureverse.app/account/')}
+                />
                 <ButtonIconSmall icon={<IconLogout />} onClick={fpass.disconnect} />
               </InnerWrapper>
             </AddressTextWrapper>
 
             <SmallText>The Root Network</SmallText>
+
+            <MetamaskWallet>
+              <IconWrapper>
+                <IconDepth />
+              </IconWrapper>
+              <IconWrapper>
+                <InnerLogoSmall src={imageWalletMetamask} alt="metamask" />
+              </IconWrapper>
+              <SmallTextWhite>{evm.truncatedAddress}</SmallTextWhite>
+              <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(evm.address ?? '')} />
+            </MetamaskWallet>
           </AddressWrapper>
         </Account>
       ) : (
@@ -116,18 +129,16 @@ export const AccountDetail = () => {
           {evm.address ? (
             <ConnectText>Create Futurepass</ConnectText>
           ) : (
-            <ConnectText>Connect with Futurepass</ConnectText>
+            <ConnectText>Connect wallet</ConnectText>
           )}
-          <IconButton>
-            <IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />
-          </IconButton>
+          <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
         </AccountNotConnected>
       )}
     </AccountWrapper>
   );
 
   const evmComponent = (
-    <AccountWrapper key="evm">
+    <AccountWrapper key="evm" isConnected={isEvm && !isFpass}>
       {evm.address ? (
         <Account key="evm">
           <Logo>
@@ -157,10 +168,8 @@ export const AccountDetail = () => {
           <Logo>
             <InnerLogo src={imageNetworkEvm} alt="evm" />
           </Logo>
-          <ConnectText>Connect with Metamask</ConnectText>
-          <IconButton>
-            <IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />
-          </IconButton>
+          <ConnectText>Connect wallet</ConnectText>
+          <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
         </AccountNotConnected>
       )}
     </AccountWrapper>
@@ -168,12 +177,12 @@ export const AccountDetail = () => {
 
   const components = () => {
     return [
-      { component: xrpComponent, priority: xrp.isConnected ? 13 : 3 },
+      { component: xrpComponent, priority: isXrp ? 13 : 3 },
       {
         component: fpassComponent,
-        priority: fpass.address && fpass.address !== zeroAddress ? 12 : 2,
+        priority: isFpass ? 12 : 2,
       },
-      { component: evmComponent, priority: evm.isConnected ? 11 : 1 },
+      { component: evmComponent, priority: isEvm && !isFpass ? 11 : 1 },
     ]
       .sort((a, b) => b.priority - a.priority)
       .map(c => c.component);
@@ -185,11 +194,12 @@ export const AccountDetail = () => {
         <Title>
           <TitleText>Account</TitleText>
         </Title>
-        <Divider />
-        {components().map((c, i) => (
-          <Fragment key={i}>{c}</Fragment>
-        ))}
-        <Divider />
+        <WalletsWrapper>
+          {components().map((c, i) => (
+            <Fragment key={i}>{c}</Fragment>
+          ))}
+        </WalletsWrapper>
+
         <Slippage />
         <Divider />
         <NetworkWrapper>
@@ -213,7 +223,19 @@ const Wrapper = tw.div`
 const InnerWrapper = tw.div`
   flex-center
 `;
-const AccountWrapper = tw.div`w-full`;
+const WalletsWrapper = tw.div`flex flex-col gap-8 px-12 pb-12`;
+
+interface AccountProps {
+  isConnected?: boolean;
+}
+
+const AccountWrapper = styled.div<AccountProps>(({ isConnected }) => [
+  tw`w-266 rounded-8 border-1 border-solid`,
+  isConnected
+    ? tw`border-primary-50 text-primary-50`
+    : tw`border-neutral-20 hover:border-neutral-80 text-neutral-100`,
+]);
+
 const Panel = tw.div`
   flex flex-col items-start bg-neutral-15 rounded-8
 `;
@@ -231,7 +253,7 @@ const Divider = tw.div`
 `;
 
 const Account = tw.div`
-  flex gap-12 px-16 py-12 w-full items-center
+  flex gap-12 px-10 py-12 w-full items-center
 `;
 const AccountNotConnected = tw.div`
   flex gap-12 px-16 py-12 w-full items-center clickable
@@ -242,11 +264,11 @@ const AddressWrapper = tw.div`
 `;
 
 const MediumText = tw.div`
-  text-neutral-100 font-m-14 address
+  font-m-14 address
 `;
 
 const NetworkWrapper = tw.div`
-  flex justify-between px-16 pb-16 pt-12 w-full
+  flex justify-between px-16 py-16 w-full
 `;
 
 const Text = tw.span`
@@ -258,13 +280,14 @@ const CurrentNetwork = tw.div`
 `;
 
 const NetworkStatus = tw.div`
-  bg-primary-50 rounded-100 w-8 h-8
+  bg-green-50 rounded-100 w-8 h-8
 `;
 
 const NetworkText = tw.div`
   text-neutral-80 font-r-12
 `;
 const SmallText = tw.div`font-r-12 text-neutral-60`;
+const SmallTextWhite = tw.div`font-r-12 text-neutral-100 flex-1`;
 const AddressTextWrapper = tw.div`flex justify-between`;
 
 const Logo = tw.div`
@@ -273,10 +296,12 @@ const Logo = tw.div`
 const InnerLogo = tw.img`
   rounded-full bg-neutral-0 w-24 h-24 flex-center flex-shrink-0
 `;
+const InnerLogoSmall = tw.img`
+  rounded-full w-20 h-20 flex-center flex-shrink-0
+`;
 const ConnectText = tw.div`
-  font-m-12 text-primary-60 flex-1
+  font-m-14 flex-1
 `;
 
-const IconButton = tw.div`
-  p-4 clickable flex-center
-`;
+const MetamaskWallet = tw.div`mt-4 py-3 px-6 flex-center gap-4 bg-neutral-10 rounded-4`;
+const IconWrapper = tw.div`flex-center`;

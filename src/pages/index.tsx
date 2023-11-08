@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes as ReactRoutes } from 'react-router-dom';
+import { Navigate, Route, Routes as ReactRoutes, useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import { IS_LANDING } from '~/constants';
@@ -7,8 +7,9 @@ import { ConnectWallet } from '~/components/connect-wallet';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
-import { POPUP_ID } from '~/types';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkFull } from '~/utils';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import Home from './home';
 import Landing from './landing';
@@ -19,7 +20,9 @@ const Page = () => {
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   useConnectXrpl();
-  const { evm, xrpl } = useWalletTypeStore();
+  const { network } = useParams();
+  const { selectedNetwork } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   return (
     <>
@@ -43,7 +46,12 @@ const Page = () => {
       </ReactRoutes>
 
       <ToastContainer />
-      {connectWalletOpened && <ConnectWallet evm={evm} xrpl={xrpl} />}
+      {connectWalletOpened && (
+        <ConnectWallet
+          evm={currentNetwork !== NETWORK.XRPL}
+          xrpl={currentNetwork === NETWORK.XRPL}
+        />
+      )}
     </>
   );
 };

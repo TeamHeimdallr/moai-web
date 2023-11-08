@@ -9,6 +9,7 @@ import IconCheck from './icon-check.svg?react';
 import IconComment from './icon-comment.svg?react';
 import IconCopy from './icon-copy.svg?react';
 import IconDashboard from './icon-dashboard.svg?react';
+import IconDepth from './icon-depth.svg?react';
 import IconDiscord from './icon-discord.svg?react';
 import IconDollarWithCircle from './icon-dollar-with-circle.svg?react';
 import IconDollars from './icon-dollars.svg?react';
@@ -67,6 +68,7 @@ export {
   IconComment,
   IconCopy,
   IconDashboard,
+  IconDepth,
   IconDiscord,
   IconDollars,
   IconDollarWithCircle,

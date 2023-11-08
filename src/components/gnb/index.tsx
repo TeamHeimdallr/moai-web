@@ -16,7 +16,6 @@ import { useBanner } from '~/pages/home/hooks/components/alert-wallet/use-banner
 import { usePopup } from '~/hooks/components/use-popup';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { Account } from '../account';
@@ -32,7 +31,6 @@ export const Gnb = () => {
   const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
 
   const { evm, xrp } = useConnectedWallet();
-  const { setWalletType } = useWalletTypeStore();
   const { text, connectWallet } = useBanner();
 
   const [mobileMenuOpened, mobileMenuOpen] = useState<boolean>(false);
@@ -80,10 +78,7 @@ export const Gnb = () => {
                   style={{ padding: isMD ? '9px 24px' : '9px 16px' }}
                   text="Connect wallet"
                   isLoading={!!opened}
-                  onClick={() => {
-                    setWalletType({ xrpl: true, evm: true });
-                    open();
-                  }}
+                  onClick={() => open()}
                 />
               )}
               <NetworkSelection />
