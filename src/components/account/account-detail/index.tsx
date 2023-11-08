@@ -268,7 +268,7 @@ const MediumText = tw.div`
 `;
 
 const NetworkWrapper = tw.div`
-  flex justify-between px-16 pb-16 pt-12 w-full
+  flex justify-between px-16 py-16 w-full
 `;
 
 const Text = tw.span`
