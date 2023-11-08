@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import tw from 'twin.macro';
@@ -13,22 +14,25 @@ export const Notification = () => {
 
   const [opened, open] = useState(false);
 
+  const { t } = useTranslation();
+
   const toggle = () => {
     open(!opened);
   };
 
   useOnClickOutside(ref, () => open(false));
 
+  // 여기 title 바뀌었음 !! i18n 으로 인해 noti-add 와 같은 식으로 내려와야 합니다.
   const dummyNoti = [
     {
       id: '1',
-      title: 'Add liquidity',
+      title: 'noti-add',
       description: '$0.10 in 20% MOAI, 80% USDC',
       link: '',
     },
     {
       id: '2',
-      title: 'Withdraw',
+      title: 'noti-withdraw',
       description: '$0.10 in 20% MOAI, 80% USDC',
       link: '',
     },
@@ -47,15 +51,15 @@ export const Notification = () => {
         <Wrapper>
           <Panel>
             <Title>
-              <TitleText>{'Recent activity'}</TitleText>
+              <TitleText>{t('Notification')}</TitleText>
             </Title>
             <Divider />
             {/* TODO: empty notification case */}
             {dummyNoti.map(({ id, title, description, link }) => (
-              <NotificationCard key={id} title={title} description={description} link={link} />
+              <NotificationCard key={id} title={t(title)} description={description} link={link} />
             ))}
             <ClearWrapper>
-              <Clear onClick={() => handleClear()}>Clear transactions</Clear>
+              <Clear onClick={() => handleClear()}>{t('Clear transactions')}</Clear>
             </ClearWrapper>
           </Panel>
         </Wrapper>

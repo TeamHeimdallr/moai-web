@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
@@ -20,6 +21,8 @@ export const NetworkSelection = () => {
   const { selectedNetwork, selectNetwork, setTargetNetwork } = useNetwork();
 
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
+
+  const { t } = useTranslation();
 
   const toggle = () => open(!opened);
 
@@ -56,7 +59,7 @@ export const NetworkSelection = () => {
         />
         {opened && (
           <ListOuterWrapper>
-            <Title>Network Selection</Title>
+            <Title>{t('Network Selection')}</Title>
             <Divider />
             <ListWrapper>
               {NETWORK_SELECT.map(({ network, text }) => (
