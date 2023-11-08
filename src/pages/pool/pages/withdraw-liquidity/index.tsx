@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
@@ -23,6 +24,8 @@ const PoolDetailWithdrawLiquidityPage = () => {
   const { pool, lpTokenBalance } = useLiquidityPoolBalance(id ?? '');
   const { lpTokenTotalSupply } = pool;
 
+  const { t } = useTranslation();
+
   return (
     <>
       <Wrapper>
@@ -33,7 +36,7 @@ const PoolDetailWithdrawLiquidityPage = () => {
           <ContentWrapper>
             <Header>
               <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
-              <Title>Withdraw from pool</Title>
+              <Title>{t('Withdraw from pool')}</Title>
             </Header>
 
             <WithdrawWrapper>
