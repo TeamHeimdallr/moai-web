@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
 import { useSlippageStore } from '~/states/data/slippage';
@@ -10,10 +11,12 @@ export const Slippage = ({ shadow }: Props) => {
   const { slippage, setSlippage } = useSlippageStore();
   const preset = [0.5, 1, 2];
 
+  const { t } = useTranslation();
+
   return (
     <SlippageWrapper shadow={shadow}>
       <SlippageInnerWarpper>
-        <SlippageText>Slippage tolerance</SlippageText>
+        <SlippageText>{t('Slippage tolerance')}</SlippageText>
         <SlippageOptions>
           {preset.map((value, idx) => (
             <SlippageOption
@@ -25,7 +28,7 @@ export const Slippage = ({ shadow }: Props) => {
             </SlippageOption>
           ))}
           {/* TODO: manually input handling */}
-          <SlippageOption disabled={true}>{'or enter manually'}</SlippageOption>
+          <SlippageOption disabled={true}>{t('or enter manually')}</SlippageOption>
         </SlippageOptions>
       </SlippageInnerWarpper>
     </SlippageWrapper>

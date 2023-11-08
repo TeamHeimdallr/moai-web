@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import copy from 'copy-to-clipboard';
 import tw, { styled } from 'twin.macro';
 import { zeroAddress } from 'viem';
@@ -35,6 +36,8 @@ export const AccountDetail = () => {
     POPUP_ID.FUTUREPASS_CREATE
   );
 
+  const { t } = useTranslation();
+
   const xrpComponent = (
     <AccountWrapper key="xrp" isConnected={isXrp}>
       {xrp.address ? (
@@ -69,7 +72,7 @@ export const AccountDetail = () => {
           <Logo>
             <InnerLogo src={imageNetworkXRPL} alt="xrpl" />
           </Logo>
-          <ConnectText>Connect wallet</ConnectText>
+          <ConnectText>{t('Connect wallet')}</ConnectText>
           <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
         </AccountNotConnected>
       )}
@@ -129,7 +132,7 @@ export const AccountDetail = () => {
           {evm.address ? (
             <ConnectText>Create Futurepass</ConnectText>
           ) : (
-            <ConnectText>Connect wallet</ConnectText>
+            <ConnectText>{t('Connect wallet')}</ConnectText>
           )}
           <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
         </AccountNotConnected>
@@ -168,7 +171,7 @@ export const AccountDetail = () => {
           <Logo>
             <InnerLogo src={imageNetworkEvm} alt="evm" />
           </Logo>
-          <ConnectText>Connect wallet</ConnectText>
+          <ConnectText>{t('Connect wallet')}</ConnectText>
           <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
         </AccountNotConnected>
       )}
@@ -192,7 +195,7 @@ export const AccountDetail = () => {
     <Wrapper>
       <Panel>
         <Title>
-          <TitleText>Account</TitleText>
+          <TitleText>{t('Account')}</TitleText>
         </Title>
         <WalletsWrapper>
           {components().map((c, i) => (
@@ -203,7 +206,7 @@ export const AccountDetail = () => {
         <Slippage />
         <Divider />
         <NetworkWrapper>
-          <Text>{'Network'}</Text>
+          <Text>{t('Network')}</Text>
           <CurrentNetwork>
             <NetworkStatus />
             <NetworkText>{name}</NetworkText>
@@ -300,7 +303,7 @@ const InnerLogoSmall = tw.img`
   rounded-full w-20 h-20 flex-center flex-shrink-0
 `;
 const ConnectText = tw.div`
-  font-m-14 flex-1
+  font-m-12 text-primary-60 flex-1
 `;
 
 const MetamaskWallet = tw.div`mt-4 py-3 px-6 flex-center gap-4 bg-neutral-10 rounded-4`;
