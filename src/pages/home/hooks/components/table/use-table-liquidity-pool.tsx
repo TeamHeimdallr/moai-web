@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { NetworkChip } from '~/components/network-chip';
@@ -31,6 +32,8 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { sort, setSort } = useTableLiquidityPoolSortStore();
+
+  const { t, i18n } = useTranslation();
 
   // TODO: connect server
   const data = [

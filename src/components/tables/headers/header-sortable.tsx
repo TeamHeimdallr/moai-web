@@ -1,4 +1,5 @@
 import { HTMLAttributes } from 'react';
+import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -30,13 +31,15 @@ export const TableHeaderSortable = ({
       <IconArrowDown width={16} height={16} />
     );
 
+  const { t } = useTranslation();
+
   return (
     <SelectableHeaderText
       selected={sort?.key === sortKey}
       onClick={() => setSort?.(toggleTableSorting({ order: sort?.order ?? 'asc', key: sortKey }))}
       {...rest}
     >
-      {label}
+      {t(label)}
       {sort?.key === sortKey && icon}
     </SelectableHeaderText>
   );
