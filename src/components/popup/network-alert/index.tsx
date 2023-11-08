@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
@@ -17,10 +18,8 @@ export const NetworkAlertPopup = () => {
   const { pathname } = useLocation();
   const { close } = usePopup(POPUP_ID.NETWORK_ALERT);
   const { selectNetwork, targetNetwork, resetTarget } = useNetwork();
-  const text =
-    pathname !== '/'
-      ? 'The current pool’s network and the selected network do not match. Would you like to change the network and return to the home?'
-      : "The current network and the selected pool's network do not match. Would you like to change the network to view the details of the selected pool?";
+  const { t } = useTranslation();
+  const text = pathname !== '/' ? t('network-alert-pool-message') : t('network-alert-home-message');
 
   const handleClickSwitchButton = () => {
     if (!targetNetwork) return;
@@ -32,15 +31,16 @@ export const NetworkAlertPopup = () => {
     }
   };
   useNetwork;
+
   return (
     <Popup
       id={POPUP_ID.NETWORK_ALERT}
       title=""
-      button={<ButtonPrimaryLarge onClick={handleClickSwitchButton} text="Switch network" />}
+      button={<ButtonPrimaryLarge onClick={handleClickSwitchButton} text={t`Switch network`} />}
     >
       <Wrapper>
         <IconAlert width={60} height={60} fill={COLOR.RED[50]} />
-        <Title>The network does not match</Title>
+        <Title>{t(`The network does not match`)}</Title>
         <Text>{text}</Text>
       </Wrapper>
     </Popup>

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -12,14 +13,15 @@ export const useBanner = () => {
   const { fpass, evm, xrp } = useConnectedWallet();
   const { setWalletType } = useWalletTypeStore();
   const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
-  const wallet =
+  const { t } = useTranslation();
+  const network =
     selectedNetwork === NETWORK.EVM_SIDECHAIN
       ? 'EVM'
       : selectedNetwork === NETWORK.THE_ROOT_NETWORK
-      ? 'Futurepass'
+      ? 'Root'
       : 'XRPL';
 
-  const text = `Please connect to ${wallet} wallet`;
+  const text = t('wallet-alert-message', { network: network });
 
   useEffect(() => {
     if (
