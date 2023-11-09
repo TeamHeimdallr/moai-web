@@ -9,13 +9,11 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { getWrappedTokenAddress, isNativeToken } from '~/api/utils/native-token';
-
 import { EVM_CONTRACT_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { getNetworkFull, getWrappedTokenAddress, isNativeToken } from '~/utils';
 import { NETWORK } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';

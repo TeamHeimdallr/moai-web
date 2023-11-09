@@ -3,7 +3,6 @@ import { fetchBalance } from '@wagmi/core';
 import { formatUnits } from 'viem';
 import { Address, useQuery } from 'wagmi';
 
-import { isNativeToken } from '~/api/utils/native-token';
 import { QUERY_KEYS } from '~/api/utils/query-keys';
 
 import { EVM_TOKEN_ADDRESS } from '~/constants';
@@ -11,7 +10,7 @@ import { EVM_POOL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { getNetworkFull, isNativeToken } from '~/utils';
 import { ITokenbalanceInPool } from '~/types';
 
 import { useLiquidityPoolBalance } from '../pool/get-liquidity-pool-balance';

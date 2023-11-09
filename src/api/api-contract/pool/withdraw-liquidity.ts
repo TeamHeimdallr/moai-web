@@ -5,9 +5,9 @@ import { useWithdrawTokenAmounts as useWithdrawTokenAmountsEvm } from '~/api/api
 import { useWithdrawLiquidity as useWithdrawLiquidityEvm } from '~/api/api-contract/_evm/pool/withdraw-liquidity';
 import { useWithdrawTokenAmounts as useWithdrawTokenAmountsXrp } from '~/api/api-contract/_xrpl/pool/get-liquidity-pool-balance';
 import { useWithdrawLiquidity as useWithdrawLiquidityXrp } from '~/api/api-contract/_xrpl/pool/withdraw-liquidity';
-import { getWrappedTokenAddress } from '~/api/utils/native-token';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { getWrappedTokenAddress } from '~/utils';
 import { NETWORK } from '~/types';
 
 interface Props {

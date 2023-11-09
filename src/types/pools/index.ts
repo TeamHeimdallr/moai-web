@@ -1,50 +1,43 @@
-import { BaseResponse } from 'xrpl';
-
 import { IToken, NETWORK } from '..';
-
-/**
- * EVM
- */
-export interface ITokenComposition extends IToken {
-  weight: number;
-}
-
-export interface IPool {
-  id: string;
-
-  // lp token
-  lpTokenName: string;
-  lpTokenAddress: string;
-  lpTokenTotalSupply: number;
-
-  compositions: ITokenComposition[];
-
-  formattedBalance: string;
-  formattedValue: string;
-  formattedVolume: string;
-  formattedApr: string;
-  formattedFees: string;
-
-  balance: number;
-  value: number;
-  volume: number;
-  apr: number;
-  fees: number;
-}
 
 export interface IPoolList {
   id: string;
+  poolId: string;
   network: NETWORK;
 
-  assets: string[];
   compositions: ITokenComposition[];
 
-  poolValue: number;
+  value: number;
   volume: number;
   apr: number;
-  balance: number;
+}
 
-  isNew?: boolean;
+export interface ITokenComposition extends IToken {
+  balance?: number;
+  price?: number;
+  value?: number;
+
+  weight?: number;
+  currentWeight?: number;
+}
+
+export interface IPool {
+  id: number;
+  poolId: string;
+  network: NETWORK;
+
+  // lp token
+  lpToken: IToken;
+
+  compositions: ITokenComposition[];
+
+  value: number;
+  volume: number;
+  apr: number;
+  trandingFees: number;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 /**
@@ -55,21 +48,48 @@ export interface IPoolTokenList {
   image?: string; // token image
 }
 
-export interface IPoolLiquidityProvisions {
+export interface ILiquidityProvision {
   id: string;
-  type: 'deposit' | 'withdraw';
+  network: NETWORK;
 
-  tokens: IToken[];
+  type: LIQUIDITY_PROVISION_TYPE;
+
   liquidityProvider: string;
-  time: number;
+  time: Date;
   txHash: string;
+
+  liquidityProvisionTokens: ILiquidityProvisionToken[];
 }
-export interface IPoolSwapHistories {
+
+export interface ILiquidityProvisionToken extends IToken {
+  type: LIQUIDITY_PROVISION_TYPE;
+  amount: number;
+}
+
+export enum LIQUIDITY_PROVISION_TYPE {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
+}
+
+export interface ISwapHistory {
   id: string;
-  tokens: IToken[];
+  network: NETWORK;
+
   trader: string;
   time: number;
   txHash: string;
+
+  swapHistoryTokens: ISwapHistoryToken[];
+}
+
+export interface ISwapHistoryToken extends IToken {
+  amount: number;
+}
+
+export enum POOL_CHART_TYPE {
+  VOLUME = 'VOLUME',
+  TVL = 'TVL',
+  FEE = 'FEE',
 }
 
 export type SwapFundManagementInput = [
@@ -93,94 +113,95 @@ export type SwapSingleSwapInput = [
   string, // 0x0 하드코딩
 ];
 
-/**
- * XRP
- */
-export interface IAmm {
-  id: string;
-  lpTokenName: string;
-  lpTokenCurrency: string;
+// TODO:
+// /**
+//  * XRP
+//  */
+// export interface IAmm {
+//   id: string;
+//   lpTokenName: string;
+//   lpTokenCurrency: string;
 
-  assets: {
-    asset1: {
-      currency: string;
-      issuer?: string;
-    };
-    asset2: {
-      currency: string;
-      issuer?: string;
-    };
-  };
-}
+//   assets: {
+//     asset1: {
+//       currency: string;
+//       issuer?: string;
+//     };
+//     asset2: {
+//       currency: string;
+//       issuer?: string;
+//     };
+//   };
+// }
 
-export interface IAmmResponse extends BaseResponse {
-  result: {
-    amm: {
-      account: string;
-      amount: string;
-      amount2: {
-        currency: string;
-        issuer: string;
-        value: string;
-      };
-      asset2_frozen: boolean;
-      auction_slot: {
-        account: string;
-        discounted_fee: number;
-        expiration: string;
-        price: {
-          currency: string;
-          issuer: string;
-          value: string;
-        };
-        time_interval: number;
-      };
-      lp_token: {
-        currency: string;
-        issuer: string;
-        value: string;
-      };
-      trading_fee: number;
-      vote_slots: {
-        account: string;
-        trading_fee: number;
-        vote_weight: number;
-      }[];
-    };
-    ledger_current_index: number;
-    validated: boolean;
-  };
-  status: string;
-  type: string;
-}
+// export interface IAmmResponse extends BaseResponse {
+//   result: {
+//     amm: {
+//       account: string;
+//       amount: string;
+//       amount2: {
+//         currency: string;
+//         issuer: string;
+//         value: string;
+//       };
+//       asset2_frozen: boolean;
+//       auction_slot: {
+//         account: string;
+//         discounted_fee: number;
+//         expiration: string;
+//         price: {
+//           currency: string;
+//           issuer: string;
+//           value: string;
+//         };
+//         time_interval: number;
+//       };
+//       lp_token: {
+//         currency: string;
+//         issuer: string;
+//         value: string;
+//       };
+//       trading_fee: number;
+//       vote_slots: {
+//         account: string;
+//         trading_fee: number;
+//         vote_weight: number;
+//       }[];
+//     };
+//     ledger_current_index: number;
+//     validated: boolean;
+//   };
+//   status: string;
+//   type: string;
+// }
 
-export interface IFormattedAmmResponse {
-  account: string;
+// export interface IFormattedAmmResponse {
+//   account: string;
 
-  poolTotalValue: number;
-  fee: number;
+//   poolTotalValue: number;
+//   fee: number;
 
-  token1: {
-    currency: string;
-    issuer?: string;
-    balance: number;
-    price: number;
-    value: number;
-    weight: number;
-  };
-  token2: {
-    currency: string;
-    issuer?: string;
-    balance: number;
-    price: number;
-    value: number;
-    weight: number;
-  };
-  liquidityPoolToken: {
-    currency: string;
-    issuer: string;
-    balance: number;
-    price: number;
-    value: number;
-  };
-}
+//   token1: {
+//     currency: string;
+//     issuer?: string;
+//     balance: number;
+//     price: number;
+//     value: number;
+//     weight: number;
+//   };
+//   token2: {
+//     currency: string;
+//     issuer?: string;
+//     balance: number;
+//     price: number;
+//     value: number;
+//     weight: number;
+//   };
+//   liquidityPoolToken: {
+//     currency: string;
+//     issuer: string;
+//     balance: number;
+//     price: number;
+//     value: number;
+//   };
+// }
