@@ -1,57 +1,61 @@
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 
-import { useGetLiquidityPoolLists } from '~/api/api-contract/pool/get-liquidity-pool-lists';
+import { useGetMyPoolsInfinityQuery } from '~/api/api-server/pools/get-my-pools';
 
 import {
   TableColumn,
   TableColumnToken,
-  TableColumnTokenIcon,
   TableHeaderComposition,
   TableHeaderMyAPR,
   TableHeaderSortable,
 } from '~/components/tables';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkAbbr } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { useTableMyLiquidityPoolSortStore } from '~/states/components';
 
-export const useTableLiquidityMy = () => {
-  const data = useGetLiquidityPoolLists();
-  const empty = data.every(d => d.balance === 0);
-
+export const useTableMyLiquidityPool = () => {
+  const { selectedNetwork } = useNetwork();
   const { sort, setSort } = useTableMyLiquidityPoolSortStore();
-  const sortedData = data?.sort((a, b) => {
-    if (sort?.key === 'POOL_VALUE')
-      return sort.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;
-    if (sort?.key === 'VOLUME')
-      return sort.order === 'asc' ? a.volume - b.volume : b.volume - a.volume;
-    return 0;
+
+  const netwokrAbbr = getNetworkAbbr(selectedNetwork);
+  const { currentAddress } = useConnectedWallet(selectedNetwork);
+
+  const { data, hasNextPage, fetchNextPage } = useGetMyPoolsInfinityQuery({
+    queries: {
+      take: 5,
+      filter: `network:eq:${netwokrAbbr}`,
+      sort: sort ? `${sort.key}:${sort.order}` : undefined,
+      walletAddress: currentAddress || '',
+    },
   });
+  const pools = useMemo(() => data?.pages?.flatMap(page => page.pools) || [], [data?.pages]);
 
   const tableData = useMemo(
     () =>
-      sortedData?.map(d => {
-        const tokens = d.compositions.reduce((acc, cur) => {
-          acc[cur.symbol] = cur.weight;
-          return acc;
-        }, {});
-
-        return {
+      pools?.map(d => ({
+        meta: {
           id: d.id,
-          meta: {
-            id: d.id,
-            network: d.network,
-          },
-          assets: <TableColumnTokenIcon tokens={d.assets} />,
-          compositions: <TableColumnToken tokens={tokens} isNew={d.isNew} />,
-          balance: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
-          poolValue: <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} align="flex-end" />,
-          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
-        };
-      }),
-    [sortedData]
+          poolId: d.poolId,
+          network: d.network,
+        },
+        compositions: (
+          <TableColumnToken
+            tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+          />
+        ),
+        balance: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
+        poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+        apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+      })),
+    [pools]
   );
 
-  const columns = useMemo(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tableColumns = useMemo<ColumnDef<any, ReactNode>[]>(
     () => [
       { accessorKey: 'meta' },
       {
@@ -61,19 +65,14 @@ export const useTableLiquidityMy = () => {
       },
       {
         header: () => (
-          <TableHeaderSortable sortKey="BALANCE" label="My Balance" sort={sort} setSort={setSort} />
+          <TableHeaderSortable sortKey="balance" label="My Balance" sort={sort} setSort={setSort} />
         ),
         cell: row => row.renderValue(),
         accessorKey: 'balance',
       },
       {
         header: () => (
-          <TableHeaderSortable
-            sortKey="POOL_VALUE"
-            label="Pool value"
-            sort={sort}
-            setSort={setSort}
-          />
+          <TableHeaderSortable sortKey="value" label="Pool value" sort={sort} setSort={setSort} />
         ),
         cell: row => row.renderValue(),
         accessorKey: 'poolValue',
@@ -89,8 +88,11 @@ export const useTableLiquidityMy = () => {
   );
 
   return {
-    columns,
-    data: tableData,
-    empty,
+    tableColumns,
+    tableData,
+
+    pools,
+    hasNextPage,
+    fetchNextPage,
   };
 };

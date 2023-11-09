@@ -10,15 +10,16 @@ import { POPUP_ID } from '~/types';
 import { SwapInputGroup } from './components/swap-input-group';
 
 const SwapPage = () => {
-  const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   const { t } = useTranslation();
+  const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
+
   return (
     <>
       <Wrapper>
-        <GnbWrapper banner={!!opened}>
+        <GnbWrapper banner={!!bannerOpened}>
           <Gnb />
         </GnbWrapper>
-        <InnerWrapper banner={!!opened}>
+        <InnerWrapper banner={!!bannerOpened}>
           <ContentWrapper>
             <Title>{t('Swap')}</Title>
 

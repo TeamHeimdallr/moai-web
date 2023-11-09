@@ -1,18 +1,19 @@
 import { HTMLAttributes, ReactNode } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import tw, { css, styled } from 'twin.macro';
+import { toHex } from 'viem';
 
 import { COLOR } from '~/assets/colors';
-
-import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
 
   title?: string;
+  address?: string;
   percentage?: number;
 
   image?: boolean;
+  imageUrl?: string;
   icon?: ReactNode;
 
   type?: 'large' | 'small';
@@ -20,28 +21,40 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   clickable?: boolean;
 
   selected?: boolean;
+  disabled?: boolean;
 }
 
 export const Token = ({
   token,
   title,
+  address,
   percentage,
   image = true,
+  imageUrl,
   icon,
   type = 'large',
   selected,
   clickable = true,
+  disabled,
   ...rest
 }: Props) => {
+  const seed = address || token || title || '';
   return (
-    <Wrapper type={type} selected={selected} clickable={clickable} hasImage={!!image} {...rest}>
+    <Wrapper
+      type={type}
+      selected={selected}
+      clickable={clickable}
+      disabled={disabled}
+      hasImage={!!image}
+      {...rest}
+    >
       {image &&
-        (TOKEN_IMAGE_MAPPER[token] ? (
-          <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />
+        (imageUrl ? (
+          <TokenImageWrapper src={imageUrl} title={token} type={type} />
         ) : (
           <Jazzicon
             diameter={type === 'large' ? 24 : 20}
-            seed={jsNumberForAddress(token ?? title)}
+            seed={jsNumberForAddress(seed?.length < 42 ? toHex(seed, { size: 42 }) : seed)}
           />
         ))}
       <TextWrapper>
@@ -58,11 +71,14 @@ interface WrapperProps {
   selected?: boolean;
   clickable?: boolean;
   hasImage?: boolean;
+  disabled?: boolean;
 }
-const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, hasImage }) => [
+const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, disabled, hasImage }) => [
   tw`flex-shrink-0 gap-8 transition-colors inline-flex-center bg-neutral-20 text-neutral-100 basis-auto`,
 
-  selected && tw`border-solid bg-primary-20 border-1 border-primary-60 hover:(bg-primary-20)`,
+  selected &&
+    !disabled &&
+    tw`border-solid bg-primary-20 border-1 border-primary-60 hover:(bg-primary-20)`,
 
   type === 'large' && tw`py-8 px-14 rounded-10`,
 
@@ -74,8 +90,10 @@ const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, hasImage 
   type === 'small' && tw`px-8 py-4 rounded-6`,
   type === 'small' && selected && tw`py-3 px-7`,
 
-  clickable && tw`clickable`,
+  clickable && !disabled && tw`clickable`,
   clickable && !selected && tw`hover:(bg-neutral-30)`,
+
+  disabled && tw`non-clickable opacity-30 hover:(bg-neutral-20)`,
 ]);
 
 const TextWrapper = tw.div`

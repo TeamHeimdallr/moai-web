@@ -1,8 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AccountLinesRequest, TrustSet } from 'xrpl';
 
-import { QUERY_KEYS } from '~/api/utils/query-keys';
-
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -11,9 +9,10 @@ interface Props {
   currency: string;
   issuer: string;
   amount: number;
+  enabled?: boolean;
 }
 // xrp trust line. use evm’s approve to unify function names.
-export const useApprove = ({ currency, issuer, amount }: Props) => {
+export const useApprove = ({ currency, issuer, amount, enabled }: Props) => {
   const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
@@ -35,7 +34,7 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
     isLoading: isReadLoading,
     data: trustLines,
     refetch,
-  } = useQuery([...QUERY_KEYS.TOKEN.GET_TRUST_LINES, address], getTrustLines, {
+  } = useQuery(['XRPL', 'TRUST_LINE', address], getTrustLines, {
     staleTime: 0,
     enabled: !!client && isConnected && isXrp,
   });
@@ -60,23 +59,23 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
   const setTrustLines = async () => await xrp.submitTransaction(txRequest as any);
 
   const { isLoading, isSuccess, mutateAsync } = useMutation(
-    QUERY_KEYS.TOKEN.SET_TRUST_LINE,
+    ['XRPL', 'SET_TRUST_LINE'],
     setTrustLines
   );
 
   const allow = async () => {
-    if (!isXrp || !issuer || isNativeXrp) return;
+    if (!isXrp || !issuer || isNativeXrp || !enabled) return;
 
     await mutateAsync();
   };
 
-  if (isNativeXrp) {
+  if (isNativeXrp || !enabled) {
     return {
       isLoading: false,
       isSuccess: true,
       allowance: true,
-      refetch: () => {},
-      allow: () => {},
+      refetch: async () => {},
+      allow: async () => {},
     };
   }
   return {

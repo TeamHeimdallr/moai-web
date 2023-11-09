@@ -2,33 +2,31 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
-import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
-
 import { IconBack } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { usePopup } from '~/hooks/components';
 import { useRequirePrarams } from '~/hooks/utils/use-require-params';
+import { POPUP_ID } from '~/types';
 
 import { AddLiquidityInputGroup } from '../../components/add-liquidity-input-group';
 
 const PoolDetailAddLiquidityPage = () => {
   const navigate = useNavigate();
 
+  const { t } = useTranslation();
+  const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   const { id } = useParams();
 
   useRequirePrarams([!!id], () => navigate(-1));
 
-  const { pool } = useLiquidityPoolBalance(id ?? '');
-
-  const { t } = useTranslation();
-
   return (
     <>
       <Wrapper>
-        <GnbWrapper>
+        <GnbWrapper banner={!!opened}>
           <Gnb />
         </GnbWrapper>
         <InnerWrapper>
@@ -39,7 +37,7 @@ const PoolDetailAddLiquidityPage = () => {
             </Header>
 
             <LiquidityWrapper>
-              <AddLiquidityInputGroup pool={pool} />
+              <AddLiquidityInputGroup />
             </LiquidityWrapper>
           </ContentWrapper>
         </InnerWrapper>
@@ -53,9 +51,15 @@ const Wrapper = tw.div`
   relative flex flex-col justify-between w-full h-full
 `;
 
-const GnbWrapper = tw.div`
-  w-full h-80 flex-center
-`;
+interface DivProps {
+  banner?: boolean;
+}
+const GnbWrapper = styled.div<DivProps>(({ banner }) => [
+  tw`
+    w-full flex-center
+  `,
+  banner ? tw`h-140` : tw`h-80`,
+]);
 
 const Header = tw.div`flex items-center gap-12 font-b-24 text-neutral-100`;
 

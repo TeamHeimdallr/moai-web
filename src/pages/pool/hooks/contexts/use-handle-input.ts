@@ -1,14 +1,14 @@
 import { FormState } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { min, minBy } from 'lodash-es';
+import { strip } from 'number-precision';
 
-import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
+import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { useRequirePrarams } from '~/hooks/utils';
-import { IToken } from '~/types';
+import { IPool, IToken } from '~/types';
 
-interface Input {
-  token?: IToken;
+interface InputChange {
+  token?: IToken; // for xrp
   value: number | undefined;
   idx: number;
 }
@@ -18,43 +18,80 @@ interface InputFormState {
   input2: number;
 }
 
-export const useHandleInput = (
-  myTokens: IToken[],
-  setInputValue1: (value: number) => void,
-  setInputValue2: (value: number) => void,
-  getInputValue: (token: string) => number,
-  formState: FormState<InputFormState>
-) => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  useRequirePrarams([!!id], () => navigate(-1));
-  const { pool } = useLiquidityPoolBalance(id ?? '');
-  const tokens = pool.compositions;
+interface Props {
+  pool: IPool;
 
+  formState: FormState<InputFormState>;
+
+  getInputValue: (symbol: string) => number;
+
+  setInputValue1: (value: number) => void;
+  setInputValue2: (value: number) => void;
+}
+export const useHandleInput = ({
+  pool,
+  formState,
+  getInputValue,
+  setInputValue1,
+  setInputValue2,
+}: Props) => {
   const { isXrp } = useNetwork();
-  const totalValue =
-    myTokens?.reduce((sum, token) => {
-      const inputValue = getInputValue(token.symbol) || 0;
-      const tokenPrice = token?.price ?? 0;
 
-      return sum + inputValue * tokenPrice;
-    }, 0) ?? 0;
+  const { compositions } = pool || {};
+  const { userPoolTokens, userPoolTokenTotalValue } = useUserPoolTokenBalances();
 
-  const handleChange = (data: Input) => {
-    const { value, idx } = data;
-    if (idx === 0) setInputValue1(value ?? 0);
-    else setInputValue2(value ?? 0);
+  /* evm add lp change handler */
+  const handleChange = ({ idx, value }: InputChange) => {
+    if (idx === 0) setInputValue1(value || 0);
+    else setInputValue2(value || 0);
+  };
+
+  /*
+   xrp add lp change handler - cannot add single token or amounts that can be break pool weight
+   to make zero price impact, set value1:value2 to balanc1:balance2
+  */
+  const handleChangeAuto = ({ token, value, idx }: InputChange) => {
+    if (!token) return;
+
+    const changingPoolTokenBalance =
+      compositions?.find(c => c.symbol === token.symbol)?.balance || 0;
+    const remainPoolTokenBalance = compositions?.find(c => c.symbol !== token.symbol)?.balance || 0;
+
+    const expectedRemainedTokenValue = changingPoolTokenBalance
+      ? strip((remainPoolTokenBalance * (value ?? 0)) / changingPoolTokenBalance)
+      : 0;
+
+    if (idx === 0) {
+      setInputValue1(value || 0);
+      setInputValue2(expectedRemainedTokenValue);
+      return;
+    }
+    if (idx === 1) {
+      setInputValue1(expectedRemainedTokenValue);
+      setInputValue2(value || 0);
+      return;
+    }
   };
 
   const handleTotalMax = () => {
-    setInputValue1(myTokens?.[0]?.balance ?? 0);
-    setInputValue2(myTokens?.[1]?.balance ?? 0);
+    setInputValue1(userPoolTokens?.[0]?.balance || 0);
+    setInputValue2(userPoolTokens?.[1]?.balance || 0);
     return;
   };
 
+  const handleOptimize = () => {
+    const criteria = userPoolTokens?.reduce(
+      (max, cur) => ((max?.value ?? 0) < (cur?.value ?? 0) ? max : cur),
+      userPoolTokens?.[0] || {}
+    );
+    const idx = userPoolTokens?.findIndex(t => t.symbol === criteria.symbol);
+
+    handleChangeAuto({ token: criteria, value: criteria.balance, idx });
+  };
+
   const isValid =
-    myTokens
-      ?.filter(token => token.balance)
+    userPoolTokens
+      ?.filter(token => token.balance > 0)
       ?.map((token, i) => {
         const currentValue = getInputValue(token.symbol);
         const isFormError = formState?.errors?.[`input${i + 1}`] !== undefined;
@@ -63,43 +100,17 @@ export const useHandleInput = (
         return (token?.balance ?? 0) >= currentValue;
       })
       ?.every(v => v) || false;
-
-  const totalValueMaxed = myTokens.reduce((acc, cur) => acc + (cur?.value ?? 0), 0) === totalValue;
-
-  const handleChangeAuto = (data: Input) => {
-    const { token, value, idx } = data;
-    if (!token) return;
-    const currnetToken = tokens.filter(t => t.symbol === token.symbol)?.[0];
-    const remainedToken = tokens.filter(t => t.symbol !== token.symbol)?.[0];
-    const expectedRemainedTokenValue =
-      ((remainedToken?.balance ?? 0) * (value ?? 0)) / (currnetToken?.balance ?? 0 ?? 0);
-    if (idx === 0) {
-      setInputValue1(value ?? 0);
-      setInputValue2(expectedRemainedTokenValue ?? 0);
-    }
-    if (idx === 1) {
-      setInputValue1(expectedRemainedTokenValue ?? 0);
-      setInputValue2(value ?? 0);
-    }
-  };
-  const handleOptimize = () => {
-    const criteria = myTokens.reduce((max, cur) =>
-      (max?.value ?? 0) < (cur?.value ?? 0) ? max : cur
-    );
-    const idx = myTokens.indexOf(criteria);
-    handleChangeAuto({ token: criteria, value: criteria.balance, idx });
-  };
-
   const isValidXrp =
-    myTokens?.filter(token => token.balance)?.length === myTokens?.length && isValid;
+    isValid &&
+    userPoolTokens?.filter(token => token.balance > 0)?.length === userPoolTokens?.length;
+
+  const totalValueMaxed =
+    userPoolTokens.reduce((acc, cur) => acc + (getInputValue(cur.symbol) || 0), 0) ===
+    userPoolTokenTotalValue;
 
   const totalValueMaxedXrp =
-    (myTokens.reduce(
-      (max, cur) => ((max?.value ?? 0) < (cur?.value ?? 0) ? max : cur),
-      myTokens?.[0] ?? {}
-    )?.value ?? 0) *
-      2 ===
-    totalValue;
+    min(userPoolTokens.map(t => getInputValue(t.symbol))) ===
+    minBy(userPoolTokens, 'value')?.balance;
 
   return {
     handleOptimize,

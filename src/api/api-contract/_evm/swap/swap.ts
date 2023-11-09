@@ -9,51 +9,75 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { EVM_CONTRACT_ADDRESS } from '~/constants';
+import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
 
 interface Props {
+  poolId: string;
+
   singleSwap: SwapSingleSwapInput;
   fundManagement: SwapFundManagementInput;
   limit?: bigint;
   deadline?: number;
+
+  enabled?: boolean;
 }
 export const useSwap = ({
+  poolId,
+
   singleSwap,
   fundManagement,
   limit = BigInt(10),
   deadline = 2000000000,
+  enabled,
 }: Props) => {
-  const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
-  const { network } = useParams();
-  const { selectedNetwork, isEvm } = useNetwork();
-
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-  const chainId = useNetworkId(currentNetwork);
-
   const publicClient = usePublicClient();
-  const { evm } = useConnectedWallet();
-  const { address } = evm;
 
-  const contractAddress = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
+  const { network } = useParams();
+  const { evm } = useConnectedWallet();
+  const { address: walletAddress } = evm;
+
+  const { selectedNetwork, isEvm } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
+
+  const chainId = useNetworkId(currentNetwork);
+  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+    {
+      params: {
+        networkAbbr: currentNetworkAbbr as string,
+        poolId: poolId as string,
+      },
+    },
+    {
+      enabled: !!poolId && !!currentNetworkAbbr,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
+  );
+  const { poolVaultAmm } = poolVaultAmmData || {};
+  const { vault } = poolVaultAmm || {};
+
+  const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
+
   const {
     isLoading: prepareLoading,
     config,
     isError,
   } = usePrepareContractWrite({
-    address: contractAddress,
+    address: (vault || '') as Address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'swap',
     chainId,
     value: singleSwap[2] === zeroAddress ? singleSwap[4] : 0n,
     args: [singleSwap, fundManagement, limit, deadline],
-    enabled: !!contractAddress && !!singleSwap && !!fundManagement && !!address && isEvm,
+    enabled: enabled && !!vault && !!singleSwap && !!fundManagement && !!walletAddress && isEvm,
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);

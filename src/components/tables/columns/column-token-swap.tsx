@@ -5,10 +5,14 @@ import { IconArrowNext } from '~/assets/icons';
 
 import { Token } from '~/components/token';
 
-import { IToken } from '~/types';
+import { formatNumber } from '~/utils';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  tokens: IToken[];
+  tokens: {
+    symbol: string;
+    value: number;
+    image?: string;
+  }[];
 }
 export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
   const [tokenA, tokenB] = tokens;
@@ -18,9 +22,10 @@ export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
     <Wrapper {...rest}>
       <Token
         key={tokenA.symbol}
-        title={`${Number((tokenA?.balance || 0).toFixed(6))}`}
+        title={`${formatNumber(tokenA.value, 6)}`}
         token={tokenA.symbol}
-        image={true}
+        image
+        imageUrl={tokenA.image}
         type="small"
       />
       <IconWrapper>
@@ -28,9 +33,10 @@ export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
       </IconWrapper>
       <Token
         key={tokenB.symbol}
-        title={`${Number((tokenB?.balance || 0).toFixed(6))}`}
+        title={`${formatNumber(tokenB.value, 6)}`}
         token={tokenB.symbol}
-        image={true}
+        image
+        imageUrl={tokenB.image}
         type="small"
       />
     </Wrapper>

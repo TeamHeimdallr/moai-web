@@ -3,15 +3,34 @@ import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
 
-import { useTableLiquidityMy } from '../hooks/components/table/use-table-liquidity-pool-my';
+import { usePopup } from '~/hooks/components';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkAbbr } from '~/utils';
+import { NETWORK, POPUP_ID } from '~/types';
 
+import { useTableMyLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool-my';
+
+interface Meta {
+  network: NETWORK;
+  id: string;
+  poolId: string;
+}
 export const MyLiquidityLayout = () => {
-  const { data, columns } = useTableLiquidityMy();
+  const { tableColumns, tableData } = useTableMyLiquidityPool();
 
   const navigate = useNavigate();
 
-  const handleRowClick = (_chain?: string, id?: string) => {
-    navigate(`/pools/${id}`);
+  const { open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
+  const { selectedNetwork, setTargetNetwork } = useNetwork();
+
+  const handleRowClick = (meta?: Meta) => {
+    if (!meta) return;
+    if (selectedNetwork !== meta.network) {
+      popupOpen();
+      setTargetNetwork(meta.network as NETWORK);
+      return;
+    }
+    navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.poolId}`);
   };
 
   return (
@@ -20,8 +39,8 @@ export const MyLiquidityLayout = () => {
         <Title>My liquidity in Moai pools</Title>
       </TitleWrapper>
       <Table
-        data={data}
-        columns={columns}
+        data={tableData}
+        columns={tableColumns}
         ratio={[2, 1, 1, 1]}
         type="darker"
         handleRowClick={handleRowClick}

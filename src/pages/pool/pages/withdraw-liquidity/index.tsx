@@ -2,34 +2,31 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
-import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
-
 import { IconBack } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { usePopup } from '~/hooks/components';
 import { useRequirePrarams } from '~/hooks/utils/use-require-params';
+import { POPUP_ID } from '~/types';
 
 import { WithdrawLiquidityInputGroup } from '../../components/withdraw-liquidity-input-group';
 
 const PoolDetailWithdrawLiquidityPage = () => {
   const navigate = useNavigate();
 
+  const { t } = useTranslation();
+  const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   const { id } = useParams();
 
   useRequirePrarams([!!id], () => navigate(-1));
 
-  const { pool, lpTokenBalance } = useLiquidityPoolBalance(id ?? '');
-  const { lpTokenTotalSupply } = pool;
-
-  const { t } = useTranslation();
-
   return (
     <>
       <Wrapper>
-        <GnbWrapper>
+        <GnbWrapper banner={!!opened}>
           <Gnb />
         </GnbWrapper>
         <InnerWrapper>
@@ -40,11 +37,7 @@ const PoolDetailWithdrawLiquidityPage = () => {
             </Header>
 
             <WithdrawWrapper>
-              <WithdrawLiquidityInputGroup
-                pool={pool}
-                lpTokenBalance={lpTokenBalance}
-                lpTokenTotalSupply={lpTokenTotalSupply}
-              />
+              <WithdrawLiquidityInputGroup />
             </WithdrawWrapper>
           </ContentWrapper>
         </InnerWrapper>
@@ -58,9 +51,15 @@ const Wrapper = tw.div`
   relative flex flex-col justify-between w-full h-full
 `;
 
-const GnbWrapper = tw.div`
-  w-full h-80 flex-center
-`;
+interface DivProps {
+  banner?: boolean;
+}
+const GnbWrapper = styled.div<DivProps>(({ banner }) => [
+  tw`
+    w-full flex-center
+  `,
+  banner ? tw`h-140` : tw`h-80`,
+]);
 
 const Header = tw.div`flex items-center gap-12 font-b-24 text-neutral-100`;
 

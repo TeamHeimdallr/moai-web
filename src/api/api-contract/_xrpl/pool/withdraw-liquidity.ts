@@ -1,28 +1,18 @@
 import { useMutation } from '@tanstack/react-query';
 import { parseUnits } from 'viem';
 
-import { QUERY_KEYS } from '~/api/utils/query-keys';
-
 import { TOKEN_DECIMAL } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-
-import { useAmmInfo } from '../amm/get-amm-info';
-
-interface Token {
-  issuer?: string;
-  amount: string;
-  currency: string;
-}
+import { ITokenComposition } from '~/types';
 
 interface Props {
-  id: string;
-  token1: Token;
-  token2: Token;
+  token1: ITokenComposition & { amount: number };
+  token2: ITokenComposition & { amount: number };
+  enabled?: boolean;
 }
-export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
-  const { ammExist } = useAmmInfo(id);
+export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
   const { isXrp } = useNetwork();
 
   const { xrp } = useConnectedWallet();
@@ -36,17 +26,17 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
     if (xrp) {
       const asset1 = { currency: 'XRP' };
       const amount1 = Number(
-        Number(parseUnits(xrp.amount ?? 0, TOKEN_DECIMAL.XRPL).toString()).toFixed(6)
-      ).toString();
+        Number(parseUnits((xrp.amount || 0).toString(), TOKEN_DECIMAL.XRPL).toString()).toFixed(6)
+      ).toString(); // max decimal is 6
 
       const remain = tokens.filter(t => t.currency !== 'XRP')?.[0];
       const asset2 = {
-        issuer: remain.issuer ?? '',
+        issuer: remain.address || '',
         currency: remain.currency,
       };
       const amount2 = {
         ...asset2,
-        value: Number(Number(remain.amount ?? 0).toFixed(6)).toString(),
+        value: Number(Number(remain.amount || 0).toFixed(6)).toString(),
       };
 
       return {
@@ -57,10 +47,10 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
       };
     }
 
-    const asset1 = { issuer: token1?.issuer ?? '', currency: token1?.currency ?? '' };
-    const amount1 = { ...asset1, value: Number(Number(token1?.amount ?? 0).toFixed(6)).toString() };
-    const asset2 = { issuer: token2?.issuer ?? '', currency: token2?.currency ?? '' };
-    const amount2 = { ...asset2, value: Number(Number(token2?.amount ?? 0).toFixed(6)).toString() };
+    const asset1 = { issuer: token1?.address || '', currency: token1?.currency || '' };
+    const amount1 = { ...asset1, value: Number(Number(token1?.amount || 0).toFixed(6)).toString() };
+    const asset2 = { issuer: token2?.address || '', currency: token2?.currency || '' };
+    const amount2 = { ...asset2, value: Number(Number(token2?.amount || 0).toFixed(6)).toString() };
 
     return {
       Amount: amount1,
@@ -83,7 +73,7 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
   const submitTx = async () => await xrp.submitTransaction(txRequest as any);
 
   const { data, isLoading, isSuccess, mutateAsync } = useMutation(
-    QUERY_KEYS.AMM.WITHDRAW_LIQUIDITY,
+    ['XRPL', 'WITHDRAW_LP'],
     submitTx
   );
 
@@ -91,7 +81,7 @@ export const useWithdrawLiquidity = ({ id, token1, token2 }: Props) => {
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = async () => {
-    if (!ammExist || !address || !isXrp) return;
+    if (!address || !isXrp || !enabled) return;
     await mutateAsync();
   };
 

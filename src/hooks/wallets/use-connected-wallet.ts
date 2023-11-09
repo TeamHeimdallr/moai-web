@@ -108,7 +108,7 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
 
   const currentAddress =
     network === NETWORK.THE_ROOT_NETWORK
-      ? fpass?.address
+      ? fpass?.address || evm?.address
       : network === NETWORK.EVM_SIDECHAIN
       ? evm?.address
       : xrp?.address;

@@ -6,3 +6,4 @@ export * from './util-solidity-math';
 export * from './util-string';
 export * from './util-table';
 export * from './util-time';
+export * from './util-token';

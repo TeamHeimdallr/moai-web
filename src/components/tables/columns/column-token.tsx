@@ -5,24 +5,27 @@ import { BadgeNew } from '~/components/badges/new';
 import { Token } from '~/components/token';
 
 import { useTablePoolCompositionSelectTokenStore } from '~/states/components';
-import { Entries } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  tokens: Record<string, number>;
+  tokens: {
+    symbol: string;
+    image?: string;
+  }[];
   isNew?: boolean;
 }
-// will be removed
+
 export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
   const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
 
   return (
     <Wrapper {...rest}>
-      {(Object.entries(tokens) as Entries<Record<string, number>>).map(([token]) => (
+      {tokens.map(token => (
         <Token
-          key={token}
-          token={token}
+          key={token.symbol}
+          token={token.symbol}
           image={true}
-          selected={selectedTokens?.includes(token)}
+          imageUrl={token.image}
+          selected={selectedTokens?.includes(token.symbol)}
           type="large"
         />
       ))}

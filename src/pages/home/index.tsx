@@ -4,13 +4,18 @@ import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
 import { usePopup } from '~/hooks/components';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { POPUP_ID } from '~/types';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
+import { MyLiquidityLayout } from './layouts/layout-liquidity-pool-my';
 import { MainLayout } from './layouts/layout-main';
 
 const HomePage = () => {
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
+
+  const { evm, fpass, xrp } = useConnectedWallet();
+  const connected = evm.address || fpass.address || xrp.address;
 
   return (
     <>
@@ -21,6 +26,7 @@ const HomePage = () => {
         <InnerWrapper>
           <MainLayout />
           <ContentWrapper>
+            {connected && <MyLiquidityLayout />}
             <LiquidityPoolLayout />
           </ContentWrapper>
         </InnerWrapper>
