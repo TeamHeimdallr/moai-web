@@ -1,10 +1,12 @@
 import { ReactNode } from 'react';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
+import { useGetLiquidityProvisionsInfinityQuery } from '~/api/api-server/pools/get-liquidity-provisions';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
-import { useGetSwapHistoriesInfinityQuery } from '~/api/api-server/pools/get-swap-histories';
+
+import { COLOR } from '~/assets/colors';
+import { IconMinus, IconPlus } from '~/assets/icons';
 
 import { SCANNER_URL } from '~/constants';
 
@@ -12,24 +14,30 @@ import {
   TableColumn,
   TableColumnIconText,
   TableColumnLink,
-  TableColumnTokenSwap,
+  TableColumnTokenPair,
   TableHeader,
   TableHeaderSortable,
 } from '~/components/tables';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
-import { truncateAddress } from '~/utils/util-string';
 import { elapsedTime } from '~/utils/util-time';
-import { useTableSwapHistoriesStore } from '~/states/components';
+import { useTableLiquidityPoolProvisionSortStore } from '~/states/components';
+import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/components/table/tab';
+import { LIQUIDITY_PROVISION_TYPE } from '~/types';
 
-export const useTableSwapHistories = () => {
+export const useTableLiquidityProvision = () => {
   const { network, id } = useParams();
   const { selectedNetwork, isXrp } = useNetwork();
-  const { sort, setSort } = useTableSwapHistoriesStore();
+  const { sort, setSort } = useTableLiquidityPoolProvisionSortStore();
+  const { selectedTab } = useTablePoolLiquidityProvisionSelectTabStore();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const { currentAddress } = useConnectedWallet(currentNetwork);
+
+  const isMyProvision = selectedTab === 'my-provision';
 
   const { data: poolData } = useGetPoolQuery(
     {
@@ -44,10 +52,10 @@ export const useTableSwapHistories = () => {
     }
   );
   const {
-    data: swapHistoriesData,
+    data: liquidityProvisionData,
     hasNextPage,
     fetchNextPage,
-  } = useGetSwapHistoriesInfinityQuery(
+  } = useGetLiquidityProvisionsInfinityQuery(
     {
       params: {
         networkAbbr: network as string,
@@ -55,6 +63,7 @@ export const useTableSwapHistories = () => {
       },
       queries: {
         take: 5,
+        filter: isMyProvision ? `liquidityProvider:eq:${currentAddress}` : undefined,
         sort: sort ? `${sort.key}:${sort.order}` : undefined,
       },
     },
@@ -67,10 +76,11 @@ export const useTableSwapHistories = () => {
   const { pool } = poolData || {};
   const { compositions } = pool || {};
 
-  const swapHistories = swapHistoriesData?.pages?.flatMap(page => page.swapHistories) || [];
+  const liquidityProvisions =
+    liquidityProvisionData?.pages?.flatMap(page => page.liquidityProvisions) || [];
 
-  const tableData = swapHistories?.map(d => {
-    const value = d.swapHistoryTokens.reduce((acc, cur) => {
+  const tableData = liquidityProvisions?.map(d => {
+    const value = d.liquidityProvisionTokens.reduce((acc, cur) => {
       const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
       const amount = cur.amount;
 
@@ -82,16 +92,21 @@ export const useTableSwapHistories = () => {
         id: d.id,
         network: d.network,
       },
-      trader: (
+      action: (
         <TableColumnIconText
-          text={truncateAddress(d.trader, 4)}
-          icon={<Jazzicon diameter={24} seed={jsNumberForAddress(d.trader ?? '')} />}
-          address
+          text={d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? 'Add tokens' : 'Withdraw'}
+          icon={
+            d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? (
+              <IconPlus width={20} height={20} fill={COLOR.GREEN[50]} />
+            ) : (
+              <IconMinus width={20} height={20} fill={COLOR.RED[50]} />
+            )
+          }
         />
       ),
-      tradeDetail: (
-        <TableColumnTokenSwap
-          tokens={d.swapHistoryTokens.map(t => ({
+      tokens: (
+        <TableColumnTokenPair
+          tokens={d.liquidityProvisionTokens.map(t => ({
             symbol: t.symbol,
             value: t.amount,
             image: t.image,
@@ -112,15 +127,16 @@ export const useTableSwapHistories = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tableColumns: ColumnDef<any, ReactNode>[] = [
     { accessorKey: 'meta' },
+
     {
-      header: () => <TableHeader label="Trader" align="flex-start" />,
+      header: () => <TableHeader label="Action" align="flex-start" />,
       cell: row => row.renderValue(),
-      accessorKey: 'trader',
+      accessorKey: 'action',
     },
     {
-      header: () => <TableHeader label="Trade details" align="flex-start" />,
+      header: () => <TableHeader label="Tokens" align="flex-start" />,
       cell: row => row.renderValue(),
-      accessorKey: 'tradeDetail',
+      accessorKey: 'tokens',
     },
     {
       header: () => (
@@ -142,7 +158,7 @@ export const useTableSwapHistories = () => {
     tableColumns,
     tableData,
 
-    swapHistories,
+    liquidityProvisions,
     hasNextPage,
     fetchNextPage,
   };

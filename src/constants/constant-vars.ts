@@ -69,7 +69,7 @@ export const GNB_MENU: IGnbMenu[] = [
 /**
  * @description FORMAT NUMBER 를 진행할때 UNIT(K,M,B,T) 를 붙이는 기준
  */
-export const FORMAT_NUMBER_THRESHOLD = 1000000000;
+export const FORMAT_NUMBER_THRESHOLD = 10 ** 10;
 
 /**
  * @description RESPONSIVE BREAKPOINT

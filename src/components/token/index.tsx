@@ -4,8 +4,6 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 
-import { TOKEN_IMAGE_MAPPER } from '~/constants';
-
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
 
@@ -13,6 +11,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   percentage?: number;
 
   image?: boolean;
+  imageUrl?: string;
   icon?: ReactNode;
 
   type?: 'large' | 'small';
@@ -27,6 +26,7 @@ export const Token = ({
   title,
   percentage,
   image = true,
+  imageUrl,
   icon,
   type = 'large',
   selected,
@@ -36,8 +36,8 @@ export const Token = ({
   return (
     <Wrapper type={type} selected={selected} clickable={clickable} hasImage={!!image} {...rest}>
       {image &&
-        (TOKEN_IMAGE_MAPPER[token] ? (
-          <TokenImageWrapper src={TOKEN_IMAGE_MAPPER[token]} title={token} type={type} />
+        (imageUrl ? (
+          <TokenImageWrapper src={imageUrl} title={token} type={type} />
         ) : (
           <Jazzicon
             diameter={type === 'large' ? 24 : 20}

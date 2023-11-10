@@ -26,7 +26,7 @@ interface Response {
 const axios = async (queries: Queries) =>
   (await api.get<Response>(`/token${encodeQuery(queries)}`)).data;
 
-export const useGetPoolQuery = (request: Request, options?: QueryOption) => {
+export const useGetTokenQuery = (request: Request, options?: QueryOption) => {
   const { queries } = request;
 
   const queryKey = ['GET', 'TOKEN', queries];

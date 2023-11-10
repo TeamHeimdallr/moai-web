@@ -1,16 +1,25 @@
+import { useNavigate, useParams } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
 import { usePopup } from '~/hooks/components';
+import { useRequirePrarams } from '~/hooks/utils';
 import { POPUP_ID } from '~/types';
 
-import { DetailHeader } from '../../layouts/detail-header';
-import { DetailLeft } from '../../layouts/detail-left';
-import { DetailRight } from '../../layouts/detail-right';
+import { PoolCompositions } from '../../components/pool-compositions';
+import { PoolHeader } from '../../components/pool-header';
+import { PoolInfo } from '../../components/pool-info';
+import { PoolLiquidityProvisions } from '../../components/pool-liquidity-provisions';
+import { PoolSwapHistories } from '../../components/pool-swap-histories';
+import { UserPoolBalances } from '../../components/user-pool-balances';
 
 const PoolDetailMainPage = () => {
+  const navigate = useNavigate();
+  const { network, id } = useParams();
+  useRequirePrarams([!!id, !!network], () => navigate(-1));
+
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   return (
     <>
@@ -20,10 +29,17 @@ const PoolDetailMainPage = () => {
         </GnbWrapper>
         <InnerWrapper banner={!!opened}>
           <ContentOuterWrapper>
-            <DetailHeader />
+            <PoolHeader />
             <ContentWrapper>
-              <DetailLeft />
-              <DetailRight />
+              <LeftContentWrapper>
+                <PoolInfo />
+                <PoolCompositions />
+                <PoolLiquidityProvisions />
+                <PoolSwapHistories />
+              </LeftContentWrapper>
+              <RightContentWrapper>
+                <UserPoolBalances />
+              </RightContentWrapper>
             </ContentWrapper>
           </ContentOuterWrapper>
         </InnerWrapper>
@@ -57,6 +73,14 @@ const ContentOuterWrapper = tw.div`flex flex-col w-full gap-40`;
 
 const ContentWrapper = tw.div`
   flex gap-40
+`;
+
+const LeftContentWrapper = tw.div`
+  w-full flex flex-col gap-24
+`;
+
+const RightContentWrapper = tw.div`
+  w-400 flex items-start
 `;
 
 export default PoolDetailMainPage;

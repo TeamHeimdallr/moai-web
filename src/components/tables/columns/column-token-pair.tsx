@@ -3,21 +3,26 @@ import tw from 'twin.macro';
 
 import { Token } from '~/components/token';
 
-import { IToken } from '~/types';
+import { formatNumber } from '~/utils';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  tokens: IToken[];
-  isNew?: boolean;
+  tokens: {
+    symbol: string;
+    value: number;
+    image?: string;
+  }[];
 }
+
 export const TableColumnTokenPair = ({ tokens, ...rest }: Props) => {
   return (
     <Wrapper {...rest}>
       {tokens.map(token => (
         <Token
           key={token.symbol}
-          title={`${Number((token?.balance || 0).toFixed(6))}`}
+          title={`${formatNumber(token.value, 6)}`}
           token={token.symbol}
           image={true}
+          imageUrl={token.image}
           type="small"
         />
       ))}

@@ -8,35 +8,33 @@ import { ButtonIconLarge } from '~/components/buttons';
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
 
-import { useTableTotalProvision } from '~/pages/pool/hooks/components/table/use-table-total-provisions';
+import { useTableLiquidityProvision } from '~/pages/pool/hooks/components/table/use-table-liquidity-provisions';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/components/table/tab';
-import { IPool } from '~/types';
 
-interface Props {
-  pool: IPool;
-}
-export const PoolLiquidityProvisions = ({ pool }: Props) => {
-  const { selectedTab, selectTab } = useTablePoolLiquidityProvisionSelectTabStore();
+export const PoolLiquidityProvisions = () => {
+  const { network } = useParams();
 
   const { selectedNetwork } = useNetwork();
-  const { network } = useParams();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { currentAddress } = useConnectedWallet(currentNetwork);
 
+  const { selectedTab, selectTab } = useTablePoolLiquidityProvisionSelectTabStore();
   const [opened, open] = useState(false);
 
   const tabs = [
     { key: 'total-provision', name: 'All liquidity provision' },
     { key: 'my-provision', name: 'My liquidity' },
   ];
-  const { data, columns, filteredData } = useTableTotalProvision(pool.id);
-  const hasLiquidity =
-    (filteredData?.filter(data => data.liquidityProvider === currentAddress)?.length ?? 0) > 0;
+
+  const { tableColumns, tableData, liquidityProvisions } = useTableLiquidityProvision();
+
+  const hasMyLiquidity =
+    selectedTab === 'my-provision' && !!currentAddress && liquidityProvisions.length > 0;
 
   return (
     <Wrapper opened={opened}>
@@ -48,8 +46,8 @@ export const PoolLiquidityProvisions = ({ pool }: Props) => {
       </TitleWrapper>
       {opened && (
         <>
-          {hasLiquidity && <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />}
-          <Table data={data} columns={columns} ratio={[2, 3, 2, 2]} type="lighter" />
+          {hasMyLiquidity && <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />}
+          <Table data={tableData} columns={tableColumns} ratio={[2, 3, 2, 2]} type="lighter" />
         </>
       )}
     </Wrapper>

@@ -8,14 +8,10 @@ import { Table } from '~/components/tables';
 
 import { useTableSwapHistories } from '~/pages/pool/hooks/components/table/use-table-swap-histories';
 
-import { IPool } from '~/types';
-
-interface Props {
-  pool: IPool;
-}
-export const PoolSwapHistories = ({ pool }: Props) => {
+export const PoolSwapHistories = () => {
   const [opened, open] = useState(false);
-  const { data, columns } = useTableSwapHistories(pool.id);
+
+  const { tableColumns, tableData } = useTableSwapHistories();
 
   return (
     <Wrapper opened={opened}>
@@ -25,7 +21,9 @@ export const PoolSwapHistories = ({ pool }: Props) => {
           <ButtonIconLarge icon={<IconDown />} />
         </Icon>
       </TitleWrapper>
-      {opened && <Table data={data} columns={columns} ratio={[2, 3, 2, 2]} type="lighter" />}
+      {opened && (
+        <Table data={tableData} columns={tableColumns} ratio={[2, 3, 2, 2]} type="lighter" />
+      )}
     </Wrapper>
   );
 };

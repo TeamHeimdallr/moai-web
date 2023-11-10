@@ -1,36 +1,46 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
+import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { IconLink } from '~/assets/icons';
 
-import { SCANNER_URL, TOKEN_IMAGE_MAPPER } from '~/constants';
+import { SCANNER_URL } from '~/constants';
 
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { useRequirePrarams } from '~/hooks/utils';
 import { getNetworkFull } from '~/utils';
 
-export const DetailHeader = () => {
-  const navigate = useNavigate();
+export const PoolHeader = () => {
   const { network, id } = useParams();
 
-  useRequirePrarams([!!id, !!network], () => navigate(-1));
-
-  const { pool } = useLiquidityPoolBalance(id ?? '');
-  const { compositions, lpTokenAddress } = pool;
-  const tokens = compositions?.map(composition => composition.symbol);
-
   const { selectedNetwork, isFpass } = useNetwork();
-
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
+  const queryEnabled = !!network && !!id;
+  const { data } = useGetPoolQuery(
+    {
+      params: {
+        networkAbbr: network as string,
+        poolId: id as string,
+      },
+    },
+    {
+      enabled: queryEnabled,
+      staleTime: 1000,
+    }
+  );
+
+  const { pool } = data || {};
+  const { lpToken, compositions } = pool || {};
+  const { address: lpTokenAddress } = lpToken || {};
+
   const handleLink = () => {
-    const url =
-      `${SCANNER_URL[currentNetwork]}/address/${lpTokenAddress}` +
-      (isFpass ? 'tab=erc20_transfers' : '');
+    const url = `${SCANNER_URL[currentNetwork]}/address/${lpTokenAddress}${
+      isFpass ? 'tab=erc20_transfers' : ''
+    }`;
 
     window.open(url);
   };
@@ -38,24 +48,27 @@ export const DetailHeader = () => {
   return (
     <HeaderWrapper>
       <TitleWrapper>
-        <BadgeWrapper style={{ width: tokens.length * 28 + 12 }}>
-          {tokens.map((token, idx) => {
+        <BadgeWrapper style={{ width: (compositions?.length || 0) * 28 + 12 }}>
+          {compositions?.map((token, idx) => {
+            const { symbol, image } = token;
             return (
-              <Badge key={token + idx} style={{ left: idx * 28 }}>
-                <Image src={TOKEN_IMAGE_MAPPER[token]} />
+              <Badge key={symbol + idx} style={{ left: idx * 28 }}>
+                <Image src={image} />
               </Badge>
             );
           })}
         </BadgeWrapper>
-        <Title>{`${tokens?.[0]}/${tokens?.[1]}`}</Title>
+        <Title>{`${compositions?.reduce((acc, cur) => `${acc}/${cur.symbol}`, '')}`}</Title>
       </TitleWrapper>
 
       <TokenWrapper>
         {compositions?.map((composition, i) => (
           <Token
-            key={`${composition.weight}-${composition.symbol}-${i}`}
+            key={`${composition.symbol}-${i}`}
             token={composition.symbol}
             percentage={composition.weight}
+            image
+            imageUrl={composition.image}
             type="small"
           />
         ))}

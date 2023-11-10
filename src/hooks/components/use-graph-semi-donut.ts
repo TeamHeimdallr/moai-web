@@ -32,7 +32,7 @@ export const useDoughnutGraph = ({ data }: Props) => {
       data: {
         datasets: [
           {
-            data: data.map(row => row?.weight ?? 0),
+            data: data.map(row => row?.currentWeight ?? 0),
             backgroundColor: [gradient1, gradient2],
             borderWidth: 0,
             circumference: 180,

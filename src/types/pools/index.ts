@@ -88,7 +88,7 @@ export interface ISwapHistory {
   network: NETWORK;
 
   trader: string;
-  time: number;
+  time: Date;
   txHash: string;
 
   swapHistoryTokens: ISwapHistoryToken[];
