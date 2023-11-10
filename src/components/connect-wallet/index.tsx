@@ -1,4 +1,5 @@
-import tw from 'twin.macro';
+import { useState } from 'react';
+import tw, { styled } from 'twin.macro';
 
 import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
 
@@ -16,6 +17,7 @@ interface Wallet {
   name: string;
   description: string;
   image: string;
+  type: string;
   onClick: () => void;
 }
 export const ConnectWallet = ({ evm, xrpl }: { evm: boolean; xrpl: boolean }) => {
@@ -23,6 +25,10 @@ export const ConnectWallet = ({ evm, xrpl }: { evm: boolean; xrpl: boolean }) =>
   const { connect: connectEvm } = useConnectWithEvmWallet();
   const { connect: connectXrpCrossmark } = useConnectWithCrossmarkWallet();
   const { connect: connectXrpGem } = useConnectWithGemWallet();
+
+  const [selectedTab, selectTab] = useState<'evm' | 'xrpl'>('xrpl');
+
+  const isCampaign = window.location.href.includes('campaign');
 
   const wallets: Wallet[] = [
     {
@@ -46,26 +52,59 @@ export const ConnectWallet = ({ evm, xrpl }: { evm: boolean; xrpl: boolean }) =>
       onClick: connectXrpGem,
       type: 'xrpl',
     },
-  ].filter(w => (w.type === 'evm' && evm) || (w.type === 'xrpl' && xrpl));
+  ];
+
+  const mainPageWallets: Wallet[] = wallets.filter(
+    w => (w.type === 'evm' && evm) || (w.type === 'xrpl' && xrpl)
+  );
 
   return (
     <Popup id={POPUP_ID.CONNECT_WALLET} title="Connect wallet">
       <Wrapper>
-        {wallets.map(w => (
-          <Wallet
-            key={w.name}
-            onClick={() => {
-              w.onClick();
-              close();
-            }}
-          >
-            <WalletImage src={w.image} alt={w.name} />
-            <NameWrapper>
-              <Name>{w.name}</Name>
-              <Description>{w.description}</Description>
-            </NameWrapper>
-          </Wallet>
-        ))}
+        {isCampaign && (
+          <TabWrapper>
+            <Tab selected={selectedTab === 'xrpl'} onClick={() => selectTab('xrpl')}>
+              XRPL
+            </Tab>
+            <Tab selected={selectedTab === 'evm'} onClick={() => selectTab('evm')}>
+              The Root Network
+            </Tab>
+          </TabWrapper>
+        )}
+        {isCampaign
+          ? wallets.map(w =>
+              w.type === selectedTab ? (
+                <Wallet
+                  key={w.name}
+                  onClick={() => {
+                    w.onClick();
+                    close();
+                  }}
+                >
+                  <WalletImage src={w.image} alt={w.name} />
+                  <NameWrapper>
+                    <Name>{w.name}</Name>
+                    <Description>{w.description}</Description>
+                  </NameWrapper>
+                </Wallet>
+              ) : null
+            )
+          : mainPageWallets.map(w => (
+              <Wallet
+                key={w.name}
+                onClick={() => {
+                  w.onClick();
+                  close();
+                }}
+              >
+                <WalletImage src={w.image} alt={w.name} />
+                <NameWrapper>
+                  <Name>{w.name}</Name>
+                  <Description>{w.description}</Description>
+                </NameWrapper>
+              </Wallet>
+            ))}
+        \
       </Wrapper>
     </Popup>
   );
@@ -78,7 +117,15 @@ const Wrapper = tw.div`
 const Wallet = tw.div`
   flex gap-12 px-16 py-15 rounded-8 bg-neutral-15 hover:bg-neutral-20 clickable
 `;
+const TabWrapper = tw.div`flex gap-24`;
 
+interface Props {
+  selected?: boolean;
+}
+const Tab = styled.div<Props>(({ selected }) => [
+  tw`font-b-16 clickable`,
+  selected ? tw`text-primary-60` : tw`text-neutral-60`,
+]);
 const WalletImage = tw.img`
   w-36 h-36 rounded-8 flex-center object-cover overflow-hidden
 `;
