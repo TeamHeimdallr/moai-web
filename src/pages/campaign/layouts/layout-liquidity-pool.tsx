@@ -1,34 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { usePopup } from '~/hooks/components';
-import { useNetwork } from '~/hooks/contexts/use-network';
-import { getNetworkAbbr } from '~/utils';
-import { NETWORK, POPUP_ID } from '~/types';
-
 import { Pending } from '../components/pending';
 import { TokenCard } from '../components/token-card';
 import { TokenList } from '../components/token-list';
 
-interface Meta {
-  network: NETWORK;
-  id: string;
-}
 export const LiquidityPoolLayout = () => {
   const navigate = useNavigate();
-
-  const { open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
-  const { selectedNetwork, setTargetNetwork } = useNetwork();
-
-  const handleRowClick = (meta?: Meta) => {
-    if (!meta) return;
-    if (selectedNetwork !== meta.network) {
-      popupOpen();
-      setTargetNetwork(meta.network as NETWORK);
-      return;
-    }
-    navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.id}`);
-  };
 
   // TODO : connect API
   const myDepositBalance = 123123;

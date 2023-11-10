@@ -184,7 +184,12 @@ module.exports = {
           fontWeight: 500,
           lineHeight: '24px',
         },
-
+        '.font-m-18': {
+          fontFamily: 'Pretendard Variable',
+          fontSize: '18px',
+          fontWeight: 500,
+          lineHeight: '26px',
+        },
         '.font-m-20': {
           fontFamily: 'Pretendard Variable',
           fontSize: '20px',
