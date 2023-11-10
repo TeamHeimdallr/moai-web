@@ -111,13 +111,13 @@ export const ConnectWallet = ({ evm, xrpl }: { evm: boolean; xrpl: boolean }) =>
 };
 
 const Wrapper = tw.div`
-  flex flex-col gap-12 px-24 py-0
+  flex flex-col gap-8 px-24 py-0
 `;
 
 const Wallet = tw.div`
   flex gap-12 px-16 py-15 rounded-8 bg-neutral-15 hover:bg-neutral-20 clickable
 `;
-const TabWrapper = tw.div`flex gap-24`;
+const TabWrapper = tw.div`flex gap-24 pb-8`;
 
 interface Props {
   selected?: boolean;
