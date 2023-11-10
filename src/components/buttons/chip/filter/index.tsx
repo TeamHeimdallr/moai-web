@@ -6,10 +6,10 @@ import { IconCancel } from '~/assets/icons';
 
 import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
-import { IToken } from '~/types';
+import { IPoolTokenList } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  token: IToken;
+  token: IPoolTokenList;
   selected?: boolean;
 }
 

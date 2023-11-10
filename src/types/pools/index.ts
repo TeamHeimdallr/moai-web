@@ -12,6 +12,18 @@ export interface IPoolList {
   apr: number;
 }
 
+export interface IMyPoolList {
+  id: string;
+  poolId: string;
+  network: NETWORK;
+
+  compositions: ITokenComposition[];
+
+  balance: number;
+  value: number;
+  apr: number;
+}
+
 export interface ITokenComposition extends IToken {
   balance?: number;
   price?: number;

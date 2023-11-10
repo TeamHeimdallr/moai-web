@@ -11,7 +11,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { getNetworkAbbr } from '~/utils';
 import { useTablePoolCompositionSelectTokenStore } from '~/states/components/table';
 import { useShowAllPoolsStore } from '~/states/pages';
-import { IToken, NETWORK, POPUP_ID } from '~/types';
+import { IPoolTokenList, NETWORK, POPUP_ID } from '~/types';
 
 import { useTableLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool';
 
@@ -20,18 +20,21 @@ interface Meta {
   id: string;
 }
 export const LiquidityPoolLayout = () => {
+  const isMounted = useRef(false);
+
   const navigate = useNavigate();
   const { name } = useNetwork();
 
   const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
   const { selectedTokens, setSelectedTokens } = useTablePoolCompositionSelectTokenStore();
-  const { data, columns } = useTableLiquidityPool({ showNetworkColumn: showAllPools });
+  const { tableData, tableColumns, poolTokens } = useTableLiquidityPool({
+    showNetworkColumn: showAllPools,
+  });
 
-  const [showToastPopup, setShowToastPopup] = useState<boolean>(false);
   const { open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
   const { selectedNetwork, setTargetNetwork } = useNetwork();
 
-  const isMounted = useRef(false);
+  const [showToastPopup, setShowToastPopup] = useState<boolean>(false);
 
   const handleRowClick = (meta?: Meta) => {
     if (!meta) return;
@@ -43,9 +46,6 @@ export const LiquidityPoolLayout = () => {
     navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.id}`);
   };
 
-  // TODO: pool 구성에 있는 토큰 리스트
-  const tokens = [{ symbol: 'MOAI' }, { symbol: 'XRP' }, { symbol: 'ROOT' }, { symbol: 'WETH' }];
-
   const handleTokenClick = (token: string) => {
     if (selectedTokens.includes(token)) {
       setSelectedTokens(selectedTokens.filter(t => t !== token));
@@ -54,7 +54,7 @@ export const LiquidityPoolLayout = () => {
     }
   };
 
-  const sortTokensBySelection = (tokens: IToken[], selectedTokens: string[]) => {
+  const sortTokensBySelection = (tokens: IPoolTokenList[], selectedTokens: string[]) => {
     return tokens.sort((a, b) => {
       const isASelected = selectedTokens.includes(a.symbol);
       const isBSelected = selectedTokens.includes(b.symbol);
@@ -65,15 +65,15 @@ export const LiquidityPoolLayout = () => {
     });
   };
 
-  const sortedTokens = sortTokensBySelection(tokens, selectedTokens);
+  const sortedTokens = sortTokensBySelection(poolTokens, selectedTokens);
 
-  // useEffect for not showing toast popup when first mounted
   useEffect(() => {
     if (!isMounted.current) {
       setShowAllPools(false);
       isMounted.current = true;
       return;
     }
+
     if (!showAllPools) {
       setShowToastPopup(true);
       setTimeout(() => {
@@ -88,7 +88,7 @@ export const LiquidityPoolLayout = () => {
       <TitleWrapper>
         {showToastPopup && (
           <ToastPopup>
-            <ToastPopupText>Switched to {name}’s Liquidity pools</ToastPopupText>
+            <ToastPopupText>{`Switched to ${name}'s Liquidity pools`}</ToastPopupText>
           </ToastPopup>
         )}
         <Title>Liquidity pools</Title>
@@ -109,8 +109,8 @@ export const LiquidityPoolLayout = () => {
           ))}
         </BadgeWrapper>
         <Table
-          data={data}
-          columns={columns}
+          data={tableData}
+          columns={tableColumns}
           ratio={showAllPools ? [1, 2, 1, 1, 1] : [2, 1, 1, 1]}
           type="darker"
           handleRowClick={handleRowClick}

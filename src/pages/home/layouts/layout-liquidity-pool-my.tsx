@@ -3,10 +3,10 @@ import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
 
-import { useTableLiquidityMy } from '../hooks/components/table/use-table-liquidity-pool-my';
+import { useTableMyLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool-my';
 
 export const MyLiquidityLayout = () => {
-  const { data, columns } = useTableLiquidityMy();
+  const { tableColumns, tableData } = useTableMyLiquidityPool();
 
   const navigate = useNavigate();
 
@@ -20,8 +20,8 @@ export const MyLiquidityLayout = () => {
         <Title>My liquidity in Moai pools</Title>
       </TitleWrapper>
       <Table
-        data={data}
-        columns={columns}
+        data={tableData}
+        columns={tableColumns}
         ratio={[2, 1, 1, 1]}
         type="darker"
         handleRowClick={handleRowClick}
