@@ -9,7 +9,8 @@ import { TableColumnAmount } from '../table/table-column-amount';
 import { TableColumnTime } from '../table/table-column-time';
 
 export const BridgeHistory = () => {
-  const hasMore = false;
+  // TODO : connect API
+  const hasMore = true;
   const isLoading = false;
 
   // TODO : connect API
@@ -84,10 +85,15 @@ export const BridgeHistory = () => {
           )}
           {hasMore && (
             <More onClick={handleMoreClick}>
-              Load more <IconDown />
+              {isLoading ? (
+                <Loading>Loading...</Loading>
+              ) : (
+                <>
+                  Load more <IconDown />
+                </>
+              )}
             </More>
           )}
-          {isLoading && <Loading>Loading...</Loading>}
         </Body>
       )}
     </StyledTable>
@@ -97,7 +103,7 @@ export const BridgeHistory = () => {
 const StyledTable = styled.div(() => [tw`w-full bg-neutral-15 rounded-12 flex flex-col`]);
 
 const Body = tw.div`
-  flex flex-col items-center font-r-16 text-neutral-100 
+  flex flex-col items-center
 `;
 
 interface BTRProps {
@@ -106,9 +112,9 @@ interface BTRProps {
 }
 const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio }) => [
   tw`
-    grid items-center w-full h-full px-24 py-20 gap-32 hover:bg-neutral-15
+    grid items-center w-full h-88 px-24 py-20 gap-32 hover:bg-neutral-15
   `,
-  rounded && tw`last:(rounded-b-10)`,
+  rounded && tw`first:(rounded-t-12) last:(rounded-b-12)`,
   css`
     & {
       grid-template-columns: ${ratio};
@@ -117,7 +123,7 @@ const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio }) => [
 ]);
 const More = styled.div(() => [
   tw`
-    w-full h-72 flex-center gap-6 font-m-14 text-neutral-60 clickable rounded-b-10
+    w-full h-72 py-20 px-24 flex-center gap-6 font-m-14 text-neutral-60 clickable rounded-b-10
     hover:(bg-neutral-15 text-primary-80)
   `,
   css`
