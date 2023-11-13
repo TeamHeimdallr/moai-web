@@ -18,11 +18,13 @@ export const BridgeHistory = () => {
       id: 1,
       amount: <TableColumnAmount balance={100} value={100} />,
       time: <TableColumnTime time={1699624454446} />,
+      hash: '0x1234',
     },
     {
       id: 2,
       amount: <TableColumnAmount balance={23} value={100} />,
       time: <TableColumnTime time={1699624454446} />,
+      hash: '0x1234',
     },
   ];
   const columns = useMemo(
@@ -50,7 +52,9 @@ export const BridgeHistory = () => {
   });
 
   const tableRatio = [14, 5].map(num => `${num}fr`).join(' ');
-  const handleRowClick = () => {};
+  const handleRowClick = (link: string) => {
+    window.open(link);
+  };
   const handleMoreClick = () => {};
 
   return (
@@ -67,7 +71,7 @@ export const BridgeHistory = () => {
                   ratio={tableRatio}
                   rounded={!hasMore && !isLoading}
                   onClick={() => {
-                    handleRowClick?.();
+                    handleRowClick?.(data[i].hash);
                   }}
                 >
                   {row.getVisibleCells().map((cell, i) => (
@@ -102,7 +106,7 @@ interface BTRProps {
 }
 const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio }) => [
   tw`
-    grid items-center w-full h-full px-24 py-20 clickable gap-32 hover:bg-neutral-15
+    grid items-center w-full h-full px-24 py-20 gap-32 hover:bg-neutral-15
   `,
   rounded && tw`last:(rounded-b-10)`,
   css`

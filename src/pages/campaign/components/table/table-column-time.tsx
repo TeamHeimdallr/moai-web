@@ -3,7 +3,9 @@ import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { IconTime } from '~/assets/icons';
+import { IconLink, IconTime } from '~/assets/icons';
+
+import { ButtonIconSmall } from '~/components/buttons';
 
 import { DATE_FORMATTER } from '~/utils';
 
@@ -16,9 +18,10 @@ export const TableColumnTime = ({ time, width, ...rest }: Props) => {
   return (
     <Wrapper width={width} {...rest}>
       <IconWrapper>
-        <IconTime width={20} height={60} fill={COLOR.NEUTRAL[60]} />
+        <IconTime width={20} height={20} fill={COLOR.NEUTRAL[60]} />
       </IconWrapper>
       <Time>{format(new Date(time), DATE_FORMATTER.FULL)}</Time>
+      <ButtonIconSmall icon={<IconLink fill={COLOR.NEUTRAL[60]} />} />
     </Wrapper>
   );
 };

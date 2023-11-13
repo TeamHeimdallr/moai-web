@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, useEffect, useRef } from 'react';
+import { ButtonHTMLAttributes, ReactNode, useEffect, useRef } from 'react';
 import lottie from 'lottie-web/build/player/lottie_light';
 import tw, { styled } from 'twin.macro';
 
@@ -6,11 +6,12 @@ import LoadingLottie from '~/assets/lottie/loading-dark.json';
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
+  icon?: ReactNode;
 
   isLoading?: boolean;
 }
 
-export const ButtonPrimaryMedium = ({ text, isLoading, disabled, ...rest }: Props) => {
+export const ButtonPrimaryMedium = ({ text, icon, isLoading, disabled, ...rest }: Props) => {
   const warpperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export const ButtonPrimaryMedium = ({ text, isLoading, disabled, ...rest }: Prop
   return (
     <Wrapper disabled={disabled || isLoading} isLoading={isLoading} {...rest}>
       {text}
+      {!isLoading && icon}
       {isLoading && <LottieWrapper ref={warpperRef} />}
     </Wrapper>
   );
@@ -41,7 +43,7 @@ interface WrapperProps {
 }
 const Wrapper = styled.button<WrapperProps>(({ isLoading }) => [
   tw`
-    gap-6 px-16 py-9 inline-flex-center rounded-10 clickable font-m-14 bg-primary-60 relative text-neutral-0 transition-colors w-full
+    gap-6 px-16 py-9 inline-flex-center rounded-10 clickable font-m-14 bg-primary-60 relative text-neutral-0 transition-colors w-full gap-6
 
     hover:(bg-primary-50 text-neutral-0)
 

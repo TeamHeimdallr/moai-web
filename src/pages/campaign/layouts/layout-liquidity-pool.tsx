@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { Pending } from '../components/pending';
@@ -6,8 +5,6 @@ import { TokenCard } from '../components/token-card';
 import { TokenList } from '../components/token-list';
 
 export const LiquidityPoolLayout = () => {
-  const navigate = useNavigate();
-
   // TODO : connect API
   const myDepositBalance = 123123;
   const myDepositValue = myDepositBalance;

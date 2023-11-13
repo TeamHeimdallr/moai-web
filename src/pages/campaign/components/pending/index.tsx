@@ -1,14 +1,14 @@
-import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import tw, { css, styled } from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
-import { IconDown } from '~/assets/icons';
+import { COLOR } from '~/assets/colors';
+import { IconNext } from '~/assets/icons';
 
-import { ButtonIconLarge } from '~/components/buttons';
+import { ButtonPrimaryMedium } from '~/components/buttons';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { formatNumber, getNetworkFull } from '~/utils';
 
 import { BridgeHistory } from './bridge-history';
 
@@ -19,36 +19,36 @@ export const Pending = () => {
 
   const { currentAddress } = useConnectedWallet(currentNetwork);
 
-  const [opened, open] = useState(false);
+  // TODO : connect API
+  const balance = 123;
+  // TODO : navigate step3
+  const handleClick = () => {};
 
   return (
-    <Wrapper opened={opened}>
+    <Wrapper>
       <TitleWrapper>
         <Title>Pending</Title>
-        <Icon opened={opened} onClick={() => open(prev => !prev)}>
-          <ButtonIconLarge icon={<IconDown />} />
-        </Icon>
+
+        <Balance>{formatNumber(balance, 2)} XRP</Balance>
+        <ButtonWrapper>
+          <ButtonPrimaryMedium
+            icon={<IconNext fill={COLOR.NEUTRAL[0]} width={20} height={20} />}
+            text="Continue"
+            onClick={handleClick}
+          />
+        </ButtonWrapper>
       </TitleWrapper>
-      {opened && <BridgeHistory />}
+      <BridgeHistory />
     </Wrapper>
   );
 };
 
-interface DivProps {
-  opened?: boolean;
-}
-const Wrapper = styled.div<DivProps>(({ opened }) => [
-  opened ? tw`pb-24` : tw`pb-20`,
-  tw`flex flex-col gap-24 bg-neutral-10 rounded-12 px-24`,
+const Wrapper = styled.div(() => [
+  tw`flex flex-col gap-24 bg-neutral-10 rounded-12 px-24 pt-20 pb-24`,
 ]);
-const TitleWrapper = tw.div`flex justify-between pt-20 items-center`;
+const TitleWrapper = tw.div`flex justify-between items-center font-m-20 gap-12`;
 const Title = tw.div`
-  font-b-20 text-neutral-100
+  flex-1 font-b-20 text-neutral-100
 `;
-
-const Icon = styled.div<DivProps>(({ opened }) => [
-  tw`p-2 transition-transform flex-center clickable`,
-  css`
-    transform: rotate(${opened ? '-180deg' : '0deg'});
-  `,
-]);
+const ButtonWrapper = tw.div``;
+const Balance = tw.div`flex`;
