@@ -12,16 +12,21 @@ import { DATE_FORMATTER } from '~/utils';
 interface Props extends HTMLAttributes<HTMLDivElement> {
   time: number;
   width?: number | 'full';
+  hash: string;
 }
 
-export const TableColumnTime = ({ time, width, ...rest }: Props) => {
+export const TableColumnTime = ({ time, width, hash, ...rest }: Props) => {
+  // TODO : handle url
+  const handleClick = () => {
+    window.open(hash);
+  };
   return (
     <Wrapper width={width} {...rest}>
       <IconWrapper>
         <IconTime width={20} height={20} fill={COLOR.NEUTRAL[60]} />
       </IconWrapper>
       <Time>{format(new Date(time), DATE_FORMATTER.FULL)}</Time>
-      <ButtonIconSmall icon={<IconLink fill={COLOR.NEUTRAL[60]} />} />
+      <ButtonIconSmall onClick={handleClick} icon={<IconLink fill={COLOR.NEUTRAL[60]} />} />
     </Wrapper>
   );
 };

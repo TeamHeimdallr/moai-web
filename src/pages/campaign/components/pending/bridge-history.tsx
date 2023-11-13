@@ -18,14 +18,12 @@ export const BridgeHistory = () => {
     {
       id: 1,
       amount: <TableColumnAmount balance={100} value={100} />,
-      time: <TableColumnTime time={1699624454446} />,
-      hash: '0x1234',
+      time: <TableColumnTime time={1699624454446} hash={'0x1234'} />,
     },
     {
       id: 2,
       amount: <TableColumnAmount balance={23} value={100} />,
-      time: <TableColumnTime time={1699624454446} />,
-      hash: '0x1234',
+      time: <TableColumnTime time={1699624454446} hash={'0x1234'} />,
     },
   ];
   const columns = useMemo(
@@ -53,9 +51,6 @@ export const BridgeHistory = () => {
   });
 
   const tableRatio = [14, 5].map(num => `${num}fr`).join(' ');
-  const handleRowClick = (link: string) => {
-    window.open(link);
-  };
   const handleMoreClick = () => {};
 
   return (
@@ -71,9 +66,6 @@ export const BridgeHistory = () => {
                   key={row.id + i}
                   ratio={tableRatio}
                   rounded={!hasMore && !isLoading}
-                  onClick={() => {
-                    handleRowClick?.(data[i].hash);
-                  }}
                 >
                   {row.getVisibleCells().map((cell, i) => (
                     <Fragment key={cell.id + i}>
@@ -112,9 +104,9 @@ interface BTRProps {
 }
 const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio }) => [
   tw`
-    grid items-center w-full h-88 px-24 py-20 gap-32 hover:bg-neutral-15
+    grid items-center w-full h-88 px-24 py-20 gap-32 hover:bg-neutral-15 first:(rounded-t-12) 
   `,
-  rounded && tw`first:(rounded-t-12) last:(rounded-b-12)`,
+  rounded && tw`last:(rounded-b-12)`,
   css`
     & {
       grid-template-columns: ${ratio};
@@ -123,7 +115,7 @@ const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio }) => [
 ]);
 const More = styled.div(() => [
   tw`
-    w-full h-72 py-20 px-24 flex-center gap-6 font-m-14 text-neutral-60 clickable rounded-b-10
+    w-full h-72 py-20 px-24 flex-center gap-6 font-m-14 text-neutral-60 clickable rounded-b-12
     hover:(bg-neutral-15 text-primary-80)
   `,
   css`

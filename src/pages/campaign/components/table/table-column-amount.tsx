@@ -8,12 +8,12 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   value: number;
   width?: number | 'full';
 }
-// TODO: will be removed
+
 export const TableColumnAmount = ({ balance, value, width, ...rest }: Props) => {
   return (
     <Wrapper width={width} {...rest}>
       <Balance>
-        {balance}
+        {formatNumber(balance, 2)}
         {' XRP'}
       </Balance>
       <Value>${formatNumber(value, 2)}</Value>

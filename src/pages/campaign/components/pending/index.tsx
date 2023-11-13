@@ -35,7 +35,7 @@ export const Pending = () => {
 };
 
 const Wrapper = styled.div(() => [
-  tw`flex max-w-1280 flex-col gap-24 bg-neutral-10 rounded-12 px-24 pt-20 pb-24`,
+  tw`flex max-w-1280 flex-col gap-24 bg-neutral-10 rounded-12 px-24 pt-20 pb-24 mt-24`,
 ]);
 const TitleWrapper = tw.div`flex justify-between items-center font-m-20 gap-12`;
 const Title = tw.div`
