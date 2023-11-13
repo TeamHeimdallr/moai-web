@@ -1,8 +1,8 @@
 import { Address, zeroAddress } from 'viem';
 
-import { useWithdrawLiquidity as useWithdrawLiquidityFpass } from '~/api/api-contract/_evm/pool/fpass-withdraw-liquidity';
-import { useWithdrawTokenAmounts as useWithdrawTokenAmountsEvm } from '~/api/api-contract/_evm/pool/get-liquidity-pool-balance';
+import { useWithdrawTokenAmounts as useWithdrawTokenAmountsEvm } from '~/api/api-contract/_evm/balance/user-pool-token-balances';
 import { useWithdrawLiquidity as useWithdrawLiquidityEvm } from '~/api/api-contract/_evm/pool/withdraw-liquidity';
+import { useWithdrawLiquidity as useWithdrawLiquidityFpass } from '~/api/api-contract/_evm/pool/withdraw-liquidity-fpass';
 import { useWithdrawTokenAmounts as useWithdrawTokenAmountsXrp } from '~/api/api-contract/_xrpl/pool/get-liquidity-pool-balance';
 import { useWithdrawLiquidity as useWithdrawLiquidityXrp } from '~/api/api-contract/_xrpl/pool/withdraw-liquidity';
 

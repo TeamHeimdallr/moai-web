@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
 import * as yup from 'yup';
 
-import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
+import { useTokenBalanceInPool } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import { useTokenPrice } from '~/api/api-contract/token/price';
 

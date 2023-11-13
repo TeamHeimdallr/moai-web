@@ -1,6 +1,6 @@
 import tw, { css, styled } from 'twin.macro';
 
-import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
+import { useTokenBalanceInPool } from '~/api/api-contract/balance/user-pool-token-balances';
 
 import { COLOR } from '~/assets/colors';
 

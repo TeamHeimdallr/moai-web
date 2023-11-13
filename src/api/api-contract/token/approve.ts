@@ -1,7 +1,7 @@
 import { Address } from 'wagmi';
 
 import { useApprove as useApproveEvm } from '~/api/api-contract/_evm/token/approve';
-import { useApprove as useApproveFpass } from '~/api/api-contract/_evm/token/fpass-approve';
+import { useApprove as useApproveFpass } from '~/api/api-contract/_evm/token/approve-fpass';
 import { useApprove as useApproveXrp } from '~/api/api-contract/_xrpl/token/approve';
 
 import { useNetwork } from '~/hooks/contexts/use-network';

@@ -1,24 +1,18 @@
-import { useEffect, useMemo } from 'react';
+import { Fragment, useEffect } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
-import { Address } from 'wagmi';
 
-import { useLiquidityPoolTokenAmount } from '~/api/api-contract/_evm/pool/get-liquidity-pool-balance';
+import { useLpTokenTotalSupply } from '~/api/api-contract/_evm/token/lp-token-supply';
 import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
+import { useCalculateAddLiquidity } from '~/api/api-contract/pool/calculate-add-liquidity';
 import { useApprove } from '~/api/api-contract/token/approve';
-import { useTokenPrice } from '~/api/api-contract/token/price';
+import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
 import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import {
-  EVM_CONTRACT_ADDRESS,
-  EVM_TOKEN_ADDRESS,
-  SCANNER_URL,
-  TOKEN_IMAGE_MAPPER,
-  XRP_TOKEN_ISSUER,
-} from '~/constants';
+import { SCANNER_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -28,39 +22,50 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { useRequirePrarams } from '~/hooks/utils';
-import { formatNumber, getNetworkFull } from '~/utils';
-import { IPool, POPUP_ID } from '~/types';
+import { formatNumber, getNetworkAbbr } from '~/utils';
+import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
-  pool: IPool;
-  tokenInputs: {
-    symbol: string;
-    amount: number;
-  }[];
-  totalValue: number;
-  priceImpact: string;
+  pool?: IPool;
+  tokensIn?: (ITokenComposition & { balance: number; amount: number })[];
 }
+export const AddLiquidityPopup = ({ tokensIn, pool }: Props) => {
+  const navigate = useNavigate();
 
-export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }: Props) => {
-  const { network } = useParams();
   const { selectedNetwork, isXrp } = useNetwork();
-  const { getTokenPrice } = useTokenPrice();
 
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const { close } = usePopup(POPUP_ID.ADD_LP);
 
-  const { bptOut: lpTokenAmountEvm } = useLiquidityPoolTokenAmount({
-    id: pool.id as Address,
-    amountsIn: tokenInputs?.map(v => v.amount) ?? [],
+  const { network, poolId, lpToken } = pool || {};
+  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+    {
+      params: {
+        networkAbbr: getNetworkAbbr(network),
+        poolId: poolId || '',
+      },
+    },
+    {
+      enabled: !!network && !!poolId,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
+  );
+  const { lpTokenPrice } = useLpTokenTotalSupply({
+    network: (network || '') as NETWORK,
+    poolId: poolId || '',
   });
+  const currentNetwork = network ?? selectedNetwork;
+  const tokenLength = tokensIn?.length || 0;
 
-  // TODO: handle 3 tokens
-  const lpTokenAmountXrp = Math.sqrt(
-    tokenInputs[0].amount * tokenInputs[0].amount + tokenInputs[1].amount * tokenInputs[1].amount
-  ).toFixed(2);
+  const { poolVaultAmm } = poolVaultAmmData || {};
+  const { vault } = poolVaultAmm || {};
 
-  const lpTokenAmount = formatNumber(lpTokenAmountEvm || lpTokenAmountXrp || 0, 6);
+  const amountsIn = tokensIn?.map(t => t.amount) || [];
 
+  const { bptOut: bptOutRaw, priceImpact } = useCalculateAddLiquidity({ amountsIn });
+  const bptOut = formatNumber(bptOutRaw || 0, 6);
+
+  // TODO: update to using map
   const {
     allow: allowToken1,
     allowance: allowance1,
@@ -68,14 +73,12 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
     isSuccess: allowSuccess1,
     refetch: refetchAllowance1,
   } = useApprove({
-    amount: tokenInputs?.[0]?.amount ?? 0,
-    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[tokenInputs?.[0]?.symbol] ?? '',
-    issuer: XRP_TOKEN_ISSUER?.[tokenInputs?.[0]?.symbol] ?? '',
-
-    spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
-    currency: tokenInputs?.[0]?.symbol ?? '',
-
-    enabled: tokenInputs?.length > 0,
+    amount: tokensIn?.[0]?.amount || 0,
+    address: tokensIn?.[0]?.address || '',
+    issuer: tokensIn?.[0]?.address || '',
+    spender: vault || '',
+    currency: tokensIn?.[0]?.currency || '',
+    enabled: tokenLength > 0,
   });
 
   const {
@@ -85,55 +88,50 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
     isSuccess: allowSuccess2,
     refetch: refetchAllowance2,
   } = useApprove({
-    amount: tokenInputs?.[1]?.amount ?? 0,
-    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[tokenInputs?.[1]?.symbol] ?? '',
-    issuer: XRP_TOKEN_ISSUER?.[tokenInputs?.[1]?.symbol] ?? '',
-
-    spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
-    currency: tokenInputs?.[1]?.symbol ?? '',
-
-    enabled: tokenInputs?.length > 1,
+    amount: tokensIn?.[1]?.amount || 0,
+    address: tokensIn?.[1]?.address || '',
+    issuer: tokensIn?.[1]?.address || '',
+    spender: vault || '',
+    currency: tokensIn?.[1]?.currency || '',
+    enabled: tokenLength > 1,
   });
 
-  const navigate = useNavigate();
-  const { id } = useParams();
+  const getEnabled = () => {
+    const validAmount = (tokensIn?.[0]?.amount || 0) > 0 && (tokensIn?.[1]?.amount || 0) > 0;
+    const validAllowance = tokenLength < 2 ? allowance1 : allowance1 && allowance2;
 
-  useRequirePrarams([!!id], () => navigate(-1));
+    return validAmount && validAllowance;
+  };
 
-  const { lpTokenName } = pool;
-
-  const enabled = !!id && totalValue > 0 && allowance1 && (allowance2 || tokenInputs.length < 2);
-  const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useAddLiquidity({
-    id: id as string,
-    enabled,
+  const { isLoading, isSuccess, txData, blockTimestamp, writeAsync } = useAddLiquidity({
+    id: poolId || '',
     tokens:
-      tokenInputs?.map(t => ({
-        address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[t.symbol] ?? '',
-        currency: t?.symbol ?? '',
-        issuer: XRP_TOKEN_ISSUER?.[t.symbol] ?? '',
-        amount: (t?.amount ?? 0).toString(),
-      })) ?? [],
+      tokensIn?.map(t => ({
+        address: t.address,
+        currency: t.currency,
+        issuer: t.address,
+        amount: `${t.amount || 0}`,
+      })) || [],
+    enabled: getEnabled(),
   });
 
-  const step = useMemo(() => {
+  const getStep = () => {
     if (isSuccess) {
-      return tokenInputs.length + 1;
+      return tokenLength + 1;
     }
 
     if (!allowance1) return 1;
-    if (!allowance2 && tokenInputs.length > 1) return 2;
-    return tokenInputs.length + 1;
-  }, [allowance1, allowance2, isSuccess, tokenInputs.length]);
+    if (!allowance2 && tokenLength > 1) return 2;
 
+    return tokenLength + 1;
+  };
+  const step = getStep();
   const txDate = new Date(blockTimestamp ?? 0);
 
-  const { close } = usePopup(POPUP_ID.ADD_LP);
-
-  // TODO: handle 3 tokens
   const handleButton = async () => {
     if (isSuccess) {
-      navigate(-1);
       close();
+      navigate(-1);
       return;
     }
 
@@ -141,7 +139,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
       await allowToken1?.();
       return;
     }
-    if (step === 2 && tokenInputs.length > 1) {
+    if (step === 2 && tokenLength > 1) {
       await allowToken2?.();
       return;
     }
@@ -161,8 +159,7 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
 
   const handleLink = () => {
     const txHash = isXrp ? txData?.hash : txData?.transactionHash;
-    const url =
-      `${SCANNER_URL[currentNetwork]}` + (isXrp ? '/transactions/' : 'tx') + `${txHash ?? ''}`;
+    const url = `${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${txHash}`;
     window.open(url);
   };
 
@@ -179,9 +176,9 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
                 : isSuccess
                 ? 'Return to pool page'
                 : step === 1
-                ? `Approve ${tokenInputs[0]?.symbol} for adding liquidity`
-                : step === 2 && tokenInputs.length > 1
-                ? `Approve ${tokenInputs[1]?.symbol} for adding liquidity`
+                ? `Approve ${tokensIn?.[0]?.symbol} for adding liquidity`
+                : step === 2 && tokenLength > 1
+                ? `Approve ${tokensIn?.[1]?.symbol} for adding liquidity`
                 : 'Add liquidity'
             }
             isLoading={isLoading}
@@ -191,62 +188,55 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
       }
     >
       <Wrapper>
-        {isSuccess ? (
+        {isSuccess && (
           <SuccessWrapper>
             <IconWrapper>
               <IconCheck width={40} height={40} />
             </IconWrapper>
             <SuccessTitle>Add liquidity confirmed!</SuccessTitle>
-            <SuccessSubTitle>{`Successfully added liquidity to ${lpTokenName} Pool`}</SuccessSubTitle>
+            <SuccessSubTitle>{`Successfully added liquidity to ${lpToken?.symbol} Pool`}</SuccessSubTitle>
           </SuccessWrapper>
-        ) : (
+        )}
+        {!isSuccess && (
           <List title={`You're providing`}>
-            {tokenInputs.map(({ symbol, amount }, idx) => (
-              <div key={idx}>
+            {tokensIn?.map(({ symbol, image, amount, price }, idx) => (
+              <Fragment key={`${symbol}-${idx}`}>
                 <TokenList
-                  key={`token-${idx}`}
                   type="large"
                   title={`${amount}`}
-                  subTitle={`${symbol}`}
-                  description={`$${formatNumber(amount * getTokenPrice(symbol), 2)}`}
-                  image={TOKEN_IMAGE_MAPPER[symbol]}
-                  leftAlign={true}
+                  subTitle={symbol}
+                  description={`$${formatNumber(amount * (price || 0), 4)}`}
+                  image={image}
+                  leftAlign
                 />
-                {idx !== tokenInputs.length - 1 && <Divider key={`divider-${idx}`} />}
-              </div>
+                {idx !== tokenLength - 1 && <Divider />}
+              </Fragment>
             ))}
           </List>
         )}
-
         <List title={`You're expected to receive`}>
           <TokenList
             type="large"
-            title={`${lpTokenAmount}`}
-            subTitle={`${lpTokenName}`}
-            description={`$${formatNumber(totalValue)}`}
-            image={
-              <Jazzicon
-                diameter={36}
-                seed={jsNumberForAddress(
-                  EVM_TOKEN_ADDRESS?.[currentNetwork]?.[lpTokenName] || lpTokenName || ''
-                )}
-              />
-            }
+            title={`${bptOut}`}
+            subTitle={`${lpToken?.symbol || ''}`}
+            description={`$${formatNumber(bptOutRaw * lpTokenPrice, 6)}`}
+            image={<Jazzicon diameter={36} seed={jsNumberForAddress(lpToken?.address || '')} />}
             leftAlign={true}
           />
         </List>
-        {isSuccess ? (
+        {isSuccess && (
           <Scanner onClick={() => handleLink()}>
             <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
             <ScannerText>{txDate.toString()}</ScannerText>
             <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
-        ) : (
+        )}{' '}
+        {!isSuccess && (
           <>
             <List title={`Summary`}>
               <Summary>
                 <SummaryTextTitle>Total</SummaryTextTitle>
-                <SummaryText>{`$${formatNumber(totalValue)}`}</SummaryText>
+                <SummaryText>{`$${formatNumber(bptOutRaw * lpTokenPrice, 6)}`}</SummaryText>
               </Summary>
               <Summary>
                 <SummaryTextTitle>Price impact</SummaryTextTitle>
@@ -255,12 +245,12 @@ export const AddLiquidityPopup = ({ pool, tokenInputs, totalValue, priceImpact }
             </List>
 
             <LoadingStep
-              totalSteps={tokenInputs.length + 1}
+              totalSteps={tokenLength + 1}
               step={step}
               isLoading={
                 step === 1
                   ? allowLoading1
-                  : step === 2 && tokenInputs.length > 1
+                  : step === 2 && tokenLength > 1
                   ? allowLoading2
                   : isLoading
               }

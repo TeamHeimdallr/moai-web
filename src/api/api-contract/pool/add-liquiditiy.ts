@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { parseUnits } from 'viem';
 
 import { useAddLiquidity as useAddLiquidityEvm } from '~/api/api-contract/_evm/pool/add-liquidity';
-import { useAddLiquidity as useAddLiquidityFpass } from '~/api/api-contract/_evm/pool/fpass-add-liquidity';
+import { useAddLiquidity as useAddLiquidityFpass } from '~/api/api-contract/_evm/pool/add-liquidity-fpass';
 import { useAddLiquidity as useAddLiquidityXrp } from '~/api/api-contract/_xrpl/pool/add-liquidity';
 
 import { TOKEN_DECIMAL } from '~/constants';

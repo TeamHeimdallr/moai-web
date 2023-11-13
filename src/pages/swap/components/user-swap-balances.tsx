@@ -1,6 +1,6 @@
 import tw from 'twin.macro';
 
-import { useTokenBalanceInPool } from '~/api/api-contract/balance/get-token-balance-in-pool';
+import { useTokenBalanceInPool } from '~/api/api-contract/balance/user-pool-token-balances';
 
 import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
