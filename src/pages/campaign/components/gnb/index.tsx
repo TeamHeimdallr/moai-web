@@ -15,7 +15,7 @@ import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID } from '~/types';
 
 export const Gnb = () => {
-  const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { open, opened } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
 
   const navigate = useNavigate();
   const { evm, xrp } = useConnectedWallet();
