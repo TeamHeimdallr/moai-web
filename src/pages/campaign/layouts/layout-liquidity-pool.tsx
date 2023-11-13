@@ -73,19 +73,19 @@ export const LiquidityPoolLayout = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col pt-60 gap-24 text-neutral-100
+  flex flex-col items-center justify-center pt-60 gap-24 text-neutral-100
 `;
 
 const MyInfoWrapper = tw.div`
-  flex flex-col gap-24 justify-center w-full
+  flex flex-col gap-24 justify-center
 `;
-const CardWrapper = tw.div`flex gap-40 w-full`;
+const CardWrapper = tw.div`flex gap-40`;
 
 const TokenWrapper = tw.div`flex gap-16`;
 
 const Title = tw.div`
   font-b-24 text-neutral-100
 `;
-const Empty = tw.div`flex-center flex-col h-194 gap-20 bg-neutral-10 rounded-12 text-neutral-80`;
+const Empty = tw.div`w-1280 flex-center flex-col h-194 gap-20 bg-neutral-10 rounded-12 text-neutral-80`;
 const TextWrapper = tw.div``;
 const ButtonWrapper = tw.div`flex-center`;
