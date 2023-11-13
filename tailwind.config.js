@@ -114,6 +114,7 @@ module.exports = {
 
       backgroundImage: {
         landing: `url('${ASSET_URL}/images/bg-landing.png')`,
+        campaign: `url('${ASSET_URL}/images/bg-campaign.png')`,
       },
     },
   },
@@ -183,7 +184,12 @@ module.exports = {
           fontWeight: 500,
           lineHeight: '24px',
         },
-
+        '.font-m-18': {
+          fontFamily: 'Pretendard Variable',
+          fontSize: '18px',
+          fontWeight: 500,
+          lineHeight: '26px',
+        },
         '.font-m-20': {
           fontFamily: 'Pretendard Variable',
           fontSize: '20px',
@@ -367,6 +373,9 @@ module.exports = {
         },
         '.pop-up-shadow': {
           'box-shadow': '0px 8px 60px 0px rgba(0, 0, 0, 0.60)',
+        },
+        '.svg-shadow': {
+          'box-shadow': '0px 4px 16px 0px rgba(28, 32, 51, 0.40)',
         },
       });
     }),

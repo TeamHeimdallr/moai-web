@@ -11,6 +11,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { getNetworkFull } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
+import Campaign from './campaign';
 import Home from './home';
 import Landing from './landing';
 import Pool from './pool';
@@ -39,6 +40,7 @@ const Page = () => {
             <Route path="/" element={<Home />} />
             <Route path="/swap" element={<Swap />} />
             <Route path="/pools/*" element={<Pool />} />
+            <Route path="/campaign/*" element={<Campaign />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
