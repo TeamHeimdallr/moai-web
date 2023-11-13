@@ -1,4 +1,3 @@
-import { useParams } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -6,19 +5,11 @@ import { IconNext } from '~/assets/icons';
 
 import { ButtonPrimaryMedium } from '~/components/buttons';
 
-import { useNetwork } from '~/hooks/contexts/use-network';
-import { useConnectedWallet } from '~/hooks/wallets';
-import { formatNumber, getNetworkFull } from '~/utils';
+import { formatNumber } from '~/utils';
 
 import { BridgeHistory } from './bridge-history';
 
 export const Pending = () => {
-  const { selectedNetwork } = useNetwork();
-  const { network } = useParams();
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-
-  const { currentAddress } = useConnectedWallet(currentNetwork);
-
   // TODO : connect API
   const balance = 123;
   // TODO : navigate step3
