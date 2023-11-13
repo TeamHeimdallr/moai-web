@@ -73,7 +73,7 @@ export const LiquidityPoolLayout = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col items-center justify-center pt-60 gap-24 text-neutral-100
+  flex flex-col items-center justify-center pt-60 gap-24 text-neutral-100 mb-120
 `;
 
 const MyInfoWrapper = tw.div`
