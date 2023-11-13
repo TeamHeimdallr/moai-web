@@ -374,6 +374,9 @@ module.exports = {
         '.pop-up-shadow': {
           'box-shadow': '0px 8px 60px 0px rgba(0, 0, 0, 0.60)',
         },
+        '.svg-shadow': {
+          'box-shadow': '0px 4px 16px 0px rgba(28, 32, 51, 0.40)',
+        },
       });
     }),
   ],
