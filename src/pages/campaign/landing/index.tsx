@@ -15,7 +15,7 @@ const LandingPage = () => {
       </GnbWrapper>
       <Contents />
 
-      {/* <LiquidityPoolLayout /> */}
+      <LiquidityPoolLayout />
       <Footer />
     </Wrapper>
   );

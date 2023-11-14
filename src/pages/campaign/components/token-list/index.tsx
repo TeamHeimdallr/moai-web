@@ -1,5 +1,5 @@
 import { HTMLAttributes } from 'react';
-import tw, { styled } from 'twin.macro';
+import tw from 'twin.macro';
 
 import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
@@ -9,12 +9,11 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
   balance: number;
   value: number;
-  type?: 'medium' | 'large';
 }
 
-export const TokenList = ({ token, balance, value, type = 'large', ...rest }: Props) => {
+export const TokenList = ({ token, balance, value, ...rest }: Props) => {
   return (
-    <Wrapper type={type} {...rest}>
+    <Wrapper {...rest}>
       <Token>
         <Image src={TOKEN_IMAGE_MAPPER[token]} /> {token}
       </Token>
@@ -25,13 +24,7 @@ export const TokenList = ({ token, balance, value, type = 'large', ...rest }: Pr
     </Wrapper>
   );
 };
-interface DivProps {
-  type: 'medium' | 'large';
-}
-const Wrapper = styled.div<DivProps>(({ type }) => [
-  tw`flex items-center gap-16 p-24 bg-neutral-15 rounded-12`,
-  type == 'medium' ? tw`w-362` : tw`w-383`,
-]);
+const Wrapper = tw.div`w-full flex items-center gap-16 p-20 bg-neutral-15 rounded-12 md:p-24 `;
 
 const Token = tw.div`flex items-center gap-12 font-r-16`;
 
