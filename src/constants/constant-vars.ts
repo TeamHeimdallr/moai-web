@@ -75,13 +75,19 @@ export const FORMAT_NUMBER_THRESHOLD = 1000000000;
  * @description RESPONSIVE BREAKPOINT
  */
 export const BREAKPOINT = {
-  SM: 0,
-  MD: 848,
-  LG: 1280,
+  XS: 0,
+  SM: 360,
+  MD: 820,
+  LG: 1120,
+  XL: 1320,
+  XXL: 1440,
 
-  MEDIA_SM: '(min-width: 0px)',
-  MEDIA_MD: '(min-width: 848px)',
-  MEDIA_LG: '(min-width: 1280px)',
+  MEDIA_XS: '(min-width: 0px)',
+  MEDIA_SM: '(min-width: 360px)',
+  MEDIA_MD: '(min-width: 820px)',
+  MEDIA_LG: '(min-width: 1120px)',
+  MEDIA_XL: '(min-width: 1320px)',
+  MEDIA_XXL: '(min-width: 1440px)',
 };
 
 export const ASSET_URL = 'https://assets.moai-finance.xyz';

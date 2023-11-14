@@ -15,12 +15,15 @@ const LandingPage = () => {
       </GnbWrapper>
       <Contents />
 
-      <LiquidityPoolLayout />
+      {/* <LiquidityPoolLayout /> */}
       <Footer />
     </Wrapper>
   );
 };
 
-const Wrapper = tw.div`relative w-full h-full px-80 flex flex-col justify-between bg-campaign bg-cover`;
+const Wrapper = tw.div`
+  relative w-full h-full flex flex-col justify-between bg-no-repeat bg-campaign bg-cover px-20
+  xxl:(px-80)
+`;
 const GnbWrapper = tw.div`w-full absolute top-0 left-0 flex-center flex-col z-10`;
 export default LandingPage;
