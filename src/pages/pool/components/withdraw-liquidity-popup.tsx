@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 import { parseUnits } from 'viem';
 
@@ -7,12 +7,7 @@ import { useWithdrawLiquidity } from '~/api/api-contract/pool/withdraw-liquidity
 import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import {
-  SCANNER_URL,
-  TOKEN_DECIMAL_WITHDRAW,
-  TOKEN_DESCRIPTION_MAPPER,
-  TOKEN_IMAGE_MAPPER,
-} from '~/constants';
+import { SCANNER_URL, TOKEN_DECIMAL_WITHDRAW } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -21,55 +16,48 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { formatNumber, getNetworkFull } from '~/utils';
-import { IPool, POPUP_ID } from '~/types';
+import { formatNumber } from '~/utils';
+import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
-  pool: IPool;
+  pool?: IPool;
+  tokensOut?: (ITokenComposition & { amount: number })[];
 
-  inputValue: number;
-  lpTokenBalance: number;
-  tokenValue: number;
-
+  lpTokenPrice: number;
+  bptIn: number;
   priceImpact: string;
-
-  amountsOut: number[];
+  withdrawTokenWeight: number;
 }
 
 export const WithdrawLiquidityPopup = ({
   pool,
-  inputValue,
-  lpTokenBalance,
-  tokenValue,
+  tokensOut,
+
+  lpTokenPrice,
+  bptIn,
   priceImpact,
-  amountsOut,
+  withdrawTokenWeight,
 }: Props) => {
   const navigate = useNavigate();
-  const { compositions } = pool;
-  const { network } = useParams();
-  const { selectedNetwork, isXrp } = useNetwork();
-
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const { isXrp } = useNetwork();
+  const { poolId, network, lpToken } = pool || {};
 
   const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useWithdrawLiquidity({
-    id: pool.id,
-    tokens: compositions.map((c, i) => ({
-      address: c.address ?? '',
-      issuer: c.address ?? '',
-      currency: c.symbol,
-      // token out expected value
-      amount: amountsOut?.[i] ?? 0,
-    })),
+    id: poolId || '',
+    tokens:
+      tokensOut?.map(t => ({
+        address: t.address || '',
+        issuer: t.address || '',
+        currency: t.symbol,
+        // token out expected value
+        amount: t.amount || 0,
+      })) || [],
     // input value
-    amount: parseUnits(`${inputValue}`, TOKEN_DECIMAL_WITHDRAW[currentNetwork]),
+    amount: parseUnits(`${bptIn}`, TOKEN_DECIMAL_WITHDRAW[network || NETWORK.XRPL]),
   });
 
   const txDate = new Date(blockTimestamp ?? 0);
-
-  const totalValue = tokenValue * inputValue;
-  const withdrawRatio = Number(
-    Math.round((lpTokenBalance ? inputValue / lpTokenBalance : 0) * 10000) / 10000
-  );
+  const totalValue = bptIn * lpTokenPrice;
 
   const { close } = usePopup(POPUP_ID.WITHDRAW_LP);
 
@@ -84,8 +72,10 @@ export const WithdrawLiquidityPopup = ({
 
   const handleLink = () => {
     const txHash = isXrp ? txData?.hash : txData?.transactionHash;
-    const url =
-      `${SCANNER_URL[currentNetwork]}` + (isXrp ? '/transactions/' : 'tx') + `${txHash ?? ''}`;
+    const url = `${SCANNER_URL[network || NETWORK.XRPL]}/${
+      isXrp ? 'transactions' : 'tx'
+    }/${txHash}`;
+
     window.open(url);
   };
 
@@ -110,32 +100,34 @@ export const WithdrawLiquidityPopup = ({
               <IconCheck width={40} height={40} />
             </IconWrapper>
             <SuccessTitle>Withdrawal confirmed!</SuccessTitle>
-            <SuccessSubTitle>{`Successfully withdrawned from ${pool.lpTokenName} Pool`}</SuccessSubTitle>
+            <SuccessSubTitle>{`Successfully withdrawned from ${
+              lpToken?.symbol || ''
+            } Pool`}</SuccessSubTitle>
           </SuccessWrapper>
         ) : (
           <List title={`You're providing`}>
             <TokenList
               type="large"
-              title={`${formatNumber(inputValue, 2)}`}
-              subTitle={`${pool.lpTokenName}`}
-              description={`$${formatNumber(totalValue)} (${withdrawRatio}%)`}
-              image={TOKEN_IMAGE_MAPPER?.[pool.lpTokenName] || TOKEN_IMAGE_MAPPER.MOAI}
-              leftAlign={true}
+              title={`${formatNumber(bptIn, 4)}`}
+              subTitle={`${lpToken?.symbol}`}
+              description={`$${formatNumber(totalValue)} (${withdrawTokenWeight}%)`}
+              image={lpToken?.image}
+              leftAlign
             />
           </List>
         )}
 
         <List title={`You're expected to receive`}>
-          {compositions.map(({ address, symbol, weight }, i) => (
-            <div key={`${address || symbol}-${i}`}>
+          {tokensOut?.map(({ symbol, currentWeight, amount, image, description }, i) => (
+            <div key={`${symbol}-${i}`}>
               <TokenList
                 type="large"
-                title={`${symbol} ${amountsOut?.[i]?.toFixed(4)} (${weight}%)`}
-                description={`${TOKEN_DESCRIPTION_MAPPER[symbol]}`}
-                image={TOKEN_IMAGE_MAPPER[symbol]}
-                leftAlign={true}
+                title={`${symbol} ${amount.toFixed(4)} (${currentWeight}%)`}
+                description={description}
+                image={image}
+                leftAlign
               />
-              {i !== compositions.length - 1 && <Divider />}
+              {i !== (tokensOut?.length || 0) - 1 && <Divider />}
             </div>
           ))}
         </List>

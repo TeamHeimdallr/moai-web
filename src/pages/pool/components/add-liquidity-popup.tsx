@@ -3,9 +3,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { useLpTokenTotalSupply } from '~/api/api-contract/_evm/token/lp-token-supply';
 import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
-import { useCalculateAddLiquidity } from '~/api/api-contract/pool/calculate-add-liquidity';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
@@ -23,13 +21,17 @@ import { TokenList } from '~/components/token-list';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { formatNumber, getNetworkAbbr } from '~/utils';
-import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
+import { IPool, ITokenComposition, POPUP_ID } from '~/types';
 
 interface Props {
   pool?: IPool;
   tokensIn?: (ITokenComposition & { balance: number; amount: number })[];
+
+  lpTokenPrice: number;
+  bptOut: number;
+  priceImpact: string;
 }
-export const AddLiquidityPopup = ({ tokensIn, pool }: Props) => {
+export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceImpact }: Props) => {
   const navigate = useNavigate();
 
   const { selectedNetwork, isXrp } = useNetwork();
@@ -50,20 +52,11 @@ export const AddLiquidityPopup = ({ tokensIn, pool }: Props) => {
       staleTime: Infinity,
     }
   );
-  const { lpTokenPrice } = useLpTokenTotalSupply({
-    network: (network || '') as NETWORK,
-    poolId: poolId || '',
-  });
   const currentNetwork = network ?? selectedNetwork;
   const tokenLength = tokensIn?.length || 0;
 
   const { poolVaultAmm } = poolVaultAmmData || {};
   const { vault } = poolVaultAmm || {};
-
-  const amountsIn = tokensIn?.map(t => t.amount) || [];
-
-  const { bptOut: bptOutRaw, priceImpact } = useCalculateAddLiquidity({ amountsIn });
-  const bptOut = formatNumber(bptOutRaw || 0, 6);
 
   // TODO: update to using map
   const {
@@ -219,7 +212,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool }: Props) => {
             type="large"
             title={`${bptOut}`}
             subTitle={`${lpToken?.symbol || ''}`}
-            description={`$${formatNumber(bptOutRaw * lpTokenPrice, 6)}`}
+            description={`$${formatNumber(bptOut * lpTokenPrice, 6)}`}
             image={<Jazzicon diameter={36} seed={jsNumberForAddress(lpToken?.address || '')} />}
             leftAlign={true}
           />
@@ -236,7 +229,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool }: Props) => {
             <List title={`Summary`}>
               <Summary>
                 <SummaryTextTitle>Total</SummaryTextTitle>
-                <SummaryText>{`$${formatNumber(bptOutRaw * lpTokenPrice, 6)}`}</SummaryText>
+                <SummaryText>{`$${formatNumber(bptOut * lpTokenPrice, 6)}`}</SummaryText>
               </Summary>
               <Summary>
                 <SummaryTextTitle>Price impact</SummaryTextTitle>

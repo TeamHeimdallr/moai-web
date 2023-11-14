@@ -1,22 +1,36 @@
+import { useParams } from 'react-router-dom';
+
+import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
+
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { calcBptInTokenOutAmountAndPriceImpact } from '~/utils';
+import { ITokenComposition } from '~/types';
+
+import { useUserPoolTokenBalances } from '../balance/user-pool-token-balances';
+
 interface WithdrawPriceImpactProp {
-  id: Address;
   bptIn: number;
 }
-export const useWithdrawTokenAmounts = ({ id, bptIn }: WithdrawPriceImpactProp) => {
-  const { network } = useParams();
-  const { selectedNetwork, isEvm } = useNetwork();
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+export const useCalculateWithdrawLiquidity = ({ bptIn }: WithdrawPriceImpactProp) => {
+  const { network, id } = useParams();
+  const { isEvm } = useNetwork();
 
-  const { tokenAddress: lpTokenAddress } = EVM_POOL[currentNetwork]?.[0] ?? {};
-
-  const { data: poolTokensData } = usePoolTokens({ id });
-  const { data: bptTotalSupply } = usePoolTotalLpTokens({ id });
-  const { data: weightData } = usePoolTokenNormalizedWeights({
-    lpTokenAddress: lpTokenAddress as Address,
-  });
-  const normalizedWeights = weightData?.map(v => Number(formatEther(v ?? 0n)) || 0) ?? [];
-
-  const balances = poolTokensData?.[1] || [];
+  const queryEnabled = !!network && !!id;
+  const { data: poolData } = useGetPoolQuery(
+    {
+      params: {
+        networkAbbr: network as string,
+        poolId: id as string,
+      },
+    },
+    {
+      enabled: queryEnabled,
+      staleTime: 1000,
+    }
+  );
+  const { pool } = poolData ?? {};
+  const { compositions } = pool || {};
+  const { lpTokenTotalSupply } = useUserPoolTokenBalances();
 
   if (!isEvm)
     return {
@@ -24,16 +38,21 @@ export const useWithdrawTokenAmounts = ({ id, bptIn }: WithdrawPriceImpactProp) 
       priceImpact: 0,
     };
 
-  const { amountsOut, priceImpact } = calcBptInTokenOutAmountAndPriceImpact({
-    balances:
-      balances.map((v: bigint) => Number(formatUnits(v, TOKEN_DECIMAL[currentNetwork]))) ?? [],
-    normalizedWeights,
-    bptIn,
-    bptTotalSupply: Number(formatEther(bptTotalSupply ?? 0n)),
-  });
+  const { amountsOut: proportionalAmountsOut, priceImpact } = calcBptInTokenOutAmountAndPriceImpact(
+    {
+      balances: compositions?.map(c => c.balance || 0) ?? [],
+      normalizedWeights: compositions?.map(c => c.currentWeight || 0) ?? [],
+      bptIn,
+      bptTotalSupply: lpTokenTotalSupply,
+    }
+  );
+  const proportionalTokensOut = (compositions?.map((c, i) => ({
+    ...c,
+    amount: proportionalAmountsOut[i],
+  })) || []) as (ITokenComposition & { amount: number })[];
 
   return {
-    amountsOut,
+    proportionalTokensOut,
     priceImpact,
   };
 };

@@ -55,9 +55,9 @@ export const AddLiquidityInputGroup = () => {
   const { pool } = poolData || {};
   const { compositions } = pool || {};
 
-  const { userPoolTokens } = useUserPoolTokenBalances();
+  const { lpTokenPrice, userPoolTokens } = useUserPoolTokenBalances();
 
-  const { priceImpact: priceImpactRaw } = useCalculateAddLiquidity({
+  const { bptOut, priceImpact: priceImpactRaw } = useCalculateAddLiquidity({
     amountsIn: [inputValue1, inputValue2],
   });
   const priceImpact = priceImpactRaw < 0.01 ? '< 0.01' : formatNumber(priceImpactRaw, 2);
@@ -216,7 +216,15 @@ export const AddLiquidityInputGroup = () => {
         disabled={!isValid || !checkedPriceImpact}
       />
 
-      {popupOpened && <AddLiquidityPopup tokensIn={tokensIn} pool={pool} />}
+      {popupOpened && (
+        <AddLiquidityPopup
+          tokensIn={tokensIn}
+          pool={pool}
+          lpTokenPrice={lpTokenPrice}
+          bptOut={bptOut}
+          priceImpact={priceImpact}
+        />
+      )}
     </Wrapper>
   );
 };
