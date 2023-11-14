@@ -46,7 +46,7 @@ export const Account = () => {
               </ConnectedXrp>
             )}
             {fpass.address && (
-              <ConnectedRoot>
+              <ConnectedRoot tripleConnected={connectedWalletCount === 3}>
                 <Image src={imageWalletFuturepass} alt="futurepass" />
               </ConnectedRoot>
             )}
@@ -113,7 +113,13 @@ const ConnectedBase = tw.div`
 `;
 const ConnectedEvm = tw(ConnectedBase)`right-9`;
 const ConnectedXrp = tw(ConnectedBase)`left-9`;
-const ConnectedRoot = tw(ConnectedBase)`absolute-center`;
+interface DivProps {
+  tripleConnected?: boolean;
+}
+const ConnectedRoot = styled.div<DivProps>(({ tripleConnected }) => [
+  tw`absolute flex-center w-28 h-28 bg-neutral-0 border-1 border-neutral-10 border-solid rounded-14`,
+  tripleConnected ? tw`absolute-center` : tw`left-9`,
+]);
 
 const Image = tw.img`
   w-24 h-24 object-cover flex-center
