@@ -2,7 +2,10 @@ import tw from 'twin.macro';
 
 import { ButtonPrimaryMedium } from '~/components/buttons';
 
+import { usePopup } from '~/hooks/components';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
+import { POPUP_ID } from '~/types';
 
 import { Pending } from '../components/pending';
 import { TokenCard } from '../components/token-card';
@@ -10,6 +13,9 @@ import { TokenList } from '../components/token-list';
 
 export const LiquidityPoolLayout = () => {
   const { xrp, fpass } = useConnectedWallet();
+  const { setWalletType } = useWalletTypeStore();
+  const { open: campaignOpen } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
+  const { open } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   // TODO : connect API
   const myDepositBalance = 123123;
@@ -26,11 +32,21 @@ export const LiquidityPoolLayout = () => {
     : "You haven't activated your $XRP yet.";
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 
-  // TODO : connect function
   const handleClick = () => {
     if (!isEmpty) return;
-    !bothConnected ? console.log('open connect wallet popup') : console.log('navigate step1');
+    if (!bothConnected) {
+      if (!xrp.isConnected && !fpass.isConnected) {
+        campaignOpen();
+        return;
+      }
+      setWalletType({ evm: !fpass.isConnected, xrpl: !xrp.isConnected });
+      open();
+      return;
+    }
+    // TODO : connect function
+    console.log('navigate setp1');
   };
+
   return (
     <Wrapper>
       <MyInfoWrapper>
