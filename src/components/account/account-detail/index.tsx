@@ -219,9 +219,7 @@ export const AccountDetail = () => {
 };
 
 const Wrapper = tw.div`
-  min-w-290 bg-neutral-15 rounded-8 absolute right-0 box-shadow-default
-  sm:top-48 
-  md:top-60
+  min-w-290 bg-neutral-15 rounded-8 absolute right-0 box-shadow-default top-48
 `;
 const InnerWrapper = tw.div`
   flex-center
