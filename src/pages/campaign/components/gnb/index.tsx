@@ -26,9 +26,9 @@ export const Gnb = () => {
       <LogoWrapper>
         <LogoText width={isLG ? 88 : 70} height={isLG ? 20 : 16} onClick={() => navigate('/')} />
       </LogoWrapper>
-      <ButtonWrapper isLG={isLG}>
+      <ButtonWrapper>
         {evm.address || xrp.address ? (
-          <ConnectedButton isLG={isLG}>
+          <ConnectedButton>
             <Notification />
             <Account />
           </ConnectedButton>
@@ -53,10 +53,7 @@ const Wrapper = styled.div(() => [
 ]);
 
 const LogoWrapper = tw.div`clickable h-20`;
-interface Props {
-  isLG: boolean;
-}
 
-const ConnectedButton = styled.div<Props>(({ isLG }) => [tw`flex`, isLG ? tw`gap-8` : tw`gap-4`]);
+const ConnectedButton = tw.div`flex gap-4 lg:gap-8`;
 
-const ButtonWrapper = styled.div<Props>(({ isLG }) => [tw`flex`, isLG ? tw`gap-8` : tw`gap-4`]);
+const ButtonWrapper = tw.div`flex gap-4 lg:gap-8`;
