@@ -36,9 +36,6 @@ export const Gnb = () => {
   const { text, connectWallet } = useBanner();
 
   const [mobileMenuOpened, mobileMenuOpen] = useState<boolean>(false);
-  const handleOpenMobileMenu = () => mobileMenuOpen(true);
-  const handleCloseMobileMenu = () => mobileMenuOpen(true);
-
   return (
     <>
       <Wrapper>
