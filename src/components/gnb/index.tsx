@@ -100,7 +100,7 @@ export const Gnb = () => {
                   }}
                 />
               )}
-              <NetworkSelection />
+              {isLG && <NetworkSelection />}
               {isLG && <LanguageChange />}
               {!isLG && (
                 <HamburgerWrapper onClick={() => mobileMenuOpen(true)}>

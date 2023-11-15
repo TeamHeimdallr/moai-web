@@ -84,11 +84,12 @@ export const NetworkSelection = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col items-end gap-20 relative z-10 flex-shrink-0
+  flex flex-col items-end gap-20 z-10 flex-shrink-0 lg:relative
 `;
 
 const ListOuterWrapper = tw.div`
-  min-w-290 bg-neutral-15 rounded-8 absolute right-0 box-shadow-default top-48
+  min-w-290 bg-neutral-15 rounded-8 absolute top-72 right-20 box-shadow-default
+  lg:(right-0 top-48)
 `;
 
 const ListWrapper = tw.div`
@@ -96,7 +97,8 @@ const ListWrapper = tw.div`
 `;
 
 const Title = tw.div`
-  p-20 font-b-18 text-neutral-100
+  p-20 font-b-16 text-neutral-100
+  lg:font-b-18
 `;
 
 const Divider = tw.div`
