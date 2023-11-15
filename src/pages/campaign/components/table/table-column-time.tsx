@@ -35,7 +35,7 @@ interface WrapperProps {
   width?: number | 'full';
 }
 const Wrapper = styled.div<WrapperProps>(({ width }) => [
-  tw`flex items-center justify-end gap-4 flex-shrink-0`,
+  tw`flex items-center gap-4 flex-shrink-0`,
   width === 'full' && tw`flex-1 w-full`,
   typeof width === 'number' &&
     css`
@@ -43,4 +43,4 @@ const Wrapper = styled.div<WrapperProps>(({ width }) => [
     `,
 ]);
 const IconWrapper = tw.div`flex-center`;
-const Time = tw.div`flex items-end font-r-14 text-neutral-60`;
+const Time = tw.div`flex items-end font-r-12 text-neutral-60 md:font-r-14`;
