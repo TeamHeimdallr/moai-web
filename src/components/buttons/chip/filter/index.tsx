@@ -4,8 +4,6 @@ import tw, { styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconCancel } from '~/assets/icons';
 
-import { TOKEN_IMAGE_MAPPER } from '~/constants';
-
 import { IPoolTokenList } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -16,7 +14,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 export const ButtonChipFilter = ({ selected, token, ...rest }: Props) => {
   return (
     <Wrapper selected={selected} {...rest}>
-      <Image src={token.image || TOKEN_IMAGE_MAPPER[token.symbol]} />
+      <Image src={token.image} />
       <TextWrapper>
         {token.symbol}
         {selected && (

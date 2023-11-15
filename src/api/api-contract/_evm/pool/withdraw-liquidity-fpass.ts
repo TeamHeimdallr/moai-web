@@ -10,34 +10,53 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { EVM_CONTRACT_ADDRESS, EVM_TOKEN_ADDRESS } from '~/constants';
+import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
+
+import { EVM_TOKEN_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
-import { NETWORK } from '~/types';
+import { getNetworkAbbr, getNetworkFull } from '~/utils';
+import { ITokenComposition, NETWORK } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
 import { FUTUREPASS_ABI } from '~/abi/futurepass';
 
 interface Props {
   poolId: string;
-  tokens: string[]; // token symbol
-  amount: bigint; // withdraw lp token amount. amounts out are calculated by exitExactBPTInForTokensOut function
+  tokens: (ITokenComposition & { amount: number })[];
+  bptIn: bigint; // withdraw lp token amount. amounts out are calculated by exitExactBPTInForTokensOut function
 
   enabled?: boolean;
 }
 
-export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props) => {
+export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) => {
   const publicClient = usePublicClient();
-  const { fpass } = useConnectedWallet();
-  const { address: walletAddress, signer } = fpass;
 
   const { network } = useParams();
+  const { fpass } = useConnectedWallet();
+  const { isConnected, address: walletAddress, signer } = fpass;
+
   const { selectedNetwork, isFpass } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const chainId = useNetworkId(currentNetwork);
+  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+    {
+      params: {
+        networkAbbr: currentNetworkAbbr as string,
+        poolId: poolId as string,
+      },
+    },
+    {
+      enabled: !!poolId && !!currentNetworkAbbr,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
+  );
+  const { poolVaultAmm } = poolVaultAmmData || {};
+  const { vault } = poolVaultAmm || {};
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
@@ -50,10 +69,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
   };
   const sortedTokens = tokens
     .slice()
-    .sort((a, b) => handleNativeXrp(a).localeCompare(handleNativeXrp(b)));
-
-  // TODO: connect to server. get vault address according to network and pool id
-  const vault = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
+    .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
 
   const encodedData = isFpass
     ? encodeFunctionData({
@@ -66,7 +82,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
           [
             sortedTokens,
             tokens.map(() => 0n),
-            WeightedPoolEncoder.exitExactBPTInForTokensOut(amount),
+            WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
             false,
           ],
         ],
@@ -82,7 +98,15 @@ export const useWithdrawLiquidity = ({ poolId, tokens, amount, enabled }: Props)
     chainId,
     value: BigInt(0),
     args: [1, vault, BigInt(0), encodedData],
-    enabled: enabled && !!walletAddress && amount > 0 && isFpass,
+    enabled:
+      enabled &&
+      isConnected &&
+      isFpass &&
+      !!walletAddress &&
+      !!signer &&
+      !!vault &&
+      bptIn > 0 &&
+      encodedData !== '0x0',
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);

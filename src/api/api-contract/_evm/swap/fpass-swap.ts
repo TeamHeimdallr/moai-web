@@ -9,17 +9,19 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { EVM_CONTRACT_ADDRESS } from '~/constants';
+import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
 import { FUTUREPASS_ABI } from '~/abi/futurepass';
 
 interface Props {
+  poolId: string;
+
   singleSwap: SwapSingleSwapInput;
   fundManagement: SwapFundManagementInput;
   limit?: bigint;
@@ -27,24 +29,42 @@ interface Props {
   proxyEnabled?: boolean;
 }
 export const useSwap = ({
+  poolId,
+
   singleSwap,
   fundManagement,
   limit = BigInt(10),
   deadline = 2000000000,
   proxyEnabled,
 }: Props) => {
-  const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
-  const { network } = useParams();
-  const { selectedNetwork, isFpass } = useNetwork();
-
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-  const chainId = useNetworkId(currentNetwork);
-
   const publicClient = usePublicClient();
-  const { fpass } = useConnectedWallet();
-  const { address, signer } = fpass;
 
-  const contractAddress = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
+  const { network } = useParams();
+  const { fpass } = useConnectedWallet();
+  const { address: walletAddress, signer } = fpass;
+
+  const { selectedNetwork, isFpass } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
+
+  const chainId = useNetworkId(currentNetwork);
+  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+    {
+      params: {
+        networkAbbr: currentNetworkAbbr as string,
+        poolId: poolId as string,
+      },
+    },
+    {
+      enabled: !!poolId && !!currentNetworkAbbr,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
+  );
+  const { poolVaultAmm } = poolVaultAmmData || {};
+  const { vault } = poolVaultAmm || {};
+
+  const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const encodedData = isFpass
     ? encodeFunctionData({
@@ -59,16 +79,22 @@ export const useSwap = ({
     config,
     isError,
   } = usePrepareContractWrite({
-    address: address as Address,
+    address: (vault || '') as Address,
     abi: FUTUREPASS_ABI,
     functionName: 'proxyCall',
 
     account: signer as Address,
     chainId,
     value: BigInt(0),
-    args: [1, contractAddress, BigInt(0), encodedData],
+    args: [1, vault, BigInt(0), encodedData],
     enabled:
-      proxyEnabled && !!contractAddress && !!singleSwap && !!fundManagement && !!address && isFpass,
+      proxyEnabled &&
+      !!vault &&
+      !!singleSwap &&
+      !!fundManagement &&
+      !!walletAddress &&
+      isFpass &&
+      encodedData !== '0x0',
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);

@@ -140,10 +140,10 @@ export const SwapPopup = ({ swapOptimizedPathPool, userAllTokenBalances }: Props
 
   const { txData, blockTimestamp, isLoading, isSuccess, isError, swap } = useSwap({
     id: swapOptimizedPathPool?.poolId || '',
-    fromToken: fromToken?.symbol || '',
-    fromValue: numFromInput,
-    toToken: toToken?.symbol || '',
-    toValue: numToInput,
+    fromToken: fromToken,
+    fromInput: numFromInput,
+    toToken: toToken,
+    toInput: numToInput,
     proxyEnabled: isSuccessAllowance,
   });
 

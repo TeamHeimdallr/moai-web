@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 
 import { IconCheck } from '~/assets/icons';
 
-import { TOKEN_IMAGE_MAPPER } from '~/constants';
+import { ASSET_URL } from '~/constants';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { POPUP_ID } from '~/types';
@@ -36,7 +36,7 @@ export const NoButton = () => {
             type="selectable"
             title={'MOAI'}
             description={'$100'}
-            image={TOKEN_IMAGE_MAPPER['USDC']}
+            image={`${ASSET_URL}/tokens/token-moai.png`}
             balance="1,234"
             value="$8.00"
           />

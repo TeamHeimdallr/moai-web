@@ -36,6 +36,8 @@ export const Gnb = () => {
   const { text, connectWallet } = useBanner();
 
   const [mobileMenuOpened, mobileMenuOpen] = useState<boolean>(false);
+  const handleOpenMobileMenu = () => mobileMenuOpen(true);
+  const handleCloseMobileMenu = () => mobileMenuOpen(true);
 
   return (
     <>
@@ -95,7 +97,7 @@ export const Gnb = () => {
             </ButtonWrapper>
           </ContentWrapper>
         </NavWrapper>
-        {mobileMenuOpened && <MobileMenu open={mobileMenuOpen} />}
+        {mobileMenuOpened && <MobileMenu closeMenu={() => mobileMenuOpen(false)} />}
       </Wrapper>
       <TooltipCommingSoon place="bottom" id={TOOLTIP_ID.COMMING_SOON} />
     </>

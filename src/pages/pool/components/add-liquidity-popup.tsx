@@ -58,7 +58,6 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
   const { poolVaultAmm } = poolVaultAmmData || {};
   const { vault } = poolVaultAmm || {};
 
-  // TODO: update to using map
   const {
     allow: allowToken1,
     allowance: allowance1,
@@ -98,13 +97,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
 
   const { isLoading, isSuccess, txData, blockTimestamp, writeAsync } = useAddLiquidity({
     id: poolId || '',
-    tokens:
-      tokensIn?.map(t => ({
-        address: t.address,
-        currency: t.currency,
-        issuer: t.address,
-        amount: `${t.amount || 0}`,
-      })) || [],
+    tokens: tokensIn || [],
     enabled: getEnabled(),
   });
 

@@ -39,7 +39,7 @@ export const useSwapStore = create<SwapState>()(
         set({
           fromToken: undefined,
           toToken: undefined,
-          fromValue: '',
+          fromInput: '',
         }),
     }))
   )

@@ -9,32 +9,48 @@ import {
   useWaitForTransaction,
 } from 'wagmi';
 
-import { EVM_CONTRACT_ADDRESS } from '~/constants';
+import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull, getWrappedTokenAddress, isNativeToken } from '~/utils';
-import { NETWORK } from '~/types';
+import { getNetworkAbbr, getNetworkFull, getWrappedTokenAddress, isNativeToken } from '~/utils';
+import { ITokenComposition, NETWORK } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
 
 interface Props {
   poolId: string;
-  tokens: string[];
-  amountsIn: bigint[];
+  tokens: (ITokenComposition & { balance: number; amount: bigint })[];
 
   enabled?: boolean;
 }
-export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) => {
-  const { network } = useParams();
+export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   const publicClient = usePublicClient();
+
+  const { network } = useParams();
   const { evm } = useConnectedWallet();
   const { isConnected, address: walletAddress } = evm;
 
   const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const chainId = useNetworkId(currentNetwork);
+  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+    {
+      params: {
+        networkAbbr: currentNetworkAbbr as string,
+        poolId: poolId as string,
+      },
+    },
+    {
+      enabled: !!poolId && !!currentNetworkAbbr,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
+  );
+  const { poolVaultAmm } = poolVaultAmmData || {};
+  const { vault } = poolVaultAmm || {};
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
@@ -45,26 +61,27 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
       return getWrappedTokenAddress(currentNetwork) ?? token;
     return token;
   };
+
   const sortedTokens = tokens
     .slice()
-    .sort((a, b) => handleNativeXrp(a).localeCompare(handleNativeXrp(b)));
-  const sortedIndex = sortedTokens.map(token => tokens.findIndex(t => t === token));
-  const sortedAmountsIn = sortedIndex.map(index => amountsIn[index]);
-  const nativeIndex = sortedTokens.findIndex(token =>
-    isNativeToken({ address: token as Address, network: currentNetwork })
+    .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedAmountsIn = sortedTokens.map(t => t.amount);
+  const nativeTokenIndex = sortedTokens.findIndex(t =>
+    isNativeToken({
+      address: t.address as Address,
+      symbol: t.symbol,
+      network: currentNetwork,
+    })
   );
 
-  // TODO: connect to server. get vault address according to network and pool id
-  const vault = EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT as Address;
-
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
-    address: vault,
+    address: (vault || '') as Address,
     abi: BALANCER_VAULT_ABI,
     functionName: 'joinPool',
 
     account: walletAddress as Address,
     chainId,
-    value: nativeIndex === -1 ? 0n : sortedAmountsIn[nativeIndex],
+    value: nativeTokenIndex === -1 ? 0n : sortedTokens[nativeTokenIndex].amount,
     args: [
       poolId,
       walletAddress,
@@ -76,7 +93,7 @@ export const useAddLiquidity = ({ poolId, tokens, amountsIn, enabled }: Props) =
         false,
       ],
     ],
-    enabled: enabled && isConnected && isEvm,
+    enabled: enabled && isConnected && isEvm && !!walletAddress && !!vault,
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);

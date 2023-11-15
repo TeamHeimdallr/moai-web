@@ -18,7 +18,11 @@ interface Wallet {
   image: string;
   onClick: () => void;
 }
-export const ConnectWallet = ({ evm, xrpl }: { evm: boolean; xrpl: boolean }) => {
+interface Props {
+  evm: boolean;
+  xrpl: boolean;
+}
+export const ConnectWallet = ({ evm, xrpl }: Props) => {
   const { close } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { connect: connectEvm } = useConnectWithEvmWallet();
   const { connect: connectXrpCrossmark } = useConnectWithCrossmarkWallet();

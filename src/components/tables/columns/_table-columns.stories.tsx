@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { TableColumn, TableColumnToken, TableColumnTokenIcon } from '.';
+import { TableColumn, TableColumnToken } from '.';
 
 const meta = {
   title: 'Components/Tables/TableColumn',
@@ -27,13 +27,6 @@ export const _TableColumnToken: Story = {
       }}
     />
   ),
-  args: {
-    value: '$123,123,123.12',
-  },
-};
-
-export const _TableColumnTokenIcon: Story = {
-  render: () => <TableColumnTokenIcon tokens={['USDC', 'USDT']} />,
   args: {
     value: '$123,123,123.12',
   },

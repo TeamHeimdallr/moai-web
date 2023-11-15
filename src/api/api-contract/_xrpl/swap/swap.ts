@@ -1,62 +1,55 @@
 import { useMutation } from 'wagmi';
 import { PaymentFlags, xrpToDrops } from 'xrpl';
 
-import { QUERY_KEYS } from '~/api/utils/query-keys';
-
-import { XRP_TOKEN_ISSUER } from '~/constants';
-
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { useSlippageStore } from '~/states/data';
-
-import { useAmmInfo } from '../amm/get-amm-info';
+import { IToken } from '~/types';
 
 interface Props {
-  id: string;
+  fromToken: IToken;
+  fromInput: number;
 
-  fromToken: string;
-  fromValue: number;
-
-  toToken: string;
-  toValue: number;
+  toToken: IToken;
+  toInput: number;
 }
-export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) => {
+export const useSwap = ({ fromToken, fromInput, toToken, toInput }: Props) => {
   const { isXrp } = useNetwork();
-  const { ammExist } = useAmmInfo(id);
   const { xrp } = useConnectedWallet();
-  const { address } = xrp;
   const { slippage } = useSlippageStore();
 
+  const { address } = xrp;
+
   const amount =
-    fromToken === 'XRP'
+    toToken.symbol === 'XRP'
       ? {
           Amount: {
-            currency: toToken,
-            issuer: XRP_TOKEN_ISSUER[toToken],
-            value: toValue.toFixed(6),
+            currency: toToken.currency,
+            issuer: toToken.address,
+            value: toInput.toFixed(6),
           },
         }
-      : { Amount: xrpToDrops(toValue.toFixed(6)) };
+      : { Amount: xrpToDrops(toInput.toFixed(6)) };
 
   const deliverMin =
-    fromToken === 'XRP'
+    toToken.symbol === 'XRP'
       ? {
           DeliverMin: {
-            currency: toToken,
-            issuer: XRP_TOKEN_ISSUER[toToken],
-            value: (toValue * (1 - slippage / 100)).toFixed(6),
+            currency: toToken.currency,
+            issuer: toToken.address,
+            value: (toInput * (1 - slippage / 100)).toFixed(6),
           },
         }
-      : { DeliverMin: xrpToDrops((toValue * (1 - slippage / 100)).toFixed(6)) };
+      : { DeliverMin: xrpToDrops((toInput * (1 - slippage / 100)).toFixed(6)) };
 
   const sendMax =
-    fromToken === 'XRP'
-      ? { SendMax: xrpToDrops(fromValue.toFixed(6)) }
+    fromToken.symbol === 'XRP'
+      ? { SendMax: xrpToDrops(fromInput.toFixed(6)) }
       : {
           SendMax: {
-            currency: fromToken,
-            issuer: XRP_TOKEN_ISSUER[fromToken],
-            value: fromValue.toFixed(6),
+            currency: fromToken.currency,
+            issuer: fromToken.address,
+            value: fromInput.toFixed(6),
           },
         };
 
@@ -73,20 +66,20 @@ export const useSwap = ({ id, fromToken, fromValue, toToken, toValue }: Props) =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitTx = async () => await xrp.submitTransaction(txRequest as any);
 
-  const { data, isLoading, isSuccess, mutateAsync } = useMutation(QUERY_KEYS.SWAP.SWAP, submitTx);
+  const { data, isLoading, isSuccess, mutateAsync } = useMutation(['XRPL', 'SWAP'], submitTx);
 
   const txData = data?.result;
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = async () => {
-    if (!ammExist || !address || !isXrp) return;
+    if (!address || !isXrp) return;
     await mutateAsync();
   };
 
   return {
     isLoading,
     isSuccess,
-    isError: !ammExist || !address || !isXrp,
+    isError: !address || !isXrp,
 
     txData,
     blockTimestamp,

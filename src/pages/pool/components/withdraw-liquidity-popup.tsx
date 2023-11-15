@@ -7,7 +7,7 @@ import { useWithdrawLiquidity } from '~/api/api-contract/pool/withdraw-liquidity
 import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL, TOKEN_DECIMAL_WITHDRAW } from '~/constants';
+import { SCANNER_URL, TOKEN_DECIMAL_WITHDRAW_LP } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -44,16 +44,9 @@ export const WithdrawLiquidityPopup = ({
 
   const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useWithdrawLiquidity({
     id: poolId || '',
-    tokens:
-      tokensOut?.map(t => ({
-        address: t.address || '',
-        issuer: t.address || '',
-        currency: t.symbol,
-        // token out expected value
-        amount: t.amount || 0,
-      })) || [],
+    tokens: tokensOut || [],
     // input value
-    amount: parseUnits(`${bptIn}`, TOKEN_DECIMAL_WITHDRAW[network || NETWORK.XRPL]),
+    bptIn: parseUnits(`${bptIn}`, TOKEN_DECIMAL_WITHDRAW_LP[network || NETWORK.XRPL]),
   });
 
   const txDate = new Date(blockTimestamp ?? 0);

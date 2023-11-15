@@ -1,8 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AccountLinesRequest, TrustSet } from 'xrpl';
 
-import { QUERY_KEYS } from '~/api/utils/query-keys';
-
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -35,7 +33,7 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
     isLoading: isReadLoading,
     data: trustLines,
     refetch,
-  } = useQuery([...QUERY_KEYS.TOKEN.GET_TRUST_LINES, address], getTrustLines, {
+  } = useQuery(['XRPL', 'TRUST_LINE', address], getTrustLines, {
     staleTime: 0,
     enabled: !!client && isConnected && isXrp,
   });
@@ -60,7 +58,7 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
   const setTrustLines = async () => await xrp.submitTransaction(txRequest as any);
 
   const { isLoading, isSuccess, mutateAsync } = useMutation(
-    QUERY_KEYS.TOKEN.SET_TRUST_LINE,
+    ['XRPL', 'SET_TRUST_LINE'],
     setTrustLines
   );
 
