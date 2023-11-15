@@ -28,7 +28,7 @@ export const LiquidityPoolLayout = () => {
   const bothConnected = xrp.isConnected && fpass.isConnected;
   const isEmpty = !bothConnected || !(myDepositBalance > 0);
   const emptyText = !bothConnected
-    ? 'To check your voyage, connect both your XRP wallet and Root Network wallet.'
+    ? 'To check your voyage, connect both your XRP\n wallet and Root Network wallet.'
     : "You haven't activated your $XRP yet.";
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 
@@ -98,5 +98,5 @@ const Title = tw.div`
   px-20 font-b-20 md:font-b-24 text-neutral-100
 `;
 const Empty = tw.div`flex-center flex-col h-194 gap-20 bg-neutral-10 rounded-12 text-neutral-80`;
-const TextWrapper = tw.div``;
-const ButtonWrapper = tw.div`flex-center`;
+const TextWrapper = tw.div`font-r-14 text-center whitespace-pre-wrap md:(font-r-16 whitespace-nowrap)`;
+const ButtonWrapper = tw.div`flex-center w-144`;

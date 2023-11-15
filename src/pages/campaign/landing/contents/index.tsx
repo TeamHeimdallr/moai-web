@@ -21,9 +21,9 @@ export const Contents = () => {
           <Logo2 width={isMD ? 489 : 293} height={isMD ? 70 : 24} />
         </LogoWrapper>
         <TextMain>
-          {isMD
-            ? "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders\nwithin XRPL to embark on our 'Liquidity Voyage.' By joining this journey, participants\nhave the unique opportunity to provide early liquidity to The Root Network. In return,\nthey'll gain exclusive access to $MOAI pre-mining and special $ROOT rewards."
-            : "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders within XRPL to embark on our 'Liquidity Voyage.' By joining this journey, participants have the unique opportunity to provide early liquidity to The Root Network. In return, they'll gain exclusive access to $MOAI pre-mining and special $ROOT rewards."}
+          {
+            "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders\nwithin XRPL to embark on our 'Liquidity Voyage.' By joining this journey, participants\nhave the unique opportunity to provide early liquidity to The Root Network. In return,\nthey'll gain exclusive access to $MOAI pre-mining and special $ROOT rewards."
+          }
         </TextMain>
         <InfoWrapper>
           <Info>
@@ -53,7 +53,7 @@ const ContentWrapper = tw.div`flex flex-col gap-24 w-320 md:w-780 xl:w-760 xxl:w
 const Title = tw.div`font-b-20`;
 const LogoWrapper = tw.div`flex gap-12 svg-shadow w-293 flex-col md:(flex-row gap-18 w-754)`;
 const ButtonWrapper = tw.div`w-157`;
-const TextMain = tw.div`w-full font-r-14 whitespace-pre-line md:font-r-16`;
+const TextMain = tw.div`w-full font-r-14 md:(font-r-16 whitespace-pre-line)`;
 const InfoWrapper = tw.div`flex gap-20 flex-col md:(flex-row) xxl:(gap-40)`;
 const Info = tw.div`
   w-320 px-24 py-20 flex flex-col gap-12 rounded-12 bg-neutral-100 bg-opacity-10 backdrop-blur-sm
