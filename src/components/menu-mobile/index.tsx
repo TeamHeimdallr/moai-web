@@ -69,7 +69,7 @@ export const MobileMenu = ({ open }: MobileMenuProps) => {
   );
 };
 
-const Wrapper = tw.div`absolute right-0 w-360 flex flex-col justify-between h-screen bg-neutral-10 z-11`;
+const Wrapper = tw.div`fixed right-0 w-360 flex flex-col justify-between h-screen bg-neutral-10 z-11 `;
 const UpperWrapper = tw.div`flex flex-col gap-40`;
 const HeaderWrapper = tw.div`flex items-center justify-between px-20 py-16`;
 const MenuWrapper = tw.div`flex flex-col gap-24 px-20`;

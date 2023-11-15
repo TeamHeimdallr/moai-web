@@ -62,12 +62,12 @@ export const Account = () => {
           <AccountWrapper>
             <InnerWrapper>
               <ConnectedBase>
-                {evm.address && <SmallImage src={imageWalletMetamask} alt="metamask" />}
+                {evm.address && <Image src={imageWalletMetamask} alt="metamask" />}
                 {xrp.address &&
                   (xrp.connectedConnector === 'crossmark' ? (
-                    <SmallImage src={imageWalletCrossmark} alt="crossmark wallet" />
+                    <Image src={imageWalletCrossmark} alt="crossmark wallet" />
                   ) : (
-                    <SmallImage src={imageWalletGem} alt="gem wallet" />
+                    <Image src={imageWalletGem} alt="gem wallet" />
                   ))}
               </ConnectedBase>
             </InnerWrapper>
@@ -130,10 +130,7 @@ const ConnectedRoot = styled.div<DivProps>(({ tripleConnected }) => [
 ]);
 
 const Image = tw.img`
-  w-24 h-24 object-cover flex-center
+  w-20 h-20 object-cover flex-center rounded-full
 `;
 
-const SmallImage = tw.img`
-  w-20 h-20 object-cover flex-center
-`;
 const InnerWrapper = tw.div`flex-center`;
