@@ -18,7 +18,7 @@ import { AccountDetail } from '../account-detail';
 export const Account = () => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { isMD } = useMediaQuery();
+  const { isLG } = useMediaQuery();
 
   const [opened, open] = useState(false);
   const toggle = () => open(!opened);
@@ -71,7 +71,7 @@ export const Account = () => {
                   ))}
               </ConnectedBase>
             </InnerWrapper>
-            {isMD && (
+            {isLG && (
               <ContentWrapper opened={opened}>
                 {truncateAddress(evm.address || xrp.address || '', 4)}
               </ContentWrapper>
@@ -99,8 +99,8 @@ const Banner = styled.div<WrapperProps>(({ opened }) => [
 ]);
 
 const AccountWrapper = tw.div`
-  relative flex-center gap-6 px-8 py-9 hover:bg-neutral-20 rounded-10
-  sm:w-40 md:(w-full pr-16)
+  relative flex-center gap-6 px-8 py-9 hover:bg-neutral-20 rounded-10 w-40
+  lg:(w-full pr-16)
 `;
 
 const ContentWrapper = styled.div<WrapperProps>(({ opened }) => [
