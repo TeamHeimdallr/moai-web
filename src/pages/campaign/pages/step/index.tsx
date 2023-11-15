@@ -33,7 +33,7 @@ const StepPage = () => {
               text={'Back'}
               icon={<IconBack />}
               disabled={step === 1}
-              onClick={() => setStep(step - 1)}
+              onClick={() => setStep('negative')}
             />
           </SmallButtonWrapper>
           <SmallButtonWrapper>
@@ -41,7 +41,7 @@ const StepPage = () => {
               text={'Next'}
               icon={<IconNext />}
               disabled={step === 4}
-              onClick={() => setStep(step + 1)}
+              onClick={() => setStep('positive')}
             />
           </SmallButtonWrapper>
         </MoveStepWrapper>
@@ -49,11 +49,7 @@ const StepPage = () => {
           <StepText>Step {step}</StepText>
           <Title>{titleText}</Title>
         </TextWrapper>
-        {step === 1 ? (
-          <StepConnectWallet step={1} />
-        ) : step === 2 ? (
-          <StepConnectWallet step={2} />
-        ) : null}
+        {step < 3 ? <StepConnectWallet step={step} /> : null}
       </Content>
     </Wrapper>
   );

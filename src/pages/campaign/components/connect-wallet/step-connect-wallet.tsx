@@ -60,53 +60,54 @@ export const StepConnectWallet = ({ step }: Props) => {
     },
   ];
   return (
-    <Wrapper>
-      {step === 1 ? (
-        <TitleWrapper>
-          <NetworkImage src={imageNetworkXRPL} />
-          XRPL
-        </TitleWrapper>
-      ) : (
-        <TitleWrapper>
-          <NetworkImage src={imageWalletFuturepass} />
-          <FpassTextWrapper>
-            Futurepass
-            <ButtonIconSmall
-              data-tooltip-id={TOOLTIP_ID.CAMPAIGN_FUTUREPASS}
-              icon={<IconQuestion width={16} height={16} />}
-            />
-          </FpassTextWrapper>
-        </TitleWrapper>
-      )}
-      <WalletWrapper>
-        {wallets.map(w =>
-          w.type === chain ? (
-            <Wallet
-              key={w.name}
-              onClick={() => {
-                w.onClick();
-                close();
-              }}
-              isLoading={isLoading}
-              isConnected={isConnected}
-            >
-              <WalletInnerWrapper>
-                <WalletImage src={w.image} alt={w.name} />
-                <Name>{w.name}</Name>
-              </WalletInnerWrapper>
-              {isLoading && <LoadingIcon src={imageStepLoading} width={24} height={24} />}
-              {isConnected && (
-                <ConnectedWrapper>
-                  <ConnetedDot />
-                  Connected
-                </ConnectedWrapper>
-              )}
-            </Wallet>
-          ) : null
+    <>
+      <Wrapper>
+        {step === 1 ? (
+          <TitleWrapper>
+            <NetworkImage src={imageNetworkXRPL} />
+            XRPL
+          </TitleWrapper>
+        ) : (
+          <TitleWrapper>
+            <NetworkImage src={imageWalletFuturepass} />
+            <FpassTextWrapper>
+              Futurepass
+              <ButtonIconSmall
+                data-tooltip-id={TOOLTIP_ID.CAMPAIGN_FUTUREPASS}
+                icon={<IconQuestion width={16} height={16} />}
+              />
+            </FpassTextWrapper>
+          </TitleWrapper>
         )}
-      </WalletWrapper>
+        <WalletWrapper>
+          {wallets
+            .filter(w => w.type === chain)
+            .map(w => (
+              <Wallet
+                key={w.name}
+                onClick={() => {
+                  w.onClick();
+                }}
+                isLoading={isLoading}
+                isConnected={isConnected}
+              >
+                <WalletInnerWrapper>
+                  <WalletImage src={w.image} alt={w.name} />
+                  <Name>{w.name}</Name>
+                </WalletInnerWrapper>
+                {isLoading && <LoadingIcon src={imageStepLoading} width={24} height={24} />}
+                {isConnected && (
+                  <ConnectedWrapper>
+                    <ConnetedDot />
+                    Connected
+                  </ConnectedWrapper>
+                )}
+              </Wallet>
+            ))}
+        </WalletWrapper>
+      </Wrapper>
       <TooltipFuturepass />
-    </Wrapper>
+    </>
   );
 };
 
