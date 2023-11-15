@@ -20,7 +20,7 @@ interface Wallet {
   type: string;
   onClick: () => void;
 }
-export const CampaignConnectWallet = () => {
+export const CampaignConnectWalletPopup = () => {
   const { close } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
   const { connect: connectEvm } = useConnectWithEvmWallet();
   const { connect: connectXrpCrossmark } = useConnectWithCrossmarkWallet();
