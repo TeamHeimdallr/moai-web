@@ -27,9 +27,7 @@ export const LiquidityPoolLayout = () => {
 
   const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
   const { selectedTokens, setSelectedTokens } = useTablePoolCompositionSelectTokenStore();
-  const { tableData, tableColumns, poolTokens } = useTableLiquidityPool({
-    showNetworkColumn: showAllPools,
-  });
+  const { tableData, tableColumns, poolTokens } = useTableLiquidityPool();
 
   const { open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
   const { selectedNetwork, setTargetNetwork } = useNetwork();

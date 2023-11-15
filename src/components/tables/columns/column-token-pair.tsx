@@ -8,7 +8,7 @@ import { formatNumber } from '~/utils';
 interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: {
     symbol: string;
-    value: number;
+    value?: number;
     image?: string;
   }[];
 }

@@ -4,6 +4,7 @@
 export const IS_MAINNET = import.meta.env.VITE_BLOCKCHAIN_ENV === 'mainnet';
 export const IS_TESTNET = import.meta.env.VITE_BLOCKCHAIN_ENV === 'testnet';
 export const IS_DEVNET = import.meta.env.VITE_BLOCKCHAIN_ENV === 'devnet';
+export const IS_LOCAL = import.meta.env.VITE_BLOCKCHAIN_ENV === 'local';
 
 export const CHAIN = import.meta.env.VITE_CHAIN_ENV;
 

@@ -17,14 +17,13 @@ import {
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
-import { useTableLiquidityPoolSortStore } from '~/states/components';
+import {
+  useTableLiquidityPoolSortStore,
+  useTablePoolCompositionSelectTokenStore,
+} from '~/states/components';
 import { useShowAllPoolsStore } from '~/states/pages';
 
-interface Props {
-  showNetworkColumn?: boolean;
-}
-
-export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
+export const useTableLiquidityPool = () => {
   const { network } = useParams();
   const { selectedNetwork } = useNetwork();
   const { sort, setSort } = useTableLiquidityPoolSortStore();
@@ -33,11 +32,14 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetwokrAbbr = getNetworkAbbr(currentNetwork);
 
+  const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
+
   const { data, hasNextPage, fetchNextPage } = useGetPoolsInfinityQuery({
     queries: {
       take: 10,
-      filter: showAllPools && currentNetwokrAbbr ? `network:eq:${currentNetwokrAbbr}` : undefined,
+      filter: showAllPools ? undefined : `network:eq:${currentNetwokrAbbr}`,
       sort: sort ? `${sort.key}:${sort.order}` : undefined,
+      tokens: selectedTokens.length > 0 ? selectedTokens.join(',') : undefined,
     },
   });
   const pools = useMemo(() => data?.pages?.flatMap(page => page.pools) || [], [data?.pages]);
@@ -48,27 +50,22 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
 
   const tableData = useMemo(
     () =>
-      pools.map(d => {
-        const tokens = d.compositions.reduce((acc, cur) => {
-          acc[cur.symbol] = cur.currentWeight || 0;
-          return acc;
-        }, {});
-
-        return {
-          meta: {
-            id: d.id,
-            network: d.network,
-          },
-          network: showNetworkColumn ? (
-            <TableColumn value={<NetworkChip network={d.network} />} />
-          ) : null,
-          compositions: <TableColumnToken tokens={tokens} />,
-          poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
-          volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
-          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
-        };
-      }),
-    [pools, showNetworkColumn]
+      pools.map(d => ({
+        meta: {
+          id: d.id,
+          network: d.network,
+        },
+        network: showAllPools ? <TableColumn value={<NetworkChip network={d.network} />} /> : null,
+        compositions: (
+          <TableColumnToken
+            tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+          />
+        ),
+        poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+        volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
+        apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+      })),
+    [pools, showAllPools]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,7 +73,7 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
     () => [
       { accessorKey: 'meta' },
 
-      showNetworkColumn
+      showAllPools
         ? {
             header: () => <TableHeader label="Chain" />,
             cell: row => row.renderValue(),
@@ -118,7 +115,7 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [showNetworkColumn, sort]
+    [showAllPools, sort]
   );
 
   return {

@@ -36,23 +36,20 @@ export const useTableMyLiquidityPool = () => {
 
   const tableData = useMemo(
     () =>
-      pools?.map(d => {
-        const tokens = d.compositions.reduce((acc, cur) => {
-          acc[cur.symbol] = cur.weight;
-          return acc;
-        }, {});
-
-        return {
-          meta: {
-            id: d.id,
-            network: d.network,
-          },
-          compositions: <TableColumnToken tokens={tokens} />,
-          balance: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
-          poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
-          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
-        };
-      }),
+      pools?.map(d => ({
+        meta: {
+          id: d.id,
+          network: d.network,
+        },
+        compositions: (
+          <TableColumnToken
+            tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+          />
+        ),
+        balance: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
+        poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+        apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+      })),
     [pools]
   );
 
