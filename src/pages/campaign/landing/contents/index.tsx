@@ -46,7 +46,7 @@ const Wrapper = tw.div`w-full min-h-screen pt-292 flex flex-col gap-40 text-neut
 
 const ContentWrapper = tw.div`flex flex-col gap-24`;
 const Title = tw.div`font-b-20`;
-const LogoWrapper = tw.div`flex gap-18 svg-shadow`;
+const LogoWrapper = tw.div`flex gap-18 svg-shadow w-754`;
 const ButtonWrapper = tw.div`w-157`;
 const TextMain = tw.div`font-r-16 whitespace-pre-line`;
 const InfoWrapper = tw.div`flex gap-40`;

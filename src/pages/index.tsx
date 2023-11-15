@@ -8,7 +8,9 @@ import { ConnectWallet } from '~/components/connect-wallet';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
+import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import Campaign from './campaign';
@@ -24,6 +26,9 @@ const Page = () => {
   const { network } = useParams();
   const { selectedNetwork } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const { evm, xrpl } = useWalletTypeStore();
+  const { xrp: xrpWallet, evm: evmWallet } = useConnectedWallet();
+  const bothDisconnected = !xrpWallet?.isConnected && !evmWallet?.isConnected;
 
   return (
     <>
@@ -50,8 +55,8 @@ const Page = () => {
       <ToastContainer />
       {connectWalletOpened && (
         <ConnectWallet
-          evm={currentNetwork !== NETWORK.XRPL}
-          xrpl={currentNetwork === NETWORK.XRPL}
+          evm={(bothDisconnected && currentNetwork !== NETWORK.XRPL) || evm}
+          xrpl={(bothDisconnected && currentNetwork === NETWORK.XRPL) || xrpl}
         />
       )}
     </>

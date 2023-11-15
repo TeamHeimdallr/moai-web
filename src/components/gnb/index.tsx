@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
 import { IconMenu } from '~/assets/icons';
@@ -15,9 +15,12 @@ import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 import { useBanner } from '~/pages/home/hooks/components/alert-wallet/use-banner';
 
 import { usePopup } from '~/hooks/components/use-popup';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { POPUP_ID, TOOLTIP_ID } from '~/types';
+import { getNetworkFull } from '~/utils';
+import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
+import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { Account } from '../account';
 import { AlertBanner } from '../alerts/banner';
@@ -31,6 +34,10 @@ export const Gnb = () => {
   const { isMD } = useMediaQuery();
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
+  const { network } = useParams();
+  const { selectedNetwork } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const { setWalletType } = useWalletTypeStore();
 
   const { evm, xrp } = useConnectedWallet();
   const { text, connectWallet } = useBanner();
@@ -84,7 +91,13 @@ export const Gnb = () => {
                   style={{ padding: isMD ? '9px 24px' : '9px 16px' }}
                   text={t('Connect wallet')}
                   isLoading={!!opened}
-                  onClick={() => open()}
+                  onClick={() => {
+                    setWalletType({
+                      evm: currentNetwork !== NETWORK.XRPL,
+                      xrpl: currentNetwork === NETWORK.XRPL,
+                    });
+                    open();
+                  }}
                 />
               )}
               <NetworkSelection />

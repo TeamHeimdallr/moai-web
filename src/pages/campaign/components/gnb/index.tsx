@@ -11,7 +11,6 @@ import { Notification } from '~/components/notification';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID } from '~/types';
 
 export const Gnb = () => {
@@ -19,7 +18,6 @@ export const Gnb = () => {
 
   const navigate = useNavigate();
   const { evm, xrp } = useConnectedWallet();
-  const { setWalletType } = useWalletTypeStore();
 
   const { isMD } = useMediaQuery();
 
@@ -40,7 +38,6 @@ export const Gnb = () => {
             text="Connect wallet"
             isLoading={!!opened}
             onClick={() => {
-              setWalletType({ xrpl: true, evm: true });
               open();
             }}
           />

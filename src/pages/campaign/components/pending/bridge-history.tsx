@@ -14,18 +14,21 @@ export const BridgeHistory = () => {
   const isLoading = false;
 
   // TODO : connect API
-  const data = [
-    {
-      id: 1,
-      amount: <TableColumnAmount balance={100} value={100} />,
-      time: <TableColumnTime time={1699624454446} hash={'0x1234'} />,
-    },
-    {
-      id: 2,
-      amount: <TableColumnAmount balance={23} value={100} />,
-      time: <TableColumnTime time={1699624454446} hash={'0x1234'} />,
-    },
-  ];
+  const data = useMemo(
+    () => [
+      {
+        id: 1,
+        amount: <TableColumnAmount balance={100} value={100} />,
+        time: <TableColumnTime time={1699624454446} hash={'0x1234'} />,
+      },
+      {
+        id: 2,
+        amount: <TableColumnAmount balance={23} value={100} />,
+        time: <TableColumnTime time={1699624454446} hash={'0x1234'} />,
+      },
+    ],
+    []
+  );
   const columns = useMemo(
     () => [
       { accessorKey: 'id' },
