@@ -3,7 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import { usePopup } from '~/hooks/components';
 import { POPUP_ID } from '~/types';
 
-import { CampaignConnectWallet } from './components/connect-wallet';
+import { CampaignConnectWalletPopup } from './components/connect-wallet/popup';
+import StepPage from './pages/step';
 import LandingPage from './landing';
 
 const Campaign = () => {
@@ -12,9 +13,10 @@ const Campaign = () => {
     <>
       <Routes>
         <Route path="/landing" element={<LandingPage />} />
+        <Route path="/step" element={<StepPage />} />
         <Route path="/*" element={<LandingPage />} />
       </Routes>
-      {connectWalletOpened && <CampaignConnectWallet />}
+      {connectWalletOpened && <CampaignConnectWalletPopup />}
     </>
   );
 };
