@@ -19,16 +19,16 @@ export const Gnb = () => {
   const navigate = useNavigate();
   const { evm, xrp } = useConnectedWallet();
 
-  const { isMD } = useMediaQuery();
+  const { isLG } = useMediaQuery();
 
   return (
     <Wrapper>
       <LogoWrapper>
-        <LogoText width={isMD ? 88 : 70} height={isMD ? 20 : 16} onClick={() => navigate('/')} />
+        <LogoText width={isLG ? 88 : 70} height={isLG ? 20 : 16} onClick={() => navigate('/')} />
       </LogoWrapper>
-      <ButtonWrapper isMD={isMD}>
+      <ButtonWrapper isLG={isLG}>
         {evm.address || xrp.address ? (
-          <ConnectedButton isMD={isMD}>
+          <ConnectedButton isLG={isLG}>
             <Notification />
             <Account />
           </ConnectedButton>
@@ -54,9 +54,9 @@ const Wrapper = styled.div(() => [
 
 const LogoWrapper = tw.div`clickable h-20`;
 interface Props {
-  isMD: boolean;
+  isLG: boolean;
 }
 
-const ConnectedButton = styled.div<Props>(({ isMD }) => [tw`flex`, isMD ? tw`gap-8` : tw`gap-4`]);
+const ConnectedButton = styled.div<Props>(({ isLG }) => [tw`flex`, isLG ? tw`gap-8` : tw`gap-4`]);
 
-const ButtonWrapper = styled.div<Props>(({ isMD }) => [tw`flex`, isMD ? tw`gap-8` : tw`gap-4`]);
+const ButtonWrapper = styled.div<Props>(({ isLG }) => [tw`flex`, isLG ? tw`gap-8` : tw`gap-4`]);

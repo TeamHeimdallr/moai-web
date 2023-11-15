@@ -18,12 +18,12 @@ export const BridgeHistory = () => {
     () => [
       {
         id: 1,
-        amount: <TableColumnAmount balance={100} value={100} />,
+        amount: <TableColumnAmount balance={100} value={100} width={'full'} />,
         time: <TableColumnTime time={1699624454446} hash={'0x1234'} />,
       },
       {
         id: 2,
-        amount: <TableColumnAmount balance={23} value={100} />,
+        amount: <TableColumnAmount balance={23} value={100} width={'full'} />,
         time: <TableColumnTime time={1699624454446} hash={'0x1234'} />,
       },
     ],
@@ -53,7 +53,6 @@ export const BridgeHistory = () => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const tableRatio = [14, 5].map(num => `${num}fr`).join(' ');
   const handleMoreClick = () => {};
 
   return (
@@ -65,11 +64,7 @@ export const BridgeHistory = () => {
           {table.getRowModel().rows.map(
             (row, i) =>
               row && (
-                <BodyInnerWrapper
-                  key={row.id + i}
-                  ratio={tableRatio}
-                  rounded={!hasMore && !isLoading}
-                >
+                <BodyInnerWrapper key={row.id + i} rounded={!hasMore && !isLoading}>
                   {row.getVisibleCells().map((cell, i) => (
                     <Fragment key={cell.id + i}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -103,18 +98,12 @@ const Body = tw.div`
 
 interface BTRProps {
   rounded?: boolean;
-  ratio: string;
 }
-const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio }) => [
+const BodyInnerWrapper = styled.div<BTRProps>(({ rounded }) => [
   tw`
-    grid items-center w-full h-88 px-24 py-20 gap-32 hover:bg-neutral-15 first:(rounded-t-12) 
+    flex flex-col gap-8 w-full p-20 hover:bg-neutral-15 first:(rounded-t-12) md:(flex-row gap-32 px-24 py-20)
   `,
   rounded && tw`last:(rounded-b-12)`,
-  css`
-    & {
-      grid-template-columns: ${ratio};
-    }
-  `,
 ]);
 const More = styled.div(() => [
   tw`

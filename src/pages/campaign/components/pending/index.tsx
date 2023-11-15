@@ -35,11 +35,11 @@ export const Pending = () => {
 };
 
 const Wrapper = styled.div(() => [
-  tw`flex max-w-1280 flex-col gap-24 bg-neutral-10 rounded-12 px-24 pt-20 pb-24 mt-24`,
+  tw`w-full flex flex-col gap-24 bg-neutral-10 rounded-12 px-24 pt-20 pb-24 mt-24`,
 ]);
 const TitleWrapper = tw.div`flex justify-between items-center font-m-20 gap-12`;
 const Title = tw.div`
-  flex-1 font-b-20 text-neutral-100
+  flex-1 text-neutral-100 font-b-18 md:font-b-20
 `;
 const ButtonWrapper = tw.div``;
 const Balance = tw.div`flex`;
