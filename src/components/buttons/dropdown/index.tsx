@@ -25,12 +25,12 @@ export const ButtonDropdown = ({
   opened,
   ...rest
 }: ButtonDrodDownProps) => {
-  const { isMD } = useMediaQuery();
+  const { isLG } = useMediaQuery();
   return (
     <Wrapper opened={opened} {...rest}>
       {image && <Image src={image} alt={imageAlt} title={imageTitle} />}
       <IconTextWrapper>
-        {isMD && <Text>{text}</Text>}
+        {isLG && <Text>{text}</Text>}
         <Icon opened={opened}>
           <IconDown width={16} height={16} fill={COLOR.NEUTRAL[60]} />
         </Icon>
@@ -43,7 +43,7 @@ interface Props {
 }
 const Wrapper = styled.button<Props>(({ opened }) => [
   tw`
-    gap-6 p-8 rounded-10 flex-center text-neutral-100 bg-neutral-10 clickable
+    gap-6 p-8 rounded-10 flex-center text-neutral-100 clickable bg-neutral-10
     hover:(text-primary-80 bg-neutral-20)
   `,
   css`
@@ -66,6 +66,7 @@ const Wrapper = styled.button<Props>(({ opened }) => [
         }
       }
     `,
+  opened && tw`bg-neutral-20`,
 ]);
 
 const IconTextWrapper = tw.div`gap-4 flex-center`;
