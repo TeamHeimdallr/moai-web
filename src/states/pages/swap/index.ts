@@ -2,17 +2,20 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
 import { logger } from '~/states/middleware/logger';
+import { IToken } from '~/types';
 
 export interface SwapState {
-  fromToken: string;
-  fromValue: number | string;
-  toToken: string;
+  fromToken: IToken | undefined;
+  toToken: IToken | undefined;
 
-  setFromToken: (fromToken: string) => void;
-  setFromValue: (fromValue: number | undefined) => void;
-  setToToken: (toToken: string) => void;
+  fromInput: number | string;
 
+  setFromToken: (fromToken?: IToken) => void;
+  setToToken: (toToken?: IToken) => void;
+
+  setFromInput: (fromInput: number | undefined) => void;
   resetFromValue: () => void;
+
   resetAll: () => void;
 }
 
@@ -21,16 +24,23 @@ export const useSwapStore = create<SwapState>()(
     logger(set => ({
       name: 'swap-store',
 
-      fromToken: '',
-      fromValue: '',
-      toToken: '',
+      fromToken: undefined,
+      toToken: undefined,
+
+      fromInput: '',
 
       setFromToken: fromToken => set({ fromToken }),
-      setFromValue: fromValue => set({ fromValue }),
       setToToken: toToken => set({ toToken }),
 
-      resetFromValue: () => set({ fromValue: '' }),
-      resetAll: () => set({ fromToken: '', fromValue: '', toToken: '' }),
+      setFromInput: fromInput => set({ fromInput }),
+      resetFromValue: () => set({ fromInput: '' }),
+
+      resetAll: () =>
+        set({
+          fromToken: undefined,
+          toToken: undefined,
+          fromValue: '',
+        }),
     }))
   )
 );

@@ -15,13 +15,18 @@ export interface IToken {
   image?: string; // token image url
 
   decimals?: number;
+
+  price?: number;
+
+  isLpToken: boolean;
+  isCexListed: boolean;
+}
+
+export interface ICreateRecentlySelectedTokenRequest {
+  network: NETWORK;
+  walletAddress: string;
+  tokenId: number;
 }
 
 // [token addresses, balance, last change block number]
 export type IPoolTokenBalanceRaw = [Address[], bigint[], bigint];
-
-// TODO:
-// export interface ITokenbalanceInPool {
-//   balancesMap?: Record<string, Pick<IToken, 'symbol' | 'balance' | 'value'>>;
-//   balancesArray?: Pick<IToken, 'symbol' | 'balance' | 'value'>[];
-// }

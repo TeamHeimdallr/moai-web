@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -76,83 +76,93 @@ export const useTableLiquidityProvision = () => {
   const { pool } = poolData || {};
   const { compositions } = pool || {};
 
-  const liquidityProvisions =
-    liquidityProvisionData?.pages?.flatMap(page => page.liquidityProvisions) || [];
+  const liquidityProvisions = useMemo(
+    () => liquidityProvisionData?.pages?.flatMap(page => page.liquidityProvisions) || [],
+    [liquidityProvisionData?.pages]
+  );
 
-  const tableData = liquidityProvisions?.map(d => {
-    const value = d.liquidityProvisionTokens.reduce((acc, cur) => {
-      const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
-      const amount = cur.amount;
+  const tableData = useMemo(
+    () =>
+      liquidityProvisions?.map(d => {
+        const value = d.liquidityProvisionTokens.reduce((acc, cur) => {
+          const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
+          const amount = cur.amount;
 
-      return (acc += price * amount);
-    }, 0);
+          return (acc += price * amount);
+        }, 0);
 
-    return {
-      meta: {
-        id: d.id,
-        network: d.network,
-      },
-      action: (
-        <TableColumnIconText
-          text={d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? 'Add tokens' : 'Withdraw'}
-          icon={
-            d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? (
-              <IconPlus width={20} height={20} fill={COLOR.GREEN[50]} />
-            ) : (
-              <IconMinus width={20} height={20} fill={COLOR.RED[50]} />
-            )
-          }
-        />
-      ),
-      tokens: (
-        <TableColumnTokenPair
-          tokens={d.liquidityProvisionTokens.map(t => ({
-            symbol: t.symbol,
-            value: t.amount,
-            image: t.image,
-          }))}
-        />
-      ),
-      value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
-      time: (
-        <TableColumnLink
-          token={`${elapsedTime(new Date(d.time).getTime())}`}
-          align="flex-end"
-          link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${d.txHash}`}
-        />
-      ),
-    };
-  });
+        return {
+          meta: {
+            id: d.id,
+            network: d.network,
+          },
+          action: (
+            <TableColumnIconText
+              text={d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? 'Add tokens' : 'Withdraw'}
+              icon={
+                d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? (
+                  <IconPlus width={20} height={20} fill={COLOR.GREEN[50]} />
+                ) : (
+                  <IconMinus width={20} height={20} fill={COLOR.RED[50]} />
+                )
+              }
+            />
+          ),
+          tokens: (
+            <TableColumnTokenPair
+              tokens={d.liquidityProvisionTokens.map(t => ({
+                symbol: t.symbol,
+                value: t.amount,
+                image: t.image,
+              }))}
+            />
+          ),
+          value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
+          time: (
+            <TableColumnLink
+              token={`${elapsedTime(new Date(d.time).getTime())}`}
+              align="flex-end"
+              link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${d.txHash}`}
+            />
+          ),
+        };
+      }),
+    [compositions, currentNetwork, isXrp, liquidityProvisions]
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tableColumns: ColumnDef<any, ReactNode>[] = [
-    { accessorKey: 'meta' },
+  const tableColumns = useMemo<ColumnDef<any, ReactNode>[]>(
+    () => [
+      { accessorKey: 'meta' },
 
-    {
-      header: () => <TableHeader label="Action" align="flex-start" />,
-      cell: row => row.renderValue(),
-      accessorKey: 'action',
-    },
-    {
-      header: () => <TableHeader label="Tokens" align="flex-start" />,
-      cell: row => row.renderValue(),
-      accessorKey: 'tokens',
-    },
-    {
-      header: () => (
-        <TableHeaderSortable sortKey="value" label="Value" sort={sort} setSort={setSort} />
-      ),
-      cell: row => row.renderValue(),
-      accessorKey: 'value',
-    },
-    {
-      header: () => (
-        <TableHeaderSortable sortKey="time" label="Time" sort={sort} setSort={setSort} />
-      ),
-      cell: row => row.renderValue(),
-      accessorKey: 'time',
-    },
-  ];
+      {
+        header: () => <TableHeader label="Action" align="flex-start" />,
+        cell: row => row.renderValue(),
+        accessorKey: 'action',
+      },
+      {
+        header: () => <TableHeader label="Tokens" align="flex-start" />,
+        cell: row => row.renderValue(),
+        accessorKey: 'tokens',
+      },
+      {
+        header: () => (
+          <TableHeaderSortable sortKey="value" label="Value" sort={sort} setSort={setSort} />
+        ),
+        cell: row => row.renderValue(),
+        accessorKey: 'value',
+      },
+      {
+        header: () => (
+          <TableHeaderSortable sortKey="time" label="Time" sort={sort} setSort={setSort} />
+        ),
+        cell: row => row.renderValue(),
+        accessorKey: 'time',
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sort]
+  );
 
   return {
     tableColumns,

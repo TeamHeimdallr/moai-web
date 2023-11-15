@@ -1,17 +1,14 @@
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
 import * as yup from 'yup';
 
-import { useTokenBalanceInPool } from '~/api/api-contract/balance/user-pool-token-balances';
-import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
-import { useTokenPrice } from '~/api/api-contract/token/price';
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useGetSwapOptimizedPathQuery } from '~/api/api-server/pools/get-swap-optimized-path';
 
-import { IconDown } from '~/assets/icons';
-
-import { EVM_POOL, XRP_AMM } from '~/constants';
+import { COLOR } from '~/assets/colors';
+import { IconArrowDown, IconDown } from '~/assets/icons';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
@@ -20,13 +17,12 @@ import { Token } from '~/components/token';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatFloat, formatNumber, getNetworkFull } from '~/utils';
+import { formatFloat, formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
 import { useSwapStore } from '~/states/pages';
 import { POPUP_ID } from '~/types/components';
 
 import { SelectFromTokenPopup } from './select-token-from-popup';
 import { SelectToTokenPopup } from './select-token-to-popup';
-import { SwapArrowDown } from './swap-arrow-down';
 import { SwapPopup } from './swap-popup';
 
 interface InputFormState {
@@ -38,44 +34,7 @@ export const SwapInputGroup = () => {
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-
-  // TODO: 추후 스왑 가능한 토큰 / 풀을 서버 api로 받아오도록 수정
-  const id = EVM_POOL?.[currentNetwork]?.[0]?.id || XRP_AMM?.[0]?.id || '';
-
-  const { pool } = useLiquidityPoolBalance(id);
-  const { evm, xrp, fpass } = useConnectedWallet();
-  const { balancesArray } = useTokenBalanceInPool();
-  const { getTokenPrice } = useTokenPrice();
-
-  const {
-    fromToken,
-    fromValue,
-    toToken,
-
-    setFromToken,
-    setFromValue,
-    setToToken,
-    resetFromValue,
-  } = useSwapStore();
-
-  // TODO: 3 pool case
-  // TODO: swap, 내부 브릿지 통합
-  const fromReserve = pool?.compositions?.find(c => c.symbol === fromToken)?.balance ?? 0;
-  const toReserve = pool?.compositions?.find(c => c.symbol === toToken)?.balance ?? 0;
-
-  const fromTokenBalance = balancesArray?.find(b => b.symbol === fromToken)?.balance ?? 0;
-  const toTokenBalance = balancesArray?.find(b => b.symbol === toToken)?.balance ?? 0;
-
-  const fromTokenPrice = getTokenPrice(fromToken);
-  const toTokenPrice = getTokenPrice(toToken);
-
-  const schema = yup.object().shape({
-    from: yup.number().min(0).max(fromTokenBalance, 'Exceeds wallet balance').required(),
-    to: yup.number().min(0).required(),
-  });
-  const { control, setValue, formState } = useForm<InputFormState>({
-    resolver: yupResolver(schema),
-  });
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const { opened: selectTokenFromPopupOpened, open: openSelectTokenFromPopup } = usePopup(
     POPUP_ID.SWAP_SELECT_TOKEN_FROM
@@ -85,113 +44,172 @@ export const SwapInputGroup = () => {
   );
   const { opened: swapPopupOpened, open: openSwapPopup } = usePopup(POPUP_ID.SWAP);
 
-  const address = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
+  const { evm, xrp, fpass } = useConnectedWallet();
+  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
 
-  // TODO: fee 하드코딩 제거
-  const fee = 0.003;
+  const {
+    fromToken,
+    toToken,
 
-  const toValue =
+    fromInput,
+
+    setFromToken,
+    setToToken,
+
+    setFromInput,
+  } = useSwapStore();
+
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const { data: swapOptimizedPathPoolData } = useGetSwapOptimizedPathQuery(
+    {
+      params: {
+        networkAbbr: currentNetworkAbbr,
+      },
+      queries: {
+        fromTokenId: fromToken?.id || 0,
+        toTokenId: toToken?.id || 0,
+      },
+    },
+    {
+      enabled: !!fromToken && !!toToken && !!currentNetworkAbbr,
+      staleTime: 1000 * 3,
+    }
+  );
+  const { pool: swapOptimizedPathPool } = swapOptimizedPathPoolData || {};
+
+  /* swap optimized path pool의 해당 토큰 balance와 price */
+  const { balance: fromTokenReserveRaw, price: fromTokenPriceRaw } =
+    swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol) || {
+      balance: 0,
+      price: 0,
+    };
+  const fromTokenReserve = fromTokenReserveRaw || 0;
+  const fromTokenPrice = fromTokenPriceRaw || 0;
+  /* swap 하고자 하는 토큰 유저 balance */
+  const fromTokenBalance =
+    userAllTokenBalances?.find(t => t.symbol === fromToken?.symbol)?.balance || 0;
+
+  /* swap optimized path pool의 해당 토큰 balance와 price */
+  const { balance: toTokenReserveRaw, price: toTokenPriceRaw } =
+    swapOptimizedPathPool?.compositions?.find(c => c.symbol === toToken?.symbol) || {
+      balance: 0,
+      price: 0,
+    };
+  const toTokenReserve = toTokenReserveRaw || 0;
+  const toTokenPrice = toTokenPriceRaw || 0;
+  /* swap 하고자 하는 토큰 유저 balance */
+  const toTokenBalance =
+    userAllTokenBalances?.find(t => t.symbol === toToken?.symbol)?.balance || 0;
+
+  const schema = yup.object().shape({
+    from: yup.number().min(0).max(fromTokenBalance, 'Exceeds wallet balance').required(),
+    to: yup.number().min(0).required(),
+  });
+  const { control, setValue, formState } = useForm<InputFormState>({
+    resolver: yupResolver(schema),
+  });
+  const fee = swapOptimizedPathPool?.trandingFees || 0;
+
+  const toInput =
     fromToken && toToken
-      ? fromValue
+      ? fromInput
         ? Number(
             formatFloat(
-              toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee))),
-              8
+              toTokenReserve -
+                toTokenReserve *
+                  (fromTokenReserve / (fromTokenReserve + Number(fromInput) * (1 - fee))),
+              6
             )
           )
         : undefined
       : undefined;
 
   const swapRatio =
-    fromValue && toValue
-      ? (toValue || 0) / (Number(fromValue || 0) === 0 ? 0.0001 : Number(fromValue || 0))
-      : toReserve - toReserve * (fromReserve / (fromReserve + (1 - fee)));
+    fromInput && toInput
+      ? (toInput || 0) / (Number(fromInput || 0) === 0 ? 0.0001 : Number(fromInput || 0))
+      : toTokenReserve - toTokenReserve * (fromTokenReserve / (fromTokenReserve + (1 - fee)));
 
   const validToSwap =
-    !!address &&
-    fromValue &&
-    Number(fromValue) > 0 &&
-    Number(fromValue) <= fromTokenBalance &&
-    toValue &&
-    toValue > 0;
+    !!walletAddress &&
+    fromInput &&
+    Number(fromInput) > 0 &&
+    Number(fromInput) <= fromTokenBalance &&
+    toInput &&
+    toInput > 0;
 
   const arrowClick = () => {
     setFromToken(toToken);
     setToToken(fromToken);
   };
 
-  useEffect(
-    () => resetFromValue(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fromToken, toToken]
-  );
-
   return (
     <>
       <Wrapper>
-        {address ? (
-          <InputWrapper>
-            <InputInnerWrapper>
-              <InputNumber
-                token={
-                  fromToken ? (
-                    <Token token={fromToken} icon={<IconDown />} />
-                  ) : (
-                    <Token token="" title="Select token" icon={<IconDown />} />
-                  )
-                }
-                balance={fromTokenBalance}
-                tokenValue={fromTokenPrice * (Number(fromValue) || 0)}
-                value={fromValue}
-                maxButton
-                slider
-                handleChange={setFromValue}
-                handleTokenClick={openSelectTokenFromPopup}
-                name={'from'}
-                control={control}
-                setValue={setValue}
-                formState={formState}
-              />
-              <IconWrapper onClick={() => arrowClick()}>
-                <SwapArrowDown />
-              </IconWrapper>
-              <InputNumber
-                disabled
-                token={
-                  toToken ? (
-                    <Token token={toToken} icon={<IconDown />} />
-                  ) : (
-                    <Token token="" title="Select token" icon={<IconDown />} />
-                  )
-                }
-                balance={toTokenBalance}
-                tokenValue={toTokenPrice * (Number(toValue) || 0)}
-                value={toValue}
-                focus={false}
-                handleTokenClick={openSelectTokenToPopup}
-                name={'to'}
-                control={control}
-                setValue={setValue}
-                formState={formState}
-              />
-            </InputInnerWrapper>
-            {fromToken && toToken && (
-              <InputLabel>{`1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`}</InputLabel>
-            )}
-          </InputWrapper>
-        ) : (
-          // TODO: component 수정
-          <Empty>
-            {isFpass && evm.address && !address
-              ? 'please create futurepass first'
-              : 'please connect wallet'}
-          </Empty>
-        )}
+        <InputWrapper>
+          <InputInnerWrapper>
+            <InputNumber
+              token={
+                <Token
+                  token={fromToken?.symbol || ''}
+                  title={fromToken ? '' : 'Select token'}
+                  icon={<IconDown />}
+                />
+              }
+              balance={fromTokenBalance}
+              tokenValue={fromTokenPrice * (Number(fromInput) || 0)}
+              value={fromInput}
+              maxButton
+              slider
+              handleChange={setFromInput}
+              handleTokenClick={openSelectTokenFromPopup}
+              name={'from'}
+              control={control}
+              setValue={setValue}
+              formState={formState}
+            />
+            <IconWrapper onClick={() => arrowClick()}>
+              <ArrowDownWrapper>
+                <IconArrowDown width={20} height={20} fill={COLOR.PRIMARY[50]} />
+              </ArrowDownWrapper>
+            </IconWrapper>
+            <InputNumber
+              disabled
+              token={
+                <Token
+                  token={toToken?.symbol || ''}
+                  title={toToken ? '' : 'Select token'}
+                  icon={<IconDown />}
+                />
+              }
+              balance={toTokenBalance}
+              tokenValue={toTokenPrice * (Number(toInput) || 0)}
+              value={toInput}
+              focus={false}
+              handleTokenClick={openSelectTokenToPopup}
+              name={'to'}
+              control={control}
+              setValue={setValue}
+              formState={formState}
+            />
+          </InputInnerWrapper>
+          {fromToken && toToken && (
+            <InputLabel>{`1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`}</InputLabel>
+          )}
+        </InputWrapper>
         <ButtonPrimaryLarge text="Preview" disabled={!validToSwap} onClick={openSwapPopup} />
       </Wrapper>
-      {address && selectTokenFromPopupOpened && <SelectFromTokenPopup />}
-      {address && selectTokenToPopupOpened && <SelectToTokenPopup />}
-      {address && swapPopupOpened && <SwapPopup />}
+      {walletAddress && selectTokenFromPopupOpened && (
+        <SelectFromTokenPopup userAllTokenBalances={userAllTokenBalances} />
+      )}
+      {walletAddress && selectTokenToPopupOpened && (
+        <SelectToTokenPopup userAllTokenBalances={userAllTokenBalances} />
+      )}
+      {walletAddress && swapPopupOpened && (
+        <SwapPopup
+          swapOptimizedPathPool={swapOptimizedPathPool}
+          userAllTokenBalances={userAllTokenBalances}
+        />
+      )}
     </>
   );
 };
@@ -212,10 +230,10 @@ const IconWrapper = tw.div`
   absolute absolute-center-x bottom-100 z-1 clickable select-none
 `;
 
-const InputLabel = tw.div`
-  flex justify-end font-r-12 text-neutral-60
+const ArrowDownWrapper = tw.div`
+  p-6 flex-center rounded-full bg-neutral-20
 `;
 
-const Empty = tw.div`
-  flex-center font-r-16 text-neutral-60
+const InputLabel = tw.div`
+  flex justify-end font-r-12 text-neutral-60
 `;

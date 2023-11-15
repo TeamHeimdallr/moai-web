@@ -39,10 +39,6 @@ export const useUserPoolTokenBalances = () => {
   const { address: poolAddress, compositions, lpToken } = pool || {};
   const { address: lpTokenAddress } = lpToken || {};
 
-  // get user lp token balance
-  // get pool value => get lp token value => get user lp token value
-
-  // get user pool composition token balance
   const tokenAddresses = [lpTokenAddress, ...(compositions?.map(c => c.address) || [])];
 
   const { data: lpTokenTotalSupplyData } = useContractRead({

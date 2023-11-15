@@ -1,8 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
-import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
-
 import { IconBack } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons';
@@ -15,13 +13,8 @@ import { WithdrawLiquidityInputGroup } from '../../components/withdraw-liquidity
 
 const PoolDetailWithdrawLiquidityPage = () => {
   const navigate = useNavigate();
-
   const { id } = useParams();
-
   useRequirePrarams([!!id], () => navigate(-1));
-
-  const { pool, lpTokenBalance } = useLiquidityPoolBalance(id ?? '');
-  const { lpTokenTotalSupply } = pool;
 
   return (
     <>
@@ -37,11 +30,7 @@ const PoolDetailWithdrawLiquidityPage = () => {
             </Header>
 
             <WithdrawWrapper>
-              <WithdrawLiquidityInputGroup
-                pool={pool}
-                lpTokenBalance={lpTokenBalance}
-                lpTokenTotalSupply={lpTokenTotalSupply}
-              />
+              <WithdrawLiquidityInputGroup />
             </WithdrawWrapper>
           </ContentWrapper>
         </InnerWrapper>

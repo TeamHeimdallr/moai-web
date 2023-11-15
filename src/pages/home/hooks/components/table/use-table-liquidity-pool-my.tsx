@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { useGetMyPoolsInfinityQuery } from '~/api/api-server/pools/get-my-pools';
@@ -32,54 +32,62 @@ export const useTableMyLiquidityPool = () => {
       walletAddress: currentAddress || '',
     },
   });
-  const pools = data?.pages?.flatMap(page => page.pools) || [];
+  const pools = useMemo(() => data?.pages?.flatMap(page => page.pools) || [], [data?.pages]);
 
-  const tableData = pools?.map(d => {
-    const tokens = d.compositions.reduce((acc, cur) => {
-      acc[cur.symbol] = cur.weight;
-      return acc;
-    }, {});
+  const tableData = useMemo(
+    () =>
+      pools?.map(d => {
+        const tokens = d.compositions.reduce((acc, cur) => {
+          acc[cur.symbol] = cur.weight;
+          return acc;
+        }, {});
 
-    return {
-      meta: {
-        id: d.id,
-        network: d.network,
-      },
-      compositions: <TableColumnToken tokens={tokens} />,
-      balance: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
-      poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
-      apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
-    };
-  });
+        return {
+          meta: {
+            id: d.id,
+            network: d.network,
+          },
+          compositions: <TableColumnToken tokens={tokens} />,
+          balance: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
+          poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+        };
+      }),
+    [pools]
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tableColumns: ColumnDef<any, ReactNode>[] = [
-    { accessorKey: 'meta' },
-    {
-      header: () => <TableHeaderComposition />,
-      cell: row => row.renderValue(),
-      accessorKey: 'compositions',
-    },
-    {
-      header: () => (
-        <TableHeaderSortable sortKey="balance" label="My Balance" sort={sort} setSort={setSort} />
-      ),
-      cell: row => row.renderValue(),
-      accessorKey: 'balance',
-    },
-    {
-      header: () => (
-        <TableHeaderSortable sortKey="value" label="Pool value" sort={sort} setSort={setSort} />
-      ),
-      cell: row => row.renderValue(),
-      accessorKey: 'poolValue',
-    },
-    {
-      header: () => <TableHeaderMyAPR />,
-      cell: row => row.renderValue(),
-      accessorKey: 'apr',
-    },
-  ];
+  const tableColumns = useMemo<ColumnDef<any, ReactNode>[]>(
+    () => [
+      { accessorKey: 'meta' },
+      {
+        header: () => <TableHeaderComposition />,
+        cell: row => row.renderValue(),
+        accessorKey: 'compositions',
+      },
+      {
+        header: () => (
+          <TableHeaderSortable sortKey="balance" label="My Balance" sort={sort} setSort={setSort} />
+        ),
+        cell: row => row.renderValue(),
+        accessorKey: 'balance',
+      },
+      {
+        header: () => (
+          <TableHeaderSortable sortKey="value" label="Pool value" sort={sort} setSort={setSort} />
+        ),
+        cell: row => row.renderValue(),
+        accessorKey: 'poolValue',
+      },
+      {
+        header: () => <TableHeaderMyAPR />,
+        cell: row => row.renderValue(),
+        accessorKey: 'apr',
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sort]
+  );
 
   return {
     tableColumns,

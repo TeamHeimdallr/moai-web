@@ -3,23 +3,14 @@ import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
 
-import { useLiquidityPoolBalance } from '~/api/api-contract/pool/get-liquidity-pool-balance';
 import { useSwap } from '~/api/api-contract/swap/swap';
 import { useApprove } from '~/api/api-contract/token/approve';
-import { useTokenPrice } from '~/api/api-contract/token/price';
+import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
 import { COLOR } from '~/assets/colors';
-import { IconCheck, IconLink, IconTime } from '~/assets/icons';
+import { IconArrowDown, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import {
-  EVM_CONTRACT_ADDRESS,
-  EVM_POOL,
-  EVM_TOKEN_ADDRESS,
-  SCANNER_URL,
-  TOKEN_IMAGE_MAPPER,
-  XRP_AMM,
-  XRP_TOKEN_ISSUER,
-} from '~/constants';
+import { SCANNER_URL } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -29,115 +20,162 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { DATE_FORMATTER, formatFloat, formatNumber, getNetworkFull } from '~/utils';
+import { useConnectedWallet } from '~/hooks/wallets';
+import { DATE_FORMATTER, formatFloat, formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
+import { IPool, IToken } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
-import { SwapArrowDown } from './swap-arrow-down';
-
-export const SwapPopup = () => {
+interface Props {
+  swapOptimizedPathPool?: IPool;
+  userAllTokenBalances?: (IToken & { balance: number })[];
+}
+export const SwapPopup = ({ swapOptimizedPathPool, userAllTokenBalances }: Props) => {
   const { network } = useParams();
-  const { selectedNetwork, isXrp } = useNetwork();
+  const { selectedNetwork, isXrp, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
-  // TODO: 추후 스왑 가능한 토큰 / 풀을 서버 api로 받아오도록 수정
-  const id = EVM_POOL?.[currentNetwork]?.[0]?.id || XRP_AMM?.[0]?.id || '';
-
-  const { pool } = useLiquidityPoolBalance(id);
-  const { getTokenPrice } = useTokenPrice();
-
-  const {
-    fromToken,
-    fromValue,
-    toToken,
-
-    resetAll,
-  } = useSwapStore();
-
-  const fromReserve = pool?.compositions?.find(c => c.symbol === fromToken)?.balance ?? 0;
-  const toReserve = pool?.compositions?.find(c => c.symbol === toToken)?.balance ?? 0;
-
-  // TODO: fee 하드코딩 제거
-  const fee = 0.003;
-
-  const toValue =
-    fromToken && toToken
-      ? fromValue
-        ? Number(
-            formatFloat(
-              toReserve - toReserve * (fromReserve / (fromReserve + Number(fromValue) * (1 - fee))),
-              8
-            )
-          )
-        : undefined
-      : undefined;
-
-  const swapRatio =
-    fromValue && toValue
-      ? (toValue || 0) / (Number(fromValue || 0) === 0 ? 0.0001 : Number(fromValue || 0))
-      : toReserve - toReserve * (fromReserve / (fromReserve + (1 - fee)));
+  const { evm, xrp, fpass } = useConnectedWallet();
+  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
 
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippage } = useSlippageStore();
 
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
 
-  const wantToAllowToken = isXrp ? toToken : fromToken;
-  const wantToAllowAmount = isXrp ? toValue : fromValue;
+  const {
+    fromToken,
+    toToken,
 
+    fromInput,
+
+    resetAll,
+  } = useSwapStore();
+  const numFromInput = Number(fromInput) || 0;
+
+  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+    {
+      params: {
+        networkAbbr: currentNetworkAbbr,
+        poolId: swapOptimizedPathPool?.poolId || '',
+      },
+    },
+    {
+      enabled: !!swapOptimizedPathPool && !!currentNetworkAbbr,
+    }
+  );
+  const { poolVaultAmm } = poolVaultAmmData || {};
+  const { vault } = poolVaultAmm || {};
+
+  /* swap optimized path pool의 해당 토큰 balance와 price */
+  const { balance: fromTokenReserveRaw } = swapOptimizedPathPool?.compositions?.find(
+    c => c.symbol === fromToken?.symbol
+  ) || {
+    balance: 0,
+    price: 0,
+  };
+  const fromTokenReserve = fromTokenReserveRaw || 0;
+  /* swap 하고자 하는 토큰 유저 balance */
+  const fromTokenBalance =
+    userAllTokenBalances?.find(t => t.symbol === fromToken?.symbol)?.balance || 0;
+
+  /* swap optimized path pool의 해당 토큰 balance와 price */
+  const { balance: toTokenReserveRaw } = swapOptimizedPathPool?.compositions?.find(
+    c => c.symbol === toToken?.symbol
+  ) || {
+    balance: 0,
+    price: 0,
+  };
+  const toTokenReserve = toTokenReserveRaw || 0;
+
+  const fee = swapOptimizedPathPool?.trandingFees || 0;
+
+  const toInput =
+    fromToken && toToken
+      ? fromInput
+        ? Number(
+            formatFloat(
+              toTokenReserve -
+                toTokenReserve * (fromTokenReserve / (fromTokenReserve + numFromInput * (1 - fee))),
+              6
+            )
+          )
+        : undefined
+      : undefined;
+  const numToInput = Number(toInput) || 0;
+
+  const swapRatio =
+    fromInput && toInput
+      ? numToInput / (numFromInput === 0 ? 0.0001 : numFromInput)
+      : toTokenReserve - toTokenReserve * (fromTokenReserve / (fromTokenReserve + (1 - fee)));
+
+  const validToSwap =
+    !!walletAddress &&
+    fromInput &&
+    numFromInput > 0 &&
+    numFromInput <= fromTokenBalance &&
+    toInput &&
+    toInput > 0;
+
+  const wantToAllowToken = isXrp ? toToken : fromToken;
+  const wantToAllowAmount = isXrp ? toInput : fromInput;
   const {
     allow,
     isLoading: isLoadingAllowance,
     isSuccess: isSuccessAllowance,
     allowance,
   } = useApprove({
-    amount: Number(wantToAllowAmount ?? 0),
-    address: EVM_TOKEN_ADDRESS?.[currentNetwork]?.[wantToAllowToken] ?? '',
-    issuer: XRP_TOKEN_ISSUER?.[wantToAllowToken] ?? '',
+    amount: Number(wantToAllowAmount || 0),
+    address: wantToAllowToken?.address || '',
+    issuer: wantToAllowToken?.address || '',
 
-    spender: EVM_CONTRACT_ADDRESS?.[currentNetwork]?.VAULT ?? '',
-    currency: wantToAllowToken ?? '',
+    spender: vault,
+    currency: wantToAllowToken?.currency || '',
 
     enabled: !!wantToAllowToken,
   });
 
   const { txData, blockTimestamp, isLoading, isSuccess, isError, swap } = useSwap({
-    id,
-    fromToken,
-    fromValue: Number(fromValue),
-    toToken,
-    toValue,
+    id: swapOptimizedPathPool?.poolId || '',
+    fromToken: fromToken?.symbol || '',
+    fromValue: numFromInput,
+    toToken: toToken?.symbol || '',
+    toValue: numToInput,
     proxyEnabled: isSuccessAllowance,
   });
 
   const handleLink = () => {
     const txHash = isXrp ? txData?.hash : txData?.transactionHash;
-    const url =
-      `${SCANNER_URL[currentNetwork]}` + (isXrp ? '/transactions/' : 'tx') + `${txHash ?? ''}`;
+    const url = `${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${txHash}`;
+
     window.open(url);
   };
 
   const step = useMemo(() => {
-    if (isSuccess) {
-      return 3;
-    }
+    if (isSuccess) return 3;
     if (isSuccessAllowance || allowance) return 2;
     return 1;
   }, [isSuccess, isSuccessAllowance, allowance]);
 
-  const numFromValue = Number(fromValue) || 0;
-  const numToValue = Number(toValue) || 0;
-  const effectivePrice = `1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`;
+  const effectivePrice =
+    fromToken && toToken && swapRatio
+      ? `1 ${fromToken.symbol} = ${formatNumber(swapRatio, 6)} ${toToken.symbol}`
+      : '';
 
-  const fromUSDValue = numFromValue * getTokenPrice(fromToken);
-  const toUSDValue = numToValue * getTokenPrice(toToken);
+  const fromValue =
+    numFromInput *
+    (swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol)?.price || 0);
+  const toValue =
+    numToInput *
+    (swapOptimizedPathPool?.compositions?.find(c => c.symbol === toToken?.symbol)?.price || 0);
 
-  const currentValue = selectedDetailInfo === 'TOKEN' ? numFromValue : fromUSDValue;
-  const currentUnit = selectedDetailInfo === 'TOKEN' ? fromToken : 'USD';
+  const currentValue = selectedDetailInfo === 'TOKEN' ? numFromInput : fromValue;
+  const currentUnit = selectedDetailInfo === 'TOKEN' ? fromToken?.symbol || '' : 'USD';
+  const totalAfterFee = (1 - (swapOptimizedPathPool?.trandingFees || 0.003)) * (currentValue || 0);
 
-  const totalAfterFee = (1 - 0.005) * (currentValue ?? 0);
   const slippageText = (slippage * 100).toFixed(1);
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
 
@@ -163,7 +201,7 @@ export const SwapPopup = () => {
       id={POPUP_ID.SWAP}
       title={isSuccess ? '' : 'Swap preview'}
       button={
-        <ButtonWrapper onClick={() => handleButton()}>
+        <ButtonWrapper onClick={handleButton}>
           <ButtonPrimaryLarge
             text={
               isLoading || isLoadingAllowance
@@ -171,12 +209,19 @@ export const SwapPopup = () => {
                 : isSuccess
                 ? 'Return to swap page'
                 : step === 1
-                ? `Approve ${wantToAllowToken} for swap`
+                ? `Approve ${wantToAllowToken?.symbol || ''} for swap`
                 : 'Confirm swap'
             }
             isLoading={isLoading || isLoadingAllowance}
             buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={!isLoading && !isLoadingAllowance && step == 2 && isError}
+            disabled={
+              isLoading ||
+              isLoadingAllowance ||
+              // invalid to swap
+              (step === 2 && !validToSwap) ||
+              // swap contract call has error
+              (step === 2 && isError)
+            }
           />
         </ButtonWrapper>
       }
@@ -189,14 +234,14 @@ export const SwapPopup = () => {
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
               <SuccessTitle>Swap confirmed!</SuccessTitle>
-              <SuccessSubTitle>{`Successfully swapped ${fromValue} ${fromToken} to ${toValue} ${toToken}`}</SuccessSubTitle>
+              <SuccessSubTitle>{`Successfully swapped ${fromInput} ${fromToken?.symbol} to ${toInput} ${toToken?.symbol}`}</SuccessSubTitle>
             </SuccessWrapper>
 
             <List title={`Total`}>
               <TokenList
-                title={`${toValue} ${toToken}`}
-                description={`$${formatNumber(toUSDValue, 2)}`}
-                image={TOKEN_IMAGE_MAPPER[toToken]}
+                title={`${toValue} ${toToken?.symbol}`}
+                description={`$${formatNumber(toValue, 4)}`}
+                image={toToken?.image}
                 type="large"
                 leftAlign
               />
@@ -207,20 +252,22 @@ export const SwapPopup = () => {
             <ListWrapper>
               <List title={`Effective price: ${effectivePrice}`}>
                 <TokenList
-                  title={`${fromValue} ${fromToken}`}
-                  description={`$${formatNumber(fromUSDValue, 2)}`}
-                  image={TOKEN_IMAGE_MAPPER[fromToken]}
+                  title={`${fromValue} ${fromToken?.symbol}`}
+                  description={`$${formatNumber(fromValue, 4)}`}
+                  image={fromToken?.image}
                   type="large"
                   leftAlign
                 />
                 <Divider />
                 <IconWrapper>
-                  <SwapArrowDown />
+                  <ArrowDownWrapper>
+                    <IconArrowDown width={20} height={20} fill={COLOR.PRIMARY[50]} />
+                  </ArrowDownWrapper>
                 </IconWrapper>
                 <TokenList
-                  title={`${toValue} ${toToken}`}
-                  description={`$${formatNumber(toUSDValue, 2)}`}
-                  image={TOKEN_IMAGE_MAPPER[toToken]}
+                  title={`${toValue} ${toToken?.symbol}`}
+                  description={`$${formatNumber(toValue, 4)}`}
+                  image={toToken?.image}
                   type="large"
                   leftAlign
                 />
@@ -229,7 +276,7 @@ export const SwapPopup = () => {
 
             <DetailWrapper>
               <DetailTitleWrapper>
-                {`Swap from ${fromToken} details`}
+                {`Swap from ${fromToken?.symbol} details`}
                 <DetailButtonWrapper>
                   <ButtonChipSmall
                     text="TOKEN"
@@ -309,6 +356,10 @@ const ListWrapper = tw.div`
 
 const IconWrapper = tw.div`
   absolute right-12 bottom-56 z-1
+`;
+
+const ArrowDownWrapper = tw.div`
+  p-6 flex-center rounded-full bg-neutral-20
 `;
 
 const DetailWrapper = tw.div`

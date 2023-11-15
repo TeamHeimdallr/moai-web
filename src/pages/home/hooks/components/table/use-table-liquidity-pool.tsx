@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -40,70 +40,86 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
       sort: sort ? `${sort.key}:${sort.order}` : undefined,
     },
   });
-  const pools = data?.pages?.flatMap(page => page.pools) || [];
-  const poolTokens = data?.pages?.flatMap(page => page.poolTokens) || [];
+  const pools = useMemo(() => data?.pages?.flatMap(page => page.pools) || [], [data?.pages]);
+  const poolTokens = useMemo(
+    () => data?.pages?.flatMap(page => page.poolTokens) || [],
+    [data?.pages]
+  );
 
-  const tableData = pools.map(d => {
-    const tokens = d.compositions.reduce((acc, cur) => {
-      acc[cur.symbol] = cur.currentWeight || 0;
-      return acc;
-    }, {});
+  const tableData = useMemo(
+    () =>
+      pools.map(d => {
+        const tokens = d.compositions.reduce((acc, cur) => {
+          acc[cur.symbol] = cur.currentWeight || 0;
+          return acc;
+        }, {});
 
-    return {
-      meta: {
-        id: d.id,
-        network: d.network,
-      },
-      network: showNetworkColumn ? (
-        <TableColumn value={<NetworkChip network={d.network} />} />
-      ) : null,
-      compositions: <TableColumnToken tokens={tokens} />,
-      poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
-      volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
-      apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
-    };
-  });
+        return {
+          meta: {
+            id: d.id,
+            network: d.network,
+          },
+          network: showNetworkColumn ? (
+            <TableColumn value={<NetworkChip network={d.network} />} />
+          ) : null,
+          compositions: <TableColumnToken tokens={tokens} />,
+          poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+          volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
+          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+        };
+      }),
+    [pools, showNetworkColumn]
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tableColumns: ColumnDef<any, ReactNode>[] = [
-    { accessorKey: 'meta' },
+  const tableColumns = useMemo<ColumnDef<any, ReactNode>[]>(
+    () => [
+      { accessorKey: 'meta' },
 
-    showNetworkColumn
-      ? {
-          header: () => <TableHeader label="Chain" />,
-          cell: row => row.renderValue(),
-          accessorKey: 'network',
-        }
-      : {
-          header: () => <></>,
-          accessorKey: 'null',
-        },
+      showNetworkColumn
+        ? {
+            header: () => <TableHeader label="Chain" />,
+            cell: row => row.renderValue(),
+            accessorKey: 'network',
+          }
+        : {
+            header: () => <></>,
+            accessorKey: 'null',
+          },
 
-    {
-      header: () => <TableHeaderComposition />,
-      cell: row => row.renderValue(),
-      accessorKey: 'compositions',
-    },
-    {
-      header: () => (
-        <TableHeaderSortable sortKey="value" label="Pool value" sort={sort} setSort={setSort} />
-      ),
-      cell: row => row.renderValue(),
-      accessorKey: 'poolValue',
-    },
-    {
-      header: () => (
-        <TableHeaderSortable sortKey="volume" label="Volume (24h)" sort={sort} setSort={setSort} />
-      ),
-      cell: row => row.renderValue(),
-      accessorKey: 'volume',
-    },
-    {
-      header: () => <TableHeaderAPR />,
-      cell: row => row.renderValue(),
-      accessorKey: 'apr',
-    },
-  ];
+      {
+        header: () => <TableHeaderComposition />,
+        cell: row => row.renderValue(),
+        accessorKey: 'compositions',
+      },
+      {
+        header: () => (
+          <TableHeaderSortable sortKey="value" label="Pool value" sort={sort} setSort={setSort} />
+        ),
+        cell: row => row.renderValue(),
+        accessorKey: 'poolValue',
+      },
+      {
+        header: () => (
+          <TableHeaderSortable
+            sortKey="volume"
+            label="Volume (24h)"
+            sort={sort}
+            setSort={setSort}
+          />
+        ),
+        cell: row => row.renderValue(),
+        accessorKey: 'volume',
+      },
+      {
+        header: () => <TableHeaderAPR />,
+        cell: row => row.renderValue(),
+        accessorKey: 'apr',
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showNetworkColumn, sort]
+  );
 
   return {
     tableColumns,

@@ -1,25 +1,56 @@
+import { useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
-import { useTokenBalanceInPool } from '~/api/api-contract/balance/user-pool-token-balances';
+import { useGetRecentlySelectedTokensQuery } from '~/api/api-server/token/get-recently-selected-tokens';
 
 import { COLOR } from '~/assets/colors';
-
-import { TOKEN_IMAGE_MAPPER } from '~/constants';
 
 import { Popup } from '~/components/popup';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
-import { formatNumber } from '~/utils';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { useConnectedWallet } from '~/hooks/wallets';
+import { formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
 import { useSwapStore } from '~/states/pages';
-import { POPUP_ID } from '~/types';
+import { IToken, POPUP_ID } from '~/types';
 
-export const SelectFromTokenPopup = () => {
-  const { balancesArray } = useTokenBalanceInPool();
+interface Props {
+  userAllTokenBalances: (IToken & { balance: number })[];
+}
+export const SelectFromTokenPopup = ({ userAllTokenBalances }: Props) => {
+  const { network } = useParams();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const { evm, xrp, fpass } = useConnectedWallet();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const { toToken, fromToken, setFromToken } = useSwapStore();
   const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_FROM);
+
+  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
+  const { data: recentlySelectedTokensData } = useGetRecentlySelectedTokensQuery(
+    {
+      params: {
+        networkAbbr: currentNetworkAbbr,
+      },
+      queries: {
+        walletAddress,
+      },
+    },
+    {
+      staleTime: 1000 * 3,
+      enabled: !!walletAddress,
+    }
+  );
+  const { tokens: recentlySelectedTokens } = recentlySelectedTokensData || {};
+
+  const handleSelect = (token: IToken) => {
+    setFromToken(token);
+    close();
+  };
 
   return (
     <Popup
@@ -30,48 +61,33 @@ export const SelectFromTokenPopup = () => {
       <Wrapper>
         <ContentContainer>
           <Tokens>
-            {balancesArray
-              ?.filter(t => (t.balance ?? 0) > 0)
-              ?.filter(t => t.symbol !== toToken)
-              .map(token => {
-                const handleClick = () => {
-                  setFromToken(token.symbol ?? '');
-                  close();
-                };
-                return <Token key={token.symbol} token={token.symbol} onClick={handleClick} />;
-              })}
+            {recentlySelectedTokens?.map(token => (
+              <Token
+                key={token.symbol}
+                token={token.symbol}
+                clickable
+                onClick={() => handleSelect(token)}
+              />
+            ))}
           </Tokens>
           <TokenLists>
-            {balancesArray
-              ?.filter(t => (t.balance ?? 0) > 0)
-              ?.filter(t => t.symbol !== toToken)
-              ?.map((balanceInfo, idx) => {
-                if (!balanceInfo) return <></>;
-
-                const { symbol, value, balance } = balanceInfo;
-                const formattedTokenBalance =
-                  (balance ?? 0) > 0 ? formatNumber(balance, 2) : undefined;
-                const formattedTokenValue =
-                  (value ?? 0) > 0 ? '$' + formatNumber(value, 2) : undefined;
-
-                const handleClick = () => {
-                  setFromToken(symbol ?? '');
-                  close();
-                };
-                return (
-                  <TokenList
-                    key={symbol + idx}
-                    title={symbol}
-                    image={TOKEN_IMAGE_MAPPER[symbol] ?? ''}
-                    type={'selectable'}
-                    balance={formattedTokenBalance}
-                    value={formattedTokenValue}
-                    selected={fromToken === (symbol ?? '')}
-                    onClick={handleClick}
-                    backgroundColor={COLOR.NEUTRAL[15]}
-                  />
-                );
-              })}
+            {userAllTokenBalances
+              ?.filter(t => t.symbol !== toToken?.symbol)
+              ?.map(token => (
+                <TokenList
+                  key={token.symbol}
+                  title={token.symbol}
+                  image={token.image}
+                  type={'selectable'}
+                  balance={token.balance ? `${formatNumber(token.balance, 4)}` : undefined}
+                  value={
+                    token.price ? `${formatNumber(token.balance * token.price, 4)}` : undefined
+                  }
+                  selected={fromToken?.symbol === token.symbol}
+                  onClick={() => handleSelect(token)}
+                  backgroundColor={COLOR.NEUTRAL[15]}
+                />
+              ))}
           </TokenLists>
         </ContentContainer>
       </Wrapper>

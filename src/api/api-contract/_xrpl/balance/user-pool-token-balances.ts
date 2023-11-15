@@ -63,7 +63,11 @@ export const useUserPoolTokenBalances = () => {
   const { data: ammInfoRaw } = useQuery<IAmmInfo>(
     ['GET', 'XRPL', 'AMM_INFO', ammAssets],
     () => client.request(ammInfoRequest),
-    { enabled: !!client && isConnected && !!ammAssets[0] && !!ammAssets[1] && isXrp }
+    {
+      enabled: !!client && isConnected && !!ammAssets[0] && !!ammAssets[1] && isXrp,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
   );
   const ammInfo = ammInfoRaw?.result?.amm;
   const lpTokenInfo = ammInfo?.lp_token;
@@ -77,7 +81,10 @@ export const useUserPoolTokenBalances = () => {
   const { data: lpTokenBalanceData } = useQuery<GatewayBalancesResponse>(
     ['GET', 'XRPL', 'AMM_INFO', lpTokenInfo?.issuer, walletAddress],
     () => client.request(lpTokenBalanceRequest),
-    { enabled: !!client && isConnected && !!lpTokenInfo?.issuer && !!walletAddress && isXrp }
+    {
+      enabled: !!client && isConnected && !!lpTokenInfo?.issuer && !!walletAddress && isXrp,
+      staleTime: 1000 * 3,
+    }
   );
 
   /* get user xrp token balance */
@@ -88,7 +95,10 @@ export const useUserPoolTokenBalances = () => {
   const { data: xrpTokenBalanceData } = useQuery<AccountInfoResponse>(
     ['GET', 'XRPL', 'ACCOUNT_INFO', walletAddress],
     () => client.request(xrpTokenBalanceRequest),
-    { enabled: !!client && isConnected && !!walletAddress && isXrp }
+    {
+      enabled: !!client && isConnected && !!walletAddress && isXrp,
+      staleTime: 1000 * 3,
+    }
   );
 
   const getTokenBalanceRequest = (account: string) => ({
@@ -104,6 +114,7 @@ export const useUserPoolTokenBalances = () => {
           queryKey: ['GET', 'XRPL', 'GATEWAY_BALANCES', token.address, walletAddress],
           queryFn: () => client.request(getTokenBalanceRequest(token.address)),
           enabled: !!client && isConnected && !!token.address && !!walletAddress && isXrp,
+          staleTime: 1000 * 3,
         })) || [],
   });
 

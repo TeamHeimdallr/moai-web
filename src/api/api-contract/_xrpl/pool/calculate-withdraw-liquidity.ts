@@ -61,7 +61,11 @@ export const useCalculateWithdrawLiquidity = ({ bptIn }: WithdrawPriceImpactProp
   const { data: ammInfoRaw } = useQuery<IAmmInfo>(
     ['GET', 'XRPL', 'AMM_INFO', ammAssets],
     () => client.request(ammInfoRequest),
-    { enabled: !!client && isConnected && !!ammAssets[0] && !!ammAssets[1] && isXrp }
+    {
+      enabled: !!client && isConnected && !!ammAssets[0] && !!ammAssets[1] && isXrp,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
   );
   const ammInfo = ammInfoRaw?.result?.amm;
   const lpTokenInfo = ammInfo?.lp_token;
