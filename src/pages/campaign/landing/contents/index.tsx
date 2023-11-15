@@ -21,9 +21,9 @@ export const Contents = () => {
           <Logo2 width={isMD ? 489 : 293} height={isMD ? 70 : 24} />
         </LogoWrapper>
         <TextMain>
-          {
-            "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders\nwithin XRPL to embark on our 'Liquidity Voyage.' By joining this journey, participants\nhave the unique opportunity to provide early liquidity to The Root Network. In return,\nthey'll gain exclusive access to $MOAI pre-mining and special $ROOT rewards."
-          }
+          {isMD
+            ? "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders\nwithin XRPL to embark on our 'Liquidity Voyage.' By joining this journey, participants\nhave the unique opportunity to provide early liquidity to The Root Network. In return,\nthey'll gain exclusive access to $MOAI pre-mining and special $ROOT rewards."
+            : "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders within XRPL to embark on our 'Liquidity Voyage.' By joining this journey, participants have the unique opportunity to provide early liquidity to The Root Network. In return, they'll gain exclusive access to $MOAI pre-mining and special $ROOT rewards."}
         </TextMain>
         <InfoWrapper>
           <Info>
@@ -44,14 +44,20 @@ export const Contents = () => {
   );
 };
 
-const Wrapper = tw.div`w-320 min-h-screen pt-112 flex flex-col gap-20 text-neutral-100 sm:pt-96 md:(w-780 gap-40 pt-292) xl:(w-760) xxl:(w-840)`;
+const Wrapper = tw.div`
+  w-full px-20 pt-112 pb-40 flex flex-col gap-20 text-neutral-100 bg-no-repeat bg-campaign bg-cover bg-center
+  sm:pt-96 md:(min-h-screen gap-40 pt-292 bg-left pb-20) xxl:px-80
+`;
 
-const ContentWrapper = tw.div`flex flex-col gap-24`;
+const ContentWrapper = tw.div`flex flex-col gap-24 w-320 md:w-780 xl:w-760 xxl:w-840`;
 const Title = tw.div`font-b-20`;
-const LogoWrapper = tw.div`flex gap-12 svg-shadow w-754 flex-col md:(flex-row gap-18)`;
+const LogoWrapper = tw.div`flex gap-12 svg-shadow w-293 flex-col md:(flex-row gap-18 w-754)`;
 const ButtonWrapper = tw.div`w-157`;
-const TextMain = tw.div`font-r-16 whitespace-pre-line md:w-full`;
+const TextMain = tw.div`w-full font-r-14 whitespace-pre-line md:font-r-16`;
 const InfoWrapper = tw.div`flex gap-20 flex-col md:(flex-row) xxl:(gap-40)`;
-const Info = tw.div`w-full px-24 py-20 flex flex-col gap-16 rounded-12 bg-neutral-100 bg-opacity-10 backdrop-blur-sm xl:(w-370) xxl:(w-400)`;
-const Label = tw.div`font-m-16 text-neutral-80`;
-const Text = tw.div`font-m-24`;
+const Info = tw.div`
+  w-320 px-24 py-20 flex flex-col gap-12 rounded-12 bg-neutral-100 bg-opacity-10 backdrop-blur-sm
+  md:gap-16 xl:(w-370) xxl:(w-400)
+`;
+const Label = tw.div`font-m-14 text-neutral-80 md:font-m-16`;
+const Text = tw.div`font-m-20 md:font-m-24`;
