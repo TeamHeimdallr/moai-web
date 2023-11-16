@@ -6,8 +6,8 @@ import { ButtonPrimarySmallIconLeading } from '~/components/buttons/primary/smal
 import { ButtonPrimarySmallIconTrailing } from '~/components/buttons/primary/small-icon-trailing';
 import { LoadingStep } from '~/components/loadings';
 
-import { StepConnectWallet } from '../../components/connect-wallet/step-connect-wallet';
-import { useCampaignStepStore } from '../../states/step';
+import { StepConnectWallet } from '../components/connect-wallet/step-connect-wallet';
+import { useCampaignStepStore } from '../states/step';
 
 const StepPage = () => {
   const { step, setStep } = useCampaignStepStore();

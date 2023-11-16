@@ -112,7 +112,7 @@ export const StepConnectWallet = ({ step }: Props) => {
 };
 
 const Wrapper = tw.div`
-  w-full flex flex-col gap-24 px-24 py-20 bg-neutral-10 rounded-12
+  w-full flex flex-col gap-24 p-24 pt-20 bg-neutral-10 rounded-12
 `;
 
 const TitleWrapper = tw.div`w-full flex items-center gap-8 font-b-16 text-neutral-100`;

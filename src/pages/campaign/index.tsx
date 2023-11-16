@@ -4,8 +4,8 @@ import { usePopup } from '~/hooks/components';
 import { POPUP_ID } from '~/types';
 
 import { CampaignConnectWalletPopup } from './components/connect-wallet/popup';
-import StepPage from './pages/step';
 import LandingPage from './landing';
+import StepPage from './step';
 
 const Campaign = () => {
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
