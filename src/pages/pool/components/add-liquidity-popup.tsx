@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
@@ -21,7 +21,7 @@ import { TokenList } from '~/components/token-list';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { formatNumber, getNetworkAbbr } from '~/utils';
-import { IPool, ITokenComposition, POPUP_ID } from '~/types';
+import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
   pool?: IPool;
@@ -34,12 +34,11 @@ interface Props {
 export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceImpact }: Props) => {
   const navigate = useNavigate();
 
-  const { selectedNetwork, isXrp } = useNetwork();
+  const { isXrp } = useNetwork();
+  const { network, poolId, lpToken } = pool || {};
+  const networkAbbr = getNetworkAbbr(network);
 
   const { close } = usePopup(POPUP_ID.ADD_LP);
-
-  const { network, poolId, lpToken } = pool || {};
-  const currentNetwork = network ?? selectedNetwork;
 
   const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
     {
@@ -91,69 +90,141 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
     enabled: token2Amount > 0,
   });
 
-  const getEnabled = () => {
-    const validAmount = token1Amount > 0 || token2Amount > 0;
-    const validAllowance =
-      token1Amount > 0 && token2Amount > 0
-        ? allowance1 && allowance2
-        : token1Amount > 0
-        ? allowance1
-        : allowance2;
+  const validAmount = token1Amount > 0 || token2Amount > 0;
+  const validAllowance =
+    token1Amount > 0 && token2Amount > 0
+      ? allowance1 && allowance2
+      : token1Amount > 0
+      ? allowance1
+      : allowance2;
 
-    return validAmount && validAllowance;
-  };
-
-  const { isLoading, isSuccess, txData, blockTimestamp, writeAsync } = useAddLiquidity({
+  const {
+    isLoading: addLiquidityLoading,
+    isSuccess,
+    txData,
+    blockTimestamp,
+    writeAsync,
+  } = useAddLiquidity({
     id: poolId || '',
     tokens: tokensIn || [],
-    enabled: getEnabled(),
+    enabled: validAmount && validAllowance,
   });
+  const txDate = new Date(blockTimestamp ?? 0);
+  const isLoading = addLiquidityLoading || allowLoading1 || allowLoading2;
 
-  const getStep = () => {
-    if (isSuccess) {
-      return tokenLength + 1;
+  const step = useMemo(() => {
+    if (isSuccess) return tokenLength + 1;
+
+    if (tokenLength === 2) {
+      if (allowance2) return 3;
+      if (allowance1) return 2;
     }
 
-    if (!allowance1) return 1;
-    if (!allowance2 && tokenLength > 1) return 2;
+    // single token deposit
+    if (tokenLength === 1) {
+      if (token1Amount > 0 && token2Amount <= 0) {
+        if (allowance1) return 2;
+      }
+      if (token2Amount > 0 && token1Amount <= 0) {
+        if (allowance2) return 2;
+      }
+    }
+    return 1;
+  }, [allowance1, allowance2, isSuccess, token1Amount, token2Amount, tokenLength]);
 
-    return tokenLength + 1;
-  };
-  const step = getStep();
-  const txDate = new Date(blockTimestamp ?? 0);
+  const stepLoading = useMemo(() => {
+    if (tokenLength === 2) {
+      if (step === 1) return allowLoading1;
+      if (step === 2) return allowLoading2;
+      if (step === 3) return addLiquidityLoading;
+    }
 
-  const handleButton = async () => {
+    if (tokenLength === 1) {
+      if (token1Amount > 0 && token2Amount <= 0) {
+        if (step === 1) return allowLoading1;
+        if (step === 2) return addLiquidityLoading;
+      }
+      if (token2Amount > 0 && token1Amount <= 0) {
+        if (step === 1) return allowLoading2;
+        if (step === 2) return addLiquidityLoading;
+      }
+    }
+    return false;
+  }, [
+    addLiquidityLoading,
+    allowLoading1,
+    allowLoading2,
+    step,
+    token1Amount,
+    token2Amount,
+    tokenLength,
+  ]);
+
+  const buttonText = useMemo(() => {
+    if (isSuccess) return 'Return to pool page';
+
+    if (tokenLength === 2) {
+      if (!allowance1) return `Approve ${tokensIn?.[0]?.symbol} for adding liquidity`;
+      if (!allowance2) return `Approve ${tokensIn?.[1]?.symbol} for adding liquidity`;
+
+      return 'Add liquidity';
+    }
+
+    // single token deposit
+    if (tokenLength === 1) {
+      if (token1Amount > 0 && token2Amount <= 0) {
+        if (!allowance1) return `Approve ${tokensIn?.[0]?.symbol} for adding liquidity`;
+        return 'Add liquidity';
+      }
+      if (token2Amount > 0 && token1Amount <= 0) {
+        if (!allowance2) return `Approve ${tokensIn?.[1]?.symbol} for adding liquidity`;
+        return 'Add liquidity';
+      }
+    }
+
+    return '';
+  }, [allowance1, allowance2, isSuccess, token1Amount, token2Amount, tokenLength, tokensIn]);
+
+  const handleButtonClick = async () => {
+    if (isLoading) return;
     if (isSuccess) {
       close();
-      navigate(-1);
+      navigate(`/pools/${networkAbbr}/${poolId}`);
       return;
+    }
+    // 2 token deposit
+    if (tokenLength === 2) {
+      if (!allowance1) return await allowToken1();
+      if (!allowance2) return await allowToken2();
+
+      return await writeAsync?.();
     }
 
-    if (step === 1) {
-      await allowToken1?.();
-      return;
+    // single token deposit
+    if (tokenLength === 1) {
+      if (token1Amount > 0 && token2Amount <= 0) {
+        if (allowance1) return await writeAsync?.();
+        else await allowToken1();
+      }
+      if (token2Amount > 0 && token1Amount <= 0) {
+        console.log('here');
+        if (allowance2) return await writeAsync?.();
+        else await allowToken2();
+      }
     }
-    if (step === 2 && tokenLength > 1) {
-      await allowToken2?.();
-      return;
-    }
-    await writeAsync?.();
   };
 
   useEffect(() => {
-    if (allowSuccess1) {
-      refetchAllowance1();
-      return;
-    }
-    if (allowSuccess2) {
-      refetchAllowance2();
-      return;
-    }
+    if (allowSuccess1) refetchAllowance1();
+    if (allowSuccess2) refetchAllowance2();
   }, [allowSuccess1, allowSuccess2, refetchAllowance1, refetchAllowance2]);
 
   const handleLink = () => {
     const txHash = isXrp ? txData?.hash : txData?.transactionHash;
-    const url = `${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${txHash}`;
+    const url = `${SCANNER_URL[network || NETWORK.THE_ROOT_NETWORK]}/${
+      isXrp ? 'transactions' : 'tx'
+    }/${txHash}`;
+
     window.open(url);
   };
 
@@ -162,19 +233,9 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
       id={POPUP_ID.ADD_LP}
       title={isSuccess ? '' : 'Add liquidity preview'}
       button={
-        <ButtonWrapper onClick={() => handleButton()}>
+        <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
-            text={
-              isLoading
-                ? 'Confirming'
-                : isSuccess
-                ? 'Return to pool page'
-                : step === 1
-                ? `Approve ${tokensIn?.[0]?.symbol} for adding liquidity`
-                : step === 2 && tokenLength > 1
-                ? `Approve ${tokensIn?.[1]?.symbol} for adding liquidity`
-                : 'Add liquidity'
-            }
+            text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
           />
@@ -241,13 +302,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
             <LoadingStep
               totalSteps={tokenLength + 1}
               step={step}
-              isLoading={
-                step === 1
-                  ? allowLoading1
-                  : step === 2 && tokenLength > 1
-                  ? allowLoading2
-                  : isLoading
-              }
+              isLoading={stepLoading}
               isDone={isSuccess}
             />
           </>

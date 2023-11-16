@@ -73,8 +73,8 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
       isLoading: false,
       isSuccess: true,
       allowance: true,
-      refetch: () => {},
-      allow: () => {},
+      refetch: async () => {},
+      allow: async () => {},
     };
   }
   return {

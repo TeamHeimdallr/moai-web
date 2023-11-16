@@ -21,7 +21,7 @@ export const useApprove = ({ amount, address, issuer, spender, currency, enabled
   const { isEvm, isFpass } = useNetwork();
 
   const resEvm = useApproveEvm({
-    amount,
+    amount: amount * 100,
     allowanceMin: amount,
     spender: (spender ?? '0x0') as Address,
     tokenAddress: address as Address,
@@ -29,7 +29,7 @@ export const useApprove = ({ amount, address, issuer, spender, currency, enabled
   });
 
   const resFpass = useApproveFpass({
-    amount,
+    amount: amount * 100,
     allowanceMin: amount,
     spender: (spender ?? '0x0') as Address,
     tokenAddress: address as Address,
