@@ -41,6 +41,7 @@ import IconPlus from './icon-plus.svg?react';
 import IconPrice from './icon-price.svg?react';
 import IconProfileFill from './icon-profile-fill.svg?react';
 import IconProfileStroke from './icon-profile-stroke.svg?react';
+import IconQuestion from './icon-question.svg?react';
 import IconRefresh from './icon-refresh.svg?react';
 import IconSearch from './icon-search.svg?react';
 import IconSetting from './icon-setting.svg?react';
@@ -100,6 +101,7 @@ export {
   IconPrice,
   IconProfileFill,
   IconProfileStroke,
+  IconQuestion,
   IconRefresh,
   IconSearch,
   IconSetting,
