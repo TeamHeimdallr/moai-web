@@ -2,14 +2,17 @@ import { Dispatch } from 'react';
 import { useNavigate } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
-import { IconCancel, IconEnglish } from '~/assets/icons';
+import { IconCancel } from '~/assets/icons';
 import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { GNB_MENU } from '~/constants';
 
 import { TOOLTIP_ID } from '~/types';
 
+import { ButtonIconLarge } from '../buttons';
 import { Footer } from '../footer';
+import { LanguageChange } from '../language-change';
+import { NetworkSelection } from '../network-selection';
 import { TooltipCommingSoon } from '../tooltips/comming-soon';
 
 interface MobileMenuProps {
@@ -37,12 +40,12 @@ export const MobileMenu = ({ open }: MobileMenuProps) => {
               <LogoText width={88} height={20} />
             </LogoWrapper>
             <ButtonWrapper>
-              <ButtonInnerWrapper>
-                <IconEnglish width={24} height={24} />
-              </ButtonInnerWrapper>
-              <ButtonInnerWrapper onClick={handleCloseClick}>
-                <IconCancel width={24} height={24} />
-              </ButtonInnerWrapper>
+              <NetworkSelection />
+              <LanguageChange />
+              <ButtonIconLarge
+                icon={<IconCancel width={24} height={24} />}
+                onClick={handleCloseClick}
+              />
             </ButtonWrapper>
           </HeaderWrapper>
           <MenuWrapper>
@@ -59,20 +62,19 @@ export const MobileMenu = ({ open }: MobileMenuProps) => {
             ))}
           </MenuWrapper>
         </UpperWrapper>
-        <Footer />
+        <Footer inMenu={true} />
       </Wrapper>
       <TooltipCommingSoon place="bottom" id={TOOLTIP_ID.COMMING_SOON} />
     </>
   );
 };
 
-const Wrapper = tw.div`absolute flex flex-col justify-between w-full h-screen bg-neutral-5 overflow-hidden z-11`;
+const Wrapper = tw.div`fixed right-0 w-360 flex flex-col justify-between h-screen bg-neutral-10 z-11 `;
 const UpperWrapper = tw.div`flex flex-col gap-40`;
 const HeaderWrapper = tw.div`flex items-center justify-between px-20 py-16`;
 const MenuWrapper = tw.div`flex flex-col gap-24 px-20`;
 const LogoWrapper = tw.div`clickable h-20`;
 const ButtonWrapper = tw.div`flex-center gap-8`;
-const ButtonInnerWrapper = tw.div`flex-center w-40 h-40 clickable`;
 interface MenuProps {
   selected: boolean;
   disabled: boolean;

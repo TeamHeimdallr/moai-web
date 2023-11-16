@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
+import { COLOR } from '~/assets/colors';
 import { IconNoti } from '~/assets/icons';
 
 import { NotificationCard } from '../notification-card';
@@ -41,10 +42,13 @@ export const Notification = () => {
   const handleClear = () => {
     //
   };
+  // TODO : connect API
+  const hasNoti = !opened;
 
   return (
     <UpperWrapper ref={ref}>
       <NotiWrapper onClick={() => toggle()} opened={opened}>
+        {hasNoti && <NotiDot />}
         <IconNoti fill={opened ? '#191B28' : '#F8FFA7'}></IconNoti>
       </NotiWrapper>
       {opened && (
@@ -73,9 +77,7 @@ const UpperWrapper = tw.div`
 `;
 
 const Wrapper = tw.div`
-  min-w-294 max-h-640 min-h-136 bg-neutral-15 rounded-8 absolute right-0 box-shadow-default
-  sm:top-48 
-  md:top-60
+  min-w-294 max-h-640 min-h-136 bg-neutral-15 rounded-8 absolute right-0 box-shadow-default top-48
 `;
 
 interface Props {
@@ -83,20 +85,23 @@ interface Props {
 }
 const NotiWrapper = styled.div<Props>(({ opened }: Props) => [
   tw`relative flex items-start w-40 h-40 gap-6 px-8 py-9 bg-neutral-10 rounded-10 clickable`,
-  opened ? tw` bg-primary-50` : tw` hover:bg-neutral-20`,
+  opened ? tw`bg-neutral-20` : tw` hover:bg-neutral-20`,
   opened
     ? css`
         & > svg path {
-          fill: #191b28;
+          fill: ${COLOR.PRIMARY[60]};
         }
       `
     : css`
+        & > svg path {
+          fill: ${COLOR.NEUTRAL[60]};
+        }
         &:hover > svg path {
-          fill: #fcffd6;
+          fill: ${COLOR.PRIMARY[80]};
         }
       `,
 ]);
-
+const NotiDot = tw.div`absolute top-6 right-6 w-6 h-6 bg-red-50 rounded-full`;
 const Panel = tw.div`
   flex flex-col items-start bg-neutral-15 rounded-8
 `;

@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
@@ -19,7 +18,7 @@ import { AccountDetail } from '../account-detail';
 export const Account = () => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { isMD } = useMediaQuery();
+  const { isLG } = useMediaQuery();
 
   const [opened, open] = useState(false);
   const toggle = () => open(!opened);
@@ -35,7 +34,10 @@ export const Account = () => {
     <Wrapper ref={ref}>
       <Banner opened={opened} onClick={toggle}>
         {connectedWalletCount > 1 ? (
-          <BothConnectedWrapper style={{ width: connectedWalletCount === 3 ? 88 : 66 }}>
+          <BothConnectedWrapper
+            style={{ width: connectedWalletCount === 3 ? 88 : 66 }}
+            opened={opened}
+          >
             {xrp.address && (
               <ConnectedXrp>
                 {xrp.connectedConnector === 'crossmark' ? (
@@ -59,10 +61,17 @@ export const Account = () => {
         ) : (
           <AccountWrapper>
             <InnerWrapper>
-              {/* TODO: icon */}
-              <Jazzicon diameter={24} seed={jsNumberForAddress(evm.address || xrp.address || '')} />
+              <ConnectedBase>
+                {evm.address && <Image src={imageWalletMetamask} alt="metamask" />}
+                {xrp.address &&
+                  (xrp.connectedConnector === 'crossmark' ? (
+                    <Image src={imageWalletCrossmark} alt="crossmark wallet" />
+                  ) : (
+                    <Image src={imageWalletGem} alt="gem wallet" />
+                  ))}
+              </ConnectedBase>
             </InnerWrapper>
-            {isMD && (
+            {isLG && (
               <ContentWrapper opened={opened}>
                 {truncateAddress(evm.address || xrp.address || '', 4)}
               </ContentWrapper>
@@ -75,9 +84,6 @@ export const Account = () => {
   );
 };
 
-const InnerWrapper = tw.div`
-  flex-center
-`;
 const Wrapper = tw.div`
   relative
 `;
@@ -93,9 +99,8 @@ const Banner = styled.div<WrapperProps>(({ opened }) => [
 ]);
 
 const AccountWrapper = tw.div`
-  flex-center gap-6 px-8 py-9
-  sm:w-40 
-  md:w-136
+  relative flex-center gap-6 px-8 py-9 hover:bg-neutral-20 rounded-10 w-40
+  lg:(w-full pr-16)
 `;
 
 const ContentWrapper = styled.div<WrapperProps>(({ opened }) => [
@@ -105,14 +110,17 @@ const ContentWrapper = styled.div<WrapperProps>(({ opened }) => [
   opened ? tw`text-primary-60` : tw`hover:text-primary-80 `,
 ]);
 
-const BothConnectedWrapper = tw.div`
-  flex inline-flex items-center bg-neutral-10 py-9 px-8 rounded-10 relative h-40
-`;
+const BothConnectedWrapper = styled.div<WrapperProps>(({ opened }) => [
+  tw`
+    flex inline-flex items-center bg-neutral-10 py-9 px-8 rounded-10 relative h-40 hover:bg-neutral-20
+  `,
+  opened && tw`bg-neutral-20`,
+]);
 const ConnectedBase = tw.div`
-  absolute flex-center w-28 h-28 bg-neutral-0 border-1 border-neutral-10 border-solid rounded-14
+  flex-center w-28 h-28 bg-neutral-0 border-1 border-neutral-10 border-solid rounded-14
 `;
-const ConnectedEvm = tw(ConnectedBase)`right-9`;
-const ConnectedXrp = tw(ConnectedBase)`left-9`;
+const ConnectedEvm = tw(ConnectedBase)`absolute right-9`;
+const ConnectedXrp = tw(ConnectedBase)`absolute left-9`;
 interface DivProps {
   tripleConnected?: boolean;
 }
@@ -122,5 +130,7 @@ const ConnectedRoot = styled.div<DivProps>(({ tripleConnected }) => [
 ]);
 
 const Image = tw.img`
-  w-24 h-24 object-cover flex-center
+  w-20 h-20 object-cover flex-center rounded-full
 `;
+
+const InnerWrapper = tw.div`flex-center`;

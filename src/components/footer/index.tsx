@@ -5,11 +5,10 @@ import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { ButtonIconLarge } from '~/components/buttons/icon';
 
-import { useMediaQuery } from '~/hooks/utils';
-
-export const Footer = () => {
-  const { isMD } = useMediaQuery();
-
+interface Props {
+  inMenu?: boolean;
+}
+export const Footer = ({ inMenu = false }: Props) => {
   // TODO: sns link
   const sns = [
     { name: 'twitter', url: 'https://twitter.com/MoaiFinance', icon: <IconTwitterX /> },
@@ -20,7 +19,7 @@ export const Footer = () => {
 
   return (
     <Wrapper>
-      {isMD && <LogoText width={70} height={16} />}
+      {!inMenu && <LogoText width={70} height={16} />}
       <Text>{`© ${new Date().getFullYear()} Moai Finance, Inc. All Rights Reserved`}</Text>
       <SnsWrapper>
         {sns.map(({ name, url, icon, disabled }) => (

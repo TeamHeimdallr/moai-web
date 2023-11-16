@@ -31,7 +31,7 @@ import { NetworkSelection } from '../network-selection';
 export const Gnb = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isMD } = useMediaQuery();
+  const { isLG } = useMediaQuery();
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
   const { network } = useParams();
@@ -62,13 +62,13 @@ export const Gnb = () => {
         <NavWrapper>
           <LogoWrapper>
             <LogoText
-              width={isMD ? 88 : 70}
-              height={isMD ? 20 : 16}
+              width={isLG ? 88 : 70}
+              height={isLG ? 20 : 16}
               onClick={() => navigate('/')}
             />
           </LogoWrapper>
           <ContentWrapper>
-            {isMD &&
+            {isLG &&
               GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
                 <MenuWrapper
                   key={id}
@@ -88,7 +88,7 @@ export const Gnb = () => {
                 </ConnectedButton>
               ) : (
                 <ButtonPrimaryMedium
-                  style={{ padding: isMD ? '9px 24px' : '9px 16px' }}
+                  style={{ padding: isLG ? '9px 24px' : '9px 16px' }}
                   text={t('Connect wallet')}
                   isLoading={!!opened}
                   onClick={() => {
@@ -100,9 +100,9 @@ export const Gnb = () => {
                   }}
                 />
               )}
-              <NetworkSelection />
-              <LanguageChange />
-              {!isMD && (
+              {isLG && <NetworkSelection />}
+              {isLG && <LanguageChange />}
+              {!isLG && (
                 <HamburgerWrapper onClick={() => mobileMenuOpen(true)}>
                   <IconMenu width={24} />
                 </HamburgerWrapper>
@@ -138,8 +138,8 @@ interface MenuProps {
 }
 const MenuWrapper = styled.div(({ selected, disabled }: MenuProps) => [
   tw`text-white clickable font-b-16`,
-  disabled ? tw`non-clickable text-neutral-60` : tw`hover:text-primary-60`,
-  !disabled && selected && tw`text-primary-60`,
+  disabled ? tw`non-clickable text-neutral-60` : tw`hover:text-primary-80`,
+  !disabled && selected && tw`text-primary-60 hover:text-primary-60`,
 ]);
 
 const ButtonWrapper = tw.div`
