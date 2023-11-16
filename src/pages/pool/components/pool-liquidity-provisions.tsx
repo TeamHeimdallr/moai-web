@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
+import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons';
@@ -31,10 +32,10 @@ export const PoolLiquidityProvisions = () => {
     { key: 'my-provision', name: 'My liquidity' },
   ];
 
-  const { tableColumns, tableData, liquidityProvisions } = useTableLiquidityProvision();
+  const { tableColumns, tableData, liquidityProvisions, hasNextPage, fetchNextPage } =
+    useTableLiquidityProvision();
 
-  const hasMyLiquidity =
-    selectedTab === 'my-provision' && !!currentAddress && liquidityProvisions.length > 0;
+  const hasMyLiquidity = !!currentAddress && liquidityProvisions.length > 0;
 
   return (
     <Wrapper opened={opened}>
@@ -47,7 +48,14 @@ export const PoolLiquidityProvisions = () => {
       {opened && (
         <>
           {hasMyLiquidity && <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />}
-          <Table data={tableData} columns={tableColumns} ratio={[2, 3, 2, 2]} type="lighter" />
+          <TableWrapper>
+            <Table data={tableData} columns={tableColumns} ratio={[2, 3, 2, 2]} type="lighter" />
+            {hasNextPage && (
+              <LoadMoreWrapper onClick={() => fetchNextPage()}>
+                Load more <IconDown width={20} height={20} fill={COLOR.NEUTRAL[60]} />
+              </LoadMoreWrapper>
+            )}
+          </TableWrapper>
         </>
       )}
     </Wrapper>
@@ -72,3 +80,10 @@ const Icon = styled.div<DivProps>(({ opened }) => [
     transform: rotate(${opened ? '-180deg' : '0deg'});
   `,
 ]);
+
+const TableWrapper = tw.div`
+  flex flex-col
+`;
+const LoadMoreWrapper = tw.div`
+  px-24 py-20 flex-center gap-6 font-m-14 text-neutral-60 bg-neutral-15 clickable
+`;

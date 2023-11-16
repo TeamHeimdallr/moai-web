@@ -112,15 +112,17 @@ const Wrapper = tw.div`
   w-400 bg-neutral-10 rounded-12
 `;
 const Header = tw.div`
-  py-20 px-24 flex items-center justify-between font-m-16 text-neutral-100
+  py-20 px-24 flex items-center justify-between font-m-20 text-neutral-100
 `;
 const Balance = tw.div`
-  font-m-20
+  font-b-24
 `;
-const TokenLists = tw.div``;
+const TokenLists = tw.div`
+  py-7
+`;
 
 const Footer = tw.div`
-  flex flex-col gap-24 bg-neutral-15 rounded-b-12
+  flex flex-col gap-24 bg-neutral-15 rounded-b-12 pt-20 px-24 pb-24
 `;
 const FooterBalanceWrapper = tw.div`
   flex w-full justify-between items-center font-m-16 text-neutral-100
@@ -130,7 +132,7 @@ const FooterBalance = tw.div`
 `;
 
 const ButtonWrapper = tw.div`
-  px-24 pt-20 pb-24 flex gap-8
+  flex gap-8
 `;
 const Divider = tw.div`
   flex h-1 bg-neutral-15

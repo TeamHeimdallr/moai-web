@@ -77,7 +77,7 @@ export const useTableSwapHistories = () => {
       swapHistories?.map(d => {
         const value = d.swapHistoryTokens.reduce((acc, cur) => {
           const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
-          const amount = cur.amount;
+          const amount = cur.amounts;
 
           return (acc += price * amount);
         }, 0);
@@ -98,7 +98,7 @@ export const useTableSwapHistories = () => {
             <TableColumnTokenSwap
               tokens={d.swapHistoryTokens.map(t => ({
                 symbol: t.symbol,
-                value: t.amount,
+                value: t.amounts,
                 image: t.image,
               }))}
             />

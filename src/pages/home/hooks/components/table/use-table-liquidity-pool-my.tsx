@@ -39,6 +39,7 @@ export const useTableMyLiquidityPool = () => {
       pools?.map(d => ({
         meta: {
           id: d.id,
+          poolId: d.poolId,
           network: d.network,
         },
         compositions: (

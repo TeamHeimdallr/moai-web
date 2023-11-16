@@ -68,7 +68,9 @@ export const useLpTokenTotalSupply = ({ network, poolId }: Props) => {
   const lpTokenInfo = ammInfo?.lp_token;
 
   const lpTokenTotalSupply = Number(lpTokenInfo?.value || 0);
-  const lpTokenPrice = Number(BigInt(pool?.value || 0) / BigInt(lpTokenTotalSupply));
+  const lpTokenPrice = lpTokenTotalSupply
+    ? Number(BigInt(pool?.value || 0) / BigInt(lpTokenTotalSupply))
+    : 0;
 
   return {
     lpTokenPrice,

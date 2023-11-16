@@ -38,7 +38,7 @@ export const PoolHeader = () => {
   const { address: lpTokenAddress } = lpToken || {};
 
   const handleLink = () => {
-    const url = `${SCANNER_URL[currentNetwork]}/address/${lpTokenAddress}${
+    const url = `${SCANNER_URL[currentNetwork]}/address/${lpTokenAddress}?${
       isFpass ? 'tab=erc20_transfers' : ''
     }`;
 
@@ -58,7 +58,9 @@ export const PoolHeader = () => {
             );
           })}
         </BadgeWrapper>
-        <Title>{`${compositions?.reduce((acc, cur) => `${acc}/${cur.symbol}`, '')}`}</Title>
+        <Title>{`${compositions
+          ?.reduce((acc, cur) => `${acc}/${cur.symbol}`, '')
+          .substring(1)}`}</Title>
       </TitleWrapper>
 
       <TokenWrapper>

@@ -53,6 +53,7 @@ export const useTableLiquidityPool = () => {
       pools.map(d => ({
         meta: {
           id: d.id,
+          poolId: d.poolId,
           network: d.network,
         },
         network: showAllPools ? <TableColumn value={<NetworkChip network={d.network} />} /> : null,

@@ -86,7 +86,7 @@ export const useTableLiquidityProvision = () => {
       liquidityProvisions?.map(d => {
         const value = d.liquidityProvisionTokens.reduce((acc, cur) => {
           const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
-          const amount = cur.amount;
+          const amount = Math.abs(cur.amounts);
 
           return (acc += price * amount);
         }, 0);
@@ -112,7 +112,7 @@ export const useTableLiquidityProvision = () => {
             <TableColumnTokenPair
               tokens={d.liquidityProvisionTokens.map(t => ({
                 symbol: t.symbol,
-                value: t.amount,
+                value: Math.abs(t.amounts),
                 image: t.image,
               }))}
             />

@@ -85,8 +85,8 @@ export const useUserPoolTokenBalances = () => {
   );
 
   const lpTokenBalance = tokenBalances?.[0] || 0;
-  const lpTokenTotalSupply = Number(formatEther(lpTokenTotalSupplyData as bigint));
-  const lpTokenPrice = Number(pool?.value || 0 / lpTokenTotalSupply);
+  const lpTokenTotalSupply = Number(formatEther((lpTokenTotalSupplyData || 0n) as bigint));
+  const lpTokenPrice = Number(lpTokenTotalSupply ? (pool?.value || 0) / lpTokenTotalSupply : 0);
   const lpTokenValue = lpTokenBalance * lpTokenPrice;
 
   const userPoolTokenBalances = tokenBalances?.slice(1) || [];

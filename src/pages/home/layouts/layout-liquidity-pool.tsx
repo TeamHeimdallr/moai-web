@@ -18,6 +18,7 @@ import { useTableLiquidityPool } from '../hooks/components/table/use-table-liqui
 interface Meta {
   network: NETWORK;
   id: string;
+  poolId: string;
 }
 export const LiquidityPoolLayout = () => {
   const isMounted = useRef(false);
@@ -41,7 +42,7 @@ export const LiquidityPoolLayout = () => {
       setTargetNetwork(meta.network as NETWORK);
       return;
     }
-    navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.id}`);
+    navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.poolId}`);
   };
 
   const handleTokenClick = (token: string) => {

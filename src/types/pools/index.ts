@@ -80,7 +80,7 @@ export interface ILiquidityProvision {
 
 export interface ILiquidityProvisionToken extends IToken {
   type: LIQUIDITY_PROVISION_TYPE;
-  amount: number;
+  amounts: number;
 }
 
 export enum LIQUIDITY_PROVISION_TYPE {
@@ -100,7 +100,7 @@ export interface ISwapHistory {
 }
 
 export interface ISwapHistoryToken extends IToken {
-  amount: number;
+  amounts: number;
 }
 
 export interface IPoolVaultAmm {
