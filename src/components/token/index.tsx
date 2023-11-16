@@ -8,6 +8,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
 
   title?: string;
+  address?: string;
   percentage?: number;
 
   image?: boolean;
@@ -24,6 +25,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 export const Token = ({
   token,
   title,
+  address,
   percentage,
   image = true,
   imageUrl,
@@ -41,7 +43,7 @@ export const Token = ({
         ) : (
           <Jazzicon
             diameter={type === 'large' ? 24 : 20}
-            seed={jsNumberForAddress(token ?? title)}
+            seed={jsNumberForAddress(address || token || title || '')}
           />
         ))}
       <TextWrapper>

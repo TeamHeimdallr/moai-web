@@ -16,7 +16,7 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkAbbr } from '~/utils';
 import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -41,6 +41,7 @@ export const WithdrawLiquidityPopup = ({
   const navigate = useNavigate();
   const { isXrp } = useNetwork();
   const { poolId, network, lpToken } = pool || {};
+  const networkAbbr = getNetworkAbbr(network);
 
   const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useWithdrawLiquidity({
     id: poolId || '',
@@ -56,7 +57,7 @@ export const WithdrawLiquidityPopup = ({
 
   const handleButton = async () => {
     if (isSuccess) {
-      navigate(-1);
+      navigate(`/pools/${networkAbbr}/${poolId}`);
       close();
     } else {
       await writeAsync?.();
@@ -101,9 +102,8 @@ export const WithdrawLiquidityPopup = ({
           <List title={`You're providing`}>
             <TokenList
               type="large"
-              title={`${formatNumber(bptIn, 4)}`}
-              subTitle={`${lpToken?.symbol}`}
-              description={`$${formatNumber(totalValue)} (${withdrawTokenWeight}%)`}
+              title={`${formatNumber(bptIn, 4)} ${lpToken?.symbol}`}
+              description={`$${formatNumber(totalValue)} (${withdrawTokenWeight.toFixed(4)}%)`}
               image={lpToken?.image}
               leftAlign
             />
@@ -111,12 +111,14 @@ export const WithdrawLiquidityPopup = ({
         )}
 
         <List title={`You're expected to receive`}>
-          {tokensOut?.map(({ symbol, currentWeight, amount, image, description }, i) => (
+          {tokensOut?.map(({ symbol, currentWeight, amount, image, price }, i) => (
             <div key={`${symbol}-${i}`}>
               <TokenList
                 type="large"
-                title={`${symbol} ${amount.toFixed(4)} (${currentWeight}%)`}
-                description={description}
+                title={`${amount.toFixed(6)} ${symbol}`}
+                description={`$${formatNumber(amount * (price || 0))} (${(
+                  (currentWeight || 0) * 100
+                )?.toFixed(2)}%)`}
                 image={image}
                 leftAlign
               />

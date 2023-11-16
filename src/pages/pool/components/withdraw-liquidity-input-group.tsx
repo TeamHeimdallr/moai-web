@@ -106,7 +106,7 @@ export const WithdrawLiquidityInputGroup = () => {
           <InputNumber
             name={'input1'}
             control={control}
-            token={<Token token={lpToken?.symbol || ''} />}
+            token={<Token token={lpToken?.symbol || ''} image address={lpToken?.address} />}
             tokenName={lpToken?.symbol || ''}
             tokenValue={withdrawTokenValue}
             balance={userLpTokenBalance || 0}
@@ -128,7 +128,7 @@ export const WithdrawLiquidityInputGroup = () => {
                   type="large"
                   title={`${symbol} ${Number(
                     (proportionalTokensOut?.[i]?.amount || 0).toFixed(6)
-                  )} (${currentWeight}%)`}
+                  )} (${currentWeight?.toFixed(2)}%)`}
                   description={description}
                   image={image}
                   leftAlign
