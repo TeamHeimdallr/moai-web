@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { keyframes } from '@emotion/react';
 import tw, { css, styled } from 'twin.macro';
 
@@ -25,40 +26,75 @@ interface Wallet {
   name: string;
   image: string;
   type: string;
-  onClick: () => void;
+  connect: () => void;
+  connected?: boolean;
+  disconnect: () => void;
 }
 
 export const StepConnectWallet = ({ step }: Props) => {
-  const { connect: connectEvm } = useConnectWithEvmWallet();
-  const { connect: connectXrpCrossmark } = useConnectWithCrossmarkWallet();
-  const { connect: connectXrpGem } = useConnectWithGemWallet();
+  const [isLoading, setIsLoading] = useState('');
+  const {
+    connect: connectEvm,
+    isConnected: evmConnected,
+    disconnect: disconnectEvm,
+  } = useConnectWithEvmWallet();
+  const {
+    connect: connectXrpCrossmark,
+    isConnected: crossMarkConnected,
+    disconnect: disconnectXrpCrossmark,
+  } = useConnectWithCrossmarkWallet();
+  const {
+    connect: connectXrpGem,
+    isConnected: gemConnected,
+    disconnect: disconnectXrpGem,
+  } = useConnectWithGemWallet();
 
   const chain = step === 1 ? 'xrpl' : 'evm';
-
-  //TODO : implement loading connect wallet
-  const isLoading = true;
-  const isConnected = false;
 
   const wallets: Wallet[] = [
     {
       name: 'Metamask',
       image: imageWalletMetamask,
-      onClick: connectEvm,
+      connect: connectEvm,
+      connected: evmConnected,
+      disconnect: disconnectEvm,
       type: 'evm',
     },
     {
       name: 'Crossmark',
       image: imageWalletCrossmark,
-      onClick: connectXrpCrossmark,
+      connect: connectXrpCrossmark,
+      connected: crossMarkConnected,
+      disconnect: disconnectXrpCrossmark,
       type: 'xrpl',
     },
     {
       name: 'Gem Wallet',
       image: imageWalletGem,
-      onClick: connectXrpGem,
+      connect: connectXrpGem,
+      connected: gemConnected,
+      disconnect: disconnectXrpGem,
       type: 'xrpl',
     },
   ];
+
+  const handleConnect = (wallet: Wallet) => {
+    const selectedWallet = wallets.find(w => w === wallet);
+    if (selectedWallet?.connected) return;
+    const chainWallets = wallets.filter(w => w.type === wallet.type);
+
+    chainWallets.forEach(w => {
+      if (w.connected) w.disconnect();
+    });
+
+    selectedWallet?.connect();
+    setIsLoading(wallet.name);
+  };
+
+  useEffect(() => {
+    setIsLoading('');
+  }, [evmConnected, gemConnected, crossMarkConnected]);
+
   return (
     <>
       <Wrapper>
@@ -85,18 +121,17 @@ export const StepConnectWallet = ({ step }: Props) => {
             .map(w => (
               <Wallet
                 key={w.name}
-                onClick={() => {
-                  w.onClick();
-                }}
-                isLoading={isLoading}
-                isConnected={isConnected}
+                onClick={() => handleConnect(w)}
+                isLoading={isLoading === w.name}
               >
                 <WalletInnerWrapper>
                   <WalletImage src={w.image} alt={w.name} />
                   <Name>{w.name}</Name>
                 </WalletInnerWrapper>
-                {isLoading && <LoadingIcon src={imageStepLoading} width={24} height={24} />}
-                {isConnected && (
+                {isLoading === w.name && (
+                  <LoadingIcon src={imageStepLoading} width={24} height={24} />
+                )}
+                {w.connected && (
                   <ConnectedWrapper>
                     <ConnetedDot />
                     Connected
@@ -119,12 +154,10 @@ const TitleWrapper = tw.div`w-full flex items-center gap-8 font-b-16 text-neutra
 
 interface WalletProps {
   isLoading?: boolean;
-  isConnected?: boolean;
 }
-const Wallet = styled.div<WalletProps>(({ isLoading, isConnected }) => [
-  tw`flex items-center gap-12 px-16 py-15 rounded-8 bg-neutral-15 hover:bg-neutral-20 clickable`,
-  isLoading && tw`bg-neutral-20 justify-between`,
-  isConnected && tw`justify-between`,
+const Wallet = styled.div<WalletProps>(({ isLoading }) => [
+  tw`flex items-center gap-12 px-16 py-15 rounded-8 bg-neutral-15 hover:bg-neutral-20 clickable justify-between`,
+  isLoading && tw`bg-neutral-20`,
 ]);
 const WalletWrapper = tw.div`flex flex-col gap-8`;
 const NetworkImage = tw.img`w-24 h-24`;
