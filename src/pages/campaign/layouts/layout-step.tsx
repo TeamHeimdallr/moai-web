@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import tw from 'twin.macro';
 
 import { useConnectedWallet } from '~/hooks/wallets';
 
@@ -10,9 +11,12 @@ export const StepContents = () => {
   const { xrp, fpass } = useConnectedWallet();
 
   useEffect(() => {
-    if (xrp?.isConnected) setStep('positive');
-    if (fpass?.isConnected) setStep('positive');
+    if (!xrp.isConnected) return;
+    setStep('positive');
+    if (!fpass.address) return;
+    setStep('positive');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return <>{step < 3 ? <StepConnectWallet step={step} /> : null}</>;
+  return <Wrapper>{step < 3 ? <StepConnectWallet /> : null}</Wrapper>;
 };
+const Wrapper = tw.div`relative w-455`;

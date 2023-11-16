@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import tw from 'twin.macro';
 
 import { IconBack, IconNext } from '~/assets/icons';
@@ -6,11 +7,14 @@ import { ButtonPrimarySmallIconLeading } from '~/components/buttons/primary/smal
 import { ButtonPrimarySmallIconTrailing } from '~/components/buttons/primary/small-icon-trailing';
 import { LoadingStep } from '~/components/loadings';
 
+import { useConnectedWallet } from '~/hooks/wallets';
+
 import { StepContents } from '../layouts/layout-step';
 import { useCampaignStepStore } from '../states/step';
 
 const StepPage = () => {
   const { step, setStep } = useCampaignStepStore();
+  const { xrp, fpass } = useConnectedWallet();
 
   // TODO : waiting connect text
   const titleText =
@@ -22,25 +26,36 @@ const StepPage = () => {
       ? 'Bridge your $XRP'
       : 'Add liquidity';
 
+  const nextDisabled = useMemo(() => {
+    if (step === 1) {
+      return !xrp.isConnected;
+    }
+    if (step === 2) {
+      return !fpass.address;
+    }
+  }, [fpass.address, step, xrp.isConnected]);
+
   return (
     <Wrapper>
       {/* TODO : connect wallet loading */}
       <LoadingStep totalSteps={4} step={step} isLoading={false} />
       <Content>
-        <MoveStepWrapper>
-          <ButtonPrimarySmallIconLeading
-            text={'Back'}
-            icon={<IconBack />}
-            disabled={step === 1}
-            onClick={() => setStep('negative')}
-          />
-          <ButtonPrimarySmallIconTrailing
-            text={'Next'}
-            icon={<IconNext />}
-            disabled={step === 4}
-            onClick={() => setStep('positive')}
-          />
-        </MoveStepWrapper>
+        {(step !== 1 || xrp.isConnected) && (
+          <MoveStepWrapper>
+            <ButtonPrimarySmallIconLeading
+              text={'Back'}
+              icon={<IconBack />}
+              disabled={step === 1}
+              onClick={() => setStep('negative')}
+            />
+            <ButtonPrimarySmallIconTrailing
+              text={'Next'}
+              icon={<IconNext />}
+              disabled={nextDisabled || step === 4}
+              onClick={() => setStep('positive')}
+            />
+          </MoveStepWrapper>
+        )}
 
         <TextWrapper>
           <StepText>Step {step}</StepText>

@@ -10,115 +10,121 @@ import { imageStepLoading } from '~/assets/images';
 import { ButtonIconSmall } from '~/components/buttons';
 
 import {
+  useConnectedWallet,
   useConnectWithCrossmarkWallet,
-  useConnectWithEvmWallet,
   useConnectWithGemWallet,
 } from '~/hooks/wallets';
 import { TOOLTIP_ID } from '~/types';
 
+import { useCampaignStepStore } from '../../states/step';
+import { CreateFuturepass } from '../create-futurepass';
 import { TooltipFuturepass } from '../tooltip/futurepass';
 
-interface Props {
-  step: number;
+interface Chain {
+  type: 'xrpl' | 'fpass';
+  image: string;
+  description: string;
+  wallets: Wallet[];
 }
-
 interface Wallet {
   name: string;
   image: string;
-  type: string;
   connect: () => void;
   connected?: boolean;
-  disconnect: () => void;
 }
 
-export const StepConnectWallet = ({ step }: Props) => {
+export const StepConnectWallet = () => {
+  const { step } = useCampaignStepStore();
+
   const [isLoading, setIsLoading] = useState('');
-  const {
-    connect: connectEvm,
-    isConnected: evmConnected,
-    disconnect: disconnectEvm,
-  } = useConnectWithEvmWallet();
-  const {
-    connect: connectXrpCrossmark,
-    isConnected: crossMarkConnected,
-    disconnect: disconnectXrpCrossmark,
-  } = useConnectWithCrossmarkWallet();
-  const {
-    connect: connectXrpGem,
-    isConnected: gemConnected,
-    disconnect: disconnectXrpGem,
-  } = useConnectWithGemWallet();
+  const { connect: connectXrpCrossmark, isConnected: crossMarkConnected } =
+    useConnectWithCrossmarkWallet();
+  const { connect: connectXrpGem, isConnected: gemConnected } = useConnectWithGemWallet();
+  const { xrp, fpass } = useConnectedWallet();
+  const [fpassComponent, createFpassComponent] = useState(
+    step === 2 && !fpass.address && fpass.isConnected
+  );
 
-  const chain = step === 1 ? 'xrpl' : 'evm';
-
-  const wallets: Wallet[] = [
-    {
-      name: 'Metamask',
-      image: imageWalletMetamask,
-      connect: connectEvm,
-      connected: evmConnected,
-      disconnect: disconnectEvm,
-      type: 'evm',
-    },
-    {
-      name: 'Crossmark',
-      image: imageWalletCrossmark,
-      connect: connectXrpCrossmark,
-      connected: crossMarkConnected,
-      disconnect: disconnectXrpCrossmark,
+  const chainMap: { [key in 'XRPL' | 'FPASS']: Chain } = {
+    XRPL: {
       type: 'xrpl',
+      description: 'XRPL',
+      image: imageNetworkXRPL,
+      wallets: [
+        {
+          name: 'Crossmark',
+          image: imageWalletCrossmark,
+          connect: connectXrpCrossmark,
+          connected: crossMarkConnected,
+        },
+        {
+          name: 'Gem Wallet',
+          image: imageWalletGem,
+          connect: connectXrpGem,
+          connected: gemConnected,
+        },
+      ],
     },
-    {
-      name: 'Gem Wallet',
-      image: imageWalletGem,
-      connect: connectXrpGem,
-      connected: gemConnected,
-      disconnect: disconnectXrpGem,
-      type: 'xrpl',
+    FPASS: {
+      type: 'fpass',
+      description: 'Futruepass',
+      image: imageWalletFuturepass,
+      wallets: [
+        {
+          name: 'Metamask',
+          image: imageWalletMetamask,
+          connect: fpass.connect,
+          connected: fpass.isConnected && !!fpass.address,
+        },
+      ],
     },
-  ];
+  };
+  const chain = step === 1 ? chainMap['XRPL'] : chainMap['FPASS'];
 
   const handleConnect = (wallet: Wallet) => {
-    const selectedWallet = wallets.find(w => w === wallet);
+    const selectedWallet = chain.wallets.find(w => w === wallet);
     if (selectedWallet?.connected) return;
-    const chainWallets = wallets.filter(w => w.type === wallet.type);
-
-    chainWallets.forEach(w => {
-      if (w.connected) w.disconnect();
-    });
-
-    selectedWallet?.connect();
-    setIsLoading(wallet.name);
+    if (chain.type === 'xrpl') {
+      xrp.disconnect();
+      selectedWallet?.connect();
+      setIsLoading(wallet.name);
+      return;
+    }
+    if (chain.type === 'fpass') {
+      if (!fpass.isConnected) {
+        wallet.connect();
+        return;
+      }
+      createFpassComponent(true);
+    }
   };
 
   useEffect(() => {
     setIsLoading('');
-  }, [evmConnected, gemConnected, crossMarkConnected]);
+  }, [fpass.address, xrp.isConnected]);
 
   return (
     <>
-      <Wrapper>
-        {step === 1 ? (
+      {fpassComponent ? (
+        <CreateFuturepass close={() => createFpassComponent(false)} />
+      ) : (
+        <Wrapper>
           <TitleWrapper>
-            <NetworkImage src={imageNetworkXRPL} />
-            XRPL
+            <NetworkImage src={chain.image} />
+            {chain.description}
+            {chain.type === 'fpass' && (
+              <FpassTextWrapper>
+                Futurepass
+                <ButtonIconSmall
+                  data-tooltip-id={TOOLTIP_ID.CAMPAIGN_FUTUREPASS}
+                  icon={<IconQuestion width={16} height={16} />}
+                />
+              </FpassTextWrapper>
+            )}
           </TitleWrapper>
-        ) : (
-          <TitleWrapper>
-            <NetworkImage src={imageWalletFuturepass} />
-            <FpassTextWrapper>
-              Futurepass
-              <ButtonIconSmall
-                data-tooltip-id={TOOLTIP_ID.CAMPAIGN_FUTUREPASS}
-                icon={<IconQuestion width={16} height={16} />}
-              />
-            </FpassTextWrapper>
-          </TitleWrapper>
-        )}
-        <WalletWrapper>
-          {wallets
-            .filter(w => w.type === chain)
-            .map(w => (
+
+          <WalletWrapper>
+            {chain.wallets.map(w => (
               <Wallet
                 key={w.name}
                 onClick={() => handleConnect(w)}
@@ -139,8 +145,9 @@ export const StepConnectWallet = ({ step }: Props) => {
                 )}
               </Wallet>
             ))}
-        </WalletWrapper>
-      </Wrapper>
+          </WalletWrapper>
+        </Wrapper>
+      )}
       <TooltipFuturepass />
     </>
   );
