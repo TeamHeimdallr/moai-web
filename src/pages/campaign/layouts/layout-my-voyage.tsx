@@ -11,7 +11,7 @@ import { Pending } from '../components/pending';
 import { TokenCard } from '../components/token-card';
 import { TokenList } from '../components/token-list';
 
-export const LiquidityPoolLayout = () => {
+export const MyVoyage = () => {
   const { xrp, fpass } = useConnectedWallet();
   const { setWalletType } = useWalletTypeStore();
   const { open: campaignOpen } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
