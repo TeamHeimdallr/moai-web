@@ -65,6 +65,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
   const sortedTokens = tokens
     .slice()
     .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedTokenAddressses = sortedTokens.map(t => t.address);
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: (vault || '') as Address,
@@ -78,7 +79,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
       walletAddress,
       walletAddress,
       [
-        sortedTokens,
+        sortedTokenAddressses,
         tokens.map(() => 0n),
         WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
         false,

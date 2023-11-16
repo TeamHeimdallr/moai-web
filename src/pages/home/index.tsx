@@ -13,7 +13,9 @@ import { MainLayout } from './layouts/layout-main';
 
 const HomePage = () => {
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
-  const { currentAddress } = useConnectedWallet();
+
+  const { evm, fpass, xrp } = useConnectedWallet();
+  const connected = evm.address || fpass.address || xrp.address;
 
   return (
     <>
@@ -24,7 +26,7 @@ const HomePage = () => {
         <InnerWrapper>
           <MainLayout />
           <ContentWrapper>
-            {currentAddress && <MyLiquidityLayout />}
+            {connected && <MyLiquidityLayout />}
             <LiquidityPoolLayout />
           </ContentWrapper>
         </InnerWrapper>

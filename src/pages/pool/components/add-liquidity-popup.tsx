@@ -39,6 +39,8 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
   const { close } = usePopup(POPUP_ID.ADD_LP);
 
   const { network, poolId, lpToken } = pool || {};
+  const currentNetwork = network ?? selectedNetwork;
+
   const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
     {
       params: {
@@ -52,11 +54,12 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
       staleTime: Infinity,
     }
   );
-  const currentNetwork = network ?? selectedNetwork;
-  const tokenLength = tokensIn?.length || 0;
-
   const { poolVaultAmm } = poolVaultAmmData || {};
   const { vault } = poolVaultAmm || {};
+
+  const tokenLength = tokensIn?.filter(t => t.amount > 0)?.length || 0;
+  const token1Amount = tokensIn?.[0]?.amount || 0;
+  const token2Amount = tokensIn?.[1]?.amount || 0;
 
   const {
     allow: allowToken1,
@@ -65,12 +68,12 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
     isSuccess: allowSuccess1,
     refetch: refetchAllowance1,
   } = useApprove({
-    amount: tokensIn?.[0]?.amount || 0,
+    amount: token1Amount,
     address: tokensIn?.[0]?.address || '',
     issuer: tokensIn?.[0]?.address || '',
     spender: vault || '',
     currency: tokensIn?.[0]?.currency || '',
-    enabled: tokenLength > 0,
+    enabled: token1Amount > 0,
   });
 
   const {
@@ -80,17 +83,22 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
     isSuccess: allowSuccess2,
     refetch: refetchAllowance2,
   } = useApprove({
-    amount: tokensIn?.[1]?.amount || 0,
+    amount: token2Amount,
     address: tokensIn?.[1]?.address || '',
     issuer: tokensIn?.[1]?.address || '',
     spender: vault || '',
     currency: tokensIn?.[1]?.currency || '',
-    enabled: tokenLength > 1,
+    enabled: token2Amount > 0,
   });
 
   const getEnabled = () => {
-    const validAmount = (tokensIn?.[0]?.amount || 0) > 0 && (tokensIn?.[1]?.amount || 0) > 0;
-    const validAllowance = tokenLength < 2 ? allowance1 : allowance1 && allowance2;
+    const validAmount = token1Amount > 0 || token2Amount > 0;
+    const validAllowance =
+      token1Amount > 0 && token2Amount > 0
+        ? allowance1 && allowance2
+        : token1Amount > 0
+        ? allowance1
+        : allowance2;
 
     return validAmount && validAllowance;
   };
@@ -203,7 +211,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
         <List title={`You're expected to receive`}>
           <TokenList
             type="large"
-            title={`${bptOut}`}
+            title={`${formatNumber(bptOut, 6)}`}
             subTitle={`${lpToken?.symbol || ''}`}
             description={`$${formatNumber(bptOut * lpTokenPrice, 6)}`}
             image={<Jazzicon diameter={36} seed={jsNumberForAddress(lpToken?.address || '')} />}

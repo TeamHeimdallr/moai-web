@@ -23,7 +23,7 @@ const axios = async (params: Params) =>
 export const useGetPoolVaultAmmQuery = (request: Request, options?: QueryOption) => {
   const { params } = request;
 
-  const queryKey = ['GET', 'POOL', params];
+  const queryKey = ['GET', 'POOL', 'VAULT_AMM', params];
   const data = useQuery<Response>(queryKey, () => axios(params), options);
 
   return {

@@ -70,24 +70,26 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
   const sortedTokens = tokens
     .slice()
     .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedTokenAddressses = sortedTokens.map(t => t.address);
 
-  const encodedData = isFpass
-    ? encodeFunctionData({
-        abi: BALANCER_VAULT_ABI,
-        functionName: 'exitPool',
-        args: [
-          poolId,
-          walletAddress,
-          walletAddress,
-          [
-            sortedTokens,
-            tokens.map(() => 0n),
-            WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
-            false,
+  const encodedData =
+    isFpass && !!walletAddress && !!signer && !!vault
+      ? encodeFunctionData({
+          abi: BALANCER_VAULT_ABI,
+          functionName: 'exitPool',
+          args: [
+            poolId,
+            walletAddress,
+            walletAddress,
+            [
+              sortedTokenAddressses,
+              tokens.map(() => 0n),
+              WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
+              false,
+            ],
           ],
-        ],
-      })
-    : '0x0';
+        })
+      : '0x0';
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: walletAddress as Address,

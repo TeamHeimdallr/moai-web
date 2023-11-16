@@ -56,22 +56,27 @@ export const AddLiquidityInputGroup = () => {
   const { compositions } = pool || {};
 
   const { lpTokenPrice, userPoolTokens } = useUserPoolTokenBalances();
+  const hasBalances = userPoolTokens.length > 0 && userPoolTokens.some(token => token.balance > 0);
 
   const { bptOut, priceImpact: priceImpactRaw } = useCalculateAddLiquidity({
     amountsIn: [inputValue1, inputValue2],
   });
-  const priceImpact = priceImpactRaw < 0.01 ? '< 0.01' : formatNumber(priceImpactRaw, 2);
+  const priceImpact = hasBalances
+    ? priceImpactRaw < 0.01
+      ? '< 0.01'
+      : formatNumber(priceImpactRaw, 2)
+    : '0.00';
 
   const schema = yup.object().shape({
     input1: yup
       .number()
       .min(0)
-      .max(compositions?.[0]?.balance ?? 0, 'Exceeds wallet balance')
+      .max(userPoolTokens?.[0]?.balance ?? 0, 'Exceeds wallet balance')
       .required(),
     input2: yup
       .number()
       .min(0)
-      .max(compositions?.[1]?.balance ?? 0, 'Exceeds wallet balance')
+      .max(userPoolTokens?.[1]?.balance ?? 0, 'Exceeds wallet balance')
       .required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
@@ -114,6 +119,7 @@ export const AddLiquidityInputGroup = () => {
     ...token,
     amount: getInputValue(token.symbol),
   }));
+  const tokensInValid = tokensIn.filter(token => token.amount > 0).length > 0;
 
   return (
     <Wrapper>
@@ -161,7 +167,7 @@ export const AddLiquidityInputGroup = () => {
                 key={token.symbol + idx}
                 name={`input${idx + 1}`}
                 control={control}
-                token={<Token token={token.symbol} />}
+                token={<Token token={token.symbol} image imageUrl={token.image} />}
                 tokenName={token.symbol}
                 tokenValue={tokenValue}
                 balance={token.balance}
@@ -182,38 +188,49 @@ export const AddLiquidityInputGroup = () => {
           <TotalInnerWrapper>
             <TotalText>Total</TotalText>
             <TotalValueWrapper>
-              <TotalValue>{`${totalValue}`}</TotalValue>
+              <TotalValue>{`$${Number(formatNumber(totalValue, 6)).toFixed(2)}`}</TotalValue>
               <ButtonPrimarySmall
                 text={totalValueMaxed ? 'Maxed' : 'Max'}
                 onClick={handleTotalMax}
                 style={{ width: 'auto' }}
-                disabled={totalValueMaxed}
+                disabled={totalValueMaxed || !hasBalances}
               />
             </TotalValueWrapper>
           </TotalInnerWrapper>
-          <PriceImpact error={priceImpactRaw >= 1}>
+          <PriceImpact error={priceImpactRaw >= 3}>
             {`Price impact  ${priceImpact}%`}
             <ButtonWrapper>
-              <ButtonPrimarySmall disabled={isXrp} text={'Optimize'} onClick={handleOptimize} />
+              <ButtonPrimarySmall
+                disabled={isXrp || !hasBalances}
+                text={'Optimize'}
+                onClick={handleOptimize}
+              />
             </ButtonWrapper>
           </PriceImpact>
         </Total>
       </InnerWrapper>
 
-      <CheckPriceImpact>
-        <CheckboxWrapper>
-          <Checkbox onClick={() => checkPriceImpact(prev => !prev)} selected={checkedPriceImpact} />
-        </CheckboxWrapper>
-        <Text>
-          I accept the high price impact from depositing, moving the market price base on the depth
-          of the market.
-        </Text>
-      </CheckPriceImpact>
+      {priceImpactRaw > 3 && (
+        <CheckPriceImpact>
+          <CheckboxWrapper>
+            <Checkbox
+              onClick={() => checkPriceImpact(prev => !prev)}
+              selected={checkedPriceImpact}
+            />
+          </CheckboxWrapper>
+          <Text>
+            I accept the high price impact from depositing, moving the market price base on the
+            depth of the market.
+          </Text>
+        </CheckPriceImpact>
+      )}
 
       <ButtonPrimaryLarge
         text="Preview"
         onClick={popupOpen}
-        disabled={!isValid || !checkedPriceImpact}
+        disabled={
+          !isValid || !hasBalances || !tokensInValid || (priceImpactRaw > 3 && !checkedPriceImpact)
+        }
       />
 
       {popupOpened && (

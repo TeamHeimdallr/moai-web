@@ -69,25 +69,27 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   const sortedTokens = tokens
     .slice()
     .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedTokenAddressses = sortedTokens.map(t => t.address);
   const sortedAmountsIn = sortedTokens.map(t => t.amount);
 
-  const encodedData = isFpass
-    ? encodeFunctionData({
-        abi: BALANCER_VAULT_ABI,
-        functionName: 'joinPool',
-        args: [
-          poolId,
-          walletAddress,
-          walletAddress,
-          [
-            sortedTokens,
-            sortedAmountsIn,
-            WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
-            false,
+  const encodedData =
+    isFpass && !!walletAddress && !!signer && !!vault
+      ? encodeFunctionData({
+          abi: BALANCER_VAULT_ABI,
+          functionName: 'joinPool',
+          args: [
+            poolId,
+            walletAddress,
+            walletAddress,
+            [
+              sortedTokenAddressses,
+              sortedAmountsIn,
+              WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+              false,
+            ],
           ],
-        ],
-      })
-    : '0x0';
+        })
+      : '0x0';
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: walletAddress as Address,

@@ -64,13 +64,14 @@ export const useApprove = ({
     onError: () => setAllowance(false),
   });
 
-  const encodedData = internalEnabled
-    ? encodeFunctionData({
-        abi: ERC20_TOKEN_ABI,
-        functionName: 'approve',
-        args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
-      })
-    : '0x0';
+  const encodedData =
+    internalEnabled && isFpass && !!walletAddress && !!signer
+      ? encodeFunctionData({
+          abi: ERC20_TOKEN_ABI,
+          functionName: 'approve',
+          args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
+        })
+      : '0x0';
 
   const { isLoading: isPrepareLoading, config } = usePrepareContractWrite({
     address: walletAddress as Address,

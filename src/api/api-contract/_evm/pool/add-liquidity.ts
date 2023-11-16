@@ -65,6 +65,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   const sortedTokens = tokens
     .slice()
     .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedTokenAddressses = sortedTokens.map(t => t.address);
   const sortedAmountsIn = sortedTokens.map(t => t.amount);
   const nativeTokenIndex = sortedTokens.findIndex(t =>
     isNativeToken({
@@ -87,7 +88,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
       walletAddress,
       walletAddress,
       [
-        sortedTokens,
+        sortedTokenAddressses,
         sortedAmountsIn,
         WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
         false,

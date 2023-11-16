@@ -66,13 +66,14 @@ export const useSwap = ({
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
-  const encodedData = isFpass
-    ? encodeFunctionData({
-        abi: BALANCER_VAULT_ABI,
-        functionName: 'swap',
-        args: [singleSwap, fundManagement, limit, deadline],
-      })
-    : '0x0';
+  const encodedData =
+    isFpass && !!walletAddress && !!signer && !!vault
+      ? encodeFunctionData({
+          abi: BALANCER_VAULT_ABI,
+          functionName: 'swap',
+          args: [singleSwap, fundManagement, limit, deadline],
+        })
+      : '0x0';
 
   const {
     isLoading: prepareLoading,
