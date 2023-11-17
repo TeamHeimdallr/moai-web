@@ -5,16 +5,16 @@ import { IconBack, IconNext } from '~/assets/icons';
 
 import { ButtonPrimarySmallIconLeading } from '~/components/buttons/primary/small-icon-leading';
 import { ButtonPrimarySmallIconTrailing } from '~/components/buttons/primary/small-icon-trailing';
-import { LoadingStep } from '~/components/loadings';
 
 import { useConnectedWallet } from '~/hooks/wallets';
 
+import { LoadingStep } from '../components/stepper';
 import { StepContents } from '../layouts/layout-step';
 import { useCampaignStepStore } from '../states/step';
 
 const StepPage = () => {
   const { step, setStep } = useCampaignStepStore();
-  const { xrp, fpass } = useConnectedWallet();
+  const { xrp, evm } = useConnectedWallet();
 
   // TODO : waiting connect text
   const titleText =
@@ -31,9 +31,9 @@ const StepPage = () => {
       return !xrp.isConnected;
     }
     if (step === 2) {
-      return !fpass.address;
+      return !evm.isConnected;
     }
-  }, [fpass.address, step, xrp.isConnected]);
+  }, [evm.isConnected, step, xrp.isConnected]);
 
   return (
     <Wrapper>

@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from 'react';
 import { keyframes } from '@emotion/react';
 import tw, { css, styled } from 'twin.macro';
 
@@ -5,31 +6,39 @@ import { COLOR } from '~/assets/colors';
 import { IconCheck } from '~/assets/icons';
 import { imageStepLoading } from '~/assets/images';
 
-interface Props {
-  totalSteps: number;
-  step: number;
-  isLoading: boolean;
-  isDone?: boolean;
-}
+import { useCampaignStepStore } from '~/pages/campaign/states/step';
+
+import { useConnectedWallet } from '~/hooks/wallets';
+
 enum Progress {
   CURRENT = 0,
   DONE = 1,
   TODO = 2,
 }
-export const LoadingStep = ({ totalSteps, step, isLoading, isDone = false }: Props) => {
+
+export const LoadingStep = () => {
+  const { step, isLoading, setLoading } = useCampaignStepStore();
+  const { xrp, evm } = useConnectedWallet();
+
+  const stepDone = useMemo(() => {
+    return [xrp.isConnected, evm.isConnected, false, false];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [evm.isConnected, xrp.isConnected]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setLoading(false), [xrp.isConnected, evm.isConnected]);
+
   return (
     <Wrapper>
-      {Array.from(Array(totalSteps)).map((_, i) => {
-        const progress = isDone
-          ? Progress.DONE
-          : i + 1 === step
-          ? Progress.CURRENT
-          : i + 1 < step
-          ? Progress.DONE
-          : Progress.TODO;
+      {stepDone.map((done, i) => {
+        const progress = done ? Progress.DONE : i + 1 === step ? Progress.CURRENT : Progress.TODO;
         return (
           <Wrapper key={i}>
-            <Step progress={progress} isLoading={isLoading} key={i}>
+            <Step
+              progress={progress}
+              isLoading={progress === Progress.CURRENT && isLoading}
+              key={i}
+            >
               {progress === Progress.DONE ? (
                 <IconWrapper>
                   <IconCheck width={24} height={24} fill={COLOR.GREEN[50]} />
@@ -47,7 +56,7 @@ export const LoadingStep = ({ totalSteps, step, isLoading, isDone = false }: Pro
                 </>
               )}
             </Step>
-            {i !== totalSteps - 1 && <Divider key={`divider-${i}`} />}
+            {i !== stepDone.length - 1 && <Divider key={`divider-${i}`} />}
           </Wrapper>
         );
       })}

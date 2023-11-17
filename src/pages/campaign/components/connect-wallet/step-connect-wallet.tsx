@@ -2,109 +2,40 @@ import { useEffect, useState } from 'react';
 import { keyframes } from '@emotion/react';
 import tw, { css, styled } from 'twin.macro';
 
-import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
-import { imageNetworkROOT, imageNetworkXRPL } from '~/assets/images';
 import { imageStepLoading } from '~/assets/images';
 
-import {
-  useConnectedWallet,
-  useConnectWithCrossmarkWallet,
-  useConnectWithEvmWallet,
-  useConnectWithGemWallet,
-} from '~/hooks/wallets';
+import { useConnectedWallet } from '~/hooks/wallets';
+import { useNetworkWallets } from '~/hooks/wallets/use-network-wallet';
 import { NETWORK } from '~/types';
 
 import { useCampaignStepStore } from '../../states/step';
 import { TooltipFuturepass } from '../tooltip/futurepass';
 
-interface ChainDetail {
-  network: NETWORK;
-  image: string;
-  description: string;
-  wallets: Wallet[];
-}
-interface Wallet {
-  name: string;
-  image: string;
-  connect: () => void;
-  connected: boolean;
-  isInstalled: boolean;
-}
-enum STEP {
-  STEP_1,
-  STEP_2,
-}
-
 export const StepConnectWallet = () => {
-  const { step, addLoading } = useCampaignStepStore();
+  const { step, setLoading } = useCampaignStepStore();
   const [isLoading, setIsLoading] = useState('');
-  const {
-    connect: connectMetamask,
-    isConnected: metamaskConnected,
-    isInstalled: metamaskIsInstalled,
-  } = useConnectWithEvmWallet();
-  const {
-    connect: connectXrpCrossmark,
-    isConnected: crossMarkConnected,
-    isInstalled: crossMarkInstalled,
-  } = useConnectWithCrossmarkWallet();
-  const {
-    connect: connectXrpGem,
-    isConnected: gemConnected,
-    isInstalled: gemIsInstalled,
-  } = useConnectWithGemWallet();
+
   const { xrp, evm } = useConnectedWallet();
 
-  const chainMap: Record<STEP, ChainDetail> = {
-    [STEP.STEP_1]: {
-      network: NETWORK.XRPL,
-      description: 'XRPL',
-      image: imageNetworkXRPL,
-      wallets: [
-        {
-          name: 'Crossmark',
-          image: imageWalletCrossmark,
-          connect: connectXrpCrossmark,
-          connected: crossMarkConnected,
-          isInstalled: crossMarkInstalled,
-        },
-        {
-          name: 'Gem Wallet',
-          image: imageWalletGem,
-          connect: connectXrpGem,
-          connected: gemConnected,
-          isInstalled: gemIsInstalled,
-        },
-      ],
-    },
-    [STEP.STEP_2]: {
-      network: NETWORK.THE_ROOT_NETWORK,
-      description: 'The Root Network',
-      image: imageNetworkROOT,
-      wallets: [
-        {
-          name: 'Metamask',
-          image: imageWalletMetamask,
-          connect: connectMetamask,
-          connected: metamaskConnected,
-          isInstalled: metamaskIsInstalled,
-        },
-      ],
-    },
-  };
-  const currentStepChain = chainMap[STEP[`STEP_${step}`]] as ChainDetail;
+  const network = step === 1 ? NETWORK.XRPL : NETWORK.THE_ROOT_NETWORK;
 
-  const handleConnect = (wallet: Wallet) => {
-    const selectedWallet = currentStepChain.wallets.find(w => w === wallet);
+  const { currentNetwork } = useNetworkWallets(network);
+
+  const handleConnect = wallet => {
+    if (!currentNetwork) return;
+    const selectedWallet = currentNetwork.wallets.find(w => w === wallet);
     if (selectedWallet?.connected) return;
     selectedWallet?.connect();
-    addLoading(step);
+    setLoading(true);
+    setIsLoading(wallet.name);
     // TODO : connect install url
-    if (!selectedWallet?.isInstalled) return;
-    if (currentStepChain.network === NETWORK.XRPL) {
+    if (!selectedWallet?.isInstalled) {
+      setIsLoading('');
+      return;
+    }
+    if (network === NETWORK.XRPL && xrp.isConnected) {
       xrp.disconnect();
     }
-    setIsLoading(wallet.name);
   };
 
   useEffect(() => {
@@ -116,12 +47,12 @@ export const StepConnectWallet = () => {
     <>
       <Wrapper>
         <TitleWrapper>
-          <NetworkImage src={currentStepChain.image} />
-          {currentStepChain.description}
+          <NetworkImage src={currentNetwork?.image ?? ''} />
+          {currentNetwork?.description}
         </TitleWrapper>
 
         <WalletWrapper>
-          {currentStepChain.wallets.map(w => (
+          {currentNetwork?.wallets?.map(w => (
             <Wallet key={w.name} onClick={() => handleConnect(w)} isLoading={isLoading === w.name}>
               <WalletInnerWrapper>
                 <WalletImage src={w.image} alt={w.name} />

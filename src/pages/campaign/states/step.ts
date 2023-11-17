@@ -6,9 +6,8 @@ import { logger } from '~/states/middleware/logger';
 interface State {
   step: number;
   setStep: (type: 'positive' | 'negative') => void;
-  loadingStep: number[];
-  addLoading: (step: number) => void;
-  removeLoading: (step: number) => void;
+  isLoading: boolean;
+  setLoading: (loading: boolean) => void;
   resetStep: () => void;
 }
 
@@ -28,18 +27,13 @@ export const useCampaignStepStore = create<State>()(
           }
         });
       },
-      loadingStep: [],
-      addLoading: (step: number) => {
+      isLoading: false,
+      setLoading: (loading: boolean) => {
         set(state => {
-          state.loadingStep.push(step);
+          state.isLoading = loading;
         });
       },
-      removeLoading: (step: number) => {
-        set(state => {
-          state.loadingStep.filter(v => v !== step);
-        });
-      },
-      resetStep: () => set({ step: 0 }),
+      resetStep: () => set({ step: 1 }),
     }))
   )
 );
