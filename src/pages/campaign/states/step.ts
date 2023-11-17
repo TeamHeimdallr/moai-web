@@ -5,8 +5,10 @@ import { logger } from '~/states/middleware/logger';
 
 interface State {
   step: number;
-
   setStep: (type: 'positive' | 'negative') => void;
+  loadingStep: number[];
+  addLoading: (step: number) => void;
+  removeLoading: (step: number) => void;
   resetStep: () => void;
 }
 
@@ -24,6 +26,17 @@ export const useCampaignStepStore = create<State>()(
           } else if (type === 'negative') {
             state.step -= 1;
           }
+        });
+      },
+      loadingStep: [],
+      addLoading: (step: number) => {
+        set(state => {
+          state.loadingStep.push(step);
+        });
+      },
+      removeLoading: (step: number) => {
+        set(state => {
+          state.loadingStep.filter(v => v !== step);
         });
       },
       resetStep: () => set({ step: 0 }),

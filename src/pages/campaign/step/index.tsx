@@ -37,8 +37,7 @@ const StepPage = () => {
 
   return (
     <Wrapper>
-      {/* TODO : connect wallet loading */}
-      <LoadingStep totalSteps={4} step={step} isLoading={false} />
+      <LoadingStep />
       <Content>
         {(step !== 1 || xrp.isConnected) && (
           <MoveStepWrapper>

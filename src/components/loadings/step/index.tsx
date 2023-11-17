@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { keyframes } from '@emotion/react';
 import tw, { css, styled } from 'twin.macro';
 
@@ -5,28 +6,32 @@ import { COLOR } from '~/assets/colors';
 import { IconCheck } from '~/assets/icons';
 import { imageStepLoading } from '~/assets/images';
 
-interface Props {
-  totalSteps: number;
-  step: number;
-  isLoading: boolean;
-  isDone?: boolean;
-}
+import { useCampaignStepStore } from '~/pages/campaign/states/step';
+
+import { useConnectedWallet } from '~/hooks/wallets';
+
 enum Progress {
   CURRENT = 0,
   DONE = 1,
   TODO = 2,
 }
-export const LoadingStep = ({ totalSteps, step, isLoading, isDone = false }: Props) => {
+
+export const LoadingStep = () => {
+  const { step, loadingStep, removeLoading } = useCampaignStepStore();
+  const { xrp, evm } = useConnectedWallet();
+
+  const stepDone = useMemo(() => {
+    if (loadingStep.includes(1) && xrp.isConnected) removeLoading(1);
+    if (loadingStep.includes(2) && evm.isConnected) removeLoading(2);
+    return [xrp.isConnected, evm.isConnected, false, false];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [evm.isConnected, xrp.isConnected]);
+
   return (
     <Wrapper>
-      {Array.from(Array(totalSteps)).map((_, i) => {
-        const progress = isDone
-          ? Progress.DONE
-          : i + 1 === step
-          ? Progress.CURRENT
-          : i + 1 < step
-          ? Progress.DONE
-          : Progress.TODO;
+      {stepDone.map((done, i) => {
+        const progress = done ? Progress.DONE : i + 1 === step ? Progress.CURRENT : Progress.TODO;
+        const isLoading = !!loadingStep.find(v => v === i + 1);
         return (
           <Wrapper key={i}>
             <Step progress={progress} isLoading={isLoading} key={i}>
@@ -47,7 +52,7 @@ export const LoadingStep = ({ totalSteps, step, isLoading, isDone = false }: Pro
                 </>
               )}
             </Step>
-            {i !== totalSteps - 1 && <Divider key={`divider-${i}`} />}
+            {i !== stepDone.length - 1 && <Divider key={`divider-${i}`} />}
           </Wrapper>
         );
       })}
