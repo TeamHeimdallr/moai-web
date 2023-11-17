@@ -60,7 +60,7 @@ export const useUserPoolTokenBalances = () => {
     asset: ammAssets[0],
     asset2: ammAssets[1],
   };
-  const { data: ammInfoRaw } = useQuery<IAmmInfo>(
+  const { data: ammInfoRaw, refetch: ammInfoRefetch } = useQuery<IAmmInfo>(
     ['GET', 'XRPL', 'AMM_INFO', ammAssets],
     () => client.request(ammInfoRequest),
     {
@@ -78,33 +78,35 @@ export const useUserPoolTokenBalances = () => {
     account: lpTokenInfo?.issuer,
     hotwallet: [walletAddress],
   };
-  const { data: lpTokenBalanceData } = useQuery<GatewayBalancesResponse>(
-    ['GET', 'XRPL', 'AMM_INFO', lpTokenInfo?.issuer, walletAddress],
-    () => client.request(lpTokenBalanceRequest),
-    {
-      enabled: !!client && isConnected && !!lpTokenInfo?.issuer && !!walletAddress && isXrp,
-      staleTime: 1000 * 3,
-    }
-  );
+  const { data: lpTokenBalanceData, refetch: lpTokenBalanceRefetch } =
+    useQuery<GatewayBalancesResponse>(
+      ['GET', 'XRPL', 'GATEWAY_BALANCES', lpTokenInfo?.issuer, walletAddress],
+      () => client.request(lpTokenBalanceRequest),
+      {
+        enabled: !!client && isConnected && !!lpTokenInfo?.issuer && !!walletAddress && isXrp,
+        staleTime: 1000 * 3,
+      }
+    );
 
   /* get user xrp token balance */
   const xrpTokenBalanceRequest = {
     command: 'account_info',
     account: walletAddress,
   };
-  const { data: xrpTokenBalanceData } = useQuery<AccountInfoResponse>(
-    ['GET', 'XRPL', 'ACCOUNT_INFO', walletAddress],
-    () => client.request(xrpTokenBalanceRequest),
-    {
-      enabled: !!client && isConnected && !!walletAddress && isXrp,
-      staleTime: 1000 * 3,
-    }
-  );
+  const { data: xrpTokenBalanceData, refetch: xrpTokenBalanceRefetch } =
+    useQuery<AccountInfoResponse>(
+      ['GET', 'XRPL', 'ACCOUNT_INFO', walletAddress],
+      () => client.request(xrpTokenBalanceRequest),
+      {
+        enabled: !!client && isConnected && !!walletAddress && isXrp,
+        staleTime: 1000 * 3,
+      }
+    );
 
   const getTokenBalanceRequest = (account: string) => ({
     command: 'gateway_balances',
-    account,
-    hotWallet: [walletAddress],
+    account: walletAddress,
+    hotWallet: [account],
   });
   const tokenBalancesData = useQueries<GatewayBalancesResponse[]>({
     queries:
@@ -117,6 +119,9 @@ export const useUserPoolTokenBalances = () => {
           staleTime: 1000 * 3,
         })) || [],
   });
+  const tokenBalancesRefetch = () => {
+    tokenBalancesData.forEach(res => res.refetch());
+  };
 
   const lpTokenBalance = Number(
     lpTokenBalanceData?.result?.balances?.[walletAddress]?.find(
@@ -124,23 +129,25 @@ export const useUserPoolTokenBalances = () => {
     )?.value || 0
   );
   const lpTokenTotalSupply = Number(lpTokenInfo?.value || 0);
-  const lpTokenPrice = lpTokenTotalSupply
-    ? Number(BigInt(pool?.value || 0) / BigInt(lpTokenTotalSupply))
-    : 0;
+  const lpTokenPrice = lpTokenTotalSupply ? Number((pool?.value || 0) / lpTokenTotalSupply) : 0;
   const lpTokenValue = lpTokenBalance * lpTokenPrice;
 
   const xrpTokenBalance = Number(
     formatUnits(BigInt(xrpTokenBalanceData?.result?.account_data?.Balance || 0), 6)
   );
-  const tokenBalances = tokenBalancesData?.map((d, i) => {
-    const asset = (d.data as GatewayBalancesResponse)?.result?.assets?.[
-      compositions?.[i]?.address || ''
-    ]?.find(d => d.currency === compositions?.[i]?.symbol);
+  const tokenBalances = tokenBalancesData?.flatMap(d => {
+    const res: (ITokenComposition & { balance: number })[] = [];
 
-    return {
-      ...compositions?.find(token => token.currency === asset?.currency),
-      balance: Number(asset?.value || 0),
-    };
+    const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
+    for (const key in assets) {
+      const composition = compositions?.find(token => token.address === key);
+      const asset = assets[key];
+
+      if (asset && composition)
+        res.push({ ...composition, balance: Number(asset?.[0]?.value || 0) });
+    }
+
+    return res;
   });
 
   const xrpComposition = compositions?.find(token => token.symbol === 'XRP');
@@ -155,6 +162,13 @@ export const useUserPoolTokenBalances = () => {
     return (acc += tokenValue);
   }, 0);
 
+  const refetch = () => {
+    ammInfoRefetch();
+    lpTokenBalanceRefetch();
+    xrpTokenBalanceRefetch();
+    tokenBalancesRefetch();
+  };
+
   return {
     pool,
     lpToken,
@@ -166,5 +180,7 @@ export const useUserPoolTokenBalances = () => {
 
     userPoolTokens,
     userPoolTokenTotalValue,
+
+    refetch,
   };
 };

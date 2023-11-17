@@ -41,7 +41,7 @@ export const useUserPoolTokenBalances = () => {
 
   const tokenAddresses = [lpTokenAddress, ...(compositions?.map(c => c.address) || [])];
 
-  const { data: lpTokenTotalSupplyData } = useContractRead({
+  const { data: lpTokenTotalSupplyData, refetch: lpTokenRefetch } = useContractRead({
     address: poolAddress as Address,
     abi: BALANCER_LP_ABI as Abi,
     functionName: 'totalSupply',
@@ -50,7 +50,7 @@ export const useUserPoolTokenBalances = () => {
     staleTime: 1000 * 3,
     enabled: !!poolAddress && !!chainId && isEvm,
   });
-  const { data: tokenBalancesData } = useContractReads({
+  const { data: tokenBalancesData, refetch: tokenBalanceRefetch } = useContractReads({
     contracts: tokenAddresses.flatMap(address => [
       {
         address: address as Address,
@@ -99,6 +99,11 @@ export const useUserPoolTokenBalances = () => {
     return (acc += tokenValue);
   }, 0);
 
+  const refetch = () => {
+    lpTokenRefetch();
+    tokenBalanceRefetch();
+  };
+
   return {
     pool,
     lpToken,
@@ -110,5 +115,7 @@ export const useUserPoolTokenBalances = () => {
 
     userPoolTokens,
     userPoolTokenTotalValue,
+
+    refetch,
   };
 };

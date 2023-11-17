@@ -9,9 +9,10 @@ interface Props {
   currency: string;
   issuer: string;
   amount: number;
+  enabled?: boolean;
 }
 // xrp trust line. use evm’s approve to unify function names.
-export const useApprove = ({ currency, issuer, amount }: Props) => {
+export const useApprove = ({ currency, issuer, amount, enabled }: Props) => {
   const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
@@ -63,12 +64,12 @@ export const useApprove = ({ currency, issuer, amount }: Props) => {
   );
 
   const allow = async () => {
-    if (!isXrp || !issuer || isNativeXrp) return;
+    if (!isXrp || !issuer || isNativeXrp || !enabled) return;
 
     await mutateAsync();
   };
 
-  if (isNativeXrp) {
+  if (isNativeXrp || !enabled) {
     return {
       isLoading: false,
       isSuccess: true,

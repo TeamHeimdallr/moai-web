@@ -1,8 +1,13 @@
+import { Fragment, useEffect, useMemo } from 'react';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import tw from 'twin.macro';
-import { parseUnits } from 'viem';
+import { parseUnits, toHex } from 'viem';
 
 import { useWithdrawLiquidity } from '~/api/api-contract/pool/withdraw-liquidity';
+import { useApprove } from '~/api/api-contract/token/approve';
+import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
 import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
@@ -11,6 +16,7 @@ import { SCANNER_URL, TOKEN_DECIMAL_WITHDRAW_LP } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
+import { LoadingStep } from '~/components/loadings';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 
@@ -27,6 +33,8 @@ interface Props {
   bptIn: number;
   priceImpact: string;
   withdrawTokenWeight: number;
+
+  refetchBalance?: () => void;
 }
 
 export const WithdrawLiquidityPopup = ({
@@ -37,30 +45,252 @@ export const WithdrawLiquidityPopup = ({
   bptIn,
   priceImpact,
   withdrawTokenWeight,
+
+  refetchBalance,
 }: Props) => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { isXrp } = useNetwork();
   const { poolId, network, lpToken } = pool || {};
+
   const networkAbbr = getNetworkAbbr(network);
 
-  const { isLoading, isSuccess, txData, writeAsync, blockTimestamp } = useWithdrawLiquidity({
+  const { close } = usePopup(POPUP_ID.WITHDRAW_LP);
+
+  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+    {
+      params: {
+        networkAbbr: getNetworkAbbr(network),
+        poolId: poolId || '',
+      },
+    },
+    {
+      enabled: !!network && !!poolId,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
+  );
+  const { poolVaultAmm } = poolVaultAmmData || {};
+  const { vault } = poolVaultAmm || {};
+
+  const tokenLength = !isXrp ? 1 : tokensOut?.filter(t => t.amount > 0)?.length || 0;
+  const token1Amount = tokensOut?.[0]?.amount || 0;
+  const token2Amount = tokensOut?.[1]?.amount || 0;
+
+  const {
+    allow: allowToken1,
+    allowance: allowance1,
+    isLoading: allowLoading1,
+    isSuccess: allowSuccess1,
+    refetch: refetchAllowance1,
+  } = useApprove({
+    amount: token1Amount,
+    address: tokensOut?.[0]?.address || '',
+    issuer: tokensOut?.[0]?.address || '',
+    spender: vault || '',
+    currency: tokensOut?.[0]?.currency || '',
+    enabled: token1Amount > 0 && isXrp,
+  });
+
+  const {
+    allow: allowToken2,
+    allowance: allowance2,
+    isLoading: allowLoading2,
+    isSuccess: allowSuccess2,
+    refetch: refetchAllowance2,
+  } = useApprove({
+    amount: token2Amount,
+    address: tokensOut?.[1]?.address || '',
+    issuer: tokensOut?.[1]?.address || '',
+    spender: vault || '',
+    currency: tokensOut?.[1]?.currency || '',
+    enabled: token2Amount > 0 && isXrp,
+  });
+
+  const {
+    allow: allowToken3,
+    allowance: allowance3,
+    isLoading: allowLoading3,
+    isSuccess: allowSuccess3,
+    refetch: refetchAllowance3,
+  } = useApprove({
+    amount: bptIn,
+    address: lpToken?.address || '',
+    issuer: lpToken?.address || '',
+    spender: vault || '',
+    currency: lpToken?.currency || '',
+    enabled: bptIn > 0 && !isXrp,
+  });
+
+  const validAmount = token1Amount > 0 || token2Amount > 0;
+  const getValidAllowance = () => {
+    if (isXrp) return allowance3;
+    if (token1Amount > 0 && token2Amount > 0) return allowance1 && allowance2;
+    if (token1Amount > 0) return allowance1;
+    if (token2Amount > 0) return allowance2;
+  };
+
+  const {
+    isLoading: withdrawLiquidityLoading,
+    isSuccess: withdrawLiquiditySuccess,
+    txData,
+    writeAsync,
+    blockTimestamp,
+  } = useWithdrawLiquidity({
     id: poolId || '',
     tokens: tokensOut || [],
     // input value
     bptIn: parseUnits(`${bptIn}`, TOKEN_DECIMAL_WITHDRAW_LP[network || NETWORK.XRPL]),
+    enabled: validAmount && getValidAllowance(),
   });
 
   const txDate = new Date(blockTimestamp ?? 0);
+  const isSuccess = withdrawLiquiditySuccess && !!txData;
+  const isLoading = withdrawLiquidityLoading || allowLoading1 || allowLoading2;
   const totalValue = bptIn * lpTokenPrice;
 
-  const { close } = usePopup(POPUP_ID.WITHDRAW_LP);
+  const step = useMemo(() => {
+    if (isSuccess) return tokenLength + 1;
 
-  const handleButton = async () => {
+    // single token deposit or in xrpl case (getting approve for receiving token)
+    if (tokenLength === 1) {
+      if (!isXrp) {
+        if (allowance3) return 2;
+      } else {
+        if (token1Amount > 0 && token2Amount <= 0) {
+          if (allowance1) return 2;
+        }
+        if (token2Amount > 0 && token1Amount <= 0) {
+          if (allowance2) return 2;
+        }
+      }
+    }
+
+    if (tokenLength === 2) {
+      if (allowance2) return 3;
+      if (allowance1) return 2;
+    }
+
+    return 1;
+  }, [
+    allowance1,
+    allowance2,
+    allowance3,
+    isSuccess,
+    isXrp,
+    token1Amount,
+    token2Amount,
+    tokenLength,
+  ]);
+
+  const stepLoading = useMemo(() => {
+    if (tokenLength === 1) {
+      if (!isXrp) {
+        if (step === 1) return allowLoading3;
+        if (step === 2) return withdrawLiquidityLoading;
+      } else {
+        if (token1Amount > 0 && token2Amount <= 0) {
+          if (step === 1) return allowLoading1;
+          if (step === 2) return withdrawLiquidityLoading;
+        }
+        if (token2Amount > 0 && token1Amount <= 0) {
+          if (step === 1) return allowLoading2;
+          if (step === 2) return withdrawLiquidityLoading;
+        }
+      }
+    }
+
+    if (tokenLength === 2) {
+      if (step === 1) return allowLoading1;
+      if (step === 2) return allowLoading2;
+      if (step === 3) return withdrawLiquidityLoading;
+    }
+
+    return false;
+  }, [
+    withdrawLiquidityLoading,
+    allowLoading1,
+    allowLoading2,
+    allowLoading3,
+    isXrp,
+    step,
+    token1Amount,
+    token2Amount,
+    tokenLength,
+  ]);
+
+  const buttonText = useMemo(() => {
+    if (isSuccess) return 'Return to pool page';
+
+    // single token deposit
+    if (tokenLength === 1) {
+      if (!isXrp) {
+        if (!allowance3) return `Approve ${lpToken?.symbol} for adding liquidity`;
+        return 'Add liquidity';
+      } else {
+        if (token1Amount > 0 && token2Amount <= 0) {
+          if (!allowance1) return `Approve ${tokensOut?.[0]?.symbol} for adding liquidity`;
+          return 'Add liquidity';
+        }
+        if (token2Amount > 0 && token1Amount <= 0) {
+          if (!allowance2) return `Approve ${tokensOut?.[1]?.symbol} for adding liquidity`;
+          return 'Add liquidity';
+        }
+      }
+    }
+
+    if (tokenLength === 2) {
+      if (!allowance1) return `Approve ${tokensOut?.[0]?.symbol} for adding liquidity`;
+      if (!allowance2) return `Approve ${tokensOut?.[1]?.symbol} for adding liquidity`;
+
+      return 'Add liquidity';
+    }
+
+    return '';
+  }, [
+    allowance1,
+    allowance2,
+    allowance3,
+    isSuccess,
+    isXrp,
+    lpToken?.symbol,
+    token1Amount,
+    token2Amount,
+    tokenLength,
+    tokensOut,
+  ]);
+
+  const handleButtonClick = async () => {
+    if (isLoading) return;
     if (isSuccess) {
-      navigate(`/pools/${networkAbbr}/${poolId}`);
       close();
-    } else {
-      await writeAsync?.();
+      navigate(`/pools/${networkAbbr}/${poolId}`);
+      return;
+    }
+
+    // single token deposit
+    if (tokenLength === 1) {
+      if (!isXrp) {
+        if (allowance3) return await writeAsync?.();
+        else await allowToken3();
+      } else {
+        if (token1Amount > 0 && token2Amount <= 0) {
+          if (allowance1) return await writeAsync?.();
+          else await allowToken1();
+        }
+        if (token2Amount > 0 && token1Amount <= 0) {
+          if (allowance2) return await writeAsync?.();
+          else await allowToken2();
+        }
+      }
+    }
+
+    // 2 token deposit
+    if (tokenLength === 2) {
+      if (!allowance1) return await allowToken1();
+      if (!allowance2) return await allowToken2();
+
+      return await writeAsync?.();
     }
   };
 
@@ -73,14 +303,37 @@ export const WithdrawLiquidityPopup = ({
     window.open(url);
   };
 
+  useEffect(() => {
+    if (allowSuccess1) refetchAllowance1();
+    if (allowSuccess2) refetchAllowance2();
+    if (allowSuccess3) refetchAllowance3();
+  }, [
+    allowSuccess1,
+    allowSuccess2,
+    allowSuccess3,
+    refetchAllowance1,
+    refetchAllowance2,
+    refetchAllowance3,
+  ]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      queryClient.invalidateQueries(['GET', 'POOL']);
+      queryClient.invalidateQueries(['GET', 'XRPL']);
+      refetchBalance?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, queryClient]);
+
   return (
     <Popup
       id={POPUP_ID.WITHDRAW_LP}
       title={isSuccess ? '' : 'Withdrawal preview'}
       button={
-        <ButtonWrapper onClick={() => handleButton()}>
+        <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
-            text={isLoading ? 'Confirming' : isSuccess ? 'Return to pool page' : 'Withdraw'}
+            // text={isLoading ? 'Confirming' : isSuccess ? 'Return to pool page' : 'Withdraw'}
+            text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
           />
@@ -88,31 +341,36 @@ export const WithdrawLiquidityPopup = ({
       }
     >
       <Wrapper>
-        {isSuccess ? (
+        {isSuccess && (
           <SuccessWrapper>
             <IconWrapper>
               <IconCheck width={40} height={40} />
             </IconWrapper>
             <SuccessTitle>Withdrawal confirmed!</SuccessTitle>
-            <SuccessSubTitle>{`Successfully withdrawned from ${
-              lpToken?.symbol || ''
-            } Pool`}</SuccessSubTitle>
+            <SuccessSubTitle>{`Successfully withdrawned from ${lpToken?.symbol} Pool`}</SuccessSubTitle>
           </SuccessWrapper>
-        ) : (
+        )}
+        {!isSuccess && (
           <List title={`You're providing`}>
             <TokenList
               type="large"
-              title={`${formatNumber(bptIn, 4)} ${lpToken?.symbol}`}
+              title={`${formatNumber(bptIn, 6)} ${lpToken?.symbol}`}
               description={`$${formatNumber(totalValue)} (${withdrawTokenWeight.toFixed(4)}%)`}
-              image={lpToken?.image}
+              image={
+                <Jazzicon
+                  diameter={36}
+                  seed={jsNumberForAddress(
+                    isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
+                  )}
+                />
+              }
               leftAlign
             />
           </List>
         )}
-
         <List title={`You're expected to receive`}>
           {tokensOut?.map(({ symbol, currentWeight, amount, image, price }, i) => (
-            <div key={`${symbol}-${i}`}>
+            <Fragment key={`${symbol}-${i}`}>
               <TokenList
                 type="large"
                 title={`${amount.toFixed(6)} ${symbol}`}
@@ -123,27 +381,37 @@ export const WithdrawLiquidityPopup = ({
                 leftAlign
               />
               {i !== (tokensOut?.length || 0) - 1 && <Divider />}
-            </div>
+            </Fragment>
           ))}
         </List>
 
-        {isSuccess ? (
+        {isSuccess && (
           <Scanner onClick={() => handleLink()}>
             <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
             <ScannerText>{txDate.toString()}</ScannerText>
             <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
-        ) : (
-          <List title={`Summary`}>
-            <Summary>
-              <SummaryTextTitle>Total</SummaryTextTitle>
-              <SummaryText>{`$${formatNumber(totalValue)}`}</SummaryText>
-            </Summary>
-            <Summary>
-              <SummaryTextTitle>Price impact</SummaryTextTitle>
-              <SummaryText>{priceImpact}%</SummaryText>
-            </Summary>
-          </List>
+        )}
+        {!isSuccess && (
+          <>
+            <List title={`Summary`}>
+              <Summary>
+                <SummaryTextTitle>Total</SummaryTextTitle>
+                <SummaryText>{`$${formatNumber(totalValue)}`}</SummaryText>
+              </Summary>
+              <Summary>
+                <SummaryTextTitle>Price impact</SummaryTextTitle>
+                <SummaryText>{priceImpact}%</SummaryText>
+              </Summary>
+            </List>
+
+            <LoadingStep
+              totalSteps={tokenLength + 1}
+              step={step}
+              isLoading={stepLoading}
+              isDone={isSuccess}
+            />
+          </>
         )}
       </Wrapper>
     </Popup>

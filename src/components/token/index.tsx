@@ -1,6 +1,7 @@
 import { HTMLAttributes, ReactNode } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import tw, { css, styled } from 'twin.macro';
+import { toHex } from 'viem';
 
 import { COLOR } from '~/assets/colors';
 
@@ -35,6 +36,7 @@ export const Token = ({
   clickable = true,
   ...rest
 }: Props) => {
+  const seed = address || token || title || '';
   return (
     <Wrapper type={type} selected={selected} clickable={clickable} hasImage={!!image} {...rest}>
       {image &&
@@ -43,7 +45,7 @@ export const Token = ({
         ) : (
           <Jazzicon
             diameter={type === 'large' ? 24 : 20}
-            seed={jsNumberForAddress(address || token || title || '')}
+            seed={jsNumberForAddress(seed?.length < 42 ? toHex(seed, { size: 42 }) : seed)}
           />
         ))}
       <TextWrapper>

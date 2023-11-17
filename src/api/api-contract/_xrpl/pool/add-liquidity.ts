@@ -26,7 +26,7 @@ export const useAddLiquidity = ({ token1, token2, enabled }: Props) => {
     if (xrp) {
       const asset1 = { currency: 'XRP' };
       const amount1 = Number(
-        Number(parseUnits((xrp.amount || 0).toString(), TOKEN_DECIMAL.XRPL).toString()).toFixed(6)
+        Number(parseUnits((xrp.amount || 0).toString(), TOKEN_DECIMAL.XRPL).toString()).toFixed(5)
       ).toString(); // max decimal is 6
 
       const remain = tokens.filter(t => t.currency !== 'XRP')?.[0];
@@ -36,7 +36,7 @@ export const useAddLiquidity = ({ token1, token2, enabled }: Props) => {
       };
       const amount2 = {
         ...asset2,
-        value: Number(Number(remain.amount || 0).toFixed(6)).toString(),
+        value: Number(Number(remain.amount || 0).toFixed(5)).toString(),
       };
 
       return {
@@ -48,9 +48,9 @@ export const useAddLiquidity = ({ token1, token2, enabled }: Props) => {
     }
 
     const asset1 = { issuer: token1?.address || '', currency: token1?.currency || '' };
-    const amount1 = { ...asset1, value: Number(Number(token1?.amount || 0).toFixed(6)).toString() };
+    const amount1 = { ...asset1, value: Number(Number(token1?.amount || 0).toFixed(5)).toString() };
     const asset2 = { issuer: token2?.address ?? '', currency: token2?.currency || '' };
-    const amount2 = { ...asset2, value: Number(Number(token1?.amount || 0).toFixed(6)).toString() };
+    const amount2 = { ...asset2, value: Number(Number(token1?.amount || 0).toFixed(5)).toString() };
 
     return {
       Amount: amount1,
@@ -65,7 +65,6 @@ export const useAddLiquidity = ({ token1, token2, enabled }: Props) => {
     TransactionType: 'AMMDeposit',
     Account: address,
     ...txAssets,
-    Fee: '100',
     Flags: 1048576, // tfTwoAsset
   };
 

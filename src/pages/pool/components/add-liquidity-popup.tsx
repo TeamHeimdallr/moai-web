@@ -2,6 +2,8 @@ import { Fragment, useEffect, useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
+import { toHex } from 'viem';
+import { useQueryClient } from 'wagmi';
 
 import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
 import { useApprove } from '~/api/api-contract/token/approve';
@@ -30,8 +32,18 @@ interface Props {
   lpTokenPrice: number;
   bptOut: number;
   priceImpact: string;
+
+  refetchBalance?: () => void;
 }
-export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceImpact }: Props) => {
+export const AddLiquidityPopup = ({
+  tokensIn,
+  pool,
+  lpTokenPrice,
+  bptOut,
+  priceImpact,
+  refetchBalance,
+}: Props) => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const { isXrp } = useNetwork();
@@ -56,7 +68,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
   const { poolVaultAmm } = poolVaultAmmData || {};
   const { vault } = poolVaultAmm || {};
 
-  const tokenLength = tokensIn?.filter(t => t.amount > 0)?.length || 0;
+  const tokenLength = isXrp ? 1 : tokensIn?.filter(t => t.amount > 0)?.length || 0;
   const token1Amount = tokensIn?.[0]?.amount || 0;
   const token2Amount = tokensIn?.[1]?.amount || 0;
 
@@ -72,7 +84,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
     issuer: tokensIn?.[0]?.address || '',
     spender: vault || '',
     currency: tokensIn?.[0]?.currency || '',
-    enabled: token1Amount > 0,
+    enabled: token1Amount > 0 && !isXrp,
   });
 
   const {
@@ -87,73 +99,112 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
     issuer: tokensIn?.[1]?.address || '',
     spender: vault || '',
     currency: tokensIn?.[1]?.currency || '',
-    enabled: token2Amount > 0,
+    enabled: token2Amount > 0 && !isXrp,
+  });
+
+  const {
+    allow: allowToken3,
+    allowance: allowance3,
+    isLoading: allowLoading3,
+    isSuccess: allowSuccess3,
+    refetch: refetchAllowance3,
+  } = useApprove({
+    amount: bptOut,
+    address: lpToken?.address || '',
+    issuer: lpToken?.address || '',
+    spender: vault || '',
+    currency: lpToken?.currency || '',
+    enabled: bptOut > 0 && isXrp,
   });
 
   const validAmount = token1Amount > 0 || token2Amount > 0;
-  const validAllowance =
-    token1Amount > 0 && token2Amount > 0
-      ? allowance1 && allowance2
-      : token1Amount > 0
-      ? allowance1
-      : allowance2;
+  const getValidAllowance = () => {
+    if (isXrp) return allowance3;
+    if (token1Amount > 0 && token2Amount > 0) return allowance1 && allowance2;
+    if (token1Amount > 0) return allowance1;
+    if (token2Amount > 0) return allowance2;
+  };
 
   const {
     isLoading: addLiquidityLoading,
-    isSuccess,
+    isSuccess: addLiquiditySuccess,
     txData,
     blockTimestamp,
     writeAsync,
   } = useAddLiquidity({
     id: poolId || '',
     tokens: tokensIn || [],
-    enabled: validAmount && validAllowance,
+    enabled: validAmount && getValidAllowance(),
   });
+
   const txDate = new Date(blockTimestamp ?? 0);
+  const isSuccess = addLiquiditySuccess && !!txData;
   const isLoading = addLiquidityLoading || allowLoading1 || allowLoading2;
 
   const step = useMemo(() => {
     if (isSuccess) return tokenLength + 1;
+
+    // single token deposit or in xrpl case (getting approve for receiving token)
+    if (tokenLength === 1) {
+      if (isXrp) {
+        if (allowance3) return 2;
+      } else {
+        if (token1Amount > 0 && token2Amount <= 0) {
+          if (allowance1) return 2;
+        }
+        if (token2Amount > 0 && token1Amount <= 0) {
+          if (allowance2) return 2;
+        }
+      }
+    }
 
     if (tokenLength === 2) {
       if (allowance2) return 3;
       if (allowance1) return 2;
     }
 
-    // single token deposit
-    if (tokenLength === 1) {
-      if (token1Amount > 0 && token2Amount <= 0) {
-        if (allowance1) return 2;
-      }
-      if (token2Amount > 0 && token1Amount <= 0) {
-        if (allowance2) return 2;
-      }
-    }
     return 1;
-  }, [allowance1, allowance2, isSuccess, token1Amount, token2Amount, tokenLength]);
+  }, [
+    allowance1,
+    allowance2,
+    allowance3,
+    isSuccess,
+    isXrp,
+    token1Amount,
+    token2Amount,
+    tokenLength,
+  ]);
 
   const stepLoading = useMemo(() => {
+    if (tokenLength === 1) {
+      if (isXrp) {
+        if (step === 1) return allowLoading3;
+        if (step === 2) return addLiquidityLoading;
+      } else {
+        if (token1Amount > 0 && token2Amount <= 0) {
+          if (step === 1) return allowLoading1;
+          if (step === 2) return addLiquidityLoading;
+        }
+        if (token2Amount > 0 && token1Amount <= 0) {
+          if (step === 1) return allowLoading2;
+          if (step === 2) return addLiquidityLoading;
+        }
+      }
+    }
+
     if (tokenLength === 2) {
       if (step === 1) return allowLoading1;
       if (step === 2) return allowLoading2;
       if (step === 3) return addLiquidityLoading;
     }
 
-    if (tokenLength === 1) {
-      if (token1Amount > 0 && token2Amount <= 0) {
-        if (step === 1) return allowLoading1;
-        if (step === 2) return addLiquidityLoading;
-      }
-      if (token2Amount > 0 && token1Amount <= 0) {
-        if (step === 1) return allowLoading2;
-        if (step === 2) return addLiquidityLoading;
-      }
-    }
     return false;
   }, [
     addLiquidityLoading,
     allowLoading1,
     allowLoading2,
+    allowLoading3,
+    isXrp,
     step,
     token1Amount,
     token2Amount,
@@ -163,6 +214,23 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
   const buttonText = useMemo(() => {
     if (isSuccess) return 'Return to pool page';
 
+    // single token deposit
+    if (tokenLength === 1) {
+      if (isXrp) {
+        if (!allowance3) return `Approve ${lpToken?.symbol} for adding liquidity`;
+        return 'Add liquidity';
+      } else {
+        if (token1Amount > 0 && token2Amount <= 0) {
+          if (!allowance1) return `Approve ${tokensIn?.[0]?.symbol} for adding liquidity`;
+          return 'Add liquidity';
+        }
+        if (token2Amount > 0 && token1Amount <= 0) {
+          if (!allowance2) return `Approve ${tokensIn?.[1]?.symbol} for adding liquidity`;
+          return 'Add liquidity';
+        }
+      }
+    }
+
     if (tokenLength === 2) {
       if (!allowance1) return `Approve ${tokensIn?.[0]?.symbol} for adding liquidity`;
       if (!allowance2) return `Approve ${tokensIn?.[1]?.symbol} for adding liquidity`;
@@ -170,20 +238,19 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
       return 'Add liquidity';
     }
 
-    // single token deposit
-    if (tokenLength === 1) {
-      if (token1Amount > 0 && token2Amount <= 0) {
-        if (!allowance1) return `Approve ${tokensIn?.[0]?.symbol} for adding liquidity`;
-        return 'Add liquidity';
-      }
-      if (token2Amount > 0 && token1Amount <= 0) {
-        if (!allowance2) return `Approve ${tokensIn?.[1]?.symbol} for adding liquidity`;
-        return 'Add liquidity';
-      }
-    }
-
     return '';
-  }, [allowance1, allowance2, isSuccess, token1Amount, token2Amount, tokenLength, tokensIn]);
+  }, [
+    allowance1,
+    allowance2,
+    allowance3,
+    isSuccess,
+    isXrp,
+    lpToken?.symbol,
+    token1Amount,
+    token2Amount,
+    tokenLength,
+    tokensIn,
+  ]);
 
   const handleButtonClick = async () => {
     if (isLoading) return;
@@ -192,6 +259,24 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
       navigate(`/pools/${networkAbbr}/${poolId}`);
       return;
     }
+
+    // single token deposit
+    if (tokenLength === 1) {
+      if (isXrp) {
+        if (allowance3) return await writeAsync?.();
+        else await allowToken3();
+      } else {
+        if (token1Amount > 0 && token2Amount <= 0) {
+          if (allowance1) return await writeAsync?.();
+          else await allowToken1();
+        }
+        if (token2Amount > 0 && token1Amount <= 0) {
+          if (allowance2) return await writeAsync?.();
+          else await allowToken2();
+        }
+      }
+    }
+
     // 2 token deposit
     if (tokenLength === 2) {
       if (!allowance1) return await allowToken1();
@@ -199,25 +284,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
 
       return await writeAsync?.();
     }
-
-    // single token deposit
-    if (tokenLength === 1) {
-      if (token1Amount > 0 && token2Amount <= 0) {
-        if (allowance1) return await writeAsync?.();
-        else await allowToken1();
-      }
-      if (token2Amount > 0 && token1Amount <= 0) {
-        console.log('here');
-        if (allowance2) return await writeAsync?.();
-        else await allowToken2();
-      }
-    }
   };
-
-  useEffect(() => {
-    if (allowSuccess1) refetchAllowance1();
-    if (allowSuccess2) refetchAllowance2();
-  }, [allowSuccess1, allowSuccess2, refetchAllowance1, refetchAllowance2]);
 
   const handleLink = () => {
     const txHash = isXrp ? txData?.hash : txData?.transactionHash;
@@ -227,6 +294,28 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
 
     window.open(url);
   };
+
+  useEffect(() => {
+    if (allowSuccess1) refetchAllowance1();
+    if (allowSuccess2) refetchAllowance2();
+    if (allowSuccess3) refetchAllowance3();
+  }, [
+    allowSuccess1,
+    allowSuccess2,
+    allowSuccess3,
+    refetchAllowance1,
+    refetchAllowance2,
+    refetchAllowance3,
+  ]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      queryClient.invalidateQueries(['GET', 'POOL']);
+      queryClient.invalidateQueries(['GET', 'XRPL']);
+      refetchBalance?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, queryClient]);
 
   return (
     <Popup
@@ -258,8 +347,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
               <Fragment key={`${symbol}-${idx}`}>
                 <TokenList
                   type="large"
-                  title={`${amount}`}
-                  subTitle={symbol}
+                  title={`${formatNumber(amount, 6)} ${symbol}`}
                   description={`$${formatNumber(amount * (price || 0), 4)}`}
                   image={image}
                   leftAlign
@@ -275,7 +363,14 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
             title={`${formatNumber(bptOut, 6)}`}
             subTitle={`${lpToken?.symbol || ''}`}
             description={`$${formatNumber(bptOut * lpTokenPrice, 6)}`}
-            image={<Jazzicon diameter={36} seed={jsNumberForAddress(lpToken?.address || '')} />}
+            image={
+              <Jazzicon
+                diameter={36}
+                seed={jsNumberForAddress(
+                  isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
+                )}
+              />
+            }
             leftAlign={true}
           />
         </List>
@@ -285,7 +380,7 @@ export const AddLiquidityPopup = ({ tokensIn, pool, lpTokenPrice, bptOut, priceI
             <ScannerText>{txDate.toString()}</ScannerText>
             <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
-        )}{' '}
+        )}
         {!isSuccess && (
           <>
             <List title={`Summary`}>

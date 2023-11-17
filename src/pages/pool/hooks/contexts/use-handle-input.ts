@@ -1,5 +1,6 @@
 import { FormState } from 'react-hook-form';
 import { min, minBy } from 'lodash-es';
+import { strip } from 'number-precision';
 
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
@@ -49,6 +50,7 @@ export const useHandleInput = ({
    xrp add lp change handler - cannot add single token or amounts that can be break pool weight
    to make zero price impact, set value1:value2 to balanc1:balance2
   */
+  // TODO: fix input changed twice
   const handleChangeAuto = ({ token, value, idx }: InputChange) => {
     if (!token) return;
 
@@ -57,7 +59,7 @@ export const useHandleInput = ({
     const remainPoolTokenBalance = compositions?.find(c => c.symbol !== token.symbol)?.balance || 0;
 
     const expectedRemainedTokenValue = changingPoolTokenBalance
-      ? (remainPoolTokenBalance * (value ?? 0)) / changingPoolTokenBalance
+      ? strip((remainPoolTokenBalance * (value ?? 0)) / changingPoolTokenBalance)
       : 0;
 
     if (idx === 0) {

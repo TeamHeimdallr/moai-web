@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { strip } from 'number-precision';
 import tw from 'twin.macro';
 import * as yup from 'yup';
 
@@ -115,9 +116,11 @@ export const SwapInputGroup = () => {
       ? fromInput
         ? Number(
             formatFloat(
-              toTokenReserve -
-                toTokenReserve *
-                  (fromTokenReserve / (fromTokenReserve + Number(fromInput) * (1 - fee))),
+              strip(
+                toTokenReserve -
+                  toTokenReserve *
+                    (fromTokenReserve / (fromTokenReserve + Number(fromInput) * (1 - fee)))
+              ),
               6
             )
           )

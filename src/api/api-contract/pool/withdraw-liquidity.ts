@@ -12,9 +12,10 @@ interface Props {
   id: string;
   tokens: (ITokenComposition & { amount: number })[];
   bptIn: bigint;
+  enabled?: boolean;
 }
 
-export const useWithdrawLiquidity = ({ id, tokens, bptIn }: Props) => {
+export const useWithdrawLiquidity = ({ id, tokens, bptIn, enabled }: Props) => {
   const { isEvm, isFpass } = useNetwork();
 
   const handleEvmWrappedTokenAddress = (address?: string) => {
@@ -26,17 +27,20 @@ export const useWithdrawLiquidity = ({ id, tokens, bptIn }: Props) => {
     poolId: id,
     tokens: tokens?.map(t => ({ ...t, address: handleEvmWrappedTokenAddress(t.address) })) || [],
     bptIn: BigInt(bptIn),
+    enabled,
   });
 
   const resFpass = useWithdrawLiquidityFpass({
     poolId: id,
     tokens,
     bptIn: BigInt(bptIn),
+    enabled,
   });
 
   const resXrp = useWithdrawLiquidityXrp({
     token1: tokens[0],
     token2: tokens[1],
+    enabled,
   });
 
   return isFpass ? resFpass : isEvm ? resEvm : resXrp;

@@ -40,6 +40,7 @@ export const useApprove = ({ amount, address, issuer, spender, currency, enabled
     amount,
     issuer,
     currency: currency ?? '',
+    enabled,
   });
 
   return isFpass ? resFpass : isEvm ? resEvm : resXrp;

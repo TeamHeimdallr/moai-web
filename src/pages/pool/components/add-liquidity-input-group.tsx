@@ -55,7 +55,7 @@ export const AddLiquidityInputGroup = () => {
   const { pool } = poolData || {};
   const { compositions } = pool || {};
 
-  const { lpTokenPrice, userPoolTokens } = useUserPoolTokenBalances();
+  const { lpTokenPrice, userPoolTokens, refetch } = useUserPoolTokenBalances();
   const hasBalances = userPoolTokens.length > 0 && userPoolTokens.some(token => token.balance > 0);
 
   const { bptOut, priceImpact: priceImpactRaw } = useCalculateAddLiquidity({
@@ -188,7 +188,7 @@ export const AddLiquidityInputGroup = () => {
           <TotalInnerWrapper>
             <TotalText>Total</TotalText>
             <TotalValueWrapper>
-              <TotalValue>{`$${Number(formatNumber(totalValue, 6)).toFixed(2)}`}</TotalValue>
+              <TotalValue>{`$${formatNumber(totalValue, 2)}`}</TotalValue>
               <ButtonPrimarySmall
                 text={totalValueMaxed ? 'Maxed' : 'Max'}
                 onClick={handleTotalMax}
@@ -240,6 +240,7 @@ export const AddLiquidityInputGroup = () => {
           lpTokenPrice={lpTokenPrice}
           bptOut={bptOut}
           priceImpact={priceImpact}
+          refetchBalance={refetch}
         />
       )}
     </Wrapper>

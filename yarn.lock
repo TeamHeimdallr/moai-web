@@ -2964,6 +2964,7 @@ __metadata:
     immer: ^10.0.3
     lodash-es: ^4.17.21
     lottie-web: ^5.12.2
+    number-precision: ^1.6.0
     prettier: ^3.0.3
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -12866,6 +12867,13 @@ __metadata:
     gauge: ^4.0.3
     set-blocking: ^2.0.0
   checksum: ae238cd264a1c3f22091cdd9e2b106f684297d3c184f1146984ecbe18aaa86343953f26b9520dedd1b1372bc0316905b736c1932d778dbeb1fcf5a1001390e2a
+  languageName: node
+  linkType: hard
+
+"number-precision@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "number-precision@npm:1.6.0"
+  checksum: fe715b90e25e3af21bfe5f94e436dc9e1ffd431bb1af0e7f4bef1e7875c5f7472e19bdf63e4aa22867503fd9c4e8a179567d685c16c1ed0bbf57554a36052aa2
   languageName: node
   linkType: hard
 

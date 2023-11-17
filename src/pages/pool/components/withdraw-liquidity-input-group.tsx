@@ -54,7 +54,7 @@ export const WithdrawLiquidityInputGroup = () => {
   const { pool } = poolData || {};
   const { compositions, lpToken } = pool || {};
 
-  const { lpTokenPrice, userLpTokenBalance } = useUserPoolTokenBalances();
+  const { lpTokenPrice, userLpTokenBalance, refetch } = useUserPoolTokenBalances();
   const { proportionalTokensOut, priceImpact: priceImpactRaw } = useCalculateWithdrawLiquidity({
     bptIn: inputValue || 0,
   });
@@ -122,20 +122,21 @@ export const WithdrawLiquidityInputGroup = () => {
         <ContentWrapper>
           <SubTitle>You receive</SubTitle>
           <TokenListWrapper>
-            {compositions?.map(({ symbol, currentWeight, description, image }, i) => (
-              <Fragment key={symbol + i}>
-                <TokenList
-                  type="large"
-                  title={`${symbol} ${Number(
-                    (proportionalTokensOut?.[i]?.amount || 0).toFixed(6)
-                  )} (${currentWeight?.toFixed(2)}%)`}
-                  description={description}
-                  image={image}
-                  leftAlign
-                />
-                {i !== (compositions?.length || 0) - 1 && <Divider />}
-              </Fragment>
-            ))}
+            {compositions?.map(({ symbol, image, price }, i) => {
+              const amount = proportionalTokensOut?.[i]?.amount || 0;
+              return (
+                <Fragment key={symbol + i}>
+                  <TokenList
+                    type="large"
+                    title={`${formatNumber(amount, 6)} ${symbol}`}
+                    description={`$${formatNumber(amount * (price || 0), 2)}`}
+                    image={image}
+                    leftAlign
+                  />
+                  {i !== (compositions?.length || 0) - 1 && <Divider />}
+                </Fragment>
+              );
+            })}
           </TokenListWrapper>
         </ContentWrapper>
         <PriceImpaceWrapper>
@@ -154,6 +155,7 @@ export const WithdrawLiquidityInputGroup = () => {
           bptIn={inputValue || 0}
           priceImpact={priceImpact}
           withdrawTokenWeight={withdrawTokenWeight}
+          refetchBalance={refetch}
         />
       )}
     </Wrapper>
