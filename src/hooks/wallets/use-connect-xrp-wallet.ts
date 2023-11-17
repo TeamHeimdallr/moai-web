@@ -36,7 +36,7 @@ export const useConnectWithGemWallet = () => {
 
   useEffect(() => {
     const getInstalled = async () => {
-      const isInstalled = (await gemIsInstalled())?.result?.isInstalled || false;
+      const isInstalled = (await gemIsInstalled())?.result?.isInstalled;
       setInstalled({ isInstalled });
     };
     getInstalled();

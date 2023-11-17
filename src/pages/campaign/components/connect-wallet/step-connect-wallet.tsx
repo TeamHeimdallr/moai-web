@@ -25,21 +25,22 @@ export const StepConnectWallet = () => {
     if (!currentNetwork) return;
     const selectedWallet = currentNetwork.wallets.find(w => w === wallet);
     if (selectedWallet?.connected) return;
+    // TODO : connect install url
+    // TODO : gemIsInstalled가 틀리게 내려옴. 확인필요
+    // if (!selectedWallet?.isInstalled) {
+    //   setIsLoading('');
+    //   return;
+    // }
     selectedWallet?.connect();
     setLoading(true);
     setIsLoading(wallet.name);
-    // TODO : connect install url
-    if (!selectedWallet?.isInstalled) {
-      setIsLoading('');
-      return;
-    }
     if (network === NETWORK.XRPL && xrp.isConnected) {
       xrp.disconnect();
     }
   };
 
   useEffect(() => {
-    setIsLoading('');
+    if ((step === 1 && xrp.isConnected) || (step === 2 && evm.isConnected)) setIsLoading('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [evm.isConnected, xrp.isConnected]);
 

@@ -24,6 +24,7 @@ export const ConnectWallet = ({ evm, xrpl }: { evm: boolean; xrpl: boolean }) =>
   const { connect: connectXrpCrossmark } = useConnectWithCrossmarkWallet();
   const { connect: connectXrpGem } = useConnectWithGemWallet();
 
+  // TODO : use-network-wallet hook
   const wallets: Wallet[] = [
     {
       name: 'Metamask',
