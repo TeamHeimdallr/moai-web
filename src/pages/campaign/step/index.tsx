@@ -13,15 +13,15 @@ import { StepContents } from '../layouts/layout-step';
 import { useCampaignStepStore } from '../states/step';
 
 const StepPage = () => {
-  const { step, setStep } = useCampaignStepStore();
+  const { step, setStep, isLoading } = useCampaignStepStore();
   const { xrp, evm } = useConnectedWallet();
 
-  // TODO : waiting connect text
+  const network = step === 1 ? 'XRPL' : 'the Root Network';
   const titleText =
-    step === 1
-      ? 'Connect to XRPL wallet'
-      : step === 2
-      ? 'Connect to the Root Network wallet'
+    step === 1 || step === 2
+      ? isLoading
+        ? 'Waiting to connect...'
+        : `Connect to ${network} wallet`
       : step === 3
       ? 'Bridge your $XRP'
       : 'Add liquidity';
@@ -33,6 +33,7 @@ const StepPage = () => {
     if (step === 2) {
       return !evm.isConnected;
     }
+    // TODP : add condition step3, step4
   }, [evm.isConnected, step, xrp.isConnected]);
 
   return (
