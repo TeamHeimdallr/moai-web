@@ -36,6 +36,7 @@ export const useConnectWithEvmWallet = () => {
     isConnected,
     isConnecting: isConnecting || isLoading,
     isConnectError: error,
+    isInstalled: !!window.ethereum,
 
     address: (address ?? '') as string,
     truncatedAddress: truncateAddress(address),

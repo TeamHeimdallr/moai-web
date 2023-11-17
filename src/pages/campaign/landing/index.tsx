@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 import { Footer } from '~/components/footer';
 
 import { Gnb } from '../components/gnb';
-import { LiquidityPoolLayout } from '../layouts/layout-liquidity-pool';
+import { MyVoyage } from '../layouts/layout-my-voyage';
 
 import { Contents } from './contents';
 
@@ -15,7 +15,7 @@ const LandingPage = () => {
       </GnbWrapper>
       <Contents />
 
-      <LiquidityPoolLayout />
+      <MyVoyage />
       <Footer />
     </Wrapper>
   );
