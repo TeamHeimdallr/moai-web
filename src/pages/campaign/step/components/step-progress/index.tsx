@@ -16,7 +16,7 @@ enum Progress {
   TODO = 2,
 }
 
-export const LoadingStep = () => {
+export const StepProgress = () => {
   const { step, isLoading, setLoading } = useCampaignStepStore();
   const { xrp, evm } = useConnectedWallet();
 

@@ -19,4 +19,4 @@ export const StepContents = () => {
   }, []);
   return <Wrapper>{step < 3 ? <StepConnectWallet /> : null}</Wrapper>;
 };
-const Wrapper = tw.div`relative w-455`;
+const Wrapper = tw.div`relative w-full`;

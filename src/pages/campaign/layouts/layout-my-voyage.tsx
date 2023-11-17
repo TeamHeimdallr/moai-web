@@ -7,9 +7,9 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID } from '~/types';
 
-import { Pending } from '../components/pending';
-import { TokenCard } from '../components/token-card';
-import { TokenList } from '../components/token-list';
+import { Pending } from '../landing/components/pending';
+import { TokenCard } from '../landing/components/token-card';
+import { TokenList } from '../landing/components/token-list';
 
 export const MyVoyage = () => {
   const { xrp, fpass } = useConnectedWallet();
