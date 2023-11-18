@@ -50,7 +50,6 @@ export const useHandleInput = ({
    xrp add lp change handler - cannot add single token or amounts that can be break pool weight
    to make zero price impact, set value1:value2 to balanc1:balance2
   */
-  // TODO: fix input changed twice
   const handleChangeAuto = ({ token, value, idx }: InputChange) => {
     if (!token) return;
 
