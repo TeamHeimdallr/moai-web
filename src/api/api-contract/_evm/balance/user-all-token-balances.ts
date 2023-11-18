@@ -35,10 +35,8 @@ export const useUserAllTokenBalances = () => {
 
   const evmNetwork = [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK];
   const tokenAddresses =
-    tokens
-      ?.filter(t => evmNetwork.includes(t.network) && !t.isLpToken && !!t.address)
-      ?.map(t => t.address) || [];
-  const { data: tokenBalancesData } = useContractReads({
+    tokens?.filter(t => evmNetwork.includes(t.network) && !!t.address)?.map(t => t.address) || [];
+  const { data: tokenBalancesData, refetch: tokenBalanceRefetch } = useContractReads({
     contracts: tokenAddresses.flatMap(address => [
       {
         address: address as Address,
@@ -75,7 +73,11 @@ export const useUserAllTokenBalances = () => {
   const userAllTokens = (tokens?.map((t, i) => ({ ...t, balance: tokenBalances?.[i] || 0 })) ||
     []) as (IToken & { balance: number })[];
 
+  const refetch = () => {
+    tokenBalanceRefetch();
+  };
   return {
     userAllTokenBalances: userAllTokens,
+    refetch,
   };
 };

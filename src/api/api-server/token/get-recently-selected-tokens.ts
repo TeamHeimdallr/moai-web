@@ -23,7 +23,7 @@ interface Response {
 }
 
 const axios = async (params: Params, queries?: Queries) =>
-  (await api.get<Response>(`/tokens/${params.networkAbbr}${encodeQuery(queries)}`)).data;
+  (await api.get<Response>(`/tokens/recent/${params.networkAbbr}${encodeQuery(queries)}`)).data;
 
 export const useGetRecentlySelectedTokensQuery = (request: Request, options?: QueryOption) => {
   const { params, queries } = request;

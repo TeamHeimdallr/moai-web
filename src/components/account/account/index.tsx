@@ -2,9 +2,11 @@ import { useRef, useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
+import { toHex } from 'viem';
 
 import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { truncateAddress } from '~/utils/util-string';
@@ -21,6 +23,7 @@ export const Account = () => {
 
   useOnClickOutside(ref, () => open(false));
 
+  const { isXrp } = useNetwork();
   const { evm, xrp } = useConnectedWallet();
   const bothConnected = evm.address && xrp.address;
 
@@ -43,8 +46,12 @@ export const Account = () => {
         ) : (
           <AccountWrapper>
             <InnerWrapper>
-              {/* TODO: icon */}
-              <Jazzicon diameter={24} seed={jsNumberForAddress(evm.address || xrp.address || '')} />
+              <Jazzicon
+                diameter={24}
+                seed={jsNumberForAddress(
+                  isXrp ? toHex(xrp.address || '', { size: 42 }) : evm.address || ''
+                )}
+              />
             </InnerWrapper>
             {isMD && (
               <ContentWrapper opened={opened}>

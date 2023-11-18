@@ -64,14 +64,13 @@ export const useApprove = ({
     onError: () => setAllowance(false),
   });
 
-  const encodedData =
-    internalEnabled && isFpass && !!walletAddress && !!signer
-      ? encodeFunctionData({
-          abi: ERC20_TOKEN_ABI,
-          functionName: 'approve',
-          args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
-        })
-      : '0x0';
+  const encodedData = internalEnabled
+    ? encodeFunctionData({
+        abi: ERC20_TOKEN_ABI,
+        functionName: 'approve',
+        args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
+      })
+    : '0x0';
 
   const { isLoading: isPrepareLoading, config } = usePrepareContractWrite({
     address: walletAddress as Address,
@@ -82,7 +81,7 @@ export const useApprove = ({
     chainId,
     value: BigInt(0),
     args: [1, tokenAddress, BigInt(0), encodedData],
-    enabled: internalEnabled,
+    enabled: internalEnabled && encodedData !== '0x0',
   });
 
   const { data, writeAsync } = useContractWrite(config);

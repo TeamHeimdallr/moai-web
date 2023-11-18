@@ -2,6 +2,7 @@ import { ReactNode, useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
+import { toHex } from 'viem';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetSwapHistoriesInfinityQuery } from '~/api/api-server/pools/get-swap-histories';
@@ -23,6 +24,7 @@ import { formatNumber } from '~/utils/util-number';
 import { truncateAddress } from '~/utils/util-string';
 import { elapsedTime } from '~/utils/util-time';
 import { useTableSwapHistoriesStore } from '~/states/components';
+import { ISwapHistoryToken, SWAP_HISTORY_TOKEN_TYPE } from '~/types';
 
 export const useTableSwapHistories = () => {
   const { network, id } = useParams();
@@ -82,6 +84,11 @@ export const useTableSwapHistories = () => {
           return (acc += price * amount);
         }, 0);
 
+        const tokens = ([
+          d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.FROM),
+          d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.TO),
+        ] || []) as ISwapHistoryToken[];
+
         return {
           meta: {
             id: d.id,
@@ -90,13 +97,20 @@ export const useTableSwapHistories = () => {
           trader: (
             <TableColumnIconText
               text={truncateAddress(d.trader, 4)}
-              icon={<Jazzicon diameter={24} seed={jsNumberForAddress(d.trader ?? '')} />}
+              icon={
+                <Jazzicon
+                  diameter={24}
+                  seed={jsNumberForAddress(
+                    isXrp ? toHex(d.trader || '', { size: 42 }) : d.trader || ''
+                  )}
+                />
+              }
               address
             />
           ),
           tradeDetail: (
             <TableColumnTokenSwap
-              tokens={d.swapHistoryTokens.map(t => ({
+              tokens={tokens.map(t => ({
                 symbol: t.symbol,
                 value: t.amounts,
                 image: t.image,

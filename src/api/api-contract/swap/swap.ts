@@ -22,9 +22,9 @@ interface Props {
 
   toToken?: IToken;
   toInput?: number;
-  proxyEnabled?: boolean;
+  enabled?: boolean;
 }
-export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, proxyEnabled }: Props) => {
+export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }: Props) => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { slippage } = useSlippageStore();
@@ -47,6 +47,7 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, proxyEnabl
     ],
     fundManagement: [evmAddress, false, evmAddress, false],
     limit: parseUnits(`${(toInput ?? 0) * (1 - slippage / 100)}`, TOKEN_DECIMAL[currentNetwork]),
+    enabled,
   });
 
   const resFpass = useSwapFpass({
@@ -61,7 +62,7 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, proxyEnabl
     ],
     fundManagement: [fpassAddress, false, fpassAddress, false],
     limit: parseUnits(`${(toInput ?? 0) * (1 - slippage / 100)}`, TOKEN_DECIMAL[currentNetwork]),
-    proxyEnabled,
+    proxyEnabled: enabled,
   });
 
   const resXrp = useSwapXrp({
@@ -70,6 +71,7 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, proxyEnabl
 
     toToken: toToken || ({} as IToken),
     toInput: toInput || 0,
+    enabled,
   });
 
   return isFpass ? resFpass : isEvm ? resEvm : resXrp;

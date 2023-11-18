@@ -80,7 +80,7 @@ export const useSwap = ({
     config,
     isError,
   } = usePrepareContractWrite({
-    address: (vault || '') as Address,
+    address: walletAddress as Address,
     abi: FUTUREPASS_ABI,
     functionName: 'proxyCall',
 

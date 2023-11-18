@@ -34,19 +34,20 @@ export const useUserAllTokenBalances = () => {
     command: 'account_info',
     account: walletAddress,
   };
-  const { data: xrpTokenBalanceData } = useQuery<AccountInfoResponse>(
-    ['GET', 'XRPL', 'ACCOUNT_INFO', walletAddress],
-    () => client.request(xrpTokenBalanceRequest),
-    {
-      enabled: !!client && isConnected && !!walletAddress && isXrp,
-      staleTime: 1000 * 3,
-    }
-  );
+  const { data: xrpTokenBalanceData, refetch: xrpTokenBalanceRefetch } =
+    useQuery<AccountInfoResponse>(
+      ['GET', 'XRPL', 'ACCOUNT_INFO', walletAddress],
+      () => client.request(xrpTokenBalanceRequest),
+      {
+        enabled: !!client && isConnected && !!walletAddress && isXrp,
+        staleTime: 1000 * 3,
+      }
+    );
 
   const getTokenBalanceRequest = (account: string) => ({
     command: 'gateway_balances',
-    account,
-    hotWallet: [walletAddress],
+    account: walletAddress,
+    hotWallet: [account],
   });
   const tokenBalancesData = useQueries<GatewayBalancesResponse[]>({
     queries:
@@ -61,6 +62,9 @@ export const useUserAllTokenBalances = () => {
           staleTime: 1000 * 3,
         })) || [],
   });
+  const tokenBalancesRefetch = () => {
+    tokenBalancesData.forEach(res => res.refetch());
+  };
 
   const xrpToken = tokens?.find(t => t.symbol === 'XRP');
   const xrpBalance = xrpToken
@@ -71,20 +75,31 @@ export const useUserAllTokenBalances = () => {
         },
       ] as (IToken & { balance: string })[])
     : ([] as (IToken & { balance: string })[]);
-  const tokenBalances = (tokens?.map((t, i) => {
-    const address = t?.address || '';
-    const currency = t?.currency || '';
 
-    const asset = (tokenBalancesData[i]?.data as GatewayBalancesResponse)?.result?.assets?.[
-      address
-    ]?.find(d => d.currency === currency);
+  const tokenBalances = tokenBalancesData?.flatMap(d => {
+    const res: (IToken & { balance: number })[] = [];
 
-    return { ...t, balance: Number(asset?.value || 0) };
-  }) || []) as (IToken & { balance: number })[];
+    const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
+    for (const key in assets) {
+      const composition = tokens?.find(token => token.address === key);
+      const asset = assets[key];
+
+      if (asset && composition)
+        res.push({ ...composition, balance: Number(asset?.[0]?.value || 0) });
+    }
+
+    return res;
+  });
+
+  const refetch = () => {
+    xrpTokenBalanceRefetch();
+    tokenBalancesRefetch();
+  };
 
   const userAllTokens = [...xrpBalance, ...tokenBalances] as (IToken & { balance: number })[];
 
   return {
     userAllTokenBalances: userAllTokens,
+    refetch,
   };
 };

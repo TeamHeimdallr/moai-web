@@ -18,8 +18,9 @@ import { IToken, POPUP_ID } from '~/types';
 
 interface Props {
   userAllTokenBalances: (IToken & { balance: number })[];
+  tokenPrice: number;
 }
-export const SelectFromTokenPopup = ({ userAllTokenBalances }: Props) => {
+export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props) => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { evm, xrp, fpass } = useConnectedWallet();
@@ -75,14 +76,16 @@ export const SelectFromTokenPopup = ({ userAllTokenBalances }: Props) => {
               ?.filter(t => t.symbol !== toToken?.symbol)
               ?.map(token => (
                 <TokenList
-                  key={token.symbol}
+                  key={`${token.network}-${token.symbol}`}
                   title={token.symbol}
                   image={token.image}
                   type={'selectable'}
-                  balance={token.balance ? `${formatNumber(token.balance, 4)}` : undefined}
-                  value={
-                    token.price ? `${formatNumber(token.balance * token.price, 4)}` : undefined
-                  }
+                  balance={token.balance ? `${formatNumber(token.balance, 4)}` : '0'}
+                  value={`$${
+                    token.price
+                      ? `${formatNumber(token.balance * (token.price || tokenPrice), 4)}`
+                      : '0'
+                  }`}
                   selected={fromToken?.symbol === token.symbol}
                   onClick={() => handleSelect(token)}
                   backgroundColor={COLOR.NEUTRAL[15]}

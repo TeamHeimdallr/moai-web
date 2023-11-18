@@ -25,6 +25,8 @@ interface Props {
   fundManagement: SwapFundManagementInput;
   limit?: bigint;
   deadline?: number;
+
+  enabled?: boolean;
 }
 export const useSwap = ({
   poolId,
@@ -33,6 +35,7 @@ export const useSwap = ({
   fundManagement,
   limit = BigInt(10),
   deadline = 2000000000,
+  enabled,
 }: Props) => {
   const publicClient = usePublicClient();
 
@@ -74,7 +77,7 @@ export const useSwap = ({
     chainId,
     value: singleSwap[2] === zeroAddress ? singleSwap[4] : 0n,
     args: [singleSwap, fundManagement, limit, deadline],
-    enabled: !!vault && !!singleSwap && !!fundManagement && !!walletAddress && isEvm,
+    enabled: enabled && !!vault && !!singleSwap && !!fundManagement && !!walletAddress && isEvm,
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);

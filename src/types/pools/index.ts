@@ -101,6 +101,7 @@ export interface ISwapHistory {
 
 export interface ISwapHistoryToken extends IToken {
   amounts: number;
+  type: SWAP_HISTORY_TOKEN_TYPE;
 }
 
 export interface IPoolVaultAmm {
@@ -118,6 +119,11 @@ export enum POOL_CHART_TYPE {
   VOLUME = 'VOLUME',
   TVL = 'TVL',
   FEE = 'FEE',
+}
+
+export enum SWAP_HISTORY_TOKEN_TYPE {
+  FROM = 'FROM',
+  TO = 'TO',
 }
 
 export type SwapFundManagementInput = [

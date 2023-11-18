@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import tw from 'twin.macro';
 import { parseUnits, toHex } from 'viem';
 
@@ -22,7 +23,7 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { formatNumber, getNetworkAbbr } from '~/utils';
+import { DATE_FORMATTER, formatNumber, getNetworkAbbr } from '~/utils';
 import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -388,7 +389,7 @@ export const WithdrawLiquidityPopup = ({
         {isSuccess && (
           <Scanner onClick={() => handleLink()}>
             <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
-            <ScannerText>{txDate.toString()}</ScannerText>
+            <ScannerText> {format(new Date(txDate), DATE_FORMATTER.FULL)}</ScannerText>
             <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
         )}

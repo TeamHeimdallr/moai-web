@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
 
@@ -20,26 +21,25 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatFloat, formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
-import { IPool, IToken } from '~/types';
+import { IPool } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 interface Props {
   swapOptimizedPathPool?: IPool;
-  userAllTokenBalances?: (IToken & { balance: number })[];
+  refetchBalance?: () => void;
 }
-export const SwapPopup = ({ swapOptimizedPathPool, userAllTokenBalances }: Props) => {
+export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const { network } = useParams();
-  const { selectedNetwork, isXrp, isEvm, isFpass } = useNetwork();
+  const { selectedNetwork, isXrp } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
-
-  const { evm, xrp, fpass } = useConnectedWallet();
-  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
 
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippage } = useSlippageStore();
@@ -51,8 +51,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, userAllTokenBalances }: Props
     toToken,
 
     fromInput,
-
-    resetAll,
   } = useSwapStore();
   const numFromInput = Number(fromInput) || 0;
 
@@ -78,10 +76,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, userAllTokenBalances }: Props
     price: 0,
   };
   const fromTokenReserve = fromTokenReserveRaw || 0;
-  /* swap 하고자 하는 토큰 유저 balance */
-  const fromTokenBalance =
-    userAllTokenBalances?.find(t => t.symbol === fromToken?.symbol)?.balance || 0;
-
   /* swap optimized path pool의 해당 토큰 balance와 price */
   const { balance: toTokenReserveRaw } = swapOptimizedPathPool?.compositions?.find(
     c => c.symbol === toToken?.symbol
@@ -105,47 +99,136 @@ export const SwapPopup = ({ swapOptimizedPathPool, userAllTokenBalances }: Props
           )
         : undefined
       : undefined;
-  const numToInput = Number(toInput) || 0;
 
+  const numToInput = Number(toInput) || 0;
   const swapRatio =
     fromInput && toInput
       ? numToInput / (numFromInput === 0 ? 0.0001 : numFromInput)
       : toTokenReserve - toTokenReserve * (fromTokenReserve / (fromTokenReserve + (1 - fee)));
 
-  const validToSwap =
-    !!walletAddress &&
-    fromInput &&
-    numFromInput > 0 &&
-    numFromInput <= fromTokenBalance &&
-    toInput &&
-    toInput > 0;
-
-  const wantToAllowToken = isXrp ? toToken : fromToken;
-  const wantToAllowAmount = isXrp ? toInput : fromInput;
   const {
-    allow,
-    isLoading: isLoadingAllowance,
-    isSuccess: isSuccessAllowance,
-    allowance,
+    allow: allowFromToken,
+    allowance: allowanceFromToken,
+    isLoading: allowFromTokenLoading,
+    isSuccess: allowFromTokenSuccess,
+    refetch: refetchFromTokenAllowance,
   } = useApprove({
-    amount: Number(wantToAllowAmount || 0),
-    address: wantToAllowToken?.address || '',
-    issuer: wantToAllowToken?.address || '',
-
-    spender: vault,
-    currency: wantToAllowToken?.currency || '',
-
-    enabled: !!wantToAllowToken,
+    amount: numFromInput,
+    address: fromToken?.address || '',
+    issuer: fromToken?.address || '',
+    spender: vault || '',
+    currency: fromToken?.currency || '',
+    enabled: numFromInput > 0 && !isXrp,
   });
 
-  const { txData, blockTimestamp, isLoading, isSuccess, isError, swap } = useSwap({
+  const {
+    allow: allowToToken,
+    allowance: allowanceToToken,
+    isLoading: allowToTokenLoading,
+    isSuccess: allowToTokenSuccess,
+    refetch: refetchToTokenAllowance,
+  } = useApprove({
+    amount: numToInput,
+    address: toToken?.address || '',
+    issuer: toToken?.address || '',
+    spender: vault || '',
+    currency: toToken?.currency || '',
+    enabled: numToInput > 0 && isXrp,
+  });
+
+  const validAmount = numFromInput > 0 || numToInput > 0;
+  const validAllowance = isXrp ? allowanceToToken : allowanceFromToken;
+
+  const {
+    txData,
+    blockTimestamp,
+    isLoading: swapLoading,
+    isSuccess: swapSuccess,
+    isError,
+    swap,
+  } = useSwap({
     id: swapOptimizedPathPool?.poolId || '',
     fromToken: fromToken,
     fromInput: numFromInput,
     toToken: toToken,
     toInput: numToInput,
-    proxyEnabled: isSuccessAllowance,
+    enabled: validAllowance && validAmount,
   });
+
+  const txDate = new Date(blockTimestamp ?? 0);
+  const isSuccess = swapSuccess && !!txData;
+  const isLoading = swapLoading || allowFromTokenLoading || allowToTokenLoading;
+
+  const effectivePrice =
+    fromToken && toToken && swapRatio
+      ? `1 ${fromToken.symbol} = ${formatNumber(swapRatio, 6)} ${toToken.symbol}`
+      : '';
+
+  const fromTokenPrice =
+    swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol)?.price || 0;
+  const fromTokenValue = numFromInput * fromTokenPrice;
+  const toTokenPrice =
+    swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol)?.price || 0;
+  const toTokenValue = numToInput * toTokenPrice;
+
+  const currentValue = selectedDetailInfo === 'TOKEN' ? numToInput : toTokenValue;
+  const currentUnit = selectedDetailInfo === 'TOKEN' ? toToken?.symbol || '' : 'USD';
+  const totalAfterFee = (1 - (swapOptimizedPathPool?.trandingFees || 0.003)) * (currentValue || 0);
+
+  const slippageText = (slippage * 100).toFixed(1);
+  const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
+
+  const step = useMemo(() => {
+    if (isSuccess) return 2;
+
+    if (isXrp && allowanceToToken) return 2;
+    if (!isXrp && allowanceFromToken) return 2;
+
+    return 1;
+  }, [allowanceFromToken, allowanceToToken, isSuccess, isXrp]);
+
+  const stepLoading = useMemo(() => {
+    if (isXrp) {
+      if (step === 1) return allowToTokenLoading;
+      if (step === 2) return swapLoading;
+    } else {
+      if (step === 1) return allowFromTokenLoading;
+      if (step === 2) return swapLoading;
+    }
+
+    return false;
+  }, [allowFromTokenLoading, allowToTokenLoading, isXrp, step, swapLoading]);
+
+  const buttonText = useMemo(() => {
+    if (isSuccess) return 'Return to pool page';
+
+    if (isXrp) {
+      if (!allowanceToToken) return `Approve ${toToken?.symbol} for adding liquidity`;
+      return 'Add liquidity';
+    } else {
+      if (!allowanceFromToken) return `Approve ${fromToken?.symbol} for adding liquidity`;
+      return 'Add liquidity';
+    }
+  }, [allowanceFromToken, allowanceToToken, fromToken?.symbol, isSuccess, isXrp, toToken?.symbol]);
+
+  const handleButtonClick = async () => {
+    if (isLoading) return;
+    if (isSuccess) {
+      close();
+      navigate(
+        `/pools/${getNetworkAbbr(swapOptimizedPathPool?.network)}/${swapOptimizedPathPool?.poolId}`
+      );
+      return;
+    }
+
+    if (isXrp) {
+      if (allowanceToToken) return await swap?.();
+      else await allowToToken();
+    } else {
+      if (allowanceFromToken) return await swap?.();
+      else await allowFromToken();
+    }
+  };
 
   const handleLink = () => {
     const txHash = isXrp ? txData?.hash : txData?.transactionHash;
@@ -154,106 +237,69 @@ export const SwapPopup = ({ swapOptimizedPathPool, userAllTokenBalances }: Props
     window.open(url);
   };
 
-  const step = useMemo(() => {
-    if (isSuccess) return 3;
-    if (isSuccessAllowance || allowance) return 2;
-    return 1;
-  }, [isSuccess, isSuccessAllowance, allowance]);
+  useEffect(() => {
+    if (allowFromTokenSuccess) refetchFromTokenAllowance();
+    if (allowToTokenSuccess) refetchToTokenAllowance();
+  }, [
+    allowFromTokenSuccess,
+    allowToTokenSuccess,
+    refetchFromTokenAllowance,
+    refetchToTokenAllowance,
+  ]);
 
-  const effectivePrice =
-    fromToken && toToken && swapRatio
-      ? `1 ${fromToken.symbol} = ${formatNumber(swapRatio, 6)} ${toToken.symbol}`
-      : '';
-
-  const fromValue =
-    numFromInput *
-    (swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol)?.price || 0);
-  const toValue =
-    numToInput *
-    (swapOptimizedPathPool?.compositions?.find(c => c.symbol === toToken?.symbol)?.price || 0);
-
-  const currentValue = selectedDetailInfo === 'TOKEN' ? numFromInput : fromValue;
-  const currentUnit = selectedDetailInfo === 'TOKEN' ? fromToken?.symbol || '' : 'USD';
-  const totalAfterFee = (1 - (swapOptimizedPathPool?.trandingFees || 0.003)) * (currentValue || 0);
-
-  const slippageText = (slippage * 100).toFixed(1);
-  const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
-
-  const handleButton = async () => {
+  useEffect(() => {
     if (isSuccess) {
-      resetAll();
-      close();
-      return;
+      queryClient.invalidateQueries(['GET', 'POOL']);
+      queryClient.invalidateQueries(['GET', 'XRPL']);
+      refetchBalance?.();
     }
-
-    if (step === 1) {
-      await allow?.();
-      return;
-    }
-    if (step === 2) {
-      await swap?.();
-      return;
-    }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, queryClient]);
 
   return (
     <Popup
       id={POPUP_ID.SWAP}
       title={isSuccess ? '' : 'Swap preview'}
       button={
-        <ButtonWrapper onClick={handleButton}>
+        <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
-            text={
-              isLoading || isLoadingAllowance
-                ? 'Confirming'
-                : isSuccess
-                ? 'Return to swap page'
-                : step === 1
-                ? `Approve ${wantToAllowToken?.symbol || ''} for swap`
-                : 'Confirm swap'
-            }
-            isLoading={isLoading || isLoadingAllowance}
+            text={buttonText}
+            isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={
-              isLoading ||
-              isLoadingAllowance ||
-              // invalid to swap
-              (step === 2 && !validToSwap) ||
-              // swap contract call has error
-              (step === 2 && isError)
-            }
+            disabled={!fromToken || !toToken || isError}
           />
         </ButtonWrapper>
       }
     >
       <Wrapper style={{ gap: isSuccess ? 40 : 24 }}>
-        {isSuccess ? (
+        {isSuccess && (
           <>
             <SuccessWrapper>
               <SuccessIconWrapper>
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
               <SuccessTitle>Swap confirmed!</SuccessTitle>
-              <SuccessSubTitle>{`Successfully swapped ${fromInput} ${fromToken?.symbol} to ${toInput} ${toToken?.symbol}`}</SuccessSubTitle>
+              <SuccessSubTitle>{`Successfully swapped ${fromInput} ${fromToken?.symbol} to ${totalAfterSlippage} ${toToken?.symbol}`}</SuccessSubTitle>
             </SuccessWrapper>
 
             <List title={`Total`}>
               <TokenList
-                title={`${toValue} ${toToken?.symbol}`}
-                description={`$${formatNumber(toValue, 4)}`}
+                title={`${totalAfterSlippage} ${toToken?.symbol}`}
+                description={`$${formatNumber(toTokenValue, 4)}`}
                 image={toToken?.image}
                 type="large"
                 leftAlign
               />
             </List>
           </>
-        ) : (
+        )}
+        {!isSuccess && (
           <>
             <ListWrapper>
               <List title={`Effective price: ${effectivePrice}`}>
                 <TokenList
-                  title={`${fromValue} ${fromToken?.symbol}`}
-                  description={`$${formatNumber(fromValue, 4)}`}
+                  title={`${fromInput} ${fromToken?.symbol}`}
+                  description={`$${formatNumber(fromTokenValue, 4)}`}
                   image={fromToken?.image}
                   type="large"
                   leftAlign
@@ -265,8 +311,8 @@ export const SwapPopup = ({ swapOptimizedPathPool, userAllTokenBalances }: Props
                   </ArrowDownWrapper>
                 </IconWrapper>
                 <TokenList
-                  title={`${toValue} ${toToken?.symbol}`}
-                  description={`$${formatNumber(toValue, 4)}`}
+                  title={`${toInput} ${toToken?.symbol}`}
+                  description={`$${formatNumber(toTokenValue, 4)}`}
                   image={toToken?.image}
                   type="large"
                   leftAlign
@@ -309,17 +355,13 @@ export const SwapPopup = ({ swapOptimizedPathPool, userAllTokenBalances }: Props
             </DetailWrapper>
           </>
         )}
-        {step < 3 ? (
-          <LoadingStep
-            totalSteps={2}
-            step={step}
-            isLoading={step === 1 ? isLoadingAllowance : isLoading}
-            isDone={isSuccess}
-          />
-        ) : (
+        {!isSuccess && (
+          <LoadingStep totalSteps={2} step={step} isLoading={stepLoading} isDone={isSuccess} />
+        )}
+        {isSuccess && (
           <TimeWrapper>
             <IconTime />
-            {format(new Date(blockTimestamp), DATE_FORMATTER.FULL)}
+            {format(new Date(txDate), DATE_FORMATTER.FULL)}
             <ClickableIcon onClick={handleLink}>
               <IconLink />
             </ClickableIcon>

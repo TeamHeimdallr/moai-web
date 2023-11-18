@@ -12,8 +12,10 @@ interface Props {
 
   toToken: IToken;
   toInput: number;
+
+  enabled?: boolean;
 }
-export const useSwap = ({ fromToken, fromInput, toToken, toInput }: Props) => {
+export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Props) => {
   const { isXrp } = useNetwork();
   const { xrp } = useConnectedWallet();
   const { slippage } = useSlippageStore();
@@ -22,25 +24,25 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput }: Props) => {
 
   const amount =
     toToken.symbol === 'XRP'
-      ? {
+      ? { Amount: xrpToDrops(toInput.toFixed(6)) }
+      : {
           Amount: {
             currency: toToken.currency,
             issuer: toToken.address,
             value: toInput.toFixed(6),
           },
-        }
-      : { Amount: xrpToDrops(toInput.toFixed(6)) };
+        };
 
   const deliverMin =
     toToken.symbol === 'XRP'
-      ? {
+      ? { DeliverMin: xrpToDrops((toInput * (1 - slippage / 100)).toFixed(6)) }
+      : {
           DeliverMin: {
             currency: toToken.currency,
             issuer: toToken.address,
             value: (toInput * (1 - slippage / 100)).toFixed(6),
           },
-        }
-      : { DeliverMin: xrpToDrops((toInput * (1 - slippage / 100)).toFixed(6)) };
+        };
 
   const sendMax =
     fromToken.symbol === 'XRP'
@@ -72,7 +74,7 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput }: Props) => {
   const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
 
   const writeAsync = async () => {
-    if (!address || !isXrp) return;
+    if (!enabled || !address || !isXrp) return;
     await mutateAsync();
   };
 

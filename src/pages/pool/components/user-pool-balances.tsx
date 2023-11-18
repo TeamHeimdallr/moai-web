@@ -1,6 +1,7 @@
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
+import { toHex } from 'viem';
 
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
@@ -20,7 +21,7 @@ export const UserPoolBalances = () => {
 
   const { network, id } = useParams();
 
-  const { isFpass, isEvm } = useNetwork();
+  const { isFpass, isEvm, isXrp } = useNetwork();
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { evm, xrp, fpass } = useConnectedWallet();
@@ -56,7 +57,14 @@ export const UserPoolBalances = () => {
       <Divider />
       <TokenLists>
         <TokenList
-          image={<Jazzicon diameter={36} seed={jsNumberForAddress(lpToken?.address || '')} />}
+          image={
+            <Jazzicon
+              diameter={36}
+              seed={jsNumberForAddress(
+                isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
+              )}
+            />
+          }
           title={lpToken?.symbol || lpTokenSymbol}
           balance={formatNumber(userLpTokenBalance || 0, 4)}
         />

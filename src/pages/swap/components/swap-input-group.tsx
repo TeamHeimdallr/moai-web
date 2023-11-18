@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -58,9 +59,18 @@ export const SwapInputGroup = () => {
     setToToken,
 
     setFromInput,
+    resetAll,
   } = useSwapStore();
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const { userAllTokenBalances: userAllTokenBalancesWithLpToken, refetch: refetchBalance } =
+    useUserAllTokenBalances();
+  const userAllTokenBalances = userAllTokenBalancesWithLpToken?.filter(t => !t.isLpToken);
+
+  const rightNetwork =
+    !!fromToken &&
+    !!toToken &&
+    fromToken?.network === currentNetwork &&
+    toToken?.network === currentNetwork;
   const { data: swapOptimizedPathPoolData } = useGetSwapOptimizedPathQuery(
     {
       params: {
@@ -72,7 +82,7 @@ export const SwapInputGroup = () => {
       },
     },
     {
-      enabled: !!fromToken && !!toToken && !!currentNetworkAbbr,
+      enabled: rightNetwork && !!currentNetworkAbbr,
       staleTime: 1000 * 3,
     }
   );
@@ -86,9 +96,11 @@ export const SwapInputGroup = () => {
     };
   const fromTokenReserve = fromTokenReserveRaw || 0;
   const fromTokenPrice = fromTokenPriceRaw || 0;
+
   /* swap 하고자 하는 토큰 유저 balance */
-  const fromTokenBalance =
-    userAllTokenBalances?.find(t => t.symbol === fromToken?.symbol)?.balance || 0;
+  const fromTokenBalance = Number(
+    userAllTokenBalances?.find(t => t.symbol === fromToken?.symbol)?.balance || 0
+  );
 
   /* swap optimized path pool의 해당 토큰 balance와 price */
   const { balance: toTokenReserveRaw, price: toTokenPriceRaw } =
@@ -98,14 +110,17 @@ export const SwapInputGroup = () => {
     };
   const toTokenReserve = toTokenReserveRaw || 0;
   const toTokenPrice = toTokenPriceRaw || 0;
+
   /* swap 하고자 하는 토큰 유저 balance */
-  const toTokenBalance =
-    userAllTokenBalances?.find(t => t.symbol === toToken?.symbol)?.balance || 0;
+  const toTokenBalance = Number(
+    userAllTokenBalances?.find(t => t.symbol === toToken?.symbol)?.balance || 0
+  );
 
   const schema = yup.object().shape({
     from: yup.number().min(0).max(fromTokenBalance, 'Exceeds wallet balance').required(),
     to: yup.number().min(0).required(),
   });
+
   const { control, setValue, formState } = useForm<InputFormState>({
     resolver: yupResolver(schema),
   });
@@ -145,6 +160,11 @@ export const SwapInputGroup = () => {
     setToToken(fromToken);
   };
 
+  useEffect(() => {
+    resetAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentNetwork]);
+
   return (
     <>
       <Wrapper>
@@ -156,6 +176,8 @@ export const SwapInputGroup = () => {
                   token={fromToken?.symbol || ''}
                   title={fromToken ? '' : 'Select token'}
                   icon={<IconDown />}
+                  image
+                  imageUrl={fromToken?.image}
                 />
               }
               balance={fromTokenBalance}
@@ -182,6 +204,8 @@ export const SwapInputGroup = () => {
                   token={toToken?.symbol || ''}
                   title={toToken ? '' : 'Select token'}
                   icon={<IconDown />}
+                  image
+                  imageUrl={toToken?.image}
                 />
               }
               balance={toTokenBalance}
@@ -196,22 +220,24 @@ export const SwapInputGroup = () => {
             />
           </InputInnerWrapper>
           {fromToken && toToken && (
-            <InputLabel>{`1 ${fromToken} = ${formatNumber(swapRatio, 6)} ${toToken}`}</InputLabel>
+            <InputLabel>{`1 ${fromToken.symbol} = ${formatNumber(swapRatio, 6)} ${
+              toToken.symbol
+            }`}</InputLabel>
           )}
         </InputWrapper>
         <ButtonPrimaryLarge text="Preview" disabled={!validToSwap} onClick={openSwapPopup} />
       </Wrapper>
       {walletAddress && selectTokenFromPopupOpened && (
-        <SelectFromTokenPopup userAllTokenBalances={userAllTokenBalances} />
+        <SelectFromTokenPopup
+          userAllTokenBalances={userAllTokenBalances}
+          tokenPrice={fromTokenPrice}
+        />
       )}
       {walletAddress && selectTokenToPopupOpened && (
-        <SelectToTokenPopup userAllTokenBalances={userAllTokenBalances} />
+        <SelectToTokenPopup userAllTokenBalances={userAllTokenBalances} tokenPrice={toTokenPrice} />
       )}
       {walletAddress && swapPopupOpened && (
-        <SwapPopup
-          swapOptimizedPathPool={swapOptimizedPathPool}
-          userAllTokenBalances={userAllTokenBalances}
-        />
+        <SwapPopup swapOptimizedPathPool={swapOptimizedPathPool} refetchBalance={refetchBalance} />
       )}
     </>
   );

@@ -23,7 +23,7 @@ export const useApprove = ({ amount, address, issuer, spender, currency, enabled
   const resEvm = useApproveEvm({
     amount: amount * 100,
     allowanceMin: amount,
-    spender: (spender ?? '0x0') as Address,
+    spender: spender as Address,
     tokenAddress: address as Address,
     enabled,
   });
@@ -31,7 +31,7 @@ export const useApprove = ({ amount, address, issuer, spender, currency, enabled
   const resFpass = useApproveFpass({
     amount: amount * 100,
     allowanceMin: amount,
-    spender: (spender ?? '0x0') as Address,
+    spender: spender as Address,
     tokenAddress: address as Address,
     enabled,
   });

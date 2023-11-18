@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -7,11 +8,16 @@ import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { NETWORK, POPUP_ID } from '~/types';
 
 export const useBanner = () => {
+  const location = useLocation();
+
   const { open, close } = usePopup(POPUP_ID.WALLET_ALERT);
+  const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
+
   const { selectedNetwork } = useNetwork();
   const { fpass, evm, xrp } = useConnectedWallet();
   const { setWalletType } = useWalletTypeStore();
-  const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
+
+  const isSwap = location.pathname.includes('swap');
   const wallet =
     selectedNetwork === NETWORK.EVM_SIDECHAIN
       ? 'EVM'
@@ -22,6 +28,8 @@ export const useBanner = () => {
   const text = `Please connect to ${wallet} wallet`;
 
   useEffect(() => {
+    if (isSwap) return; // On the swap page, can proceed regardless of the selected network.
+
     if (
       (selectedNetwork === NETWORK.XRPL && !xrp.isConnected) ||
       (selectedNetwork === NETWORK.EVM_SIDECHAIN && !evm.isConnected) ||

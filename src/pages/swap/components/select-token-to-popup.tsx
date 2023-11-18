@@ -18,8 +18,9 @@ import { IToken, POPUP_ID } from '~/types';
 
 interface Props {
   userAllTokenBalances: (IToken & { balance: number })[];
+  tokenPrice: number;
 }
-export const SelectToTokenPopup = ({ userAllTokenBalances }: Props) => {
+export const SelectToTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props) => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { evm, xrp, fpass } = useConnectedWallet();
@@ -27,8 +28,8 @@ export const SelectToTokenPopup = ({ userAllTokenBalances }: Props) => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
-  const { toToken, fromToken, setFromToken } = useSwapStore();
-  const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_FROM);
+  const { toToken, fromToken, setToToken } = useSwapStore();
+  const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_TO);
 
   const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
   const { data: recentlySelectedTokensData } = useGetRecentlySelectedTokensQuery(
@@ -48,7 +49,7 @@ export const SelectToTokenPopup = ({ userAllTokenBalances }: Props) => {
   const { tokens: recentlySelectedTokens } = recentlySelectedTokensData || {};
 
   const handleSelect = (token: IToken) => {
-    setFromToken(token);
+    setToToken(token);
     close();
   };
   return (
@@ -74,14 +75,16 @@ export const SelectToTokenPopup = ({ userAllTokenBalances }: Props) => {
               ?.filter(t => t.symbol !== fromToken?.symbol)
               ?.map(token => (
                 <TokenList
-                  key={token.symbol}
+                  key={`${token.network}-${token.symbol}`}
                   title={token.symbol}
                   image={token.image}
                   type={'selectable'}
-                  balance={token.balance ? `${formatNumber(token.balance, 4)}` : undefined}
-                  value={
-                    token.price ? `${formatNumber(token.balance * token.price, 4)}` : undefined
-                  }
+                  balance={token.balance ? `${formatNumber(token.balance, 4)}` : '0'}
+                  value={`$${
+                    token.price
+                      ? `${formatNumber(token.balance * (token.price || tokenPrice), 4)}`
+                      : '0'
+                  }`}
                   selected={toToken?.symbol === token.symbol}
                   onClick={() => handleSelect(token)}
                   backgroundColor={COLOR.NEUTRAL[15]}
