@@ -1,4 +1,5 @@
 import { Fragment, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import tw, { css, styled } from 'twin.macro';
 
@@ -9,6 +10,8 @@ import { TableColumnAmount } from '../table/table-column-amount';
 import { TableColumnTime } from '../table/table-column-time';
 
 export const BridgeHistory = () => {
+  const { t } = useTranslation();
+
   // TODO : connect API
   const hasMore = true;
   const isLoading = false;
@@ -79,7 +82,7 @@ export const BridgeHistory = () => {
                 <Loading>Loading...</Loading>
               ) : (
                 <>
-                  Load more <IconDown />
+                  {t('Load more')} <IconDown />
                 </>
               )}
             </More>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
 import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
@@ -27,6 +28,7 @@ export const ConnectWallet = ({ evm, xrpl }: Props) => {
   const { connect: connectEvm } = useConnectWithEvmWallet();
   const { connect: connectXrpCrossmark } = useConnectWithCrossmarkWallet();
   const { connect: connectXrpGem } = useConnectWithGemWallet();
+  const { t } = useTranslation();
 
   // TODO : use-network-wallet hook
   const wallets: Wallet[] = [
@@ -54,7 +56,7 @@ export const ConnectWallet = ({ evm, xrpl }: Props) => {
   ].filter(w => (w.type === 'evm' && evm) || (w.type === 'xrpl' && xrpl));
 
   return (
-    <Popup id={POPUP_ID.CONNECT_WALLET} title="Connect wallet">
+    <Popup id={POPUP_ID.CONNECT_WALLET} title={t('Connect wallet')}>
       <Wrapper>
         {wallets.map(w => (
           <Wallet

@@ -1,4 +1,5 @@
 import { Fragment, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ColumnDef } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import tw, { css, styled } from 'twin.macro';
@@ -44,6 +45,7 @@ export const Table = <T extends object>({
     },
     getCoreRowModel: getCoreRowModel(),
   });
+  const { t } = useTranslation();
 
   const tableRatio = ratio.map(num => `${num}fr`).join(' ');
 
@@ -90,7 +92,7 @@ export const Table = <T extends object>({
           )}
           {hasMore && (
             <More onClick={handleMoreClick}>
-              Load more <IconDown />
+              {t('Load more')} <IconDown />
             </More>
           )}
           {isLoading && <Loading>Loading...</Loading>}

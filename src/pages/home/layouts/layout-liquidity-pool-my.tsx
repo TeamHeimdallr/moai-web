@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
@@ -18,6 +19,7 @@ interface Meta {
 export const MyLiquidityLayout = () => {
   const { tableColumns, tableData } = useTableMyLiquidityPool();
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
@@ -36,7 +38,7 @@ export const MyLiquidityLayout = () => {
   return (
     <Wrapper>
       <TitleWrapper>
-        <Title>My liquidity in Moai pools</Title>
+        <Title>{t('My liquidity in Moai pools')}</Title>
       </TitleWrapper>
       <Table
         data={tableData}

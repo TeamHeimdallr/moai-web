@@ -1,4 +1,5 @@
 import { ReactNode, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
@@ -31,6 +32,7 @@ export const useTableSwapHistories = () => {
   const { selectedNetwork, isXrp } = useNetwork();
   const { sort, setSort } = useTableSwapHistoriesStore();
 
+  const { t } = useTranslation();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { data: poolData } = useGetPoolQuery(
@@ -89,6 +91,13 @@ export const useTableSwapHistories = () => {
           d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.TO),
         ] || []) as ISwapHistoryToken[];
 
+        const time = elapsedTime(new Date(d.time).getTime());
+        const splittedTime = time.split(' ');
+        const translatedTime =
+          time === 'Just now'
+            ? t('Just now')
+            : t(`${splittedTime[1]} ${splittedTime[2]}`, { time: splittedTime[0] });
+
         return {
           meta: {
             id: d.id,
@@ -120,14 +129,14 @@ export const useTableSwapHistories = () => {
           value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
           time: (
             <TableColumnLink
-              token={`${elapsedTime(new Date(d.time).getTime())}`}
+              token={translatedTime}
               align="flex-end"
               link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${d.txHash}`}
             />
           ),
         };
       }),
-    [compositions, currentNetwork, isXrp, swapHistories]
+    [compositions, currentNetwork, isXrp, swapHistories, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

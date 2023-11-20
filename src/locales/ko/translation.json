@@ -7,6 +7,8 @@
   "Pool Value": "유동량",
   "Volume (24h)": "거래량 (24시간)",
   "APR": "APR",
+  "My APR": "나의 APR",
+  "My Balance": "예치 금액",
 
   "Connect wallet": "지갑 연결",
 
@@ -46,7 +48,7 @@
   "90d": "90일",
   "180d": "180일",
   "365d": "365일",
-  " days volume": "일간 거래량",
+  "days volume": "일간 거래량",
 
   "Action": "거래 내용",
   "Tokens": "토큰",
@@ -60,12 +62,14 @@
   "Time": "시간",
 
   "Just now": "방금 전",
-  "seconds ago": "초 전",
-  "minutes ago": "분 전",
-  "hours ago": "시간 전",
-  "days ago": "일 전",
-  "months ago": "개월 전",
-  "years ago": "년 전",
+  "seconds ago": "{{ time }}초 전",
+  "minutes ago": "{{ time }}분 전",
+  "hours ago": "{{ time }}시간 전",
+  "days ago": "{{ time }}일 전",
+  "months ago": "{{ time }}개월 전",
+  "years ago": "{{ time }}년 전",
+
+  "Load more": "더 보기",
 
   "Total": "총",
 
@@ -117,6 +121,7 @@
   "Summary": "요약",
   "Total liquidity": "총 유동량",
   "approve-add-liquidity-token-message": "유동성 공급을 위해 ${{token}} 승인하기",
+  "Confirm withdraw liquidity in wallet": "지갑 서명을 완료해주세요.",
   "Add liquidity confirmed!": "유동성 공급을 완료했습니다.",
   "add-liquidity-success-message": "{{pool}} 풀에 성공적으로 유동성을 추가했습니다.",
   "Return to pool page": "풀 화면으로 돌아가기",

@@ -33,7 +33,7 @@ export const MainLayout = () => {
         </>
       ) : (
         <>
-          <Title>Your Universal Gateway to Multi-chain Liquidity</Title>
+          <Title>{'Your Universal Gateway to\nMulti-chain Liquidity'}</Title>
           <ButtonWrapper>
             <ButtonPrimaryLarge
               text={t('Connect wallet')}
@@ -59,7 +59,9 @@ const MainWrapper = styled.div<MainWrapperProps>(({ isConnected }) => [
   isConnected && tw`gap-12 pt-160 pb-120`,
 ]);
 
-const Title = tw.div`font-b-48 text-neutral-100`;
+const Title = tw.div`
+  font-b-48 text-neutral-100 whitespace-pre-wrap text-center
+`;
 const SubTitle = tw.div`font-b-36 text-neutral-100`;
 const Label = tw.div`font-b-24 text-neutral-100`;
 

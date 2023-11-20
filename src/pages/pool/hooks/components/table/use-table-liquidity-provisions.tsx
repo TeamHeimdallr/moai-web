@@ -1,4 +1,5 @@
 import { ReactNode, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -34,6 +35,7 @@ export const useTableLiquidityProvision = () => {
   const { sort, setSort } = useTableLiquidityPoolProvisionSortStore();
   const { selectedTab } = useTablePoolLiquidityProvisionSelectTabStore();
 
+  const { t } = useTranslation();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { currentAddress } = useConnectedWallet(currentNetwork);
 
@@ -91,6 +93,13 @@ export const useTableLiquidityProvision = () => {
           return (acc += price * amount);
         }, 0);
 
+        const time = elapsedTime(new Date(d.time).getTime());
+        const splittedTime = time.split(' ');
+        const translatedTime =
+          time === 'Just now'
+            ? t('Just now')
+            : t(`${splittedTime[1]} ${splittedTime[2]}`, { time: splittedTime[0] });
+
         return {
           meta: {
             id: d.id,
@@ -98,7 +107,7 @@ export const useTableLiquidityProvision = () => {
           },
           action: (
             <TableColumnIconText
-              text={d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? 'Add tokens' : 'Withdraw'}
+              text={d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? t('Add tokens') : t('Withdrawal')}
               icon={
                 d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? (
                   <IconPlus width={20} height={20} fill={COLOR.GREEN[50]} />
@@ -120,14 +129,14 @@ export const useTableLiquidityProvision = () => {
           value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
           time: (
             <TableColumnLink
-              token={`${elapsedTime(new Date(d.time).getTime())}`}
+              token={translatedTime}
               align="flex-end"
               link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${d.txHash}`}
             />
           ),
         };
       }),
-    [compositions, currentNetwork, isXrp, liquidityProvisions]
+    [compositions, currentNetwork, isXrp, liquidityProvisions, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

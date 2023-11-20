@@ -100,7 +100,7 @@ export const LiquidityPoolLayout = () => {
         )}
         <Title>{t(`Liquidity pools`)}</Title>
         <AllChainToggle>
-          <Title>{t(`"All supported chains`)}</Title>
+          {t(`All supported chains`)}
           <Toggle selected={showAllPools} onClick={() => setShowAllPools(!showAllPools)} />
         </AllChainToggle>
       </TitleWrapper>

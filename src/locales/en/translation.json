@@ -7,6 +7,8 @@
   "Pool Value": "Pool Value",
   "Volume (24h)": "Volume (24h)",
   "APR": "APR",
+  "My APR": "My APR",
+  "My Balance": "My Balance",
 
   "Connect wallet": "Connect wallet",
 
@@ -46,7 +48,7 @@
   "90d": "90d",
   "180d": "180d",
   "365d": "365d",
-  " days volume": " days volume",
+  "days volume": "days volume",
 
   "Action": "Action",
   "Tokens": "Tokens",
@@ -60,12 +62,14 @@
   "Time": "Time",
 
   "Just now": "Just now",
-  "seconds ago": "seconds ago",
-  "minutes ago": "minutes ago",
-  "hours ago": "hours ago",
-  "days ago": "days ago",
-  "months ago": "months ago",
-  "years ago": "years ago",
+  "seconds ago": "{{ time }} seconds ago",
+  "minutes ago": "{{ time }} minutes ago",
+  "hours ago": "{{ time }} hours ago",
+  "days ago": "{{ time }} days ago",
+  "months ago": "{{ time }} months ago",
+  "years ago": "{{ time }} years ago",
+
+  "Load more": "Load more",
 
   "Total": "Total",
 
@@ -130,6 +134,7 @@
   "Withdrawal preview": "Withdrawal preview",
   "Total withdrawal": "Total",
   "approve-withdraw-liquidity-token-message": "Approve ${{token}} for withdrawal liquidity",
+  "Confirm withdraw liquidity in wallet": "Confirm withdraw liquidity in wallet",
   "Withdrawal comfirmed!": "Withdrawal comfirmed!",
   "withdraw-success-message": "Successfully withdrawned from {{pool}} Pool",
   "Exceeds wallet balance": "Exceeds wallet balance",
