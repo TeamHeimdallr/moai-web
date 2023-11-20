@@ -19,7 +19,7 @@ export const useTableLiquidityPoolProvisionSortStore = create<State>()(
     logger(set => ({
       name: 'TABLE_LIQUIDITY_POOL_PROVISION_SORT_STORE',
 
-      sort: { key: 'TIME', order: 'desc' },
+      sort: { key: 'time', order: 'desc' },
       setSort: (sort: ITableSort) => set({ sort }),
       resetSort: () => set({ sort: undefined }),
     }))
@@ -34,7 +34,7 @@ export const useTableLiquidityPoolSortStore = create<State>()(
     logger(set => ({
       name: 'TABLE_LIQUIDITY_POOL_SORT_STORE',
 
-      sort: { key: 'POOL_VALUE', order: 'desc' },
+      sort: { key: 'value', order: 'desc' },
       setSort: (sort: ITableSort) => set({ sort }),
       resetSort: () => set({ sort: undefined }),
     }))
@@ -49,7 +49,7 @@ export const useTableMyLiquidityPoolSortStore = create<State>()(
     logger(set => ({
       name: 'TABLE_MY_LIQUIDITY_POOL_SORT_STORE',
 
-      sort: { key: 'BALANCE', order: 'desc' },
+      sort: { key: 'balance', order: 'desc' },
       setSort: (sort: ITableSort) => set({ sort }),
       resetSort: () => set({ sort: undefined }),
     }))
@@ -63,7 +63,7 @@ export const useTableSwapHistoriesStore = create<State>()(
   immer(
     logger(set => ({
       name: 'TABLE_SWAP_HISTORIES_SORT_STORE',
-      sort: { key: 'TIME', order: 'desc' },
+      sort: { key: 'time', order: 'desc' },
       setSort: (sort: ITableSort) => set({ sort }),
       resetSort: () => set({ sort: undefined }),
     }))

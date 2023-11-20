@@ -2,49 +2,59 @@ import { BaseResponse } from 'xrpl';
 
 import { IToken, NETWORK } from '..';
 
-/**
- * EVM
- */
-export interface ITokenComposition extends IToken {
-  weight: number;
-}
-
-export interface IPool {
+export interface IPoolList {
   id: string;
-
-  // lp token
-  lpTokenName: string;
-  lpTokenAddress: string;
-  lpTokenTotalSupply: number;
+  poolId: string;
+  network: NETWORK;
 
   compositions: ITokenComposition[];
 
-  formattedBalance: string;
-  formattedValue: string;
-  formattedVolume: string;
-  formattedApr: string;
-  formattedFees: string;
-
-  balance: number;
   value: number;
   volume: number;
   apr: number;
-  fees: number;
 }
 
-export interface IPoolList {
+export interface IMyPoolList {
   id: string;
+  poolId: string;
   network: NETWORK;
 
-  assets: string[];
   compositions: ITokenComposition[];
 
-  poolValue: number;
+  balance: number;
+  value: number;
+  apr: number;
+}
+
+export interface ITokenComposition extends IToken {
+  balance?: number;
+  price?: number;
+  value?: number;
+
+  weight?: number;
+  currentWeight?: number;
+}
+
+export interface IPool {
+  id: number;
+
+  address: string;
+  poolId: string;
+
+  network: NETWORK;
+
+  // lp token
+  lpToken: IToken;
+
+  compositions: ITokenComposition[];
+
+  value: number;
   volume: number;
   apr: number;
-  balance: number;
+  trandingFees: number;
 
-  isNew?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 /**
@@ -55,21 +65,65 @@ export interface IPoolTokenList {
   image?: string; // token image
 }
 
-export interface IPoolLiquidityProvisions {
+export interface ILiquidityProvision {
   id: string;
-  type: 'deposit' | 'withdraw';
+  network: NETWORK;
 
-  tokens: IToken[];
+  type: LIQUIDITY_PROVISION_TYPE;
+
   liquidityProvider: string;
-  time: number;
+  time: Date;
   txHash: string;
+
+  liquidityProvisionTokens: ILiquidityProvisionToken[];
 }
-export interface IPoolSwapHistories {
+
+export interface ILiquidityProvisionToken extends IToken {
+  type: LIQUIDITY_PROVISION_TYPE;
+  amounts: number;
+}
+
+export enum LIQUIDITY_PROVISION_TYPE {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
+}
+
+export interface ISwapHistory {
   id: string;
-  tokens: IToken[];
+  network: NETWORK;
+
   trader: string;
-  time: number;
+  time: Date;
   txHash: string;
+
+  swapHistoryTokens: ISwapHistoryToken[];
+}
+
+export interface ISwapHistoryToken extends IToken {
+  amounts: number;
+  type: SWAP_HISTORY_TOKEN_TYPE;
+}
+
+export interface IPoolVaultAmm {
+  id: number;
+  network: NETWORK;
+
+  vault?: string;
+  ammAssets: IToken[];
+
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum POOL_CHART_TYPE {
+  VOLUME = 'VOLUME',
+  TVL = 'TVL',
+  FEE = 'FEE',
+}
+
+export enum SWAP_HISTORY_TOKEN_TYPE {
+  FROM = 'FROM',
+  TO = 'TO',
 }
 
 export type SwapFundManagementInput = [
@@ -96,24 +150,8 @@ export type SwapSingleSwapInput = [
 /**
  * XRP
  */
-export interface IAmm {
-  id: string;
-  lpTokenName: string;
-  lpTokenCurrency: string;
 
-  assets: {
-    asset1: {
-      currency: string;
-      issuer?: string;
-    };
-    asset2: {
-      currency: string;
-      issuer?: string;
-    };
-  };
-}
-
-export interface IAmmResponse extends BaseResponse {
+export interface IAmmInfo extends BaseResponse {
   result: {
     amm: {
       account: string;
@@ -152,35 +190,4 @@ export interface IAmmResponse extends BaseResponse {
   };
   status: string;
   type: string;
-}
-
-export interface IFormattedAmmResponse {
-  account: string;
-
-  poolTotalValue: number;
-  fee: number;
-
-  token1: {
-    currency: string;
-    issuer?: string;
-    balance: number;
-    price: number;
-    value: number;
-    weight: number;
-  };
-  token2: {
-    currency: string;
-    issuer?: string;
-    balance: number;
-    price: number;
-    value: number;
-    weight: number;
-  };
-  liquidityPoolToken: {
-    currency: string;
-    issuer: string;
-    balance: number;
-    price: number;
-    value: number;
-  };
 }

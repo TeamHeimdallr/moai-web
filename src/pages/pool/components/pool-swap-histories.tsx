@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
+import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons';
@@ -9,14 +10,10 @@ import { Table } from '~/components/tables';
 
 import { useTableSwapHistories } from '~/pages/pool/hooks/components/table/use-table-swap-histories';
 
-import { IPool } from '~/types';
-
-interface Props {
-  pool: IPool;
-}
-export const PoolSwapHistories = ({ pool }: Props) => {
+export const PoolSwapHistories = () => {
   const [opened, open] = useState(false);
-  const { data, columns } = useTableSwapHistories(pool.id);
+
+  const { tableColumns, tableData, hasNextPage, fetchNextPage } = useTableSwapHistories();
 
   const { t } = useTranslation();
 
@@ -28,7 +25,16 @@ export const PoolSwapHistories = ({ pool }: Props) => {
           <ButtonIconLarge icon={<IconDown />} />
         </Icon>
       </TitleWrapper>
-      {opened && <Table data={data} columns={columns} ratio={[2, 3, 2, 2]} type="lighter" />}
+      {opened && (
+        <TableWrapper>
+          <Table data={tableData} columns={tableColumns} ratio={[2, 3, 2, 2]} type="lighter" />
+          {hasNextPage && (
+            <LoadMoreWrapper onClick={() => fetchNextPage()}>
+              Load more <IconDown width={20} height={20} fill={COLOR.NEUTRAL[60]} />
+            </LoadMoreWrapper>
+          )}
+        </TableWrapper>
+      )}
     </Wrapper>
   );
 };
@@ -51,3 +57,10 @@ const Icon = styled.div<DivProps>(({ opened }) => [
     transform: rotate(${opened ? '-180deg' : '0deg'});
   `,
 ]);
+
+const TableWrapper = tw.div`
+  flex flex-col
+`;
+const LoadMoreWrapper = tw.div`
+  px-24 py-20 flex-center gap-6 font-m-14 text-neutral-60 bg-neutral-15 clickable
+`;

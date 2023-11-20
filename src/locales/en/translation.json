@@ -34,6 +34,9 @@
   "My liquidity": "My liquidity",
   "Add liquidity": "Add liquidity",
 
+  "Confirm add liquidity in wallet": "Confirm add liquidity in wallet",
+  "Confirm withdrawal in wallet": "Confirm withdrawal in wallet",
+
   "Volume": "Volume",
   "Fees": "Fees",
 
@@ -65,6 +68,8 @@
   "years ago": "years ago",
 
   "Total": "Total",
+
+  "My pool balance": "My pool balance",
 
   "The network does not match": "The network does not match",
   "Switch network": "Switch network",
@@ -111,7 +116,7 @@
   "You're expected to receive": "You're expected to receive",
   "Summary": "Summary",
   "Total liquidity": "Total",
-  "approve-token-message": "Approve {{token}} for adding liquidity",
+  "approve-add-liquidity-token-message": "Approve {{token}} for adding liquidity",
   "Add liquidity confirmed!": "Add liquidity confirmed!",
   "add-liquidity-success-message": "Successfully added liquidity to {{pool}} Pool",
   "Return to pool page": "Return to pool page",
@@ -124,6 +129,7 @@
   "You receive": "You receive",
   "Withdrawal preview": "Withdrawal preview",
   "Total withdrawal": "Total",
+  "approve-withdraw-liquidity-token-message": "Approve ${{token}} for withdrawal liquidity",
   "Withdrawal comfirmed!": "Withdrawal comfirmed!",
   "withdraw-success-message": "Successfully withdrawned from {{pool}} Pool",
   "Exceeds wallet balance": "Exceeds wallet balance",

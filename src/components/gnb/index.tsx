@@ -45,7 +45,6 @@ export const Gnb = () => {
   const { t } = useTranslation();
 
   const [mobileMenuOpened, mobileMenuOpen] = useState<boolean>(false);
-
   return (
     <>
       <Wrapper>
@@ -110,7 +109,7 @@ export const Gnb = () => {
             </ButtonWrapper>
           </ContentWrapper>
         </NavWrapper>
-        {mobileMenuOpened && <MobileMenu open={mobileMenuOpen} />}
+        {mobileMenuOpened && <MobileMenu closeMenu={() => mobileMenuOpen(false)} />}
       </Wrapper>
       <TooltipCommingSoon place="bottom" id={TOOLTIP_ID.COMMING_SOON} />
     </>

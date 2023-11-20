@@ -1,6 +1,8 @@
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { ReactNode, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { ColumnDef } from '@tanstack/react-table';
+
+import { useGetPoolsInfinityQuery } from '~/api/api-server/pools/get-pools';
 
 import { NetworkChip } from '~/components/network-chip';
 import {
@@ -13,149 +15,66 @@ import {
 } from '~/components/tables';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { getNetworkFull } from '~/utils';
+import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
-import { useTableLiquidityPoolSortStore } from '~/states/components';
+import {
+  useTableLiquidityPoolSortStore,
+  useTablePoolCompositionSelectTokenStore,
+} from '~/states/components';
 import { useShowAllPoolsStore } from '~/states/pages';
-import { NETWORK } from '~/types';
 
-interface Props {
-  showNetworkColumn?: boolean;
-}
-
-export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
-  const { showAllPools } = useShowAllPoolsStore();
-
+export const useTableLiquidityPool = () => {
   const { network } = useParams();
   const { selectedNetwork } = useNetwork();
+  const { sort, setSort } = useTableLiquidityPoolSortStore();
+  const { showAllPools } = useShowAllPoolsStore();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetwokrAbbr = getNetworkAbbr(currentNetwork);
 
-  const { sort, setSort } = useTableLiquidityPoolSortStore();
+  const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
 
-  const { t, i18n } = useTranslation();
-
-  // TODO: connect server
-  const data = [
-    {
-      id: 'rHxWxmYU1AkWFmp3eq2afQ4qrPE7sVqHVr',
-      network: NETWORK.XRPL,
-      assets: ['XRP', 'MOAI'],
-      compositions: [
-        {
-          name: 'XRP',
-          balance: 3493.294,
-          price: 1.749,
-          value: 100000,
-          tokenAddress: 'XRP',
-          weight: 50,
-        },
-        {
-          name: 'MOAI',
-          balance: 3493.294,
-          price: 1.749,
-          value: 100000,
-          tokenAddress: 'MOAI',
-          weight: 50,
-        },
-      ],
-      poolValue: 730008,
-      volume: 58137,
-      apr: 5.49,
+  const { data, hasNextPage, fetchNextPage } = useGetPoolsInfinityQuery({
+    queries: {
+      take: 10,
+      filter: showAllPools ? undefined : `network:eq:${currentNetwokrAbbr}`,
+      sort: sort ? `${sort.key}:${sort.order}` : undefined,
+      tokens: selectedTokens.length > 0 ? selectedTokens.join(',') : undefined,
     },
-    {
-      id: '0x291af6e1b841cad6e3dcd66f2aa0790a007578ad000200000000000000000000',
-      network: NETWORK.THE_ROOT_NETWORK,
-      assets: ['XRP', 'ROOT'],
-      compositions: [
-        {
-          name: 'XRP',
-          balance: 3493.294,
-          price: 1.749,
-          value: 100000,
-          tokenAddress: 'XRP',
-          weight: 50,
-        },
-        {
-          name: 'ROOT',
-          balance: 3493.294,
-          price: 1.749,
-          value: 100000,
-          tokenAddress: 'ROOT',
-          weight: 50,
-        },
-      ],
-      poolValue: 1259280,
-      volume: 78086,
-      apr: 6.79,
-    },
-    {
-      id: '0xe73749250390c51e029cfab3d0488e08c183a671000200000000000000000001',
-      network: NETWORK.EVM_SIDECHAIN,
-      assets: ['XRP', 'WETH'],
-      compositions: [
-        {
-          name: 'XRP',
-          balance: 3493.294,
-          price: 1.749,
-          value: 100000,
-          tokenAddress: 'MOAI',
-          weight: 50,
-        },
-        {
-          name: 'WETH',
-          balance: 3493.294,
-          price: 1.749,
-          value: 100000,
-          tokenAddress: 'WETH',
-          weight: 50,
-        },
-      ],
-      poolValue: 948822,
-      volume: 17669,
-      apr: 8.94,
-    },
-  ];
-  const filteredData = showAllPools ? data : data?.filter(d => d.network === currentNetwork);
-  const sortedData = filteredData?.sort((a, b) => {
-    if (sort?.key === 'POOL_VALUE')
-      return sort.order === 'asc' ? a.poolValue - b.poolValue : b.poolValue - a.poolValue;
-
-    if (sort?.key === 'VOLUME')
-      return sort.order === 'asc' ? a.volume - b.volume : b.volume - a.volume;
-
-    return 0;
   });
+  const pools = useMemo(() => data?.pages?.flatMap(page => page.pools) || [], [data?.pages]);
+  const poolTokens = useMemo(
+    () => data?.pages?.flatMap(page => page.poolTokens) || [],
+    [data?.pages]
+  );
 
   const tableData = useMemo(
     () =>
-      sortedData?.map(d => {
-        const tokens = d.compositions.reduce((acc, cur) => {
-          acc[cur.name] = cur.weight;
-          return acc;
-        }, {});
-
-        return {
-          meta: {
-            id: d.id,
-            network: d.network,
-          },
-          network: showNetworkColumn ? (
-            <TableColumn value={<NetworkChip network={d.network} />} />
-          ) : null,
-          compositions: <TableColumnToken tokens={tokens} />,
-          poolValue: <TableColumn value={`$${formatNumber(d.poolValue, 2)}`} align="flex-end" />,
-          volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
-          apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
-        };
-      }),
-    [sortedData, showNetworkColumn]
+      pools.map(d => ({
+        meta: {
+          id: d.id,
+          poolId: d.poolId,
+          network: d.network,
+        },
+        network: showAllPools ? <TableColumn value={<NetworkChip network={d.network} />} /> : null,
+        compositions: (
+          <TableColumnToken
+            tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+          />
+        ),
+        poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+        volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
+        apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+      })),
+    [pools, showAllPools]
   );
 
-  const columns = useMemo(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tableColumns = useMemo<ColumnDef<any, ReactNode>[]>(
     () => [
       { accessorKey: 'meta' },
-      showNetworkColumn
+
+      showAllPools
         ? {
             header: () => <TableHeader label="Chain" />,
             cell: row => row.renderValue(),
@@ -165,6 +84,7 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
             header: () => <></>,
             accessorKey: 'null',
           },
+
       {
         header: () => <TableHeaderComposition />,
         cell: row => row.renderValue(),
@@ -172,12 +92,7 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
       },
       {
         header: () => (
-          <TableHeaderSortable
-            sortKey="POOL_VALUE"
-            label="Pool value"
-            sort={sort}
-            setSort={setSort}
-          />
+          <TableHeaderSortable sortKey="value" label="Pool value" sort={sort} setSort={setSort} />
         ),
         cell: row => row.renderValue(),
         accessorKey: 'poolValue',
@@ -185,7 +100,7 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
       {
         header: () => (
           <TableHeaderSortable
-            sortKey="VOLUME"
+            sortKey="volume"
             label="Volume (24h)"
             sort={sort}
             setSort={setSort}
@@ -201,11 +116,16 @@ export const useTableLiquidityPool = ({ showNetworkColumn }: Props) => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sort, showNetworkColumn]
+    [showAllPools, sort]
   );
 
   return {
-    columns,
-    data: tableData,
+    tableColumns,
+    tableData,
+
+    pools,
+    poolTokens,
+    hasNextPage,
+    fetchNextPage,
   };
 };

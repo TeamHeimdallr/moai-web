@@ -19,12 +19,12 @@ export default meta;
 const Wrapper = tw.div``;
 
 export const NoButton = () => {
-  const { opened, open, close } = usePopup(POPUP_ID.NETWORK_ALERT);
+  const { opened, open } = usePopup(POPUP_ID.NETWORK_ALERT);
 
   return (
     <Wrapper>
       <ButtonPrimaryLarge text="open popup !" onClick={open} />
-      {opened && <NetworkAlertPopup onClickButton={close} />}
+      {opened && <NetworkAlertPopup />}
     </Wrapper>
   );
 };

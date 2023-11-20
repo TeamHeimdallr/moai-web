@@ -1,8 +1,6 @@
 import { Address, useAccount, useContractRead } from 'wagmi';
 
-import { EVM_CONTRACT_ADDRESS } from '~/constants';
-
-import { NETWORK } from '~/types';
+import { IS_MAINNET } from '~/constants';
 
 import { FUTUREPASS_REGISTER_ABI } from '~/abi/futurepass-register';
 
@@ -11,6 +9,10 @@ import { useNetwork } from '../contexts/use-network';
 interface Props {
   enabled?: boolean;
 }
+
+const FUTUREPASS_REGISTER = IS_MAINNET
+  ? '0x000000000000000000000000000000000000FFff'
+  : '0x000000000000000000000000000000000000FFff';
 export const useFuturepassOf = ({ enabled }: Props) => {
   const { address: walletAddress } = useAccount();
   const { isFpass } = useNetwork();
@@ -20,7 +22,7 @@ export const useFuturepassOf = ({ enabled }: Props) => {
     refetch,
     ...rest
   } = useContractRead({
-    address: EVM_CONTRACT_ADDRESS[NETWORK.THE_ROOT_NETWORK].FUTUREPASS_REGISTER as Address,
+    address: FUTUREPASS_REGISTER as Address,
     abi: FUTUREPASS_REGISTER_ABI,
     functionName: 'futurepassOf',
     args: [walletAddress],

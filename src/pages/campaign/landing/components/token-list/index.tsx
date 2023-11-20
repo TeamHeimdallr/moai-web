@@ -1,21 +1,20 @@
 import { HTMLAttributes } from 'react';
 import tw from 'twin.macro';
 
-import { TOKEN_IMAGE_MAPPER } from '~/constants';
-
 import { formatNumber, formatNumberWithComma } from '~/utils';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
   balance: number;
   value: number;
+  image?: string;
 }
 
-export const TokenList = ({ token, balance, value, ...rest }: Props) => {
+export const TokenList = ({ token, balance, value, image, ...rest }: Props) => {
   return (
     <Wrapper {...rest}>
       <Token>
-        <Image src={TOKEN_IMAGE_MAPPER[token]} /> {token}
+        <Image src={image} /> {token}
       </Token>
       <Description>
         <Balance>{formatNumberWithComma(balance)}</Balance>

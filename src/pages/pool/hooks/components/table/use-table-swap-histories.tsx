@@ -1,8 +1,11 @@
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useParams } from 'react-router-dom';
+import { ColumnDef } from '@tanstack/react-table';
+import { toHex } from 'viem';
 
-import { useGetSwapHistories } from '~/api/api-contract/swap/get-swap-histories';
+import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
+import { useGetSwapHistoriesInfinityQuery } from '~/api/api-server/pools/get-swap-histories';
 
 import { SCANNER_URL } from '~/constants';
 
@@ -21,73 +24,116 @@ import { formatNumber } from '~/utils/util-number';
 import { truncateAddress } from '~/utils/util-string';
 import { elapsedTime } from '~/utils/util-time';
 import { useTableSwapHistoriesStore } from '~/states/components';
+import { ISwapHistoryToken, SWAP_HISTORY_TOKEN_TYPE } from '~/types';
 
-export const useTableSwapHistories = (id: string) => {
-  const { data } = useGetSwapHistories({ id });
-
-  const { network } = useParams();
+export const useTableSwapHistories = () => {
+  const { network, id } = useParams();
   const { selectedNetwork, isXrp } = useNetwork();
-
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { sort, setSort } = useTableSwapHistoriesStore();
 
-  const swapData = data?.map(d => {
-    const id = d?.id ?? '';
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
-    const tradeDetail =
-      d?.tokens?.map(t => ({
-        symbol: t?.symbol ?? '',
-        balance: t?.balance ?? 0,
-        value: t?.value ?? 0,
-      })) ?? [];
+  const { data: poolData } = useGetPoolQuery(
+    {
+      params: {
+        networkAbbr: network as string,
+        poolId: id as string,
+      },
+    },
+    {
+      enabled: !!network && !!id,
+      staleTime: 1000,
+    }
+  );
+  const {
+    data: swapHistoriesData,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetSwapHistoriesInfinityQuery(
+    {
+      params: {
+        networkAbbr: network as string,
+        poolId: id as string,
+      },
+      queries: {
+        take: 5,
+        sort: sort ? `${sort.key}:${sort.order}` : undefined,
+      },
+    },
+    {
+      enabled: !!network && !!id,
+      staleTime: 1000,
+    }
+  );
 
-    const value = tradeDetail?.reduce((acc, cur) => acc + cur.value, 0) ?? 0;
-    const time = d?.time ?? Date.now();
-    const trader = (d?.trader ?? '') as string;
-    const txHash = (d?.txHash ?? '') as string;
+  const { pool } = poolData || {};
+  const { compositions } = pool || {};
 
-    return {
-      id,
-      trader,
-      tradeDetail,
-      value,
-      time,
-      txHash,
-    };
-  });
-
-  const sortedData = swapData?.sort((a, b) => {
-    if (sort?.key === 'TIME') return sort.order === 'asc' ? a.time - b.time : b.time - a.time;
-    return 0;
-  });
+  const swapHistories = useMemo(
+    () => swapHistoriesData?.pages?.flatMap(page => page.swapHistories) || [],
+    [swapHistoriesData?.pages]
+  );
 
   const tableData = useMemo(
     () =>
-      sortedData?.map(d => ({
-        id: d.id,
-        trader: (
-          <TableColumnIconText
-            text={truncateAddress(d.trader, 4)}
-            icon={<Jazzicon diameter={24} seed={jsNumberForAddress(d.trader ?? '')} />}
-            address
-          />
-        ),
-        tradeDetail: <TableColumnTokenSwap tokens={d.tradeDetail} />,
-        value: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
-        time: (
-          <TableColumnLink
-            token={`${elapsedTime(d.time)}`}
-            align="flex-end"
-            link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${d.txHash}`}
-          />
-        ),
-      })),
-    [currentNetwork, isXrp, sortedData]
+      swapHistories?.map(d => {
+        const value = d.swapHistoryTokens.reduce((acc, cur) => {
+          const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
+          const amount = cur.amounts;
+
+          return (acc += price * amount);
+        }, 0);
+
+        const tokens = ([
+          d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.FROM),
+          d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.TO),
+        ] || []) as ISwapHistoryToken[];
+
+        return {
+          meta: {
+            id: d.id,
+            network: d.network,
+          },
+          trader: (
+            <TableColumnIconText
+              text={truncateAddress(d.trader, 4)}
+              icon={
+                <Jazzicon
+                  diameter={24}
+                  seed={jsNumberForAddress(
+                    isXrp ? toHex(d.trader || '', { size: 42 }) : d.trader || ''
+                  )}
+                />
+              }
+              address
+            />
+          ),
+          tradeDetail: (
+            <TableColumnTokenSwap
+              tokens={tokens.map(t => ({
+                symbol: t.symbol,
+                value: t.amounts,
+                image: t.image,
+              }))}
+            />
+          ),
+          value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
+          time: (
+            <TableColumnLink
+              token={`${elapsedTime(new Date(d.time).getTime())}`}
+              align="flex-end"
+              link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${d.txHash}`}
+            />
+          ),
+        };
+      }),
+    [compositions, currentNetwork, isXrp, swapHistories]
   );
 
-  const columns = useMemo(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tableColumns = useMemo<ColumnDef<any, ReactNode>[]>(
     () => [
-      { accessorKey: 'id' },
+      { accessorKey: 'meta' },
       {
         header: () => <TableHeader label="Trader" align="flex-start" />,
         cell: row => row.renderValue(),
@@ -99,13 +145,15 @@ export const useTableSwapHistories = (id: string) => {
         accessorKey: 'tradeDetail',
       },
       {
-        header: () => <TableHeader label="Value" align="flex-end" />,
+        header: () => (
+          <TableHeaderSortable sortKey="value" label="Value" sort={sort} setSort={setSort} />
+        ),
         cell: row => row.renderValue(),
         accessorKey: 'value',
       },
       {
         header: () => (
-          <TableHeaderSortable sortKey="TIME" label="Time" sort={sort} setSort={setSort} />
+          <TableHeaderSortable sortKey="time" label="Time" sort={sort} setSort={setSort} />
         ),
         cell: row => row.renderValue(),
         accessorKey: 'time',
@@ -116,7 +164,11 @@ export const useTableSwapHistories = (id: string) => {
   );
 
   return {
-    columns,
-    data: tableData,
+    tableColumns,
+    tableData,
+
+    swapHistories,
+    hasNextPage,
+    fetchNextPage,
   };
 };

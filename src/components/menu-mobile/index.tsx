@@ -1,4 +1,3 @@
-import { Dispatch } from 'react';
 import { useNavigate } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
@@ -16,19 +15,19 @@ import { NetworkSelection } from '../network-selection';
 import { TooltipCommingSoon } from '../tooltips/comming-soon';
 
 interface MobileMenuProps {
-  open: Dispatch<React.SetStateAction<boolean>>;
+  closeMenu: () => void;
 }
 
-export const MobileMenu = ({ open }: MobileMenuProps) => {
+export const MobileMenu = ({ closeMenu }: MobileMenuProps) => {
   const navigate = useNavigate();
 
   const handleMenuClick = (path: string) => {
-    open(false);
+    closeMenu();
     navigate(path);
   };
 
   const handleCloseClick = () => {
-    open(false);
+    closeMenu();
   };
 
   return (

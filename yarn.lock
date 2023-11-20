@@ -2966,12 +2966,13 @@ __metadata:
     immer: ^10.0.3
     lodash-es: ^4.17.21
     lottie-web: ^5.12.2
+    number-precision: ^1.6.0
     prettier: ^3.0.3
     react: ^18.2.0
     react-dom: ^18.2.0
     react-error-boundary: ^4.0.11
     react-hook-form: ^7.47.0
-    react-i18next: ^13.3.1
+    react-i18next: ^13.5.0
     react-jazzicon: ^1.0.4
     react-number-format: ^5.3.1
     react-responsive: ^9.0.2
@@ -12897,6 +12898,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"number-precision@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "number-precision@npm:1.6.0"
+  checksum: fe715b90e25e3af21bfe5f94e436dc9e1ffd431bb1af0e7f4bef1e7875c5f7472e19bdf63e4aa22867503fd9c4e8a179567d685c16c1ed0bbf57554a36052aa2
+  languageName: node
+  linkType: hard
+
 "object-assign@npm:^4.0.1, object-assign@npm:^4.1.1":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
@@ -13943,9 +13951,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^13.3.1":
-  version: 13.3.1
-  resolution: "react-i18next@npm:13.3.1"
+"react-i18next@npm:^13.5.0":
+  version: 13.5.0
+  resolution: "react-i18next@npm:13.5.0"
   dependencies:
     "@babel/runtime": ^7.22.5
     html-parse-stringify: ^3.0.1
@@ -13957,7 +13965,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 71a9ae4968d701aa8c11009389f49548058abb16e96d0e0f4107206fe2dfd2df6c43e44b3209824ea42b8d2aefa8fe5ebc56e019a40947b39c3cb703e5293a87
+  checksum: 2f68ccd24daf72ddd2d11a526fb3c2b66c11ea4fcd2e24ac7aed42bf57ec7bffa7455ad1dc93679968ff629e9b1896465cdf6d1a61c29b92138ef88098e8dcba
   languageName: node
   linkType: hard
 

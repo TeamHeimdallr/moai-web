@@ -3,13 +3,11 @@ import { useParams } from 'react-router-dom';
 import { Address, parseUnits } from 'viem';
 import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
 
-import { isNativeToken } from '~/api/utils/native-token';
-
 import { TOKEN_DECIMAL } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { getNetworkFull, isNativeToken } from '~/utils';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
 

@@ -1,7 +1,7 @@
 import tw from 'twin.macro';
 
 import { useDoughnutGraph } from '~/hooks/components/use-graph-semi-donut';
-import { formatNumberWithUnit } from '~/utils';
+import { formatNumber } from '~/utils';
 import { ITokenComposition } from '~/types';
 
 interface Props {
@@ -16,7 +16,7 @@ export const GraphSemiDonut = ({ data }: Props) => {
     <Wrapper>
       <Canvas id="moai-pool--doughnut-graph" />
       <TotalValue>
-        <Amount>${formatNumberWithUnit(totalValue, 1)}</Amount>
+        <Amount>${formatNumber(totalValue, 4)}</Amount>
         <Title>Pool Value</Title>
       </TotalValue>
     </Wrapper>

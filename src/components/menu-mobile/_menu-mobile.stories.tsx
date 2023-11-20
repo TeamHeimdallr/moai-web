@@ -1,6 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
 import type { Meta, StoryObj } from '@storybook/react';
-import tw, { css, styled } from 'twin.macro';
+import tw from 'twin.macro';
 
 import Web3Provider from '~/hocs/hoc-web3-provider';
 
@@ -22,7 +22,7 @@ export const _MobileMenu: Story = {
       <Web3Provider>
         <BrowserRouter>
           <Wrapper>
-            <MobileMenu />
+            <MobileMenu closeMenu={() => {}} />
           </Wrapper>
         </BrowserRouter>
       </Web3Provider>

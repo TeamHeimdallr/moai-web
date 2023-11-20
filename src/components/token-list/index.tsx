@@ -44,8 +44,8 @@ export const TokenList = ({
 
       {!leftAlign && (
         <RightWrapper>
-          <Balance type={type}>{balance}</Balance>
-          <Value type={type}>{value}</Value>
+          {balance && <Balance type={type}>{balance}</Balance>}
+          {value && <Value type={type}>{value}</Value>}
         </RightWrapper>
       )}
     </Wrapper>

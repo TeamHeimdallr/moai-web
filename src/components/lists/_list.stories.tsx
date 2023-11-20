@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import tw from 'twin.macro';
 
-import { TOKEN_IMAGE_MAPPER } from '~/constants';
+import { ASSET_URL } from '~/constants';
 
 import { TokenList } from '../token-list';
 
@@ -26,14 +26,14 @@ export const Normal: Story = {
         type="large"
         title={'MOAI'}
         description={'description'}
-        image={TOKEN_IMAGE_MAPPER['MOAI']}
+        image={`${ASSET_URL}/tokens/token-moai.png`}
       />
       <Divider />
       <TokenList
         type="large"
         title={'MOAI'}
         description={'description'}
-        image={TOKEN_IMAGE_MAPPER['MOAI']}
+        image={`${ASSET_URL}/tokens/token-moai.png`}
       />
     </List>
   ),
@@ -47,14 +47,14 @@ export const NoHeader: Story = {
         type="large"
         title={'MOAI'}
         description={'description'}
-        image={TOKEN_IMAGE_MAPPER['MOAI']}
+        image={`${ASSET_URL}/tokens/token-moai.png`}
       />
       <Divider />
       <TokenList
         type="large"
         title={'MOAI'}
         description={'description'}
-        image={TOKEN_IMAGE_MAPPER['MOAI']}
+        image={`${ASSET_URL}/tokens/token-moai.png`}
       />
     </List>
   ),
