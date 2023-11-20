@@ -1,5 +1,4 @@
 import { HTMLAttributes } from 'react';
-import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
 import { IconLink } from '~/assets/icons';
@@ -18,12 +17,10 @@ export const TableColumnLink = ({ token, link, align, ...rest }: Props) => {
     window.open(link);
   };
 
-  const { t } = useTranslation();
-
   return (
     <Wrapper align={align} onClick={handleClick} {...rest}>
       <TextWrapper>
-        {t(token)}
+        {token}
         <ButtonIconSmall icon={<IconLink />} />
       </TextWrapper>
     </Wrapper>

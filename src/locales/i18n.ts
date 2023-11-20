@@ -14,10 +14,10 @@ const resources = {
 };
 
 i18n.use(initReactI18next).init({
-  debug: true,
+  debug: false,
   resources,
-  lng: 'en', // 기본 설정 언어, 'cimode'로 설정할 경우 키 값으로 출력된다.
-  fallbackLng: 'en', // 번역 파일에서 찾을 수 없는 경우 기본 언어
+  lng: 'en',
+  fallbackLng: 'en',
   interpolation: {
     escapeValue: false,
   },

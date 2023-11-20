@@ -49,10 +49,9 @@ interface PoolInfoCardProps {
   value: string;
 }
 const PoolInfoCard = ({ name, value }: PoolInfoCardProps) => {
-  const { t } = useTranslation();
   return (
     <Wrapper>
-      <Name>{t(name)}</Name>
+      <Name>{name}</Name>
       <Value>{value}</Value>
     </Wrapper>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
 import { useDoughnutGraph } from '~/hooks/components/use-graph-semi-donut';
@@ -8,8 +9,9 @@ interface Props {
   data: ITokenComposition[];
 }
 export const GraphSemiDonut = ({ data }: Props) => {
-  const totalValue = data.reduce((acc, cur) => acc + (cur?.value ?? 0), 0);
+  const { t } = useTranslation();
 
+  const totalValue = data.reduce((acc, cur) => acc + (cur?.value ?? 0), 0);
   useDoughnutGraph({ data });
 
   return (
@@ -17,7 +19,7 @@ export const GraphSemiDonut = ({ data }: Props) => {
       <Canvas id="moai-pool--doughnut-graph" />
       <TotalValue>
         <Amount>${formatNumber(totalValue, 4)}</Amount>
-        <Title>Pool Value</Title>
+        <Title>{t('Pool Value')}</Title>
       </TotalValue>
     </Wrapper>
   );

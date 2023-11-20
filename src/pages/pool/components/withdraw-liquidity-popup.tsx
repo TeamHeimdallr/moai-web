@@ -261,7 +261,6 @@ export const WithdrawLiquidityPopup = ({
     }
 
     return '';
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     allowance1,
     allowance2,
@@ -269,6 +268,7 @@ export const WithdrawLiquidityPopup = ({
     isSuccess,
     isXrp,
     lpToken?.symbol,
+    t,
     token1Amount,
     token2Amount,
     tokenLength,

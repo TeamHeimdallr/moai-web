@@ -213,8 +213,15 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     }
 
     return '';
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allowanceFromToken, allowanceToToken, fromToken?.symbol, isSuccess, isXrp, toToken?.symbol]);
+  }, [
+    allowanceFromToken,
+    allowanceToToken,
+    fromToken?.symbol,
+    isSuccess,
+    isXrp,
+    t,
+    toToken?.symbol,
+  ]);
 
   const handleButtonClick = async () => {
     if (isLoading) return;

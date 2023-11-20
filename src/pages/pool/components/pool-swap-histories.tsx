@@ -30,7 +30,7 @@ export const PoolSwapHistories = () => {
           <Table data={tableData} columns={tableColumns} ratio={[2, 3, 2, 2]} type="lighter" />
           {hasNextPage && (
             <LoadMoreWrapper onClick={() => fetchNextPage()}>
-              Load more <IconDown width={20} height={20} fill={COLOR.NEUTRAL[60]} />
+              {t('Load more')} <IconDown width={20} height={20} fill={COLOR.NEUTRAL[60]} />
             </LoadMoreWrapper>
           )}
         </TableWrapper>
