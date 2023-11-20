@@ -1,7 +1,11 @@
+import imageCampaignLighthouse from './campaign-lighthouse.png';
+import imageCampaignReward from './campaign-reward.png';
+import imageCampaignToken from './campaign-token.png';
 import imageNetworkEmpty from './network-empty.png';
 import imageNetworkEvm from './network-evm.png';
 import imageNetworkROOT from './network-root.png';
 import imageNetworkXRPL from './network-xrpl.png';
+import imageQuote from './quote.png';
 import imageStepLoading from './step-loading.png';
 import imageTokenMOAI from './token-moai.png';
 import imageTokenROOT from './token-root.png';
@@ -17,10 +21,14 @@ import imageWalletMetamask from './wallet-metamask.png';
 import imageWalletXumm from './wallet-xumm.png';
 
 export {
+  imageCampaignLighthouse,
+  imageCampaignReward,
+  imageCampaignToken,
   imageNetworkEmpty,
   imageNetworkEvm,
   imageNetworkROOT,
   imageNetworkXRPL,
+  imageQuote,
   imageStepLoading,
   imageTokenMOAI,
   imageTokenROOT,
