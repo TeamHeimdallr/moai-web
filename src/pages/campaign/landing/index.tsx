@@ -6,6 +6,8 @@ import { Gnb } from '../components/gnb';
 import { MyVoyage } from '../layouts/layout-my-voyage';
 
 import { Contents } from './contents';
+import { Description } from './description';
+import { Futureverse } from './futureverse';
 
 const LandingPage = () => {
   return (
@@ -16,6 +18,8 @@ const LandingPage = () => {
       <Contents />
 
       <MyVoyage />
+      <Futureverse />
+      <Description />
       <Footer />
     </Wrapper>
   );
