@@ -2961,6 +2961,7 @@ __metadata:
     eslint-plugin-storybook: ^0.6.15
     ethers: ^5.7.2
     framer-motion: ^10.16.4
+    gsap: ^3.12.2
     i18next: ^23.6.0
     immer: ^10.0.3
     lodash-es: ^4.17.21
@@ -10710,6 +10711,13 @@ __metadata:
   version: 15.8.0
   resolution: "graphql@npm:15.8.0"
   checksum: 423325271db8858428641b9aca01699283d1fe5b40ef6d4ac622569ecca927019fce8196208b91dd1d8eb8114f00263fe661d241d0eb40c10e5bfd650f86ec5e
+  languageName: node
+  linkType: hard
+
+"gsap@npm:^3.12.2":
+  version: 3.12.2
+  resolution: "gsap@npm:3.12.2"
+  checksum: e3e9709f9ca60cee0ef7fd91f45a232a48b550f95b6df090dfffe2511fccc651408476de575b69c1c2ce80b6089b6ad0d4854beb58ea427f14e51a30b0640a70
   languageName: node
   linkType: hard
 
