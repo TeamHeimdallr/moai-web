@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
 import { formatNumber } from '~/utils';
@@ -8,6 +9,8 @@ interface Props {
   idx: number;
 }
 export const TokenCompositionLabel = ({ composition, idx }: Props) => {
+  const { t } = useTranslation();
+
   const { symbol, balance, value } = composition || {};
 
   if (!composition) return;
@@ -15,7 +18,9 @@ export const TokenCompositionLabel = ({ composition, idx }: Props) => {
     <Wrapper>
       <TokenSymbolWrapper>
         <TokenColorCircle idx={idx} />
-        <TokenSymbolText>Total {symbol}</TokenSymbolText>
+        <TokenSymbolText>
+          {t('Total')} {symbol}
+        </TokenSymbolText>
       </TokenSymbolWrapper>
       <TokenValueWrapper>
         <TokenBalance>

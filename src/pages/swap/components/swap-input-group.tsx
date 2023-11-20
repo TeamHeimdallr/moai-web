@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { strip } from 'number-precision';
@@ -34,6 +35,7 @@ interface InputFormState {
 export const SwapInputGroup = () => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const { t } = useTranslation();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
@@ -117,7 +119,7 @@ export const SwapInputGroup = () => {
   );
 
   const schema = yup.object().shape({
-    from: yup.number().min(0).max(fromTokenBalance, 'Exceeds wallet balance').required(),
+    from: yup.number().min(0).max(fromTokenBalance, t('Exceeds wallet balance')).required(),
     to: yup.number().min(0).required(),
   });
 
@@ -174,7 +176,7 @@ export const SwapInputGroup = () => {
               token={
                 <Token
                   token={fromToken?.symbol || ''}
-                  title={fromToken ? '' : 'Select token'}
+                  title={fromToken ? '' : t('Select token')}
                   icon={<IconDown />}
                   image
                   imageUrl={fromToken?.image}
@@ -202,7 +204,7 @@ export const SwapInputGroup = () => {
               token={
                 <Token
                   token={toToken?.symbol || ''}
-                  title={toToken ? '' : 'Select token'}
+                  title={toToken ? '' : t('Select token')}
                   icon={<IconDown />}
                   image
                   imageUrl={toToken?.image}
@@ -225,7 +227,7 @@ export const SwapInputGroup = () => {
             }`}</InputLabel>
           )}
         </InputWrapper>
-        <ButtonPrimaryLarge text="Preview" disabled={!validToSwap} onClick={openSwapPopup} />
+        <ButtonPrimaryLarge text={t('Preview')} disabled={!validToSwap} onClick={openSwapPopup} />
       </Wrapper>
       {walletAddress && selectTokenFromPopupOpened && (
         <SelectFromTokenPopup

@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
@@ -27,12 +28,13 @@ interface InputFormState {
 }
 export const WithdrawLiquidityInputGroup = () => {
   const { network, id } = useParams();
+  const { t } = useTranslation();
 
   const [inputValue, setInputValue] = useState<number>();
 
   const tabs = [
-    { key: 'proportional', name: 'Proportional pool tokens' },
-    { key: 'single', name: 'Single token', disabled: true },
+    { key: 'proportional', name: t('Proportional pool tokens') },
+    { key: 'single', name: t('Single token'), disabled: true },
   ];
   const { selectedTab, selectTab } = useWithdrawLiquidityInputGroupTabStore();
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.WITHDRAW_LP);
@@ -66,7 +68,7 @@ export const WithdrawLiquidityInputGroup = () => {
     input1: yup
       .number()
       .min(0)
-      .max(userLpTokenBalance || 0, 'Exceeds wallet balance')
+      .max(userLpTokenBalance || 0, t('Exceeds wallet balance'))
       .required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
@@ -102,7 +104,7 @@ export const WithdrawLiquidityInputGroup = () => {
       </Header>
       <InnerWrapper>
         <ContentWrapper>
-          <SubTitle>You provide</SubTitle>
+          <SubTitle>{t('You provide')}</SubTitle>
           <InputNumber
             name={'input1'}
             control={control}
@@ -120,7 +122,7 @@ export const WithdrawLiquidityInputGroup = () => {
           />
         </ContentWrapper>
         <ContentWrapper>
-          <SubTitle>You receive</SubTitle>
+          <SubTitle>{t('You receive')}</SubTitle>
           <TokenListWrapper>
             {compositions?.map(({ symbol, image, price }, i) => {
               const amount = proportionalTokensOut?.[i]?.amount || 0;
@@ -140,12 +142,12 @@ export const WithdrawLiquidityInputGroup = () => {
           </TokenListWrapper>
         </ContentWrapper>
         <PriceImpaceWrapper>
-          <PriceImpact>Price impact</PriceImpact>
+          <PriceImpact>{t('Price impact')}</PriceImpact>
           <PriceImpact>{`${priceImpact}%`}</PriceImpact>
         </PriceImpaceWrapper>
       </InnerWrapper>
 
-      <ButtonPrimaryLarge text="Preview" onClick={popupOpen} disabled={!isValidToWithdraw} />
+      <ButtonPrimaryLarge text={t('Preview')} onClick={popupOpen} disabled={!isValidToWithdraw} />
 
       {popupOpened && (
         <WithdrawLiquidityPopup

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
@@ -24,7 +25,7 @@ export const LiquidityPoolLayout = () => {
   const isMounted = useRef(false);
 
   const navigate = useNavigate();
-  const { name } = useNetwork();
+  const { t } = useTranslation();
 
   const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
   const { selectedTokens, setSelectedTokens } = useTablePoolCompositionSelectTokenStore();
@@ -66,6 +67,13 @@ export const LiquidityPoolLayout = () => {
 
   const sortedTokens = sortTokensBySelection(poolTokens, selectedTokens);
 
+  const network =
+    selectedNetwork === NETWORK.EVM_SIDECHAIN
+      ? 'EVM'
+      : selectedNetwork === NETWORK.THE_ROOT_NETWORK
+      ? 'Futurepass'
+      : 'XRPL';
+
   useEffect(() => {
     if (!isMounted.current) {
       setShowAllPools(false);
@@ -87,12 +95,12 @@ export const LiquidityPoolLayout = () => {
       <TitleWrapper>
         {showToastPopup && (
           <ToastPopup>
-            <ToastPopupText>{`Switched to ${name}'s Liquidity pools`}</ToastPopupText>
+            <ToastPopupText>{t('show-all-pools-message', { network: network })}</ToastPopupText>
           </ToastPopup>
         )}
-        <Title>Liquidity pools</Title>
+        <Title>{t(`Liquidity pools`)}</Title>
         <AllChainToggle>
-          All supported chains
+          <Title>{t(`"All supported chains`)}</Title>
           <Toggle selected={showAllPools} onClick={() => setShowAllPools(!showAllPools)} />
         </AllChainToggle>
       </TitleWrapper>

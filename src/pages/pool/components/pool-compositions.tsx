@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
@@ -9,6 +10,7 @@ import { TokenCompositionLabel } from './pool-compositions-label';
 
 export const PoolCompositions = () => {
   const { network, id } = useParams();
+  const { t } = useTranslation();
 
   const queryEnabled = !!network && !!id;
   const { data } = useGetPoolQuery(
@@ -29,7 +31,7 @@ export const PoolCompositions = () => {
 
   return (
     <Wrapper>
-      <Title>Pool composition</Title>
+      <Title>{t('Pool composition')}</Title>
       {compositions && (
         <ContentsWrapper>
           <TokenCompositionLabel composition={compositions[0]} idx={0} />

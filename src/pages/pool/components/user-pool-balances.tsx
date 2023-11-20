@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
@@ -20,6 +21,7 @@ export const UserPoolBalances = () => {
   const navigate = useNavigate();
 
   const { network, id } = useParams();
+  const { t } = useTranslation();
 
   const { isFpass, isEvm, isXrp } = useNetwork();
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
@@ -52,7 +54,8 @@ export const UserPoolBalances = () => {
   return (
     <Wrapper>
       <Header>
-        My liquidity <Balance>${formatNumber(userLpTokenValue || 0, 4)}</Balance>
+        {t('My liquidity')}
+        <Balance>${formatNumber(userLpTokenValue || 0, 4)}</Balance>
       </Header>
       <Divider />
       <TokenLists>
@@ -71,20 +74,20 @@ export const UserPoolBalances = () => {
       </TokenLists>
       <Footer>
         <FooterBalanceWrapper>
-          My pool balance
+          {t('My pool balance')}
           <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0, 4)}`}</FooterBalance>
         </FooterBalanceWrapper>
         <ButtonWrapper>
           {address ? (
             <ButtonPrimaryLarge
-              text="Add liquidity"
+              text={t('Add liquidity')}
               onClick={handleAddLiquidity}
               disabled={!address}
             />
           ) : isFpass && !fpass.address && evm.address ? (
             <ButtonPrimaryLarge
               style={{ padding: '9px 24px' }}
-              text="Create Futurepass"
+              text={t('Create Futurepass')}
               isLoading={!!opened}
               onClick={() => {
                 openFuturepassCreate();
@@ -93,7 +96,7 @@ export const UserPoolBalances = () => {
           ) : (
             <ButtonPrimaryLarge
               style={{ padding: '9px 24px' }}
-              text="Connect wallet"
+              text={t('Connect wallet')}
               isLoading={!!opened}
               onClick={() => {
                 setWalletType({ xrpl: !isEvm, evm: isEvm });
@@ -104,7 +107,7 @@ export const UserPoolBalances = () => {
           {userLpTokenBalance > 0 && (
             <ButtonPrimaryLarge
               buttonType="outlined"
-              text="Withdraw"
+              text={t('Withdraw')}
               disabled={!address}
               onClick={handleWithdrawLiquidity}
             />

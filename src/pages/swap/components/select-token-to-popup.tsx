@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 import { useQueryClient } from 'wagmi';
@@ -27,6 +28,7 @@ export const SelectToTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props) 
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { evm, xrp, fpass } = useConnectedWallet();
+  const { t } = useTranslation();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
@@ -70,7 +72,7 @@ export const SelectToTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props) 
   return (
     <Popup
       id={POPUP_ID.SWAP_SELECT_TOKEN_TO}
-      title="Select token"
+      title={t('Select token')}
       style={{ backgroundColor: COLOR.NEUTRAL[10] }}
     >
       <Wrapper>

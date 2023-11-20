@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -35,6 +36,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
+  const { t } = useTranslation();
   const { network } = useParams();
   const { selectedNetwork, isXrp } = useNetwork();
 
@@ -200,15 +202,18 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   }, [allowFromTokenLoading, allowToTokenLoading, isXrp, step, swapLoading]);
 
   const buttonText = useMemo(() => {
-    if (isSuccess) return 'Return to pool page';
+    if (isSuccess) return t('Return to pool page');
 
     if (isXrp) {
-      if (!allowanceToToken) return `Approve ${toToken?.symbol} for adding liquidity`;
-      return 'Add liquidity';
+      if (!allowanceToToken) return t('approve-swap-message', { token: toToken?.symbol });
+      return t('Confirm swap');
     } else {
-      if (!allowanceFromToken) return `Approve ${fromToken?.symbol} for adding liquidity`;
-      return 'Add liquidity';
+      if (!allowanceFromToken) return t('approve-swap-message', { token: fromToken?.symbol });
+      return t('Confirm swap');
     }
+
+    return '';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowanceFromToken, allowanceToToken, fromToken?.symbol, isSuccess, isXrp, toToken?.symbol]);
 
   const handleButtonClick = async () => {
@@ -259,7 +264,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   return (
     <Popup
       id={POPUP_ID.SWAP}
-      title={isSuccess ? '' : 'Swap preview'}
+      title={isSuccess ? '' : t('Swap preview')}
       button={
         <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
@@ -278,11 +283,18 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
               <SuccessIconWrapper>
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
-              <SuccessTitle>Swap confirmed!</SuccessTitle>
-              <SuccessSubTitle>{`Successfully swapped ${fromInput} ${fromToken?.symbol} to ${totalAfterSlippage} ${toToken?.symbol}`}</SuccessSubTitle>
+              <SuccessTitle>{t('Swap confirmed!')}</SuccessTitle>
+              <SuccessSubTitle>
+                {t('swap-success-message', {
+                  fromValue: fromInput,
+                  fromToken: fromToken?.symbol,
+                  toValue: totalAfterSlippage,
+                  toToken: toToken?.symbol,
+                })}
+              </SuccessSubTitle>
             </SuccessWrapper>
 
-            <List title={`Total`}>
+            <List title={t(`Total swap`)}>
               <TokenList
                 title={`${totalAfterSlippage} ${toToken?.symbol}`}
                 description={`$${formatNumber(toTokenValue, 4)}`}
@@ -296,7 +308,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
         {!isSuccess && (
           <>
             <ListWrapper>
-              <List title={`Effective price: ${effectivePrice}`}>
+              <List title={`${t('Effective price')}: ${effectivePrice}`}>
                 <TokenList
                   title={`${fromInput} ${fromToken?.symbol}`}
                   description={`$${formatNumber(fromTokenValue, 4)}`}
@@ -322,7 +334,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
             <DetailWrapper>
               <DetailTitleWrapper>
-                {`Swap from ${fromToken?.symbol} details`}
+                {t('swap-detail', { token: fromToken?.symbol })}
                 <DetailButtonWrapper>
                   <ButtonChipSmall
                     text="TOKEN"
@@ -338,14 +350,16 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
               </DetailTitleWrapper>
               <DetailInfoWrapper>
                 <DetailInfoTextWrapper>
-                  <DetailInfoText>Total expected after fees</DetailInfoText>
+                  <DetailInfoText>{t('Total expected after fees')}</DetailInfoText>
                   <DetailInfoText>{`${formatNumber(
                     totalAfterFee,
                     6
                   )} ${currentUnit}`}</DetailInfoText>
                 </DetailInfoTextWrapper>
                 <DetailInfoTextWrapper>
-                  <DetailInfoSubtext>{`The least you'll get at ${slippageText}% slippage`}</DetailInfoSubtext>
+                  <DetailInfoSubtext>
+                    {t('least-user-get-message', { slippage: slippageText })}
+                  </DetailInfoSubtext>
                   <DetailInfoSubtext>{`${formatNumber(
                     totalAfterSlippage,
                     6

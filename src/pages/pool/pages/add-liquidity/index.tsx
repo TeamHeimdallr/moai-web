@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
@@ -16,6 +17,7 @@ import { AddLiquidityInputGroup } from '../../components/add-liquidity-input-gro
 const PoolDetailAddLiquidityPage = () => {
   const navigate = useNavigate();
 
+  const { t } = useTranslation();
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   const { id } = useParams();
 
@@ -31,7 +33,7 @@ const PoolDetailAddLiquidityPage = () => {
           <ContentWrapper>
             <Header>
               <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
-              <Title>Add liquidity</Title>
+              <Title>{t('Add liquidity')}</Title>
             </Header>
 
             <LiquidityWrapper>

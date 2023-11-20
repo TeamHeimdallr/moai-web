@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
@@ -9,7 +10,9 @@ import { POPUP_ID } from '~/types';
 import { SwapInputGroup } from './components/swap-input-group';
 
 const SwapPage = () => {
+  const { t } = useTranslation();
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
+
   return (
     <>
       <Wrapper>
@@ -18,7 +21,7 @@ const SwapPage = () => {
         </GnbWrapper>
         <InnerWrapper banner={!!bannerOpened}>
           <ContentWrapper>
-            <Title>Swap</Title>
+            <Title>{t('Swap')}</Title>
 
             <SwapWrapper>
               <SwapInputGroup />

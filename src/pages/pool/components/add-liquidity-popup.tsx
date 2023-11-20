@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -46,6 +47,8 @@ export const AddLiquidityPopup = ({
 }: Props) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const { t } = useTranslation();
 
   const { isXrp } = useNetwork();
   const { network, poolId, lpToken } = pool || {};
@@ -213,33 +216,39 @@ export const AddLiquidityPopup = ({
   ]);
 
   const buttonText = useMemo(() => {
-    if (isSuccess) return 'Return to pool page';
+    if (isSuccess) return t('Return to pool page');
 
     // single token deposit
     if (tokenLength === 1) {
       if (isXrp) {
-        if (!allowance3) return `Approve ${lpToken?.symbol} for adding liquidity`;
-        return 'Add liquidity';
+        if (!allowance3)
+          return t('approve-add-liquidity-token-message', { token: lpToken?.symbol });
+        return t('Confirm add liquidity in wallet');
       } else {
         if (token1Amount > 0 && token2Amount <= 0) {
-          if (!allowance1) return `Approve ${tokensIn?.[0]?.symbol} for adding liquidity`;
-          return 'Add liquidity';
+          if (!allowance1)
+            return t('approve-add-liquidity-token-message', { token: tokensIn?.[0]?.symbol });
+          return t('Confirm add liquidity in wallet');
         }
         if (token2Amount > 0 && token1Amount <= 0) {
-          if (!allowance2) return `Approve ${tokensIn?.[1]?.symbol} for adding liquidity`;
-          return 'Add liquidity';
+          if (!allowance2)
+            return t('approve-add-liquidity-token-message', { token: tokensIn?.[1]?.symbol });
+          return t('Confirm add liquidity in wallet');
         }
       }
     }
 
     if (tokenLength === 2) {
-      if (!allowance1) return `Approve ${tokensIn?.[0]?.symbol} for adding liquidity`;
-      if (!allowance2) return `Approve ${tokensIn?.[1]?.symbol} for adding liquidity`;
+      if (!allowance1)
+        return t('approve-add-liquidity-token-message', { token: tokensIn?.[0]?.symbol });
+      if (!allowance2)
+        return t('approve-add-liquidity-token-message', { token: tokensIn?.[1]?.symbol });
 
-      return 'Add liquidity';
+      return t('Confirm add liquidity in wallet');
     }
 
     return '';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     allowance1,
     allowance2,
@@ -321,7 +330,7 @@ export const AddLiquidityPopup = ({
   return (
     <Popup
       id={POPUP_ID.ADD_LP}
-      title={isSuccess ? '' : 'Add liquidity preview'}
+      title={isSuccess ? '' : t('Add liquidity preview')}
       button={
         <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
@@ -338,12 +347,14 @@ export const AddLiquidityPopup = ({
             <IconWrapper>
               <IconCheck width={40} height={40} />
             </IconWrapper>
-            <SuccessTitle>Add liquidity confirmed!</SuccessTitle>
-            <SuccessSubTitle>{`Successfully added liquidity to ${lpToken?.symbol} Pool`}</SuccessSubTitle>
+            <SuccessTitle>{t('Add liquidity confirmed!')}</SuccessTitle>
+            <SuccessSubTitle>
+              {t('add-liquidity-success-message', { pool: lpToken?.symbol })}
+            </SuccessSubTitle>
           </SuccessWrapper>
         )}
         {!isSuccess && (
-          <List title={`You're providing`}>
+          <List title={t(`You're providing`)}>
             {tokensIn?.map(({ symbol, image, amount, price }, idx) => (
               <Fragment key={`${symbol}-${idx}`}>
                 <TokenList
@@ -358,7 +369,7 @@ export const AddLiquidityPopup = ({
             ))}
           </List>
         )}
-        <List title={`You're expected to receive`}>
+        <List title={t(`You're expected to receive`)}>
           <TokenList
             type="large"
             title={`${formatNumber(bptOut, 6)}`}
@@ -384,13 +395,13 @@ export const AddLiquidityPopup = ({
         )}
         {!isSuccess && (
           <>
-            <List title={`Summary`}>
+            <List title={t(`Summary`)}>
               <Summary>
-                <SummaryTextTitle>Total</SummaryTextTitle>
+                <SummaryTextTitle>{t('Total liquidity')}</SummaryTextTitle>
                 <SummaryText>{`$${formatNumber(bptOut * lpTokenPrice, 6)}`}</SummaryText>
               </Summary>
               <Summary>
-                <SummaryTextTitle>Price impact</SummaryTextTitle>
+                <SummaryTextTitle>{t('Price impact')}</SummaryTextTitle>
                 <SummaryText>{priceImpact}%</SummaryText>
               </Summary>
             </List>

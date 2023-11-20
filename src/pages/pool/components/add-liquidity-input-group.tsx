@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw, { styled } from 'twin.macro';
@@ -34,6 +35,8 @@ export const AddLiquidityInputGroup = () => {
   const [inputValue1, setInputValue1] = useState<number>(0);
   const [inputValue2, setInputValue2] = useState<number>(0);
   const [checkedPriceImpact, checkPriceImpact] = useState(false);
+
+  const { t } = useTranslation();
 
   const { isXrp } = useNetwork();
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
@@ -71,12 +74,12 @@ export const AddLiquidityInputGroup = () => {
     input1: yup
       .number()
       .min(0)
-      .max(userPoolTokens?.[0]?.balance ?? 0, 'Exceeds wallet balance')
+      .max(userPoolTokens?.[0]?.balance ?? 0, t('Exceeds wallet balance'))
       .required(),
     input2: yup
       .number()
       .min(0)
-      .max(userPoolTokens?.[1]?.balance ?? 0, 'Exceeds wallet balance')
+      .max(userPoolTokens?.[1]?.balance ?? 0, t('Exceeds wallet balance'))
       .required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
@@ -124,7 +127,7 @@ export const AddLiquidityInputGroup = () => {
   return (
     <Wrapper>
       <Header>
-        <Title>Enter liquidity amount</Title>
+        <Title>{t('Enter liquidity amount')}</Title>
         {/* TODO: activate setting / slippage
 
         const ref = useRef<HTMLDivElement>(null);
@@ -147,8 +150,8 @@ export const AddLiquidityInputGroup = () => {
       <InnerWrapper>
         {!isValidToAddLiquidity && (
           <AlertMessage
-            title="Insufficient balance"
-            description="One or either token balance is insufficient to add liquidity. You need both tokens in order to add liqudiity."
+            title={t(`Insufficient balance`)}
+            description={t(`insufficient-balance-message`)}
             type="warning"
           />
         )}
@@ -158,7 +161,7 @@ export const AddLiquidityInputGroup = () => {
             if (token.balance === 0) {
               return (
                 <NoBalanceAlert key={token.symbol}>
-                  No wallet balance for some pool tokens: {token.symbol}
+                  {t('No wallet balance for some pool tokens')} {token.symbol}
                 </NoBalanceAlert>
               );
             }
@@ -186,7 +189,7 @@ export const AddLiquidityInputGroup = () => {
 
         <Total>
           <TotalInnerWrapper>
-            <TotalText>Total</TotalText>
+            <TotalText>{t`Total liquidity`}</TotalText>
             <TotalValueWrapper>
               <TotalValue>{`$${formatNumber(totalValue, 2)}`}</TotalValue>
               <ButtonPrimarySmall
@@ -198,7 +201,7 @@ export const AddLiquidityInputGroup = () => {
             </TotalValueWrapper>
           </TotalInnerWrapper>
           <PriceImpact error={priceImpactRaw >= 3}>
-            {`Price impact  ${priceImpact}%`}
+            {`${t('Price impact')} ${priceImpact}%`}
             <ButtonWrapper>
               <ButtonPrimarySmall
                 disabled={isXrp || !hasBalances}
@@ -219,14 +222,13 @@ export const AddLiquidityInputGroup = () => {
             />
           </CheckboxWrapper>
           <Text>
-            I accept the high price impact from depositing, moving the market price base on the
-            depth of the market.
+            <Text>{t('accept-high-price-impact-message')}</Text>
           </Text>
         </CheckPriceImpact>
       )}
 
       <ButtonPrimaryLarge
-        text="Preview"
+        text={t('Preview')}
         onClick={popupOpen}
         disabled={
           !isValid || !hasBalances || !tokensInValid || (priceImpactRaw > 3 && !checkedPriceImpact)

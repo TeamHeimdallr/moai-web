@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
@@ -7,6 +8,7 @@ import { formatNumber } from '~/utils';
 
 export const PoolInfo = () => {
   const { network, id } = useParams();
+  const { t } = useTranslation();
 
   const queryEnabled = !!network && !!id;
   const { data } = useGetPoolQuery(
@@ -32,10 +34,10 @@ export const PoolInfo = () => {
 
   return (
     <PoolValueContainer>
-      <PoolInfoCard name="Pool Value" value={formattedValue} />
-      <PoolInfoCard name="Volume (24h)" value={formattedVolume} />
-      <PoolInfoCard name="APR" value={formattedApr} />
-      <PoolInfoCard name="Trading Fee" value={formattedFees} />
+      <PoolInfoCard name={t('Pool Value')} value={formattedValue} />
+      <PoolInfoCard name={t('Volume (24h)')} value={formattedVolume} />
+      <PoolInfoCard name={t('APR')} value={formattedApr} />
+      <PoolInfoCard name={t('Trading Fee')} value={formattedFees} />
     </PoolValueContainer>
   );
 };
