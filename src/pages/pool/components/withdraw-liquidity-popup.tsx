@@ -127,7 +127,7 @@ export const WithdrawLiquidityPopup = ({
 
   const validAmount = token1Amount > 0 || token2Amount > 0;
   const getValidAllowance = () => {
-    if (isXrp) return allowance3;
+    if (!isXrp) return allowance3;
     if (token1Amount > 0 && token2Amount > 0) return allowance1 && allowance2;
     if (token1Amount > 0) return allowance1;
     if (token2Amount > 0) return allowance2;
