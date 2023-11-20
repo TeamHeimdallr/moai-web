@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import tw, { css, styled } from 'twin.macro';
 
+import { useCreateRecentlySelectedTokensMutate } from '~/api/api-server/token/create-recently-selected-tokens';
 import { useGetRecentlySelectedTokensQuery } from '~/api/api-server/token/get-recently-selected-tokens';
 
 import { COLOR } from '~/assets/colors';
@@ -21,6 +23,7 @@ interface Props {
   tokenPrice: number;
 }
 export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props) => {
+  const queryClient = useQueryClient();
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { evm, xrp, fpass } = useConnectedWallet();
@@ -32,23 +35,35 @@ export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props
   const { close } = usePopup(POPUP_ID.SWAP_SELECT_TOKEN_FROM);
 
   const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
-  const { data: recentlySelectedTokensData } = useGetRecentlySelectedTokensQuery(
-    {
-      params: {
-        networkAbbr: currentNetworkAbbr,
+
+  const { mutateAsync: createRecentlySelectedTokens } = useCreateRecentlySelectedTokensMutate();
+  const { data: recentlySelectedTokensData, queryKey: recentlySelectedTokensQueryKey } =
+    useGetRecentlySelectedTokensQuery(
+      {
+        params: {
+          networkAbbr: currentNetworkAbbr,
+        },
+        queries: {
+          walletAddress,
+        },
       },
-      queries: {
-        walletAddress,
-      },
-    },
-    {
-      staleTime: 1000 * 3,
-      enabled: !!walletAddress,
-    }
-  );
+      {
+        staleTime: 1000 * 3,
+        enabled: !!walletAddress,
+      }
+    );
   const { tokens: recentlySelectedTokens } = recentlySelectedTokensData || {};
 
-  const handleSelect = (token: IToken) => {
+  const handleSelect = async (token: IToken) => {
+    if (token.symbol === toToken?.symbol) return;
+
+    await createRecentlySelectedTokens({
+      network: currentNetwork,
+      walletAddress,
+      tokenId: token.id,
+    });
+    queryClient.invalidateQueries(recentlySelectedTokensQueryKey);
+
     setFromToken(token);
     close();
   };
@@ -66,7 +81,10 @@ export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props
               <Token
                 key={token.symbol}
                 token={token.symbol}
+                image
+                imageUrl={token.image}
                 clickable
+                disabled={token.symbol === toToken?.symbol}
                 onClick={() => handleSelect(token)}
               />
             ))}
