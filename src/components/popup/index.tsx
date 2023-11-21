@@ -59,7 +59,8 @@ const InnerWrapper = tw.div`
   xs:(overflow-y-auto)
   md:w-452
 `;
-const Header = tw.div`flex items-center justify-between font-b-18 text-neutral-100 px-24 py-20
+const Header = tw.div`
+  flex items-center justify-between font-b-18 text-neutral-100 px-24 py-20
   md:font-b-20
 `;
 const TitleWrapper = tw.div`flex-center gap-8`;
