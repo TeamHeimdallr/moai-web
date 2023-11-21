@@ -15,4 +15,7 @@ export const LanguageChange = () => {
   );
 };
 
-const Wrapper = tw.div`relative flex items-start w-40 h-40 gap-6 px-8 py-9 bg-neutral-10 hover:bg-neutral-20 rounded-10 clickable`;
+const Wrapper = tw.div`
+  relative flex items-start w-40 h-40 gap-6 px-8 py-9 bg-neutral-10 rounded-10 clickable
+  hover:(bg-neutral-20)
+`;

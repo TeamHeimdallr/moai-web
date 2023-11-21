@@ -23,6 +23,14 @@ export const Normal: Story = {
   },
 };
 
+export const Outlined: Story = {
+  args: {
+    text: 'Text here',
+    icon: <IconNext />,
+    buttonType: 'outlined',
+  },
+};
+
 export const Loading: Story = {
   args: {
     text: 'Text here',

@@ -165,5 +165,7 @@
   "least-user-get-message": "{{slippage}} 슬리피지에서 받을 수 있는 최소 금액",
   "Swap confirmed!": "구매를 완료했습니다.",
   "swap-success-message": "{{fromValue}} {{fromToken}}로 {{toValue}} {{toToken}}를 성공적으로 구매했습니다.",
-  "Total swap": "총액"
+  "Total swap": "총액",
+
+  "Get started": "시작하기"
 }

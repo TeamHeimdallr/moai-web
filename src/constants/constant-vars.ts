@@ -38,14 +38,18 @@ export const FORMAT_NUMBER_THRESHOLD = 10 ** 10;
 export const BREAKPOINT = {
   XS: 0,
   SM: 360,
+  SMD: 640,
   MD: 820,
+  MLG: 960,
   LG: 1120,
   XL: 1320,
   XXL: 1440,
 
   MEDIA_XS: '(min-width: 0px)',
   MEDIA_SM: '(min-width: 360px)',
+  MEDIA_SMD: '(min-width: 640px)',
   MEDIA_MD: '(min-width: 820px)',
+  MEDIA_MLG: '(min-width: 960px)',
   MEDIA_LG: '(min-width: 1120px)',
   MEDIA_XL: '(min-width: 1320px)',
   MEDIA_XXL: '(min-width: 1440px)',

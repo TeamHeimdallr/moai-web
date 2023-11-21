@@ -9,6 +9,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
   icon: ReactNode;
 
+  buttonType?: 'filled' | 'outlined';
   isLoading?: boolean;
 }
 
@@ -17,6 +18,7 @@ export const ButtonPrimaryMediumIconTrailing = ({
   icon,
   isLoading,
   disabled,
+  buttonType = 'filled',
   ...rest
 }: Props) => {
   const warpperRef = useRef<HTMLDivElement>(null);
@@ -37,60 +39,76 @@ export const ButtonPrimaryMediumIconTrailing = ({
   }, [warpperRef, isLoading, disabled]);
 
   return (
-    <Wrapper disabled={disabled || isLoading} isLoading={isLoading} {...rest}>
+    <Wrapper
+      disabled={disabled || isLoading}
+      buttonType={buttonType}
+      isLoading={isLoading}
+      {...rest}
+    >
+      {isLoading && <LottieWrapper ref={warpperRef} />}
       {text}
       <IconWrapper className="icon">{icon}</IconWrapper>
-      {isLoading && <LottieWrapper ref={warpperRef} />}
     </Wrapper>
   );
 };
 
 interface WrapperProps {
   isLoading?: boolean;
+  buttonType?: 'filled' | 'outlined';
 }
-const Wrapper = styled.button<WrapperProps>(({ isLoading }) => [
+const Wrapper = styled.button<WrapperProps>(({ isLoading, buttonType }) => [
   tw`
-    gap-6 pr-8 pl-16 py-9 inline-flex-center rounded-10 clickable font-m-14 text-primary-60 relative bg-neutral-10 transition-color
+    gap-6 pl-16 pr-10 py-9 min-h-40 inline-flex-center rounded-10 clickable font-m-14 bg-primary-60 text-neutral-0 transition-colors w-full
 
     hover:(bg-primary-50 text-neutral-0)
 
     disabled:(bg-neutral-5 text-neutral-40 non-clickable)
     disabled:hover:(bg-neutral-5 text-neutral-40)
   `,
-  isLoading &&
-    tw`
-      text-transparent bg-primary-60 non-clickable
-      hover:(bg-primary-60 text-transparent)
-
-      disabled:(text-transparent bg-primary-60 non-clickable)
-      disabled:hover:(bg-primary-60 text-transparent)
-    `,
   css`
     & .icon svg {
       width: 20px;
       height: 20px;
-
-      fill: ${COLOR.PRIMARY[60]};
-      transition-property: background-color, border-color, color, fill, stroke;
-      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      transition-duration: 150ms;
-    }
-
-    &:hover .icon svg {
       fill: ${COLOR.NEUTRAL[0]};
-    }
-
-    &:disabled .icon svg,
-    &:disabled:hover .icon svg {
-      fill: ${COLOR.NEUTRAL[40]};
     }
   `,
   isLoading &&
+    tw`
+    
+    bg-primary-60 non-clickable
+    hover:(bg-primary-60 text-neutral-0)
+    
+    disabled:(bg-primary-60 text-neutral-0 non-clickable)
+    disabled:hover:(bg-primary-60 text-neutral-0)
+    `,
+  buttonType === 'outlined' &&
     css`
-      & .icon svg,
-      &:disabled .icon svg,
-      &:disabled:hover .icon svg {
-        fill: transparent;
+      & .icon svg {
+        fill: ${COLOR.PRIMARY[60]};
+        transition-property: background-color, border-color, color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
+      &:hover .icon svg {
+        fill: ${COLOR.NEUTRAL[0]};
+      }
+    `,
+  buttonType === 'outlined' &&
+    tw`
+      py-8 bg-transparent border-solid pl-15 pr-9 border-1 border-primary-60 text-primary-60
+
+      disabled:(border-none pl-16 py-9 pr-10 non-clickable)
+    `,
+  isLoading &&
+    css`
+      color: transparent !important;
+
+      & .icon svg {
+        fill: ${COLOR.PRIMARY[60]};
+      }
+      & .icon svg {
+        width: 20px;
+        height: 20px;
       }
     `,
 ]);
@@ -100,5 +118,5 @@ const IconWrapper = tw.div`
 `;
 
 const LottieWrapper = tw.div`
-  w-full h-full flex-center absolute absolute-center
+  w-40 h-40 flex-center absolute absolute-center
 `;
