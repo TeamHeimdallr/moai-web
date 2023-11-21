@@ -1,7 +1,7 @@
 import { Bar } from 'react-chartjs-2';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { format } from 'date-fns';
+import { format, sub } from 'date-fns';
 import { upperFirst } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
@@ -11,11 +11,12 @@ import { COLOR } from '~/assets/colors';
 
 import { ButtonChipSmall } from '~/components/buttons';
 
-import { formatNumber } from '~/utils';
+import { formatNumber, formatNumberWithComma, formatNumberWithUnit } from '~/utils';
 import {
   usePoolInfoChartSelectedRangeStore,
   usePoolInfoChartSelectedTabStore,
 } from '~/states/components/chart/tab';
+import { IChartData } from '~/types';
 
 export const PoolInfoChart = () => {
   const { network, id } = useParams();
@@ -56,18 +57,15 @@ export const PoolInfoChart = () => {
 
   const { VOLUME: volumeData, TVL: tvlData, FEE: feeData } = data || {};
 
-  const sumValues = (data: { value: number }[]) => data.reduce((acc, cur) => acc + cur.value, 0);
+  const chartDataRaw =
+    selectedTab === 'volume' ? volumeData : selectedTab === 'tvl' ? tvlData : feeData;
+  const chartDataPadding = {
+    date: sub(new Date(chartDataRaw?.[0]?.date || new Date()), { days: 1 }),
+    value: 0,
+  } as IChartData;
 
-  const chartData =
-    selectedTab === 'volume' ? volumeData : selectedTab === 'tvl' ? tvlData : feeData || [];
-  const totalValue =
-    selectedTab === 'volume'
-      ? sumValues(volumeData || [])
-      : selectedTab === 'tvl'
-      ? sumValues(tvlData || [])
-      : selectedTab === 'fees'
-      ? sumValues(feeData || [])
-      : 0;
+  const chartData = chartDataRaw ? [chartDataPadding, ...chartDataRaw] : [];
+  const totalValue = chartData?.reduce((acc, cur) => acc + cur.value, 0) || 0;
 
   return (
     <Wrapper>
@@ -93,67 +91,76 @@ export const PoolInfoChart = () => {
 
       <ChartOuterWrapper>
         <ChartWrapper>
-          <Bar
-            style={{ width: '100%', height: '270px' }}
-            data={{
-              datasets: [
-                {
-                  data: chartData || [],
-                  backgroundColor: COLOR.PRIMARY[80],
-                  borderRadius: 4,
-                },
-              ],
-            }}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              animation: false,
-              plugins: {
-                tooltip: { enabled: false },
-                legend: { display: false },
-              },
-              parsing: {
-                xAxisKey: 'date',
-                yAxisKey: 'value',
-              },
-              scales: {
-                x: {
-                  type: 'time',
-                  time: {
-                    unit: 'month',
-                    displayFormats: {
-                      month: 'MMM',
-                    },
+          {chartData && (
+            <Bar
+              style={{ width: '100%', height: '270px' }}
+              data={{
+                datasets: [
+                  {
+                    data: chartData || [],
+                    backgroundColor: COLOR.PRIMARY[80],
+                    borderRadius: 4,
                   },
-                  border: { display: false },
-                  offset: true,
-                  ticks: {
-                    callback: (value: string | number) => {
-                      const date = new Date(value);
-                      const formattedDate = format(date, 'MMM');
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                plugins: {
+                  tooltip: { enabled: false },
+                  legend: { display: false },
+                },
+                parsing: {
+                  xAxisKey: 'date',
+                  yAxisKey: 'value',
+                },
+                layout: {
+                  autoPadding: false,
+                  padding: 0,
+                },
+                scales: {
+                  x: {
+                    type: 'time',
+                    time: {
+                      unit: 'month',
+                      displayFormats: {
+                        month: 'MMM',
+                      },
+                    },
+                    border: { display: false },
+                    offset: false,
+                    ticks: {
+                      callback: (value: string | number) => {
+                        const date = new Date(value);
+                        const formattedDate = format(date, 'MMM');
 
-                      return t(formattedDate);
+                        return t(formattedDate);
+                      },
+                      color: COLOR.NEUTRAL[60],
+                      font: {
+                        family: 'Pretendard Variable',
+                      },
                     },
-                    color: COLOR.NEUTRAL[60],
+                    grid: {
+                      display: false,
+                    },
                   },
-                  grid: {
-                    display: false,
-                    offset: true,
+                  y: {
+                    type: 'linear',
+                    ticks: {
+                      callback: (value: string | number) =>
+                        `$${formatNumberWithUnit(Number(value), 0)}`,
+                      color: COLOR.NEUTRAL[60],
+                      crossAlign: 'far',
+                    },
+                    border: { display: false },
+                    grid: { display: false },
                   },
                 },
-                y: {
-                  type: 'linear',
-                  ticks: {
-                    callback: (value: string | number) => `$${formatNumber(value, 4)}`,
-                    color: COLOR.NEUTRAL[60],
-                    crossAlign: 'far',
-                  },
-                  border: { display: false },
-                  grid: { display: false },
-                },
-              },
-            }}
-          />
+              }}
+            />
+          )}
         </ChartWrapper>
         <ChartRangeWrapper>
           {ranges.map(range => (
