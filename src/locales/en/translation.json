@@ -48,7 +48,8 @@
   "90d": "90d",
   "180d": "180d",
   "365d": "365d",
-  "days volume": "days volume",
+  "All": "All",
+  "days volume": "{{ days }} days volume",
 
   "Action": "Action",
   "Tokens": "Tokens",
