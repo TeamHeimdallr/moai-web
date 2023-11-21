@@ -25,20 +25,22 @@ export const Popup = ({ id, title, children, button, icon, ...rest }: Props) => 
   return (
     <>
       <ContentContainer ref={popupRef} {...rest}>
-        <Header>
-          <TitleWrapper>
-            <IconWrapper>{icon}</IconWrapper>
-            {title}
-          </TitleWrapper>
+        <InnerWrapper>
+          <Header>
+            <TitleWrapper>
+              <IconWrapper>{icon}</IconWrapper>
+              {title}
+            </TitleWrapper>
 
-          <ButtonIconLarge onClick={close} icon={<IconCancel fill={COLOR.NEUTRAL[60]} />} />
-        </Header>
+            <ButtonIconLarge onClick={close} icon={<IconCancel fill={COLOR.NEUTRAL[60]} />} />
+          </Header>
 
-        <ContentWrapper>{children}</ContentWrapper>
+          <ContentWrapper>{children}</ContentWrapper>
 
-        <Footer>
-          <ButtonWrapper>{button}</ButtonWrapper>
-        </Footer>
+          <Footer>
+            <ButtonWrapper>{button}</ButtonWrapper>
+          </Footer>
+        </InnerWrapper>
       </ContentContainer>
       <Dim />
     </>
@@ -48,10 +50,19 @@ const Dim = tw.div`
   fixed w-screen h-screen bg-neutral-0/60 top-0 left-0 z-20
 `;
 const ContentContainer = tw.div`
-  fixed absolute-center bg-neutral-10 w-452 rounded-12 z-21 pop-up-shadow
+  absolute-center max-w-452 fixed w-full top-0 left-0 z-21 flex justify-center
+  xs:(max-h-[calc(100%-120px)] overflow-y-auto)
+  md:(py-0)
 `;
-const Header = tw.div`flex items-center justify-between font-b-20 text-neutral-100 px-24 py-20`;
-const TitleWrapper = tw.div`flex-center  gap-8`;
+const InnerWrapper = tw.div`
+  w-full h-full bg-neutral-10 rounded-12 pop-up-shadow
+  xs:(overflow-y-auto)
+  md:w-452
+`;
+const Header = tw.div`flex items-center justify-between font-b-18 text-neutral-100 px-24 py-20
+  md:font-b-20
+`;
+const TitleWrapper = tw.div`flex-center gap-8`;
 const IconWrapper = tw.div`flex-center`;
 const ContentWrapper = tw.div``;
 
