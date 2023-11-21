@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -10,6 +10,9 @@ import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-t
 import { useCalculateWithdrawLiquidity } from '~/api/api-contract/pool/calculate-withdraw-liquidity';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
+import { IconSetting } from '~/assets/icons';
+
+import { Slippage } from '~/components/account';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { Tab } from '~/components/tab';
@@ -17,6 +20,7 @@ import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
+import { useOnClickOutside } from '~/hooks/utils';
 import { formatNumber } from '~/utils';
 import { useWithdrawLiquidityInputGroupTabStore } from '~/states/components/input-group/tab';
 import { POPUP_ID } from '~/types';
@@ -27,6 +31,14 @@ interface InputFormState {
   input1: number;
 }
 export const WithdrawLiquidityInputGroup = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const iconRef = useRef<HTMLDivElement>(null);
+
+  const [opened, open] = useState(false);
+  const toggle = () => open(!opened);
+
+  useOnClickOutside([ref, iconRef], () => open(false));
+
   const { network, id } = useParams();
   const { t } = useTranslation();
 
@@ -83,14 +95,6 @@ export const WithdrawLiquidityInputGroup = () => {
     <Wrapper>
       <Header>
         <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />
-        {/* TODO: activate setting / slippage
-
-        const ref = useRef<HTMLDivElement>(null);
-        const iconRef = useRef<HTMLDivElement>(null);
-
-        const [opened, open] = useState(false);
-        const toggle = () => open(!opened);
-        useOnClickOutside([ref, iconRef], () => open(false));
 
         <IconWrapper onClick={toggle} ref={iconRef}>
           <IconSetting fill={opened ? '#F5FF83' : '#9296AD'} width={20} height={20} />
@@ -100,7 +104,6 @@ export const WithdrawLiquidityInputGroup = () => {
             <Slippage shadow />
           </SlippageWrapper>
         )}
-        */}
       </Header>
       <InnerWrapper>
         <ContentWrapper>
@@ -172,21 +175,17 @@ const Header = tw.div`
   flex justify-between items-center gap-10 w-full relative
 `;
 
-/*
 const SlippageWrapper = tw.div`
-  absolute top-40 right-0
+  absolute top-40 right-0 z-10
 `;
-*/
 
 const InnerWrapper = tw.div`
   flex flex-col gap-16
 `;
 
-/*
 const IconWrapper = tw.div`
   clickable w-32 h-32 items-center justify-center flex relative
 `;
-*/
 
 const ContentWrapper = tw.div`
   flex flex-col gap-8

@@ -27,9 +27,10 @@ interface Props {
 export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }: Props) => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
-  const { slippage } = useSlippageStore();
+  const { slippage: slippageRaw } = useSlippageStore();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const slippage = Number(slippageRaw || 0);
 
   const { evm, fpass } = useConnectedWallet();
   const evmAddress = evm?.address ?? '';

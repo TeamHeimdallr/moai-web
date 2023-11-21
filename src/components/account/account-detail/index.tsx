@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import copy from 'copy-to-clipboard';
 import tw, { styled } from 'twin.macro';
@@ -36,7 +36,17 @@ export const AccountDetail = () => {
     POPUP_ID.FUTUREPASS_CREATE
   );
 
+  const [xrpAddress, setXrpAddress] = useState(xrp.truncatedAddress || '');
+  const [fpassAddress, setFpassAddress] = useState(fpass.truncatedAddress || '');
+  const [fpassEvmAddress, setFpassEvmAddress] = useState(evm.truncatedAddress || '');
+  const [evmAddress, setEvmAddress] = useState(evm.truncatedAddress || '');
+
   const { t } = useTranslation();
+
+  const handleCopy = (address: string, callback: (address: string) => void) => {
+    callback(t('Copied!'));
+    setTimeout(() => callback(address), 2000);
+  };
 
   const xrpComponent = (
     <AccountWrapper key="xrp" isConnected={isXrp}>
@@ -50,10 +60,19 @@ export const AccountDetail = () => {
           </Logo>
           <AddressWrapper>
             <AddressTextWrapper>
-              <MediumText>{xrp.truncatedAddress}</MediumText>
+              <MediumText>{xrpAddress}</MediumText>
               <InnerWrapper>
-                {/* TODO: Copied! 문구 2초 노출 */}
-                <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(xrp.address ?? '')} />
+                <ButtonIconSmall
+                  icon={<IconCopy />}
+                  onClick={() =>
+                    copy(xrp.address, {
+                      onCopy: () =>
+                        handleCopy(xrp.truncatedAddress, (address: string) =>
+                          setXrpAddress(address)
+                        ),
+                    })
+                  }
+                />
                 <ButtonIconSmall icon={<IconLogout />} onClick={xrp.disconnect} />
               </InnerWrapper>
             </AddressTextWrapper>
@@ -88,10 +107,19 @@ export const AccountDetail = () => {
           </Logo>
           <AddressWrapper>
             <AddressTextWrapper>
-              <MediumText>{fpass.truncatedAddress}</MediumText>
+              <MediumText>{fpassAddress}</MediumText>
               <InnerWrapper>
-                {/* TODO: Copied! 문구 2초 노출 */}
-                <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(fpass.address)} />
+                <ButtonIconSmall
+                  icon={<IconCopy />}
+                  onClick={() =>
+                    copy(fpass.address, {
+                      onCopy: () =>
+                        handleCopy(fpass.truncatedAddress, (address: string) =>
+                          setFpassAddress(address)
+                        ),
+                    })
+                  }
+                />
                 <ButtonIconSmall
                   icon={<IconLink />}
                   onClick={() => window.open('https://futurepass.futureverse.app/account/')}
@@ -109,8 +137,18 @@ export const AccountDetail = () => {
               <IconWrapper>
                 <InnerLogoSmall src={imageWalletMetamask} alt="metamask" />
               </IconWrapper>
-              <SmallTextWhite>{evm.truncatedAddress}</SmallTextWhite>
-              <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(evm.address ?? '')} />
+              <SmallTextWhite>{fpassEvmAddress}</SmallTextWhite>
+              <ButtonIconSmall
+                icon={<IconCopy />}
+                onClick={() =>
+                  copy(evm.address, {
+                    onCopy: () =>
+                      handleCopy(evm.truncatedAddress, (address: string) =>
+                        setFpassEvmAddress(address)
+                      ),
+                  })
+                }
+              />
             </MetamaskWallet>
           </AddressWrapper>
         </Account>
@@ -149,10 +187,19 @@ export const AccountDetail = () => {
           </Logo>
           <AddressWrapper>
             <AddressTextWrapper>
-              <MediumText>{evm.truncatedAddress}</MediumText>
+              <MediumText>{evmAddress}</MediumText>
               <InnerWrapper>
-                {/* TODO: Copied! 문구 2초 노출 */}
-                <ButtonIconSmall icon={<IconCopy />} onClick={() => copy(evm.address)} />
+                <ButtonIconSmall
+                  icon={<IconCopy />}
+                  onClick={() =>
+                    copy(evm.address, {
+                      onCopy: () =>
+                        handleCopy(evm.truncatedAddress, (address: string) =>
+                          setEvmAddress(address)
+                        ),
+                    })
+                  }
+                />
                 <ButtonIconSmall icon={<IconLogout />} onClick={evm.disconnect} />
               </InnerWrapper>
             </AddressTextWrapper>
@@ -288,7 +335,7 @@ const NetworkText = tw.div`
   text-neutral-80 font-r-12
 `;
 const SmallText = tw.div`font-r-12 text-neutral-60`;
-const SmallTextWhite = tw.div`font-r-12 text-neutral-100 flex-1`;
+const SmallTextWhite = tw.div`font-r-12 text-neutral-100 flex-1 address`;
 const AddressTextWrapper = tw.div`flex justify-between`;
 
 const Logo = tw.div`

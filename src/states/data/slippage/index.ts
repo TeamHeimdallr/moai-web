@@ -5,8 +5,10 @@ import { immer } from 'zustand/middleware/immer';
 import { logger } from '../../middleware/logger';
 
 interface State {
-  slippage: number; // unit %
-  setSlippage: (slippage: number) => void;
+  manual: boolean;
+  slippage: number | string; // unit %
+  setSlippage: (slippage: number | string) => void;
+  setManualSlippage: (slippage: number | string) => void;
 }
 
 export const useSlippageStore = create<State>()(
@@ -15,8 +17,10 @@ export const useSlippageStore = create<State>()(
       logger(set => ({
         name: 'SLIPPAGE_STORE',
 
+        manual: false,
         slippage: 0.5,
-        setSlippage: (slippage: number) => set({ slippage }),
+        setSlippage: (slippage: number | string) => set({ manual: false, slippage }),
+        setManualSlippage: (slippage: number | string) => set({ manual: true, slippage }),
       }))
     ),
     { name: 'MOAI_SLIPPAGE' }

@@ -1,5 +1,10 @@
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import tw, { styled } from 'twin.macro';
+import AutosizeInput from 'react-input-autosize';
+import tw, { css, styled } from 'twin.macro';
+import { useOnClickOutside } from 'usehooks-ts';
+
+import { COLOR } from '~/assets/colors';
 
 import { useSlippageStore } from '~/states/data/slippage';
 
@@ -7,28 +12,79 @@ interface Props {
   shadow?: boolean;
 }
 
+const SLIPPAGE_PRESET = [0.5, 1, 2];
 export const Slippage = ({ shadow }: Props) => {
-  const { slippage, setSlippage } = useSlippageStore();
-  const preset = [0.5, 1, 2];
+  const manualSlippageRef = useRef<HTMLDivElement>(null);
+
+  const [inputFocus, setInputFocus] = useState(false);
 
   const { t } = useTranslation();
+  const { manual, slippage, setManualSlippage, setSlippage } = useSlippageStore();
+  useOnClickOutside(manualSlippageRef, () => setInputFocus(false));
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value as number | string;
+    const numValue = Number(value);
+
+    if (numValue && numValue > 100) return;
+    if (numValue && numValue < 0) return;
+
+    if (!(typeof value === 'string' && value === '')) {
+      setManualSlippage(numValue);
+      return;
+    }
+    setManualSlippage(value);
+  };
+
+  useEffect(() => {
+    if (!inputFocus && typeof slippage === 'string' && slippage === '') {
+      setSlippage(0.5);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slippage, inputFocus]);
 
   return (
     <SlippageWrapper shadow={shadow}>
       <SlippageInnerWarpper>
         <SlippageText>{t('Slippage tolerance')}</SlippageText>
         <SlippageOptions>
-          {preset.map((value, idx) => (
+          {SLIPPAGE_PRESET.map((value, idx) => (
             <SlippageOption
               key={`${value}-${idx}`}
-              selected={slippage === value}
+              selected={!manual && slippage === value}
               onClick={() => setSlippage(value)}
             >
               {`${value.toFixed(1)}%`}
             </SlippageOption>
           ))}
-          {/* TODO: manually input handling */}
-          <SlippageOption disabled={true}>{t('or enter manually')}</SlippageOption>
+          {inputFocus || (manual && slippage) ? (
+            <SlippageOption
+              onClick={() => setInputFocus(true)}
+              ref={manualSlippageRef}
+              selected={!inputFocus && manual && !!slippage}
+            >
+              <SlippageInputWrapper>
+                {/* @ts-expect-error Server Component */}
+                <AutosizeInput
+                  name="slippage"
+                  autoFocus
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="0.00"
+                  extraWidth={0}
+                  value={slippage}
+                  onChange={handleInputChange}
+                  min={0}
+                  max={100}
+                />
+                %
+              </SlippageInputWrapper>
+            </SlippageOption>
+          ) : (
+            <SlippageOption onClick={() => setInputFocus(true)}>
+              {t('or enter manually')}
+            </SlippageOption>
+          )}
         </SlippageOptions>
       </SlippageInnerWarpper>
     </SlippageWrapper>
@@ -66,3 +122,61 @@ const SlippageOption = styled.div<SlippageOptionProps>(({ selected, disabled }) 
     : tw`hover:bg-neutral-20 hover:text-neutral-60 border-neutral-80`,
   disabled && tw`non-clickable`,
 ]);
+
+const SlippageInputWrapper = styled.div(() => [
+  tw`
+    font-r-16 text-primary-50 flex-center gap-2
+  `,
+  css`
+    & input {
+      padding: 0;
+      border: 0;
+      outlint: 0;
+
+      background: transparent;
+      width: 32px;
+
+      font-family: Pretendard Variable;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: ${COLOR.PRIMARY[50]};
+
+      &:placeholder {
+        color: ${COLOR.NEUTRAL[70]};
+      }
+    }
+  `,
+]);
+
+//  <SlippageOption
+//             onClick={() => setInputFocus(true)}
+//             ref={manualSlippageRef}
+//             selected={inputFocus || (manual && !!slippage)}
+//           >
+//             {inputFocus || (manual && slippage) ? (
+//               <SlippageInputWrapper>
+//                 {/* @ts-expect-error Server Component */}
+//                 <AutosizeInput
+//                   name="slippage"
+//                   autoFocus
+//                   type="number"
+//                   inputMode="numeric"
+//                   placeholder="0.00"
+//                   extraWidth={0}
+//                   value={slippage}
+//                   onChange={handleInputChange}
+//                   min={0}
+//                   max={100}
+//                 />
+//                 %
+//               </SlippageInputWrapper>
+//             ) : (
+//               t('or enter manually')
+//             )}
+//           </SlippageOption>

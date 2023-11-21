@@ -11,7 +11,7 @@ import { COLOR } from '~/assets/colors';
 
 import { ButtonChipSmall } from '~/components/buttons';
 
-import { formatNumber, formatNumberWithComma, formatNumberWithUnit } from '~/utils';
+import { formatNumber, formatNumberWithUnit } from '~/utils';
 import {
   usePoolInfoChartSelectedRangeStore,
   usePoolInfoChartSelectedTabStore,
