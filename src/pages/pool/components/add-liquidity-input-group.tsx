@@ -250,7 +250,8 @@ export const AddLiquidityInputGroup = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col bg-neutral-10 gap-24 px-24 py-20 rounded-12 w-452
+  flex flex-col bg-neutral-10 gap-20 px-20 py-16 rounded-12
+  md:(w-452 gap-24 pt-20 px-24 pb-24)
 `;
 
 const Header = tw.div`

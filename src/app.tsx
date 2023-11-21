@@ -8,7 +8,7 @@ import Web3Provider from './hocs/hoc-web3-provider';
 import i18n from './locales/i18n';
 import Pages from './pages';
 
-const RouteWrapper = tw.main`relative w-full h-full min-w-1440`;
+const RouteWrapper = tw.main`relative w-full h-full`;
 const App = () => {
   return (
     <Suspense>

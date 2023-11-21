@@ -428,11 +428,13 @@ const Wrapper = tw.div`
 `;
 
 const SuccessTitle = tw.div`
-  text-neutral-100 font-b-24
+  text-neutral-100 font-b-20
+  md:font-b-24
 `;
 
 const SuccessSubTitle = tw.div`
-  text-neutral-80 font-r-16
+  text-neutral-80 font-r-14
+  md:font-r-16
 `;
 
 const SuccessWrapper = tw.div`

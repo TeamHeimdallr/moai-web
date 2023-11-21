@@ -191,7 +191,7 @@ interface WrapperProps {
   error?: boolean;
 }
 const Wrapper = styled.div<WrapperProps>(({ focus, focused, error }) => [
-  tw`flex flex-col gap-12 transition-colors border-transparent border-solid w-404 pt-15 pb-11 pl-11 pr-19 bg-neutral-15 rounded-8 border-1`,
+  tw`w-full flex flex-col gap-12 transition-colors border-transparent border-solid pt-15 pb-11 pl-15 pr-15 bg-neutral-15 rounded-8 border-1`,
   focus && tw`hover:(border-neutral-80)`,
   focused && tw`border-primary-50 hover:(border-primary-50)`,
   error && tw`border-red-50 hover:(border-red-50)`,
@@ -230,10 +230,10 @@ const BalanceLabel = tw.div`
   text-neutral-60
 `;
 const BalanceValue = tw.div`
-  text-neutral-60 truncate max-w-120
+  text-neutral-80 truncate max-w-120
 `;
 const TokenUSDValue = tw.div`
-  text-neutral-60 flex-1 text-right
+  text-neutral-80 flex-1 text-right
 `;
 
 const ErrorMessage = tw.div`
