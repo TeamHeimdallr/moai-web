@@ -31,8 +31,11 @@ interface Response {
 }
 
 const axios = async (params, queries?: Queries) =>
-  (await api.get<Response>(`/pools/${params.networkAbbr}/${params.poolId}${encodeQuery(queries)}`))
-    .data;
+  (
+    await api.get<Response>(
+      `/pool/${params.networkAbbr}/${params.poolId}/chart${encodeQuery(queries)}`
+    )
+  ).data;
 
 export const useGetChartQuery = (request: Request, options?: QueryOption) => {
   const { params, queries } = request;
