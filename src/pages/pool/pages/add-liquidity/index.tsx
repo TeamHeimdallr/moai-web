@@ -58,7 +58,7 @@ const GnbWrapper = styled.div<DivProps>(({ banner }) => [
   tw`
     w-full flex-center
   `,
-  banner ? tw`h-140` : tw`h-80`,
+  banner ? tw`h-132 mlg:(h-140)` : tw`h-72 mlg:(h-80)`,
 ]);
 
 const Header = tw.div`
