@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -10,6 +10,9 @@ import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-t
 import { useCalculateAddLiquidity } from '~/api/api-contract/pool/calculate-add-liquidity';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
+import { IconSetting } from '~/assets/icons';
+
+import { Slippage } from '~/components/account';
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge, ButtonPrimarySmall } from '~/components/buttons';
 import { Checkbox, InputNumber } from '~/components/inputs';
@@ -17,6 +20,7 @@ import { Token } from '~/components/token';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useOnClickOutside } from '~/hooks/utils';
 import { formatNumber } from '~/utils';
 import { IPool, POPUP_ID } from '~/types';
 
@@ -29,6 +33,14 @@ interface InputFormState {
   input2: number;
 }
 export const AddLiquidityInputGroup = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const iconRef = useRef<HTMLDivElement>(null);
+
+  const [opened, open] = useState(false);
+  const toggle = () => open(!opened);
+
+  useOnClickOutside([ref, iconRef], () => open(false));
+
   const { network, id } = useParams();
 
   const [inputBlured, inputBlurAll] = useState(false);
@@ -128,14 +140,6 @@ export const AddLiquidityInputGroup = () => {
     <Wrapper>
       <Header>
         <Title>{t('Enter liquidity amount')}</Title>
-        {/* TODO: activate setting / slippage
-
-        const ref = useRef<HTMLDivElement>(null);
-        const iconRef = useRef<HTMLDivElement>(null);
-
-        const [opened, open] = useState(false);
-        const toggle = () => open(!opened);
-        useOnClickOutside([ref, iconRef], () => open(false));
 
         <IconWrapper onClick={toggle} ref={iconRef}>
           <IconSetting fill={opened ? '#F5FF83' : '#9296AD'} width={20} height={20} />
@@ -145,7 +149,6 @@ export const AddLiquidityInputGroup = () => {
             <Slippage shadow />
           </SlippageWrapper>
         )}
-        */}
       </Header>
       <InnerWrapper>
         {!isValidToAddLiquidity && (
@@ -258,21 +261,17 @@ const Header = tw.div`
   flex justify-between items-center gap-10 w-full relative
 `;
 
-/*
 const SlippageWrapper = tw.div`
-  absolute top-40 right-0
+  absolute top-40 right-0 z-10
 `;
-*/
 
 const InnerWrapper = tw.div`
   flex flex-col gap-16
 `;
 
-/*
 const IconWrapper = tw.div`
   clickable w-32 h-32 items-center justify-center flex relative
 `;
-*/
 
 const Title = tw.div`
   text-neutral-100 font-b-16

@@ -44,10 +44,11 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const { close } = usePopup(POPUP_ID.SWAP);
-  const { slippage } = useSlippageStore();
+  const { slippage: slippageRaw } = useSlippageStore();
 
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
 
+  const slippage = Number(slippageRaw || 0);
   const {
     fromToken,
     toToken,

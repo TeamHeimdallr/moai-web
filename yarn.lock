@@ -2937,6 +2937,7 @@ __metadata:
     "@types/node": ^20.8.7
     "@types/react": ^18.2.31
     "@types/react-dom": ^18.2.14
+    "@types/react-input-autosize": ^2.2.4
     "@types/tinycolor2": ^1.4.5
     "@typescript-eslint/eslint-plugin": ^6.8.0
     "@typescript-eslint/parser": ^6.8.0
@@ -2975,6 +2976,7 @@ __metadata:
     react-error-boundary: ^4.0.11
     react-hook-form: ^7.47.0
     react-i18next: ^13.5.0
+    react-input-autosize: ^3.0.0
     react-jazzicon: ^1.0.4
     react-number-format: ^5.3.1
     react-responsive: ^9.0.2
@@ -6117,6 +6119,15 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 890289c70d1966c168037637c09cacefe6205bdd27a33252144a6b432595a2943775ac1a1accac0beddaeb67f8fdf721e076acb1adc990b08e51c3d9fd4e780c
+  languageName: node
+  linkType: hard
+
+"@types/react-input-autosize@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@types/react-input-autosize@npm:2.2.4"
+  dependencies:
+    "@types/react": "*"
+  checksum: 871aebda1a19e35561bc207cd4df87dbf4b9d25080f94ee975b0bcb356f6ab77c5a129b987ed90367146d3f247cca3b12145511974e211e5321a16c944ccb358
   languageName: node
   linkType: hard
 
@@ -13625,7 +13636,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.6.1, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.5.8, prop-types@npm:^15.6.1, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -13988,6 +13999,17 @@ __metadata:
     react-native:
       optional: true
   checksum: 2f68ccd24daf72ddd2d11a526fb3c2b66c11ea4fcd2e24ac7aed42bf57ec7bffa7455ad1dc93679968ff629e9b1896465cdf6d1a61c29b92138ef88098e8dcba
+  languageName: node
+  linkType: hard
+
+"react-input-autosize@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "react-input-autosize@npm:3.0.0"
+  dependencies:
+    prop-types: ^15.5.8
+  peerDependencies:
+    react: ^16.3.0 || ^17.0.0
+  checksum: cc3309ddc87446ade742c7d0e88ef089dd8b6981f21506a2bb27daf01a8803ac697f64157c4ffc7e81dfcf3892b54a4072dbc3652fd9addcf6d22dd0b87ab723
   languageName: node
   linkType: hard
 

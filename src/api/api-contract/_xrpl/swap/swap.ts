@@ -18,10 +18,11 @@ interface Props {
 export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Props) => {
   const { isXrp } = useNetwork();
   const { xrp } = useConnectedWallet();
-  const { slippage } = useSlippageStore();
+  const { slippage: slippageRaw } = useSlippageStore();
 
   const { address } = xrp;
 
+  const slippage = Number(slippageRaw || 0);
   const amount =
     toToken.symbol === 'XRP'
       ? { Amount: xrpToDrops(toInput.toFixed(6)) }
