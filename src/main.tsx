@@ -1,5 +1,8 @@
 import { createRoot } from 'react-dom/client';
 
+import 'chart.js/auto';
+import 'chartjs-adapter-date-fns';
+
 import App from './app';
 
 import '~/styles/index.css';

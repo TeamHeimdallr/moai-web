@@ -11,6 +11,7 @@ import { POPUP_ID } from '~/types';
 import { PoolCompositions } from '../../components/pool-compositions';
 import { PoolHeader } from '../../components/pool-header';
 import { PoolInfo } from '../../components/pool-info';
+import { PoolInfoChart } from '../../components/pool-info-chart';
 import { PoolLiquidityProvisions } from '../../components/pool-liquidity-provisions';
 import { PoolSwapHistories } from '../../components/pool-swap-histories';
 import { UserPoolBalances } from '../../components/user-pool-balances';
@@ -34,6 +35,7 @@ const PoolDetailMainPage = () => {
               <LeftContentWrapper>
                 <PoolInfo />
                 <PoolCompositions />
+                <PoolInfoChart />
                 <PoolLiquidityProvisions />
                 <PoolSwapHistories />
               </LeftContentWrapper>

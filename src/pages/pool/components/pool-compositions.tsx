@@ -4,8 +4,7 @@ import tw from 'twin.macro';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
-import { GraphSemiDonut } from '~/components/graph';
-
+import { PoolCompositionsChart } from './pool-compositions-chart';
 import { TokenCompositionLabel } from './pool-compositions-label';
 
 export const PoolCompositions = () => {
@@ -36,7 +35,7 @@ export const PoolCompositions = () => {
         <ContentsWrapper>
           <TokenCompositionLabel composition={compositions[0]} idx={0} />
           <GraphWrapper>
-            <GraphSemiDonut data={compositions} />
+            <PoolCompositionsChart data={compositions} />
           </GraphWrapper>
           <TokenCompositionLabel composition={compositions[1]} idx={1} />
         </ContentsWrapper>
