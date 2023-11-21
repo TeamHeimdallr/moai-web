@@ -118,7 +118,9 @@ export const Gnb = () => {
 
 const Wrapper = styled.div(() => [tw`flex items-center flex-col w-full z-20 bg-transparent`]);
 const BannerWrapper = tw.div`w-full`;
-const NavWrapper = tw.div`flex items-center justify-between px-24 py-20 w-full`;
+const NavWrapper = tw.div`w-full flex items-center justify-between 
+  px-20 py-16
+  lg:(px-24 py-20)`;
 const LogoWrapper = tw.div`clickable h-20`;
 
 const ContentWrapper = tw.div`
@@ -127,8 +129,8 @@ const ContentWrapper = tw.div`
 
 const ConnectedButton = tw.div`
   flex 
-  sm:gap-4 
-  md:gap-8
+  gap-4 
+  lg:gap-8
 `;
 
 interface MenuProps {
@@ -143,8 +145,8 @@ const MenuWrapper = styled.div(({ selected, disabled }: MenuProps) => [
 
 const ButtonWrapper = tw.div`
   flex 
-  sm:(gap-4) 
-  md:(gap-8)
+  gap-4 
+  lg:gap-8
 `;
 
 const HamburgerWrapper = tw.div`flex-center p-8 rounded-10 bg-neutral-10 clickable hover:(bg-neutral-20)`;
