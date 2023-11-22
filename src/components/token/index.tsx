@@ -101,7 +101,7 @@ const TextWrapper = tw.div`
 `;
 
 const TokenText = tw.div`
-  font-r-16 leading-23
+  font-r-16 leading-24
 `;
 const Percentage = tw.div`
   font-r-12 text-neutral-80

@@ -23,7 +23,7 @@ export const NetworkChip = ({ network }: Props) => {
       color: COLOR.CHAIN.XRPL,
     },
     [NETWORK.THE_ROOT_NETWORK]: {
-      name: 'Root Network',
+      name: 'The Root Network',
       icon: <IconNetworkRoot width={20} height={20} />,
       color: COLOR.CHAIN.ROOT,
     },
@@ -48,11 +48,19 @@ interface WrapperProps {
 }
 
 const Wrapper = styled.div<WrapperProps>(({ color }) => [
-  tw`px-14 py-9 flex inline-flex items-center justify-center gap-6 font-m-14 rounded-10`,
+  tw`
+    flex inline-flex items-center justify-center max-w-full
+    gap-8 font-m-14 pl-10 pr-14 py-5 rounded-8
+    md:(py-9 rounded-10)
+  `,
   css`
     color: ${color};
     background-color: ${color + '33'};
   `,
 ]);
-const IconWrapper = tw.div`flex-center`;
-const Network = tw.div``;
+const IconWrapper = tw.div`
+  flex-center
+`;
+const Network = tw.div`
+  truncate
+`;

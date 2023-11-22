@@ -16,7 +16,7 @@ export const useBanner = () => {
   const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { selectedNetwork } = useNetwork();
-  const { fpass, evm, xrp } = useConnectedWallet();
+  const { fpass, evm, xrp, currentAddress } = useConnectedWallet();
   const { setWalletType } = useWalletTypeStore();
 
   const isSwap = location.pathname.includes('swap');
@@ -30,7 +30,11 @@ export const useBanner = () => {
   const text = t('wallet-alert-message', { network: network });
 
   useEffect(() => {
-    if (isSwap) return; // On the swap page, can proceed regardless of the selected network.
+    // if wallet not connected or on the swap page, can proceed regardless of the selected network.
+    if (!currentAddress || isSwap) {
+      close();
+      return;
+    }
 
     if (
       (selectedNetwork === NETWORK.XRPL && !xrp.isConnected) ||

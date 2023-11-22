@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { useGetMyPoolsInfinityQuery } from '~/api/api-server/pools/get-my-pools';
@@ -12,6 +12,7 @@ import {
 } from '~/components/tables';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
@@ -20,6 +21,8 @@ import { useTableMyLiquidityPoolSortStore } from '~/states/components';
 export const useTableMyLiquidityPool = () => {
   const { selectedNetwork } = useNetwork();
   const { sort, setSort } = useTableMyLiquidityPoolSortStore();
+
+  const { isMD } = useMediaQuery();
 
   const netwokrAbbr = getNetworkAbbr(selectedNetwork);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
@@ -87,9 +90,52 @@ export const useTableMyLiquidityPool = () => {
     [sort]
   );
 
+  const mobileTableData = useMemo(
+    () =>
+      pools.map(d => ({
+        rows: [
+          <TableColumnToken
+            key={d.id}
+            tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+          />,
+        ],
+        dataRows: [
+          {
+            label: 'Pool value',
+            value: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+          },
+          {
+            label: 'My Balance',
+            value: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
+          },
+          {
+            label: 'My APR',
+            value: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+          },
+        ],
+      })),
+    [pools]
+  );
+
+  const mobileTableColumn = useMemo<ReactNode>(
+    () => (
+      <TableHeaderSortable sortKey="balance" label="My Balance" sort={sort} setSort={setSort} />
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sort]
+  );
+
+  useEffect(() => {
+    if (!isMD) setSort({ key: 'balance', order: 'desc' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMD]);
+
   return {
     tableColumns,
     tableData,
+
+    mobileTableData,
+    mobileTableColumn,
 
     pools,
     hasNextPage,

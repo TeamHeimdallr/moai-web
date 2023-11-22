@@ -45,8 +45,8 @@ export const Contents = () => {
 };
 
 const Wrapper = tw.div`
-  w-full px-20 pt-112 pb-40 flex flex-col gap-40 text-neutral-100 bg-no-repeat bg-campaign bg-cover bg-center
-  sm:pt-96 md:(gap-40 pt-292 bg-left bg-top) lg:(min-h-screen) xxl:px-80
+  w-full px-20 pt-112 pb-40 flex flex-col gap-40 text-neutral-100 bg-no-repeat bg-campaign bg-cover bg-center pt-96
+  md:(gap-40 pt-292 bg-left bg-top) lg:(min-h-screen) xxl:px-80
 `;
 
 const ContentWrapper = tw.div`flex flex-col gap-24 w-320 md:w-full lg:w-840`;

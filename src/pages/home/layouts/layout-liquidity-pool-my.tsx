@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { Table } from '~/components/tables';
+import { TableMobile } from '~/components/tables/table-mobile';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
@@ -17,8 +19,16 @@ interface Meta {
   poolId: string;
 }
 export const MyLiquidityLayout = () => {
-  const { tableColumns, tableData } = useTableMyLiquidityPool();
+  const {
+    tableColumns,
+    tableData,
+    mobileTableData,
+    mobileTableColumn,
+    hasNextPage,
+    fetchNextPage,
+  } = useTableMyLiquidityPool();
 
+  const { isMD } = useMediaQuery();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -40,25 +50,41 @@ export const MyLiquidityLayout = () => {
       <TitleWrapper>
         <Title>{t('My liquidity in Moai pools')}</Title>
       </TitleWrapper>
-      <Table
-        data={tableData}
-        columns={tableColumns}
-        ratio={[2, 1, 1, 1]}
-        type="darker"
-        handleRowClick={handleRowClick}
-      />
+      {isMD ? (
+        <Table
+          data={tableData}
+          columns={tableColumns}
+          ratio={[2, 1, 1, 1]}
+          type="darker"
+          hasMore={hasNextPage}
+          handleRowClick={handleRowClick}
+          handleMoreClick={() => fetchNextPage()}
+        />
+      ) : (
+        <TableMobile
+          data={mobileTableData}
+          columns={mobileTableColumn}
+          type="darker"
+          hasMore={hasNextPage}
+          handleMoreClick={fetchNextPage}
+        />
+      )}
     </Wrapper>
   );
 };
 
 const Wrapper = tw.div`
   flex flex-col gap-24
+  md:(px-20)
 `;
 
 const TitleWrapper = tw.div`
-  h-40 flex gap-10 items-center w-full
+  w-full flex gap-10 items-center px-20
+  md:(h-40 px-0)
 `;
 
 const Title = tw.div`
-  font-b-24 text-neutral-100 flex-1
+  text-neutral-100 flex-1
+  font-b-20
+  md:(font-b-24)
 `;

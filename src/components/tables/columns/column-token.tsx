@@ -4,6 +4,7 @@ import tw from 'twin.macro';
 import { BadgeNew } from '~/components/badges/new';
 import { Token } from '~/components/token';
 
+import { useMediaQuery } from '~/hooks/utils';
 import { useTablePoolCompositionSelectTokenStore } from '~/states/components';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -16,6 +17,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
   const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
+  const { isMD } = useMediaQuery();
 
   return (
     <Wrapper {...rest}>
@@ -26,7 +28,7 @@ export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
           image={true}
           imageUrl={token.image}
           selected={selectedTokens?.includes(token.symbol)}
-          type="large"
+          type={isMD ? 'large' : 'small'}
         />
       ))}
       {isNew && <BadgeNew />}
@@ -35,5 +37,6 @@ export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
 };
 
 const Wrapper = tw.div`
-  w-full flex gap-8 items-center flex-1
+  w-full flex gap-6 items-center flex-1
+  md:(gap-8)
 `;

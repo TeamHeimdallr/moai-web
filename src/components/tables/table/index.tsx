@@ -47,7 +47,7 @@ export const Table = <T extends object>({
   });
   const { t } = useTranslation();
 
-  const tableRatio = ratio.map(num => `${num}fr`).join(' ');
+  const tableRatio = ratio.map(num => `minmax(0, ${num}fr)`).join(' ');
 
   return (
     <StyledTable type={type}>
@@ -92,7 +92,8 @@ export const Table = <T extends object>({
           )}
           {hasMore && (
             <More onClick={handleMoreClick}>
-              {t('Load more')} <IconDown />
+              {t('Load more')}
+              <IconDown width={20} height={20} />
             </More>
           )}
           {isLoading && <Loading>Loading...</Loading>}
@@ -156,6 +157,7 @@ const Divider = styled.div<DividerProps>(({ type }) => [
 const More = styled.div(() => [
   tw`
     w-full h-72 flex-center gap-6 font-m-14 text-neutral-60 clickable rounded-b-10
+    px-24 py-25
     hover:(bg-neutral-15 text-primary-80)
   `,
   css`

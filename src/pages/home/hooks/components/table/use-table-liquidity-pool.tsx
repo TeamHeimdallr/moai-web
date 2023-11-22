@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -15,6 +15,7 @@ import {
 } from '~/components/tables';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import {
@@ -28,6 +29,8 @@ export const useTableLiquidityPool = () => {
   const { selectedNetwork } = useNetwork();
   const { sort, setSort } = useTableLiquidityPoolSortStore();
   const { showAllPools } = useShowAllPoolsStore();
+
+  const { isMD } = useMediaQuery();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetwokrAbbr = getNetworkAbbr(currentNetwork);
@@ -119,9 +122,55 @@ export const useTableLiquidityPool = () => {
     [showAllPools, sort]
   );
 
+  const mobileTableData = useMemo(
+    () =>
+      pools.map(d => ({
+        rows: [
+          showAllPools ? (
+            <TableColumn key={d.id} value={<NetworkChip network={d.network} />} />
+          ) : (
+            <></>
+          ),
+          <TableColumnToken
+            key={d.id}
+            tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+          />,
+        ],
+        dataRows: [
+          {
+            label: 'Pool value',
+            value: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+          },
+          {
+            label: 'Volume (24h)',
+            value: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
+          },
+          {
+            label: 'APR',
+            value: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+          },
+        ],
+      })),
+    [pools, showAllPools]
+  );
+
+  const mobileTableColumn = useMemo<ReactNode>(
+    () => <TableHeaderSortable sortKey="value" label="Pool value" sort={sort} setSort={setSort} />,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sort]
+  );
+
+  useEffect(() => {
+    if (!isMD) setSort({ key: 'value', order: 'desc' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMD]);
+
   return {
     tableColumns,
     tableData,
+
+    mobileTableData,
+    mobileTableColumn,
 
     pools,
     poolTokens,

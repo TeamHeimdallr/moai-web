@@ -25,12 +25,12 @@ export const ButtonDropdown = ({
   opened,
   ...rest
 }: ButtonDrodDownProps) => {
-  const { isLG } = useMediaQuery();
+  const { isMLG } = useMediaQuery();
   return (
     <Wrapper opened={opened} {...rest}>
       {image && <Image src={image} alt={imageAlt} title={imageTitle} />}
       <IconTextWrapper>
-        {isLG && <Text>{text}</Text>}
+        {isMLG && <Text>{text}</Text>}
         <Icon opened={opened}>
           <IconDown width={16} height={16} fill={COLOR.NEUTRAL[60]} />
         </Icon>
@@ -81,7 +81,6 @@ const Icon = styled.div<Props>(({ opened }) => [
 const Text = tw.div`font-m-14`;
 
 const Image = tw.img`
-  flex-center object-cover 
-  sm:(w-20 h-20) 
+  flex-center object-cover w-20 h-20
   md:(w-24 h-24)
 `;
