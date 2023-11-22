@@ -66,7 +66,8 @@ const ContentWrapper = styled.div(() => [
 ]);
 
 const Title = tw.div`
-  font-b-24 h-40 flex items-center text-neutral-100
+  font-b-20 h-40 flex items-center text-neutral-100 px-20
+  md:(font-b-24 px-0)
 `;
 
 const SwapWrapper = tw.div`
