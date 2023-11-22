@@ -152,7 +152,7 @@
   "least-user-get-message": "The least you'll get at {{slippage}} slippage",
   "Swap confirmed!": "Swap confirmed!",
   "swap-success-message": "Successfully swapped {{fromValue}} {{fromToken}} to {{toValue}} {{toToken}}",
-  "Total swap": "총액",
+  "Total swap": "Total",
 
   "Get started": "Get started"
 }
