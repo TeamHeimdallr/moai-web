@@ -41,9 +41,9 @@ export const PoolLiquidityProvisions = () => {
 
   return (
     <Wrapper opened={opened}>
-      <TitleWrapper>
+      <TitleWrapper onClick={() => open(prev => !prev)}>
         <Title>{t('Liquidity provision')}</Title>
-        <Icon opened={opened} onClick={() => open(prev => !prev)}>
+        <Icon opened={opened}>
           <ButtonIconLarge icon={<IconDown />} />
         </Icon>
       </TitleWrapper>
