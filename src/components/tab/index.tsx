@@ -41,9 +41,14 @@ interface DivProps {
   gap: number;
 }
 const Wrapper = styled.div<DivProps>(({ gap }) => [
-  tw`flex`,
+  tw`w-full flex overflow-x-auto 
+  xs:max-w-[calc(100vw-84px)]
+  `,
   css`
     gap: ${gap}px;
+    ::-webkit-scrollbar {
+      display: none;
+    }
   `,
 ]);
 
@@ -54,7 +59,8 @@ interface TextProps {
 }
 
 const Text = styled.div<TextProps>(({ selected, type, disabled }) => [
-  tw`clickable`,
+  tw`clickable whitespace-nowrap w-full
+  `,
   selected ? tw`text-primary-60` : tw`text-neutral-60 hover:text-primary-80`,
   type === 'large' ? tw`font-b-18` : tw`font-b-16`,
   disabled && tw`text-neutral-60 non-clickable hover:text-neutral-60`,

@@ -61,14 +61,20 @@ const GnbWrapper = styled.div<DivProps>(({ banner }) => [
   banner ? tw`h-124 mlg:(h-140)` : tw`h-72 mlg:(h-80)`,
 ]);
 
-const Header = tw.div`flex items-center gap-12 font-b-24 text-neutral-100`;
+const Header = tw.div`
+  flex items-center gap-4 font-b-24 text-neutral-100 px-20
+  md:(gap-12 px-0)
+  `;
 
 const InnerWrapper = tw.div`
-  flex flex-col gap-40 pt-40 pb-120
+  flex flex-col gap-40 pt-20 pb-120
+  md:pt-40
 `;
 
 const ContentWrapper = styled.div(() => [
-  tw`flex flex-col items-center gap-40`,
+  tw`flex flex-col items-center gap-20 w-full
+  md:gap-40
+  `,
   css`
     & > div {
       width: 100%;
@@ -78,7 +84,8 @@ const ContentWrapper = styled.div(() => [
 ]);
 
 const Title = tw.div`
-  font-b-24 h-40 flex items-center text-neutral-100
+  font-b-20 h-40 flex items-center text-neutral-100
+  md:font-b-24
 `;
 
 const WithdrawWrapper = tw.div`
