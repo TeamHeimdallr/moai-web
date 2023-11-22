@@ -57,7 +57,7 @@ interface DivProps {
   selected?: boolean;
 }
 const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
-  tw`flex items-center justify-between gap-10`,
+  tw`w-full flex items-center justify-between gap-10`,
   backgroundColor &&
     css`
       background-color: ${backgroundColor};
