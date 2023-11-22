@@ -6,6 +6,8 @@ import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
 interface Data {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta?: any;
   rows: ReactNode[];
   dataRows: {
     label: string;
@@ -22,7 +24,8 @@ interface Props {
   type?: 'darker' | 'lighter';
 
   handleMoreClick?: () => void;
-  handleClick?: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handleClick?: (meta: any) => void;
 }
 
 export const TableMobile = ({
@@ -45,8 +48,8 @@ export const TableMobile = ({
       <Divider type={type} />
       {isEmpty && <EmptyWrapper>No liquidity pools</EmptyWrapper>}
       {!isEmpty &&
-        data.map(({ rows, dataRows }, i) => (
-          <ContentWrapper key={i} onClick={handleClick}>
+        data.map(({ meta, rows, dataRows }, i) => (
+          <ContentWrapper key={i} onClick={() => handleClick?.(meta)}>
             {rows.map((row, i) => (
               <Row key={i}>{row}</Row>
             ))}

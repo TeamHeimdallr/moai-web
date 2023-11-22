@@ -39,6 +39,7 @@ export const LiquidityPoolLayout = () => {
     mobileTableColumn,
     poolTokens,
     hasNextPage,
+    handleMobileRowClick,
     fetchNextPage,
   } = useTableLiquidityPool();
 
@@ -144,6 +145,7 @@ export const LiquidityPoolLayout = () => {
           type="darker"
           hasMore={hasNextPage}
           handleMoreClick={fetchNextPage}
+          handleClick={meta => handleMobileRowClick(meta.network, meta.poolId)}
         />
       )}
     </Wrapper>

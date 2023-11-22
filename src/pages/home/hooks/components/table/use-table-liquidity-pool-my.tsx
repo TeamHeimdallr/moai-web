@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { useGetMyPoolsInfinityQuery } from '~/api/api-server/pools/get-my-pools';
@@ -19,6 +20,7 @@ import { formatNumber } from '~/utils/util-number';
 import { useTableMyLiquidityPoolSortStore } from '~/states/components';
 
 export const useTableMyLiquidityPool = () => {
+  const navigate = useNavigate();
   const { selectedNetwork } = useNetwork();
   const { sort, setSort } = useTableMyLiquidityPoolSortStore();
 
@@ -93,6 +95,10 @@ export const useTableMyLiquidityPool = () => {
   const mobileTableData = useMemo(
     () =>
       pools.map(d => ({
+        meta: {
+          poolId: d.poolId,
+          network: getNetworkAbbr(d.network),
+        },
         rows: [
           <TableColumnToken
             key={d.id}
@@ -124,6 +130,9 @@ export const useTableMyLiquidityPool = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sort]
   );
+  const handleMobileRowClick = (network: string, poolId: string) => {
+    navigate(`/pools/${network}/${poolId}`);
+  };
 
   useEffect(() => {
     if (!isMD) setSort({ key: 'balance', order: 'desc' });
@@ -136,6 +145,7 @@ export const useTableMyLiquidityPool = () => {
 
     mobileTableData,
     mobileTableColumn,
+    handleMobileRowClick,
 
     pools,
     hasNextPage,
