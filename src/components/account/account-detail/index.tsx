@@ -7,7 +7,6 @@ import { zeroAddress } from 'viem';
 import { COLOR } from '~/assets/colors';
 import { IconCopy, IconDepth, IconLink, IconLogout, IconNext } from '~/assets/icons';
 import {
-  imageNetworkEvm,
   imageNetworkEvmSidechain,
   imageNetworkXRPL,
   imageWalletCrossmark,
