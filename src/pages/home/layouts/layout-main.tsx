@@ -29,11 +29,11 @@ export const MainLayout = () => {
       style={{ backgroundImage: `url(${ASSET_URL}/images/bg-main.png)` }}
     >
       {isConnected ? (
-        <>
+        <SubTitleWrapper>
           <Label>{t('My Moai balance')}</Label>
           {/* TODO: moai balance */}
           <SubTitle>{`$0`}</SubTitle>
-        </>
+        </SubTitleWrapper>
       ) : (
         <>
           <Title>{'Your Universal Gateway to\nMulti-chain Liquidity'}</Title>
@@ -66,10 +66,10 @@ const MainWrapper = styled.div<MainWrapperProps>(({ banner }) => [
   `,
   banner &&
     tw`
-    gap-12
-    pt-172 pb-80
-    md:(pt-260 pb-140 gap-24)
-  `,
+      gap-12
+      pt-172 pb-80
+      md:(pt-260 pb-140 gap-24)
+    `,
 ]);
 
 const Title = tw.div`
@@ -78,8 +78,22 @@ const Title = tw.div`
   font-b-28 px-20
   md:(font-b-48 whitespace-pre-wrap)
 `;
-const SubTitle = tw.div`font-b-36 text-neutral-100`;
-const Label = tw.div`font-b-24 text-neutral-100`;
+
+const SubTitleWrapper = tw.div`
+  flex-center flex-col 
+  gap-8
+  md:(gap-12)
+`;
+const SubTitle = tw.div`
+  text-neutral-100
+  font-b-28
+  md:(font-b-36)
+`;
+const Label = tw.div`
+  text-neutral-100
+  font-b-20
+  md:(font-b-24)
+`;
 
 const ButtonWrapper = tw.div`
   inline-flex-center

@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
-import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons';
@@ -52,12 +51,14 @@ export const PoolLiquidityProvisions = () => {
         <>
           {hasMyLiquidity && <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />}
           <TableWrapper>
-            <Table data={tableData} columns={tableColumns} ratio={[2, 3, 2, 2]} type="lighter" />
-            {hasNextPage && (
-              <LoadMoreWrapper onClick={() => fetchNextPage()}>
-                {t('Load more')} <IconDown width={20} height={20} fill={COLOR.NEUTRAL[60]} />
-              </LoadMoreWrapper>
-            )}
+            <Table
+              data={tableData}
+              columns={tableColumns}
+              ratio={[2, 3, 2, 2]}
+              type="lighter"
+              hasMore={hasNextPage}
+              handleMoreClick={() => fetchNextPage()}
+            />
           </TableWrapper>
         </>
       )}
@@ -86,7 +87,4 @@ const Icon = styled.div<DivProps>(({ opened }) => [
 
 const TableWrapper = tw.div`
   flex flex-col
-`;
-const LoadMoreWrapper = tw.div`
-  px-24 py-20 flex-center gap-6 font-m-14 text-neutral-60 bg-neutral-15 clickable
 `;
