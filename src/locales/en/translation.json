@@ -22,7 +22,7 @@
   "noti-add": "Add liquidity",
   "noti-withdraw": "Withdraw",
 
-  "show-all-pools-message": "Switched to {{network}} Network's Liquidity pools",
+  "show-all-pools-message": "Switched to {{network}} Liquidity pools",
   "wallet-alert-message": "Please connect to {{network}} wallet",
 
   "My liquidity in Moai pools": "My liquidity in Moai pools",

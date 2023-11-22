@@ -22,9 +22,9 @@ export const useBanner = () => {
   const isSwap = location.pathname.includes('swap');
   const network =
     selectedNetwork === NETWORK.EVM_SIDECHAIN
-      ? 'EVM'
+      ? 'EVM sidechain'
       : selectedNetwork === NETWORK.THE_ROOT_NETWORK
-      ? 'Root'
+      ? 'The Root Network'
       : 'XRPL';
 
   const text = t('wallet-alert-message', { network: network });

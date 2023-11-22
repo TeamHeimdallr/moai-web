@@ -8,7 +8,7 @@ import { IconDown } from '~/assets/icons';
 interface Data {
   rows: ReactNode[];
   dataRows: {
-    label: ReactNode;
+    label: string;
     value: ReactNode;
   }[];
 }
@@ -53,7 +53,7 @@ export const TableMobile = ({
             <DataRowWrapper>
               {dataRows.map(({ label, value }, i) => (
                 <DataRow key={i}>
-                  <DataLabel>{label}</DataLabel>
+                  <DataLabel>{t(label)}</DataLabel>
                   {value}
                 </DataRow>
               ))}

@@ -49,9 +49,9 @@ export const LiquidityPoolLayout = () => {
 
   const network =
     selectedNetwork === NETWORK.EVM_SIDECHAIN
-      ? 'EVM'
+      ? 'EVM sidechain'
       : selectedNetwork === NETWORK.THE_ROOT_NETWORK
-      ? 'Futurepass'
+      ? 'The Root Network'
       : 'XRPL';
 
   const handleRowClick = (meta?: Meta) => {
