@@ -24,7 +24,6 @@ export const Tab = ({ tabs, gap = 24, type = 'medium', onClick, selectedTab }: P
         return (
           <Text
             key={tab.key}
-            className="tab-text"
             selected={tab.key === selectedTab}
             disabled={tab.disabled}
             onClick={handleClick}
