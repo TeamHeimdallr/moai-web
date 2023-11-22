@@ -246,7 +246,8 @@ export const SwapInputGroup = () => {
 };
 
 const Wrapper = tw.div`
-   w-452 flex flex-col flex-shrink-0 rounded-12 bg-neutral-10 px-24 py-20 gap-24
+   w-full flex flex-col flex-shrink-0 rounded-12 bg-neutral-10 gap-20 p-20
+   md:(w-452 p-24 gap-24)
 `;
 
 const InputWrapper = tw.div`
