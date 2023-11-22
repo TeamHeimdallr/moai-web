@@ -12,8 +12,7 @@ import { ButtonPrimaryMedium, ButtonPrimarySmallBlack } from '~/components/butto
 import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
-import { useBanner } from '~/pages/home/hooks/components/alert-wallet/use-banner';
-
+import { useBanner } from '~/hooks/components/use-banner';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
