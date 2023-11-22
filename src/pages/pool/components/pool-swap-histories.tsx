@@ -18,9 +18,9 @@ export const PoolSwapHistories = () => {
 
   return (
     <Wrapper opened={opened}>
-      <TitleWrapper>
+      <TitleWrapper onClick={() => open(prev => !prev)}>
         <Title>{t('Swaps')}</Title>
-        <Icon opened={opened} onClick={() => open(prev => !prev)}>
+        <Icon opened={opened}>
           <ButtonIconLarge icon={<IconDown />} />
         </Icon>
       </TitleWrapper>

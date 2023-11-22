@@ -3,6 +3,7 @@ import imageCampaignReward from './campaign-reward.png';
 import imageCampaignToken from './campaign-token.png';
 import imageNetworkEmpty from './network-empty.png';
 import imageNetworkEvm from './network-evm.png';
+import imageNetworkEvmSidechain from './network-evm.png';
 import imageNetworkROOT from './network-root.png';
 import imageNetworkXRPL from './network-xrpl.png';
 import imageQuote from './quote.png';
@@ -20,6 +21,7 @@ export {
   imageCampaignToken,
   imageNetworkEmpty,
   imageNetworkEvm,
+  imageNetworkEvmSidechain,
   imageNetworkROOT,
   imageNetworkXRPL,
   imageQuote,

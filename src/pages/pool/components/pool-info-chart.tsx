@@ -11,7 +11,7 @@ import { COLOR } from '~/assets/colors';
 
 import { ButtonChipSmall } from '~/components/buttons';
 
-import { formatNumber, formatNumberWithUnit } from '~/utils';
+import { formatFloat, formatNumber, formatNumberWithUnit } from '~/utils';
 import {
   usePoolInfoChartSelectedRangeStore,
   usePoolInfoChartSelectedTabStore,
@@ -149,8 +149,10 @@ export const PoolInfoChart = () => {
                   y: {
                     type: 'linear',
                     ticks: {
-                      callback: (value: string | number) =>
-                        `$${formatNumberWithUnit(Number(value), 0)}`,
+                      callback: (value: string | number) => {
+                        if (Number(value) < 1) return `$${formatFloat(Number(value), 4)}`;
+                        return `$${formatNumberWithUnit(Number(value), 0)}`;
+                      },
                       color: COLOR.NEUTRAL[60],
                       crossAlign: 'far',
                     },

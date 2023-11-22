@@ -7,7 +7,7 @@ import { zeroAddress } from 'viem';
 import { COLOR } from '~/assets/colors';
 import { IconCopy, IconDepth, IconLink, IconLogout, IconNext } from '~/assets/icons';
 import {
-  imageNetworkEvm,
+  imageNetworkEvmSidechain,
   imageNetworkXRPL,
   imageWalletCrossmark,
   imageWalletFuturepass,
@@ -216,7 +216,7 @@ export const AccountDetail = () => {
           key="evm-not-connected"
         >
           <Logo>
-            <InnerLogo src={imageNetworkEvm} alt="evm" />
+            <InnerLogo src={imageNetworkEvmSidechain} alt="evm" />
           </Logo>
           <ConnectText>{t('Connect wallet')}</ConnectText>
           <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
@@ -304,7 +304,7 @@ const Account = tw.div`
   flex gap-12 px-10 py-12 w-full items-center
 `;
 const AccountNotConnected = tw.div`
-  flex gap-12 px-16 py-12 w-full items-center clickable
+  flex gap-12 px-10 py-12 w-full items-center clickable
 `;
 
 const AddressWrapper = tw.div`
