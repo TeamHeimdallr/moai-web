@@ -34,6 +34,7 @@ interface UseConnectedWallet {
     refetch: () => void;
   };
 
+  anyAddress: string | undefined;
   currentAddress: string | undefined;
 }
 export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
@@ -106,6 +107,7 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
     refetch,
   };
 
+  const anyAddress = xrp?.address || evm?.address || fpass?.address;
   const currentAddress =
     network === NETWORK.THE_ROOT_NETWORK
       ? fpass?.address || evm?.address
@@ -118,6 +120,7 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
     xrp,
     fpass,
 
+    anyAddress,
     currentAddress,
   };
 };

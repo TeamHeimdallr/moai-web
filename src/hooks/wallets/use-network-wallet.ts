@@ -4,6 +4,7 @@ import {
   imageWalletCrossmark,
   imageWalletGem,
   imageWalletMetamask,
+  imageWalletWalletConnect,
 } from '~/assets/images';
 
 import { NETWORK } from '~/types';
@@ -27,6 +28,7 @@ interface Wallet {
 export const useNetworkWallets = (network?: NETWORK) => {
   const {
     connect: connectMetamask,
+    connectByWalletConnect,
     isConnected: metamaskConnected,
     isInstalled: metamaskIsInstalled,
   } = useConnectWithEvmWallet();
@@ -41,7 +43,7 @@ export const useNetworkWallets = (network?: NETWORK) => {
     isInstalled: gemIsInstalled,
   } = useConnectWithGemWallet();
 
-  const networkMap: Record<NETWORK.XRPL | NETWORK.THE_ROOT_NETWORK, NetworkDetail> = {
+  const networkMap: Record<NETWORK, NetworkDetail> = {
     [NETWORK.XRPL]: {
       description: 'XRPL',
       image: imageNetworkXRPL,
@@ -64,6 +66,26 @@ export const useNetworkWallets = (network?: NETWORK) => {
     },
     [NETWORK.THE_ROOT_NETWORK]: {
       description: 'The Root Network',
+      image: imageNetworkROOT,
+      wallets: [
+        {
+          name: 'Metamask',
+          image: imageWalletMetamask,
+          connect: connectMetamask,
+          connected: metamaskConnected,
+          isInstalled: metamaskIsInstalled,
+        },
+        {
+          name: 'Wallet Connect',
+          image: imageWalletWalletConnect,
+          connect: connectByWalletConnect,
+          connected: metamaskConnected,
+          isInstalled: metamaskIsInstalled,
+        },
+      ],
+    },
+    [NETWORK.EVM_SIDECHAIN]: {
+      description: 'Evm sidechain',
       image: imageNetworkROOT,
       wallets: [
         {

@@ -1,4 +1,4 @@
-// import { useModal } from 'connectkit';
+import { useModal } from 'connectkit';
 import { useAccount, useConfig, useConnect, useDisconnect } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 
@@ -8,7 +8,7 @@ import { truncateAddress } from '~/utils/util-string';
 export const useConnectWithEvmWallet = () => {
   const { connectors } = useConfig();
   const { address, isConnected, isConnecting } = useAccount();
-  // const { setOpen } = useModal();
+  const { setOpen: connectByWalletConnect } = useModal();
 
   const {
     connect: connectInjectedConnector,
@@ -21,16 +21,14 @@ export const useConnectWithEvmWallet = () => {
 
   const { disconnect } = useDisconnect();
   const connect = () => {
-    // has injected provider
     if (window.ethereum) connectInjectedConnector();
-
-    // others, open connectkit modal
-    // TODO: connectkit 최적화 후 사용
-    // else setOpen(true);
+    else connectByWalletConnect(true);
   };
 
   return {
     connect,
+    connectByWalletConnect: () => connectByWalletConnect(true),
+
     disconnect,
     connectedConnector,
     isConnected,

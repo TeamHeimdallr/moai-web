@@ -1,6 +1,7 @@
 import imageCampaignLighthouse from './campaign-lighthouse.png';
 import imageCampaignReward from './campaign-reward.png';
 import imageCampaignToken from './campaign-token.png';
+import imageMoai from './image-moai.png';
 import imageNetworkEmpty from './network-empty.png';
 import imageNetworkEvm from './network-evm.png';
 import imageNetworkEvmSidechain from './network-evm.png';
@@ -13,12 +14,14 @@ import imageWalletDcent from './wallet-dcent.png';
 import imageWalletFuturepass from './wallet-futurepass.png';
 import imageWalletGem from './wallet-gem.png';
 import imageWalletMetamask from './wallet-metamask.png';
+import imageWalletWalletConnect from './wallet-walletconnect.png';
 import imageWalletXumm from './wallet-xumm.png';
 
 export {
   imageCampaignLighthouse,
   imageCampaignReward,
   imageCampaignToken,
+  imageMoai,
   imageNetworkEmpty,
   imageNetworkEvm,
   imageNetworkEvmSidechain,
@@ -31,5 +34,6 @@ export {
   imageWalletFuturepass,
   imageWalletGem,
   imageWalletMetamask,
+  imageWalletWalletConnect,
   imageWalletXumm,
 };
