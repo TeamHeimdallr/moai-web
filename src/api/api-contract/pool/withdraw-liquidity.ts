@@ -1,7 +1,7 @@
 import { zeroAddress } from 'viem';
 
 import { useWithdrawLiquidity as useWithdrawLiquidityEvm } from '~/api/api-contract/_evm/pool/withdraw-liquidity';
-import { useWithdrawLiquidity as useWithdrawLiquidityFpass } from '~/api/api-contract/_evm/pool/withdraw-liquidity-fpass';
+import { useWithdrawLiquidity as useWithdrawLiquidityFpass } from '~/api/api-contract/_evm/pool/withdraw-liquidity-substrate';
 import { useWithdrawLiquidity as useWithdrawLiquidityXrp } from '~/api/api-contract/_xrpl/pool/withdraw-liquidity';
 
 import { useNetwork } from '~/hooks/contexts/use-network';

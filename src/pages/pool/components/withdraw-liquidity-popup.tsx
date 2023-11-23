@@ -310,9 +310,9 @@ export const WithdrawLiquidityPopup = ({
   };
 
   const handleLink = () => {
-    const txHash = isXrp ? txData?.hash : txData?.transactionHash;
+    const txHash = isXrp ? txData?.hash : txData?.extrinsicId;
     const url = `${SCANNER_URL[network || NETWORK.XRPL]}/${
-      isXrp ? 'transactions' : 'tx'
+      isXrp ? 'transactions' : 'extrinsic'
     }/${txHash}`;
 
     window.open(url);
