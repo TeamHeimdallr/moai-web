@@ -39,6 +39,7 @@ export const LiquidityPoolLayout = () => {
     mobileTableColumn,
     poolTokens,
     hasNextPage,
+    handleMobileRowClick,
     fetchNextPage,
   } = useTableLiquidityPool();
 
@@ -49,9 +50,9 @@ export const LiquidityPoolLayout = () => {
 
   const network =
     selectedNetwork === NETWORK.EVM_SIDECHAIN
-      ? 'EVM'
+      ? 'EVM sidechain'
       : selectedNetwork === NETWORK.THE_ROOT_NETWORK
-      ? 'Futurepass'
+      ? 'The Root Network'
       : 'XRPL';
 
   const handleRowClick = (meta?: Meta) => {
@@ -144,6 +145,7 @@ export const LiquidityPoolLayout = () => {
           type="darker"
           hasMore={hasNextPage}
           handleMoreClick={fetchNextPage}
+          handleClick={meta => handleMobileRowClick(meta.network, meta.poolId)}
         />
       )}
     </Wrapper>
@@ -153,6 +155,7 @@ export const LiquidityPoolLayout = () => {
 const Wrapper = tw.div`
   flex flex-col gap-24 relative
   md:(px-20)
+  xl:(px-80)
 `;
 
 const TitleWrapper = tw.div`

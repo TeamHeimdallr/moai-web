@@ -59,9 +59,16 @@ interface DivProps {
 }
 const InnerWrapper = styled.div<DivProps>(({ banner }) => [
   tw`  
-    flex flex-col pt-120 pb-120 px-80
+    flex flex-col pt-120 pb-120 px-20 pt-112
+    mlg:(pt-120)
+    xl:(px-80 items-center)
   `,
-  banner ? tw`pt-180` : tw`pt-120`,
+  banner &&
+    tw`
+      pt-164
+      md:(pt-172)
+      mlg:(pt-180)
+    `,
 ]);
 
 const GnbWrapper = styled.div<DivProps>(({ banner }) => [
@@ -71,18 +78,24 @@ const GnbWrapper = styled.div<DivProps>(({ banner }) => [
   banner ? tw`h-124 mlg:(h-140)` : tw`h-72 mlg:(h-80)`,
 ]);
 
-const ContentOuterWrapper = tw.div`flex flex-col w-full gap-40`;
+const ContentOuterWrapper = tw.div`
+  flex flex-col w-full gap-40 max-w-1440
+`;
 
 const ContentWrapper = tw.div`
-  flex gap-40
+  flex flex-col gap-20
+  lg:(flex-row) 
+  xl:(gap-40)
 `;
 
 const LeftContentWrapper = tw.div`
-  w-full flex flex-col gap-24
+  flex flex-col gap-24 flex-1 min-w-0 order-2
+  lg:(order-1)
 `;
 
 const RightContentWrapper = tw.div`
-  w-400 flex items-start
+  w-full flex order-1
+  lg:(order-2 w-400 items-start)
 `;
 
 export default PoolDetailMainPage;

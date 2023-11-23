@@ -7,11 +7,12 @@ import { toHex } from 'viem';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
 import { FuturepassCreatePopup } from '~/components/account/futurepass-create-popup';
-import { ButtonPrimaryLarge } from '~/components/buttons/primary';
+import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber } from '~/utils/util-number';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
@@ -20,6 +21,7 @@ import { POPUP_ID } from '~/types';
 export const UserPoolBalances = () => {
   const navigate = useNavigate();
 
+  const { isMD } = useMediaQuery();
   const { network, id } = useParams();
   const { t } = useTranslation();
 
@@ -51,6 +53,7 @@ export const UserPoolBalances = () => {
     navigate(`/pools/${network}/${id}/withdraw`);
   };
 
+  const ButtonPrimary = isMD ? ButtonPrimaryLarge : ButtonPrimaryMedium;
   return (
     <Wrapper>
       <Header>
@@ -70,6 +73,7 @@ export const UserPoolBalances = () => {
           }
           title={lpToken?.symbol || lpTokenSymbol}
           balance={formatNumber(userLpTokenBalance || 0, 4)}
+          type={isMD ? 'large' : 'medium'}
         />
       </TokenLists>
       <Footer>
@@ -79,13 +83,13 @@ export const UserPoolBalances = () => {
         </FooterBalanceWrapper>
         <ButtonWrapper>
           {address ? (
-            <ButtonPrimaryLarge
+            <ButtonPrimary
               text={t('Add liquidity')}
               onClick={handleAddLiquidity}
               disabled={!address}
             />
           ) : isFpass && !fpass.address && evm.address ? (
-            <ButtonPrimaryLarge
+            <ButtonPrimary
               style={{ padding: '9px 24px' }}
               text={t('Create Futurepass')}
               isLoading={!!opened}
@@ -94,7 +98,7 @@ export const UserPoolBalances = () => {
               }}
             />
           ) : (
-            <ButtonPrimaryLarge
+            <ButtonPrimary
               style={{ padding: '9px 24px' }}
               text={t('Connect wallet')}
               isLoading={!!opened}
@@ -105,7 +109,7 @@ export const UserPoolBalances = () => {
             />
           )}
           {userLpTokenBalance > 0 && (
-            <ButtonPrimaryLarge
+            <ButtonPrimary
               buttonType="outlined"
               text={t('Withdraw')}
               disabled={!address}
@@ -120,26 +124,32 @@ export const UserPoolBalances = () => {
 };
 
 const Wrapper = tw.div`
-  w-400 bg-neutral-10 rounded-12
+  w-full bg-neutral-10 rounded-12
 `;
 const Header = tw.div`
-  py-20 px-24 flex items-center justify-between font-m-20 text-neutral-100
+  py-20 px-24 flex items-center justify-between font-b-18 text-neutral-100
+  md:(font-b-20)
 `;
 const Balance = tw.div`
-  font-b-24
+  font-b-20
+  md:(font-b-24)
 `;
 const TokenLists = tw.div`
   py-7
 `;
 
 const Footer = tw.div`
-  flex flex-col gap-24 bg-neutral-15 rounded-b-12 pt-20 px-24 pb-24
+  flex flex-col gap-24 bg-neutral-15 rounded-b-12
+  pt-16 px-20 pb-20
+  md:(pt-20 px-24 pb-24)
 `;
 const FooterBalanceWrapper = tw.div`
-  flex w-full justify-between items-center font-m-16 text-neutral-100
+  flex w-full justify-between items-center font-m-14 text-neutral-100
+  md:(font-m-16)
 `;
 const FooterBalance = tw.div`
-  font-m-20
+  font-m-18
+  md:(font-m-20)
 `;
 
 const ButtonWrapper = tw.div`

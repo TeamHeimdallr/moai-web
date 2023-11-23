@@ -69,19 +69,25 @@ export const PoolCompositionsChart = ({ data }: Props) => {
 };
 
 const Wrapper = tw.div`
-  w-380 h-380 relative flex items-end justify-center
+  relative flex items-end justify-center
+  w-288 h-288
+  md:(w-380 h-380)
 `;
 
 const ChartWrapper = tw.div`
   absolute z-1 w-full h-full
+  md:(top-15)
 `;
 
 const TotalValue = tw.div`
-  flex-center flex-col gap-2
+  flex-center flex-col gap-2 absolute absolute-center-x bottom-85
+  md:(bottom-120)
 `;
 const Amount = tw.div`
-  font-b-28 text-neutral-100
+  font-b-24 text-neutral-100
+  md:(font-b-28)
 `;
 const ValueTitle = tw.div`
-  font-m-16 text-neutral-80 pb-120
+  font-m-14 text-neutral-80
+  md:(font-m-16)
 `;

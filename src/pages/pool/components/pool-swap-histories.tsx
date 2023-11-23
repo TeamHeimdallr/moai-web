@@ -6,14 +6,25 @@ import { IconDown } from '~/assets/icons';
 
 import { ButtonIconLarge } from '~/components/buttons';
 import { Table } from '~/components/tables';
+import { TableMobile } from '~/components/tables/table-mobile';
 
 import { useTableSwapHistories } from '~/pages/pool/hooks/components/table/use-table-swap-histories';
+
+import { useMediaQuery } from '~/hooks/utils';
 
 export const PoolSwapHistories = () => {
   const [opened, open] = useState(false);
 
-  const { tableColumns, tableData, hasNextPage, fetchNextPage } = useTableSwapHistories();
+  const {
+    tableColumns,
+    tableData,
+    mobileTableData,
+    mobileTableColumn,
+    hasNextPage,
+    fetchNextPage,
+  } = useTableSwapHistories();
 
+  const { isMD } = useMediaQuery();
   const { t } = useTranslation();
 
   return (
@@ -26,14 +37,24 @@ export const PoolSwapHistories = () => {
       </TitleWrapper>
       {opened && (
         <TableWrapper>
-          <Table
-            data={tableData}
-            columns={tableColumns}
-            ratio={[2, 3, 2, 2]}
-            type="lighter"
-            hasMore={hasNextPage}
-            handleMoreClick={() => fetchNextPage()}
-          />
+          {isMD ? (
+            <Table
+              data={tableData}
+              columns={tableColumns}
+              ratio={[2, 3, 2, 2]}
+              type="lighter"
+              hasMore={hasNextPage}
+              handleMoreClick={() => fetchNextPage()}
+            />
+          ) : (
+            <TableMobile
+              data={mobileTableData}
+              columns={mobileTableColumn}
+              type="lighter"
+              hasMore={hasNextPage}
+              handleMoreClick={fetchNextPage}
+            />
+          )}
         </TableWrapper>
       )}
     </Wrapper>
@@ -47,9 +68,12 @@ const Wrapper = styled.div<DivProps>(({ opened }) => [
   opened ? tw`pb-24` : tw`pb-20`,
   tw`flex flex-col gap-24 bg-neutral-10 rounded-12 px-24`,
 ]);
-const TitleWrapper = tw.div`flex justify-between items-center pt-20`;
+const TitleWrapper = tw.div`
+  flex justify-between items-center pt-20
+`;
 const Title = tw.div`
-  font-b-20 text-neutral-100
+  font-b-18 text-neutral-100
+  md:(font-b-20)
 `;
 
 const Icon = styled.div<DivProps>(({ opened }) => [

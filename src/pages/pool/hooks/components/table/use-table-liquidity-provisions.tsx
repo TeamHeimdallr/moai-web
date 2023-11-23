@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
@@ -21,6 +21,7 @@ import {
 } from '~/components/tables';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
@@ -34,6 +35,8 @@ export const useTableLiquidityProvision = () => {
   const { selectedNetwork, isXrp } = useNetwork();
   const { sort, setSort } = useTableLiquidityPoolProvisionSortStore();
   const { selectedTab } = useTablePoolLiquidityProvisionSelectTabStore();
+
+  const { isMD } = useMediaQuery();
 
   const { t } = useTranslation();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
@@ -173,9 +176,85 @@ export const useTableLiquidityProvision = () => {
     [sort]
   );
 
+  const mobileTableData = useMemo(
+    () =>
+      liquidityProvisions.map((d, i) => {
+        const value = d.liquidityProvisionTokens.reduce((acc, cur) => {
+          const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
+          const amount = Math.abs(cur.amounts);
+
+          return (acc += price * amount);
+        }, 0);
+
+        const time = elapsedTime(new Date(d.time).getTime());
+        const splittedTime = time.split(' ');
+        const translatedTime =
+          time === 'Just now'
+            ? t('Just now')
+            : t(`${splittedTime[1]} ${splittedTime[2]}`, { time: splittedTime[0] });
+
+        return {
+          rows: [
+            <TableColumnIconText
+              key={i}
+              text={d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? t('Add tokens') : t('Withdrawal')}
+              icon={
+                d.type === LIQUIDITY_PROVISION_TYPE.DEPOSIT ? (
+                  <IconPlus width={20} height={20} fill={COLOR.GREEN[50]} />
+                ) : (
+                  <IconMinus width={20} height={20} fill={COLOR.RED[50]} />
+                )
+              }
+            />,
+            <TableColumnTokenPair
+              key={i}
+              tokens={d.liquidityProvisionTokens.map(t => ({
+                symbol: t.symbol,
+                value: Math.abs(t.amounts),
+                image: t.image,
+              }))}
+            />,
+          ],
+          dataRows: [
+            {
+              label: 'Value',
+              value: <TableColumn value={`$${formatNumber(value, 2)}`} align="flex-end" />,
+            },
+            {
+              label: 'Time',
+              value: (
+                <TableColumnLink
+                  token={translatedTime}
+                  align="flex-end"
+                  link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${
+                    d.txHash
+                  }`}
+                />
+              ),
+            },
+          ],
+        };
+      }),
+    [compositions, currentNetwork, isXrp, liquidityProvisions, t]
+  );
+
+  const mobileTableColumn = useMemo<ReactNode>(
+    () => <TableHeaderSortable sortKey="time" label="Time" sort={sort} setSort={setSort} />,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sort]
+  );
+
+  useEffect(() => {
+    if (!isMD) setSort({ key: 'time', order: 'desc' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMD]);
+
   return {
     tableColumns,
     tableData,
+
+    mobileTableData,
+    mobileTableColumn,
 
     liquidityProvisions,
     hasNextPage,

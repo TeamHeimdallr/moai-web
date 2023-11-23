@@ -19,7 +19,7 @@ export const TableColumnTokenPair = ({ tokens, ...rest }: Props) => {
       {tokens.map(token => (
         <Token
           key={token.symbol}
-          title={`${formatNumber(token.value, 6)}`}
+          title={`${formatNumber(token.value, 3)}`}
           token={token.symbol}
           image={true}
           imageUrl={token.image}

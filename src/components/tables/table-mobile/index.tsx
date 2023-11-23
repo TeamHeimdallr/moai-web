@@ -6,9 +6,11 @@ import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
 interface Data {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta?: any;
   rows: ReactNode[];
   dataRows: {
-    label: ReactNode;
+    label: string;
     value: ReactNode;
   }[];
 }
@@ -22,7 +24,8 @@ interface Props {
   type?: 'darker' | 'lighter';
 
   handleMoreClick?: () => void;
-  handleClick?: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handleClick?: (meta: any) => void;
 }
 
 export const TableMobile = ({
@@ -45,27 +48,27 @@ export const TableMobile = ({
       <Divider type={type} />
       {isEmpty && <EmptyWrapper>No liquidity pools</EmptyWrapper>}
       {!isEmpty &&
-        data.map(({ rows, dataRows }, i) => (
-          <ContentWrapper key={i} onClick={handleClick}>
+        data.map(({ meta, rows, dataRows }, i) => (
+          <ContentWrapper key={i} onClick={() => handleClick?.(meta)}>
             {rows.map((row, i) => (
               <Row key={i}>{row}</Row>
             ))}
             <DataRowWrapper>
               {dataRows.map(({ label, value }, i) => (
                 <DataRow key={i}>
-                  <DataLabel>{label}</DataLabel>
-                  {value}
+                  <DataLabel>{t(label)}</DataLabel>
+                  <DataValue>{value}</DataValue>
                 </DataRow>
               ))}
             </DataRowWrapper>
-            {hasMore && (
-              <More onClick={handleMoreClick}>
-                {t('Load more')}
-                <IconDown width={20} height={20} />
-              </More>
-            )}
           </ContentWrapper>
         ))}
+      {!isEmpty && hasMore && (
+        <More onClick={handleMoreClick}>
+          {t('Load more')}
+          <IconDown width={20} height={20} />
+        </More>
+      )}
     </Wrapper>
   );
 };
@@ -113,6 +116,10 @@ const DataRow = tw.div`
 
 const DataLabel = tw.div`
   text-neutral-80 flex-shrink-0
+`;
+
+const DataValue = tw.div`
+  flex justify-end flex-1
 `;
 
 const More = styled.div(() => [
