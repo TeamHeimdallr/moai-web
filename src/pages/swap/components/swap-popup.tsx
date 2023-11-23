@@ -244,8 +244,8 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   };
 
   const handleLink = () => {
-    const txHash = isXrp ? txData?.hash : txData?.transactionHash;
-    const url = `${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${txHash}`;
+    const txHash = isXrp ? txData?.hash : txData?.extrinsicId;
+    const url = `${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'extrinsic'}/${txHash}`;
 
     window.open(url);
   };
