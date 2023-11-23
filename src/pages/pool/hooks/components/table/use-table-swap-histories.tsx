@@ -29,7 +29,7 @@ import { ISwapHistoryToken, SWAP_HISTORY_TOKEN_TYPE } from '~/types';
 
 export const useTableSwapHistories = () => {
   const { network, id } = useParams();
-  const { selectedNetwork, isXrp } = useNetwork();
+  const { selectedNetwork, isXrp, isFpass } = useNetwork();
   const { sort, setSort } = useTableSwapHistoriesStore();
 
   const { t } = useTranslation();
@@ -132,15 +132,15 @@ export const useTableSwapHistories = () => {
                 <TableColumnLink
                   token={translatedTime}
                   align="flex-end"
-                  link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${
-                    d.txHash
-                  }`}
+                  link={`${SCANNER_URL[currentNetwork]}/${
+                    isXrp ? 'transactions' : isFpass ? 'extrinsic' : 'tx'
+                  }/${d.txHash}`}
                 />
               ),
             };
           })
         : [],
-    [compositions, currentNetwork, isXrp, swapHistories, t]
+    [compositions, currentNetwork, isFpass, isXrp, swapHistories, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -233,16 +233,16 @@ export const useTableSwapHistories = () => {
                 <TableColumnLink
                   token={translatedTime}
                   align="flex-end"
-                  link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${
-                    d.txHash
-                  }`}
+                  link={`${SCANNER_URL[currentNetwork]}/${
+                    isXrp ? 'transactions' : isFpass ? 'extrinsic' : 'tx'
+                  }/${d.txHash}`}
                 />
               ),
             },
           ],
         };
       }),
-    [compositions, currentNetwork, isXrp, swapHistories, t]
+    [compositions, currentNetwork, isFpass, isXrp, swapHistories, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
