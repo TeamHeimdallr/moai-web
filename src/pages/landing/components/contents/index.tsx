@@ -9,12 +9,7 @@ import { COLOR } from '~/assets/colors';
 import { IconLink } from '~/assets/icons';
 import LogoLanding from '~/assets/logos/logo-landing.svg?react';
 
-import {
-  ButtonPrimaryLarge,
-  ButtonPrimaryMedium,
-  ButtonPrimaryMediumIconTrailing,
-} from '~/components/buttons';
-import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
+import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 
 import { useMediaQuery } from '~/hooks/utils';
 
