@@ -42,7 +42,7 @@ interface DivProps {
 }
 const Wrapper = styled.div<DivProps>(({ gap }) => [
   tw`
-    flex overflow-scroll
+    flex overflow-auto
   `,
   css`
     gap: ${gap}px;
