@@ -42,7 +42,7 @@ interface DivProps {
 }
 const Wrapper = styled.div<DivProps>(({ gap }) => [
   tw`
-    flex
+    flex overflow-scroll
   `,
   css`
     gap: ${gap}px;
@@ -56,7 +56,7 @@ interface TextProps {
 }
 
 const Text = styled.div<TextProps>(({ selected, type, disabled }) => [
-  tw`clickable
+  tw`clickable flex-shrink-0
   `,
   selected ? tw`text-primary-60` : tw`text-neutral-60 hover:text-primary-80`,
   type === 'large' ? tw`font-b-18` : tw`font-b-16`,
