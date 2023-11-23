@@ -88,7 +88,6 @@ export const LiquidityPoolLayout = () => {
 
   useEffect(() => {
     if (!isMounted.current) {
-      setShowAllPools(false);
       isMounted.current = true;
       return;
     }

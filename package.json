@@ -29,6 +29,7 @@
     "axios": "^1.5.1",
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",
+    "connectkit": "^1.5.3",
     "copy-to-clipboard": "^3.3.3",
     "d3-format": "^3.1.0",
     "date-fns": "^2.30.0",

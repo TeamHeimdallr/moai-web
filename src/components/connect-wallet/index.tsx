@@ -30,7 +30,7 @@ export const ConnectWallet = ({ evm, xrpl }: Props) => {
   const { connect: connectXrpGem } = useConnectWithGemWallet();
   const { t } = useTranslation();
 
-  // TODO : use-network-wallet hook
+  // TODO: use useNetworkWallet hook - 연결하고자 하는 네트워크에 따라서 지원하는 지갑 목록을 보여주는 기능 처리 필요
   const wallets: Wallet[] = [
     {
       name: 'Metamask',
@@ -69,7 +69,6 @@ export const ConnectWallet = ({ evm, xrpl }: Props) => {
             <WalletImage src={w.image} alt={w.name} />
             <NameWrapper>
               <Name>{w.name}</Name>
-              <Description>{w.description}</Description>
             </NameWrapper>
           </Wallet>
         ))}
@@ -90,11 +89,8 @@ const WalletImage = tw.img`
   w-36 h-36 rounded-8 flex-center object-cover overflow-hidden
 `;
 const NameWrapper = tw.div`
-  flex flex-col
+  flex-center flex-col
 `;
 const Name = tw.div`
   font-m-16 text-neutral-100
-`;
-const Description = tw.div`
-  font-r-12 text-neutral-60
 `;

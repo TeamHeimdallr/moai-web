@@ -20,6 +20,7 @@ import { ButtonIconSmall } from '~/components/buttons/icon';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { truncateAddress } from '~/utils';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID } from '~/types';
 
@@ -43,9 +44,11 @@ export const AccountDetail = () => {
 
   const { t } = useTranslation();
 
-  const handleCopy = (address: string, callback: (address: string) => void) => {
+  const handleCopy = (address: string, callback: (truncatedAddress: string) => void) => {
+    copy(address);
+
     callback(t('Copied!'));
-    setTimeout(() => callback(address), 2000);
+    setTimeout(() => callback(truncateAddress(address)), 2000);
   };
 
   const xrpComponent = (
@@ -64,14 +67,7 @@ export const AccountDetail = () => {
               <InnerWrapper>
                 <ButtonIconSmall
                   icon={<IconCopy />}
-                  onClick={() =>
-                    copy(xrp.address, {
-                      onCopy: () =>
-                        handleCopy(xrp.truncatedAddress, (address: string) =>
-                          setXrpAddress(address)
-                        ),
-                    })
-                  }
+                  onClick={() => handleCopy(xrp.address, setXrpAddress)}
                 />
                 <ButtonIconSmall icon={<IconLogout />} onClick={xrp.disconnect} />
               </InnerWrapper>
@@ -111,14 +107,7 @@ export const AccountDetail = () => {
               <InnerWrapper>
                 <ButtonIconSmall
                   icon={<IconCopy />}
-                  onClick={() =>
-                    copy(fpass.address, {
-                      onCopy: () =>
-                        handleCopy(fpass.truncatedAddress, (address: string) =>
-                          setFpassAddress(address)
-                        ),
-                    })
-                  }
+                  onClick={() => handleCopy(fpass.address, setFpassAddress)}
                 />
                 <ButtonIconSmall
                   icon={<IconLink />}
@@ -140,14 +129,7 @@ export const AccountDetail = () => {
               <SmallTextWhite>{fpassEvmAddress}</SmallTextWhite>
               <ButtonIconSmall
                 icon={<IconCopy />}
-                onClick={() =>
-                  copy(evm.address, {
-                    onCopy: () =>
-                      handleCopy(evm.truncatedAddress, (address: string) =>
-                        setFpassEvmAddress(address)
-                      ),
-                  })
-                }
+                onClick={() => handleCopy(evm.address, setFpassEvmAddress)}
               />
             </MetamaskWallet>
           </AddressWrapper>
@@ -191,14 +173,7 @@ export const AccountDetail = () => {
               <InnerWrapper>
                 <ButtonIconSmall
                   icon={<IconCopy />}
-                  onClick={() =>
-                    copy(evm.address, {
-                      onCopy: () =>
-                        handleCopy(evm.truncatedAddress, (address: string) =>
-                          setEvmAddress(address)
-                        ),
-                    })
-                  }
+                  onClick={() => handleCopy(evm.address, setEvmAddress)}
                 />
                 <ButtonIconSmall icon={<IconLogout />} onClick={evm.disconnect} />
               </InnerWrapper>
@@ -348,7 +323,7 @@ const InnerLogoSmall = tw.img`
   rounded-full w-20 h-20 flex-center flex-shrink-0
 `;
 const ConnectText = tw.div`
-  font-m-12 text-primary-60 flex-1
+  font-m-12 text-neutral-100 flex-1
 `;
 
 const MetamaskWallet = tw.div`mt-4 py-3 px-6 flex-center gap-4 bg-neutral-10 rounded-4`;

@@ -20,14 +20,17 @@ import Pool from './pool';
 import Swap from './swap';
 
 const Page = () => {
-  const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
-
   useConnectXrpl();
+
   const { network } = useParams();
   const { selectedNetwork } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
   const { evm, xrpl } = useWalletTypeStore();
   const { xrp: xrpWallet, evm: evmWallet } = useConnectedWallet();
+
+  const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
+
   const bothDisconnected = !xrpWallet?.isConnected && !evmWallet?.isConnected;
 
   return (
