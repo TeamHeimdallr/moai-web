@@ -155,6 +155,7 @@ export const LiquidityPoolLayout = () => {
 const Wrapper = tw.div`
   flex flex-col gap-24 relative
   md:(px-20)
+  xl:(px-80)
 `;
 
 const TitleWrapper = tw.div`

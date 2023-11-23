@@ -81,9 +81,11 @@ export const PoolHeader = () => {
 };
 
 const HeaderWrapper = tw.div`
-  flex flex-col gap-12 gap-12
+  flex flex-col gap-16
 `;
-const TitleWrapper = tw.div`flex inline-flex gap-16`;
+const TitleWrapper = tw.div`
+  flex inline-flex gap-16 items-center
+`;
 const BadgeWrapper = tw.div`
   flex inline-flex items-center relative h-40
 `;
@@ -95,7 +97,8 @@ const Image = tw.img`
 `;
 
 const Title = tw.div`
-  right-0 font-b-28 text-neutral-100
+  right-0 font-b-20 text-neutral-100
+  md:(font-b-28)
 `;
 const TokenWrapper = tw.div`
   flex gap-8 items-center

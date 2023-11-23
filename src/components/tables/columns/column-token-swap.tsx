@@ -22,7 +22,7 @@ export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
     <Wrapper {...rest}>
       <Token
         key={tokenA.symbol}
-        title={`${formatNumber(tokenA.value, 6)}`}
+        title={`${formatNumber(tokenA.value, 3)}`}
         token={tokenA.symbol}
         image
         imageUrl={tokenA.image}
@@ -33,7 +33,7 @@ export const TableColumnTokenSwap = ({ tokens, ...rest }: Props) => {
       </IconWrapper>
       <Token
         key={tokenB.symbol}
-        title={`${formatNumber(tokenB.value, 6)}`}
+        title={`${formatNumber(tokenB.value, 3)}`}
         token={tokenB.symbol}
         image
         imageUrl={tokenB.image}

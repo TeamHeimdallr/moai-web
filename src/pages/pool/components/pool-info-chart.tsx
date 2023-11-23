@@ -140,6 +140,8 @@ export const PoolInfoChart = () => {
                       color: COLOR.NEUTRAL[60],
                       font: {
                         family: 'Pretendard Variable',
+                        size: 11,
+                        lineHeight: '18px',
                       },
                     },
                     grid: {
@@ -155,6 +157,11 @@ export const PoolInfoChart = () => {
                       },
                       color: COLOR.NEUTRAL[60],
                       crossAlign: 'far',
+                      font: {
+                        family: 'Pretendard Variable',
+                        size: 11,
+                        lineHeight: '18px',
+                      },
                     },
                     border: { display: false },
                     grid: { display: false },
@@ -184,7 +191,8 @@ const Wrapper = tw.div`
 `;
 
 const Header = tw.div`
-  flex justify-between gap-16
+  flex flex-col justify-between gap-16
+  md:(flex-row)
 `;
 
 const HeaderTitleWrapper = tw.div`
@@ -196,7 +204,8 @@ interface HeaderTitleProps {
 }
 const HeaderTitle = styled.div<HeaderTitleProps>(({ selected }) => [
   tw`
-    font-b-20 text-neutral-60 clickable
+    font-b-18 text-neutral-60 clickable
+    md:(font-b-20)
   `,
   selected && tw`text-primary-60`,
 ]);
@@ -206,10 +215,12 @@ const HeaderValueWrapper = tw.div`
 `;
 
 const HeaderValue = tw.div`
-  font-m-24 text-neutral-100
+  font-m-20 text-neutral-100
+  md:(font-m-24)
 `;
 const HeaderValueLabel = tw.div`
-  font-r-14 text-neutral-60
+  font-r-12 text-neutral-60
+  md:(font-r-14)
 `;
 
 const ChartOuterWrapper = tw.div`

@@ -8,10 +8,12 @@ import { IconDown } from '~/assets/icons';
 import { ButtonIconLarge } from '~/components/buttons';
 import { Tab } from '~/components/tab';
 import { Table } from '~/components/tables';
+import { TableMobile } from '~/components/tables/table-mobile';
 
 import { useTableLiquidityProvision } from '~/pages/pool/hooks/components/table/use-table-liquidity-provisions';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/components/table/tab';
@@ -19,6 +21,7 @@ import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/component
 export const PoolLiquidityProvisions = () => {
   const { network } = useParams();
 
+  const { isMD } = useMediaQuery();
   const { t } = useTranslation();
 
   const { selectedNetwork } = useNetwork();
@@ -34,8 +37,15 @@ export const PoolLiquidityProvisions = () => {
     { key: 'my-provision', name: 'My liquidity' },
   ];
 
-  const { tableColumns, tableData, liquidityProvisions, hasNextPage, fetchNextPage } =
-    useTableLiquidityProvision();
+  const {
+    tableColumns,
+    tableData,
+    mobileTableColumn,
+    mobileTableData,
+    liquidityProvisions,
+    hasNextPage,
+    fetchNextPage,
+  } = useTableLiquidityProvision();
 
   const hasMyLiquidity = !!currentAddress && liquidityProvisions.length > 0;
 
@@ -51,14 +61,24 @@ export const PoolLiquidityProvisions = () => {
         <>
           {hasMyLiquidity && <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />}
           <TableWrapper>
-            <Table
-              data={tableData}
-              columns={tableColumns}
-              ratio={[2, 3, 2, 2]}
-              type="lighter"
-              hasMore={hasNextPage}
-              handleMoreClick={() => fetchNextPage()}
-            />
+            {isMD ? (
+              <Table
+                data={tableData}
+                columns={tableColumns}
+                ratio={[2, 3, 2, 2]}
+                type="lighter"
+                hasMore={hasNextPage}
+                handleMoreClick={() => fetchNextPage()}
+              />
+            ) : (
+              <TableMobile
+                data={mobileTableData}
+                columns={mobileTableColumn}
+                type="lighter"
+                hasMore={hasNextPage}
+                handleMoreClick={fetchNextPage}
+              />
+            )}
           </TableWrapper>
         </>
       )}
@@ -73,9 +93,12 @@ const Wrapper = styled.div<DivProps>(({ opened }) => [
   opened ? tw`pb-24` : tw`pb-20`,
   tw`flex flex-col gap-24 bg-neutral-10 rounded-12 px-24`,
 ]);
-const TitleWrapper = tw.div`flex justify-between pt-20 items-center`;
+const TitleWrapper = tw.div`
+  flex justify-between pt-20 items-center
+`;
 const Title = tw.div`
-  font-b-20 text-neutral-100
+  font-b-18 text-neutral-100
+  md:(font-b-20)
 `;
 
 const Icon = styled.div<DivProps>(({ opened }) => [

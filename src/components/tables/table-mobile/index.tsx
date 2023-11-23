@@ -57,18 +57,18 @@ export const TableMobile = ({
               {dataRows.map(({ label, value }, i) => (
                 <DataRow key={i}>
                   <DataLabel>{t(label)}</DataLabel>
-                  {value}
+                  <DataValue>{value}</DataValue>
                 </DataRow>
               ))}
             </DataRowWrapper>
-            {hasMore && (
-              <More onClick={handleMoreClick}>
-                {t('Load more')}
-                <IconDown width={20} height={20} />
-              </More>
-            )}
           </ContentWrapper>
         ))}
+      {!isEmpty && hasMore && (
+        <More onClick={handleMoreClick}>
+          {t('Load more')}
+          <IconDown width={20} height={20} />
+        </More>
+      )}
     </Wrapper>
   );
 };
@@ -116,6 +116,10 @@ const DataRow = tw.div`
 
 const DataLabel = tw.div`
   text-neutral-80 flex-shrink-0
+`;
+
+const DataValue = tw.div`
+  flex justify-end flex-1
 `;
 
 const More = styled.div(() => [

@@ -33,16 +33,26 @@ export const PoolInfo = () => {
   const formattedFees = trandingFees ? `${trandingFees * 100}%` : '0%';
 
   return (
-    <PoolValueContainer>
-      <PoolInfoCard name={t('Pool Value')} value={formattedValue} />
-      <PoolInfoCard name={t('Volume (24h)')} value={formattedVolume} />
-      <PoolInfoCard name={t('APR')} value={formattedApr} />
-      <PoolInfoCard name={t('Trading Fee')} value={formattedFees} />
-    </PoolValueContainer>
+    <Wrapper>
+      <InnerWrapper>
+        <PoolInfoCard name={t('Pool Value')} value={formattedValue} />
+        <PoolInfoCard name={t('Volume (24h)')} value={formattedVolume} />
+      </InnerWrapper>
+      <InnerWrapper>
+        <PoolInfoCard name={t('APR')} value={formattedApr} />
+        <PoolInfoCard name={t('Trading Fee')} value={formattedFees} />
+      </InnerWrapper>
+    </Wrapper>
   );
 };
 
-const PoolValueContainer = tw.div`flex gap-16`;
+const Wrapper = tw.div`
+  flex gap-16 flex-col
+  md:(flex-row)
+`;
+const InnerWrapper = tw.div`
+  flex flex-1 gap-16
+`;
 
 interface PoolInfoCardProps {
   name: string;
@@ -50,18 +60,22 @@ interface PoolInfoCardProps {
 }
 const PoolInfoCard = ({ name, value }: PoolInfoCardProps) => {
   return (
-    <Wrapper>
+    <PoolInfoCardWrapper>
       <Name>{name}</Name>
       <Value>{value}</Value>
-    </Wrapper>
+    </PoolInfoCardWrapper>
   );
 };
-const Wrapper = tw.div`
-  w-full flex flex-col bg-neutral-10 rounded-12 py-20 px-24 gap-16
+const PoolInfoCardWrapper = tw.div`
+  w-full flex flex-1 flex-col bg-neutral-10 rounded-12
+  py-16 px-20 gap-12
+  md:(py-20 px-24 gap-16)
 `;
 const Name = tw.div`
   font-m-14 text-neutral-80
+  md:(font-m-16)
 `;
 const Value = tw.div`
-  font-m-20 text-neutral-100
+  font-m-18 text-neutral-100
+  md:(font-m-20)
 `;
