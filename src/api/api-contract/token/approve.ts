@@ -1,7 +1,7 @@
 import { Address } from 'wagmi';
 
 import { useApprove as useApproveEvm } from '~/api/api-contract/_evm/token/approve';
-import { useApprove as useApproveFpass } from '~/api/api-contract/_evm/token/approve-fpass';
+import { useApprove as useApproveFpass } from '~/api/api-contract/_evm/token/approve-substrate';
 import { useApprove as useApproveXrp } from '~/api/api-contract/_xrpl/token/approve';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -21,7 +21,7 @@ export const useApprove = ({ amount, address, issuer, spender, currency, enabled
   const { isEvm, isFpass } = useNetwork();
 
   const resEvm = useApproveEvm({
-    amount: amount * 100,
+    amount: amount * 10,
     allowanceMin: amount,
     spender: spender as Address,
     tokenAddress: address as Address,
@@ -29,7 +29,7 @@ export const useApprove = ({ amount, address, issuer, spender, currency, enabled
   });
 
   const resFpass = useApproveFpass({
-    amount: amount * 100,
+    amount: amount * 10,
     allowanceMin: amount,
     spender: spender as Address,
     tokenAddress: address as Address,

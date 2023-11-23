@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { parseUnits } from 'viem';
 import { Address } from 'wagmi';
 
-import { useSwap as useSwapFpass } from '~/api/api-contract/_evm/swap/fpass-swap';
+import { useSwap as useSwapFpass } from '~/api/api-contract/_evm/swap/substrate-swap';
 import { useSwap as useSwapEvm } from '~/api/api-contract/_evm/swap/swap';
 import { useSwap as useSwapXrp } from '~/api/api-contract/_xrpl/swap/swap';
 

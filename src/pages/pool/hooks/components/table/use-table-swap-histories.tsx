@@ -78,64 +78,68 @@ export const useTableSwapHistories = () => {
 
   const tableData = useMemo(
     () =>
-      swapHistories?.map(d => {
-        const value = d.swapHistoryTokens.reduce((acc, cur) => {
-          const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
-          const amount = cur.amounts;
+      swapHistories
+        ? swapHistories?.map(d => {
+            const value = d.swapHistoryTokens.reduce((acc, cur) => {
+              const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
+              const amount = cur.amounts;
 
-          return (acc += price * amount);
-        }, 0);
+              return (acc += price * amount);
+            }, 0);
 
-        const tokens = ([
-          d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.FROM),
-          d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.TO),
-        ] || []) as ISwapHistoryToken[];
+            const tokens = ([
+              d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.FROM),
+              d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.TO),
+            ] || []) as ISwapHistoryToken[];
 
-        const time = elapsedTime(new Date(d.time).getTime());
-        const splittedTime = time.split(' ');
-        const translatedTime =
-          time === 'Just now'
-            ? t('Just now')
-            : t(`${splittedTime[1]} ${splittedTime[2]}`, { time: splittedTime[0] });
+            const time = elapsedTime(new Date(d.time).getTime());
+            const splittedTime = time.split(' ');
+            const translatedTime =
+              time === 'Just now'
+                ? t('Just now')
+                : t(`${splittedTime[1]} ${splittedTime[2]}`, { time: splittedTime[0] });
 
-        return {
-          meta: {
-            id: d.id,
-            network: d.network,
-          },
-          trader: (
-            <TableColumnIconText
-              text={truncateAddress(d.trader, 4)}
-              icon={
-                <Jazzicon
-                  diameter={24}
-                  seed={jsNumberForAddress(
-                    isXrp ? toHex(d.trader || '', { size: 42 }) : d.trader || ''
-                  )}
+            return {
+              meta: {
+                id: d.id,
+                network: d.network,
+              },
+              trader: (
+                <TableColumnIconText
+                  text={truncateAddress(d.trader, 4)}
+                  icon={
+                    <Jazzicon
+                      diameter={24}
+                      seed={jsNumberForAddress(
+                        isXrp ? toHex(d.trader || '', { size: 42 }) : d.trader || ''
+                      )}
+                    />
+                  }
+                  address
                 />
-              }
-              address
-            />
-          ),
-          tradeDetail: (
-            <TableColumnTokenSwap
-              tokens={tokens.map(t => ({
-                symbol: t.symbol,
-                value: t.amounts,
-                image: t.image,
-              }))}
-            />
-          ),
-          value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
-          time: (
-            <TableColumnLink
-              token={translatedTime}
-              align="flex-end"
-              link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${d.txHash}`}
-            />
-          ),
-        };
-      }),
+              ),
+              tradeDetail: (
+                <TableColumnTokenSwap
+                  tokens={tokens.map(t => ({
+                    symbol: t.symbol,
+                    value: t.amounts,
+                    image: t.image,
+                  }))}
+                />
+              ),
+              value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
+              time: (
+                <TableColumnLink
+                  token={translatedTime}
+                  align="flex-end"
+                  link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${
+                    d.txHash
+                  }`}
+                />
+              ),
+            };
+          })
+        : [],
     [compositions, currentNetwork, isXrp, swapHistories, t]
   );
 
