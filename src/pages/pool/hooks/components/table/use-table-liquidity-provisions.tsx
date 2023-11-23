@@ -32,7 +32,7 @@ import { LIQUIDITY_PROVISION_TYPE } from '~/types';
 
 export const useTableLiquidityProvision = () => {
   const { network, id } = useParams();
-  const { selectedNetwork, isXrp } = useNetwork();
+  const { selectedNetwork, isXrp, isFpass } = useNetwork();
   const { sort, setSort } = useTableLiquidityPoolProvisionSortStore();
   const { selectedTab } = useTablePoolLiquidityProvisionSelectTabStore();
 
@@ -134,12 +134,14 @@ export const useTableLiquidityProvision = () => {
             <TableColumnLink
               token={translatedTime}
               align="flex-end"
-              link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${d.txHash}`}
+              link={`${SCANNER_URL[currentNetwork]}/${
+                isXrp ? 'transactions' : isFpass ? 'extrinsic' : 'tx'
+              }/${d.txHash}`}
             />
           ),
         };
       }),
-    [compositions, currentNetwork, isXrp, liquidityProvisions, t]
+    [compositions, currentNetwork, isFpass, isXrp, liquidityProvisions, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -226,16 +228,16 @@ export const useTableLiquidityProvision = () => {
                 <TableColumnLink
                   token={translatedTime}
                   align="flex-end"
-                  link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'tx'}/${
-                    d.txHash
-                  }`}
+                  link={`${SCANNER_URL[currentNetwork]}/${
+                    isXrp ? 'transactions' : isFpass ? 'extrinsic' : 'tx'
+                  }/${d.txHash}`}
                 />
               ),
             },
           ],
         };
       }),
-    [compositions, currentNetwork, isXrp, liquidityProvisions, t]
+    [compositions, currentNetwork, isFpass, isXrp, liquidityProvisions, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
