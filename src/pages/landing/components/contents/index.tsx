@@ -1,19 +1,36 @@
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
-import tw from 'twin.macro';
+import tw, { css } from 'twin.macro';
+import { useOnClickOutside } from 'usehooks-ts';
 
+import { COLOR } from '~/assets/colors';
 import { IconLink } from '~/assets/icons';
 import LogoLanding from '~/assets/logos/logo-landing.svg?react';
 
-import { ButtonPrimaryMediumIconTrailing } from '~/components/buttons';
-import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
+import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 
 import { useMediaQuery } from '~/hooks/utils';
 
 export const Contents = () => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   const { t } = useTranslation();
   const { isSMD, isMLG } = useMediaQuery();
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  useOnClickOutside(dropdownRef, () => setDropdownOpen(false));
+
+  const handleMainnetClick = () => {
+    window.open('https://app.moai-finance.xyz/');
+    setDropdownOpen(false);
+  };
+
+  const handleDevnetClick = () => {
+    window.open('https://app-devnet.moai-finance.xyz/');
+    setDropdownOpen(false);
+  };
 
   const logoSize = isMLG
     ? { width: '691px', height: '60px' }
@@ -47,19 +64,38 @@ export const Contents = () => {
         </TextMain>
         <ButtonWrapper>
           {isSMD ? (
-            <ButtonPrimaryLargeIconTrailing
+            <ButtonPrimaryLarge
               text={t('Get started')}
-              buttonType={'outlined'}
-              icon={<IconLink />}
-              onClick={() => window.open('https://app.moai-finance.xyz/')}
+              buttonType="outlined"
+              onClick={() => setDropdownOpen(true)}
             />
           ) : (
-            <ButtonPrimaryMediumIconTrailing
+            <ButtonPrimaryMedium
               text={t('Get started')}
-              buttonType={'outlined'}
-              icon={<IconLink />}
-              onClick={() => window.open('https://app.moai-finance.xyz/')}
+              buttonType="outlined"
+              onClick={() => setDropdownOpen(true)}
             />
+          )}
+
+          {dropdownOpen && (
+            <DropdownWrapper ref={dropdownRef}>
+              <Dropdown onClick={handleDevnetClick}>
+                Devnet
+                <IconLink
+                  width={isSMD ? 20 : 16}
+                  height={isSMD ? 20 : 16}
+                  color={COLOR.NEUTRAL[100]}
+                />
+              </Dropdown>
+              <Dropdown onClick={handleMainnetClick}>
+                Mainnet
+                <IconLink
+                  width={isSMD ? 20 : 16}
+                  height={isSMD ? 20 : 16}
+                  color={COLOR.NEUTRAL[100]}
+                />
+              </Dropdown>
+            </DropdownWrapper>
           )}
         </ButtonWrapper>
       </BottomWrapper>
@@ -90,10 +126,32 @@ const BottomWrapper = styled(motion.div)(() => [
     mlg:(gap-40)
   `,
 ]);
+
 const ButtonWrapper = tw.div`
-  w-125
-  smd:(w-157)
+  relative
+  w-110
+  smd:(w-140)
 `;
+
+const DropdownWrapper = styled.div(() => [
+  tw`
+    flex-center flex-col p-8 rounded-8 gap-2 bg-neutral-15 absolute left-0
+    top-48 w-110
+    smd:(top-56 w-140)
+  `,
+  css`
+    box-shadow: 0px 4px 24px 0px rgba(25, 27, 40, 0.6);
+  `,
+]);
+
+const Dropdown = tw.div`
+  w-full flex items-center justify-between flex-1 text-neutral-100 rounded-8 clickable py-8
+  hover:(bg-neutral-20)
+
+  pl-8 pr-4 gap-2 font-r-14
+  smd:(pl-12 pr-8 gap-8 font-r-16)
+`;
+
 const TextMain = tw.div`
   text-center text-neutral-100 
   w-full font-eb-32

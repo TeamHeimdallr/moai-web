@@ -1,6 +1,4 @@
 import crossmarkSdk from '@crossmarkio/sdk';
-import { SignAndSubmitFullResponse } from '@crossmarkio/sdk/dist/src/typings/crossmark/models';
-import { AllTransactionRequest } from '@crossmarkio/sdk/dist/src/typings/crossmark/models/common/tx';
 import {
   submitTransaction as gemSubmitTransaction,
   SubmitTransactionResponse,
@@ -71,8 +69,8 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
         address: xrpCrossmarkAddress,
         truncatedAddress: truncatedXrpCrossmarkAddress,
         connectedConnector: 'crossmark',
-        submitTransaction: async (tx: AllTransactionRequest) =>
-          (await crossmarkSdk.signAndSubmitAndWait(tx)) as SignAndSubmitFullResponse,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        submitTransaction: async (tx: any) => await crossmarkSdk.signAndSubmitAndWait(tx),
       }
     : {
         isConnected: isXrpGemConnected,
