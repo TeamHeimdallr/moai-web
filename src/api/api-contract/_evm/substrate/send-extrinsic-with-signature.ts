@@ -4,9 +4,13 @@ import { ISubmittableResult } from '@polkadot/types/types';
 
 export interface SubmittableResponse {
   blockHash: string;
+  blockNumber: bigint;
+
   extrinsicHash: string;
   extrinsicIndex: number;
   extrinsicId: string;
+
+  transactionHash: string; // for compatiable with TransactionReceipt
 }
 export async function sendExtrinsicWithSignature(
   extrinsic: SubmittableExtrinsic<'promise', ISubmittableResult>
@@ -32,6 +36,8 @@ export async function sendExtrinsicWithSignature(
             extrinsicHash: txHash.toString(),
             extrinsicIndex: txIndex!,
             extrinsicId,
+            blockNumber: BigInt(Number(blockNumber)),
+            transactionHash: txHash.toString(),
           });
         }
 
