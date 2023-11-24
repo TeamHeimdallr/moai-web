@@ -78,7 +78,7 @@ export const UserPoolBalances = () => {
       </TokenLists>
       <Footer>
         <FooterBalanceWrapper>
-          {t('My pool balance')}
+          {t('Wallet balance')}
           <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0, 4)}`}</FooterBalance>
         </FooterBalanceWrapper>
         <ButtonWrapper>
