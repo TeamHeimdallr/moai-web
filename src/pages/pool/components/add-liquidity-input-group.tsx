@@ -44,8 +44,7 @@ export const AddLiquidityInputGroup = () => {
   const { network, id } = useParams();
 
   const [inputBlured, inputBlurAll] = useState(false);
-  const [inputValue1, setInputValue1] = useState<number>(0);
-  const [inputValue2, setInputValue2] = useState<number>(0);
+  const [inputValues, _setInputValues] = useState<number[]>([0, 0]);
   const [checkedPriceImpact, checkPriceImpact] = useState(false);
 
   const { t } = useTranslation();
@@ -74,7 +73,7 @@ export const AddLiquidityInputGroup = () => {
   const hasBalances = userPoolTokens.length > 0 && userPoolTokens.some(token => token.balance > 0);
 
   const { bptOut, priceImpact: priceImpactRaw } = useCalculateAddLiquidity({
-    amountsIn: [inputValue1, inputValue2],
+    amountsIn: [inputValues[0], inputValues[1]],
   });
   const priceImpact = hasBalances
     ? priceImpactRaw < 0.01
@@ -98,20 +97,13 @@ export const AddLiquidityInputGroup = () => {
     resolver: yupResolver(schema),
   });
 
-  const getInputValue = (token: string) => {
-    if (token === compositions?.[0]?.symbol) return inputValue1;
-    if (token === compositions?.[1]?.symbol) return inputValue2;
-    return 0;
-  };
-
   const { handleChange, handleTotalMax, isValid, totalValueMaxed, handleOptimize } = useHandleInput(
     {
       pool: pool || ({} as IPool),
       formState,
 
-      getInputValue,
-      setInputValue1,
-      setInputValue2,
+      inputValues,
+      setInputValues: (value: number[]) => _setInputValues(value),
     }
   );
 
@@ -127,12 +119,12 @@ export const AddLiquidityInputGroup = () => {
   const isValidToAddLiquidity = getIsValidToAddLiquidity();
 
   const totalValue = userPoolTokens.reduce(
-    (acc, cur) => (acc += (cur.price || 0) * (getInputValue(cur.symbol) || 0)),
+    (acc, cur, i) => (acc += (cur.price || 0) * (inputValues[i] || 0)),
     0
   );
-  const tokensIn = userPoolTokens.map(token => ({
+  const tokensIn = userPoolTokens.map((token, i) => ({
     ...token,
-    amount: getInputValue(token.symbol),
+    amount: inputValues[i],
   }));
   const tokensInValid = tokensIn.filter(token => token.amount > 0).length > 0;
 
@@ -160,7 +152,7 @@ export const AddLiquidityInputGroup = () => {
         )}
         {isValidToAddLiquidity &&
           userPoolTokens.map((token, idx) => {
-            const tokenValue = (token?.price || 0) * (getInputValue(token?.symbol) || 0);
+            const tokenValue = (token?.price || 0) * (inputValues[idx] || 0);
             if (token.balance === 0) {
               return (
                 <NoBalanceAlert key={token.symbol}>
@@ -178,8 +170,8 @@ export const AddLiquidityInputGroup = () => {
                 tokenValue={tokenValue}
                 balance={token.balance}
                 handleChange={value => handleChange({ token, value, idx })}
-                slider={getInputValue(token.symbol) > 0}
-                value={getInputValue(token.symbol)}
+                slider={inputValues[idx] > 0}
+                value={inputValues[idx]}
                 setValue={setValue}
                 formState={formState}
                 maxButton
