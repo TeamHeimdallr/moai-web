@@ -18,7 +18,7 @@ export const useSelecteNetworkStore = create<State>()(
     immer(
       logger(set => ({
         name: 'SELECTED_NETWORK_STORE',
-        selectedNetwork: NETWORK.XRPL,
+        selectedNetwork: NETWORK.THE_ROOT_NETWORK,
         selectNetwork: (network: NETWORK) => set({ selectedNetwork: network }),
         targetNetwork: undefined,
         setTargetNetwork: (network: NETWORK) => set({ targetNetwork: network }),
