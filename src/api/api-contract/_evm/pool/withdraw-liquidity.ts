@@ -32,7 +32,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
   const { isConnected, address: walletAddress } = evm;
 
   const { network } = useParams();
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
@@ -85,7 +85,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
         false,
       ],
     ],
-    enabled: enabled && isConnected && isEvm && !!walletAddress && bptIn > 0 && !!vault,
+    enabled: enabled && isConnected && isEvm && !isFpass && !!walletAddress && bptIn > 0 && !!vault,
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);

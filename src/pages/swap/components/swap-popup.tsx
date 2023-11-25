@@ -155,7 +155,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     fromInput: numFromInput,
     toToken: toToken,
     toInput: numToInput,
-    enabled: validAllowance && validAmount,
+    enabled: !!swapOptimizedPathPool?.poolId && validAllowance && validAmount,
   });
 
   const txDate = new Date(blockTimestamp ?? 0);
@@ -212,8 +212,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       if (!allowanceFromToken) return t('approve-swap-message', { token: fromToken?.symbol });
       return t('Confirm swap');
     }
-
-    return '';
   }, [
     allowanceFromToken,
     allowanceToToken,

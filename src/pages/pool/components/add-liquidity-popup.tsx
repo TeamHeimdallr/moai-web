@@ -138,7 +138,7 @@ export const AddLiquidityPopup = ({
   } = useAddLiquidity({
     id: poolId || '',
     tokens: tokensIn || [],
-    enabled: validAmount && getValidAllowance(),
+    enabled: !!poolId && validAmount && getValidAllowance(),
   });
 
   const txDate = new Date(blockTimestamp ?? 0);

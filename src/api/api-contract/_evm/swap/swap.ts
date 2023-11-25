@@ -43,7 +43,7 @@ export const useSwap = ({
   const { evm } = useConnectedWallet();
   const { address: walletAddress } = evm;
 
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
@@ -77,7 +77,14 @@ export const useSwap = ({
     chainId,
     value: singleSwap[2] === zeroAddress ? singleSwap[4] : 0n,
     args: [singleSwap, fundManagement, limit, deadline],
-    enabled: enabled && !!vault && !!singleSwap && !!fundManagement && !!walletAddress && isEvm,
+    enabled:
+      enabled &&
+      !!vault &&
+      !!singleSwap &&
+      !!fundManagement &&
+      !!walletAddress &&
+      isEvm &&
+      !isFpass,
   });
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);
