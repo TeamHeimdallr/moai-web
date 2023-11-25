@@ -9,12 +9,11 @@ interface Props {
   inMenu?: boolean;
 }
 export const Footer = ({ inMenu = false }: Props) => {
-  // TODO: sns link
   const sns = [
     { name: 'twitter', url: 'https://twitter.com/MoaiFinance', icon: <IconTwitterX /> },
     { name: 'medium', url: 'https://medium.com/@moai-finance', icon: <IconMedium /> },
-    { name: 'discord', url: '#', icon: <IconDiscord />, disabled: true },
-    { name: 'paper', url: '#', icon: <IconPaper /> },
+    { name: 'discord', url: 'https://discord.gg/UARy6esS', icon: <IconDiscord /> },
+    { name: 'paper', url: 'https://docs.moai-finance.xyz', icon: <IconPaper /> },
   ];
 
   return (
@@ -22,14 +21,8 @@ export const Footer = ({ inMenu = false }: Props) => {
       {!inMenu && <LogoText width={70} height={16} />}
       <Text>{`© ${new Date().getFullYear()} Moai Finance, Inc. All Rights Reserved`}</Text>
       <SnsWrapper>
-        {sns.map(({ name, url, icon, disabled }) => (
-          <ButtonIconLarge
-            key={name}
-            title={name}
-            icon={icon}
-            disabled={disabled}
-            onClick={() => window.open(url)}
-          />
+        {sns.map(({ name, url, icon }) => (
+          <ButtonIconLarge key={name} title={name} icon={icon} onClick={() => window.open(url)} />
         ))}
       </SnsWrapper>
     </Wrapper>
