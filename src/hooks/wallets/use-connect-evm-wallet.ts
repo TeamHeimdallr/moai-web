@@ -4,14 +4,15 @@ import { InjectedConnector } from 'wagmi/connectors/injected';
 
 import { truncateAddress } from '~/utils/util-string';
 
-// TODO: connect wallet persist. 지금은 한번 연결 후 새로고침시 useAccount에서 값이 제대로 받아와지지 않음
 export const useConnectWithEvmWallet = () => {
   const { connectors } = useConfig();
   const { address, isConnected, isConnecting } = useAccount();
   const { open: connectByWalletConnect } = useWeb3Modal();
 
+  const { disconnect: _disconnect } = useDisconnect();
+
   const {
-    connect: connectInjectedConnector,
+    connectAsync: connectInjectedConnector,
     error,
     isLoading,
   } = useConnect({
@@ -19,10 +20,15 @@ export const useConnectWithEvmWallet = () => {
   });
   const connectedConnector = connectors?.[0]?.name ?? '';
 
-  const { disconnect } = useDisconnect();
-  const connect = () => {
-    if (window.ethereum) connectInjectedConnector();
-    else connectByWalletConnect(true);
+  const disconnect = () => {
+    _disconnect();
+    localStorage.removeItem('wagmi.injected.shimDisconnect');
+  };
+  const connect = async () => {
+    if (window.ethereum) {
+      await connectInjectedConnector();
+      localStorage.setItem('wagmi.injected.shimDisconnect', 'true');
+    } else connectByWalletConnect(true);
   };
 
   return {
