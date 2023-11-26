@@ -1,4 +1,4 @@
-import { useModal } from 'connectkit';
+import { useWeb3Modal } from '@web3modal/react';
 import { useAccount, useConfig, useConnect, useDisconnect } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 
@@ -8,14 +8,14 @@ import { truncateAddress } from '~/utils/util-string';
 export const useConnectWithEvmWallet = () => {
   const { connectors } = useConfig();
   const { address, isConnected, isConnecting } = useAccount();
-  const { setOpen: connectByWalletConnect } = useModal();
+  const { open: connectByWalletConnect } = useWeb3Modal();
 
   const {
     connect: connectInjectedConnector,
     error,
     isLoading,
   } = useConnect({
-    connector: connectors?.[0] || new InjectedConnector(),
+    connector: new InjectedConnector(),
   });
   const connectedConnector = connectors?.[0]?.name ?? '';
 
