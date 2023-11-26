@@ -5,8 +5,8 @@ import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
-import { encodeFunctionData } from 'viem';
-import { usePublicClient } from 'wagmi';
+import { Address, encodeFunctionData } from 'viem';
+import { usePublicClient, useWalletClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
 import { getTrnApi } from '~/api/api-contract/_evm/substrate/get-trn-api';
@@ -36,6 +36,8 @@ interface Props {
   enabled?: boolean;
 }
 export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) => {
+  const { data: walletClient } = useWalletClient();
+
   const { fpass } = useConnectedWallet();
   const { address: walletAddress, signer } = fpass;
 
@@ -134,9 +136,9 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
         extrinsic.method
       );
 
-      const signature = await window.ethereum.request({
+      const signature = await walletClient?.request({
         method: 'personal_sign',
-        params: [ethPayload, signer],
+        params: [ethPayload, signer as Address],
       });
 
       const signedExtrinsic = extrinsic.addSignature(

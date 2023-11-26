@@ -1,7 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
-import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
+import {
+  imageWalletCrossmark,
+  imageWalletGem,
+  imageWalletMetamask,
+  imageWalletWalletConnect,
+} from '~/assets/images';
 
 import { Popup } from '~/components/popup';
 
@@ -25,7 +30,7 @@ interface Props {
 }
 export const ConnectWallet = ({ evm, xrpl }: Props) => {
   const { close } = usePopup(POPUP_ID.CONNECT_WALLET);
-  const { connect: connectEvm } = useConnectWithEvmWallet();
+  const { connect: connectEvm, connectByWalletConnect } = useConnectWithEvmWallet();
   const { connect: connectXrpCrossmark } = useConnectWithCrossmarkWallet();
   const { connect: connectXrpGem } = useConnectWithGemWallet();
   const { t } = useTranslation();
@@ -37,6 +42,13 @@ export const ConnectWallet = ({ evm, xrpl }: Props) => {
       description: 'Supports The Root Network and EVM Sidechain',
       image: imageWalletMetamask,
       onClick: connectEvm,
+      type: 'evm',
+    },
+    {
+      name: 'Wallet Connect',
+      description: 'Supports The Root Network and EVM Sidechain',
+      image: imageWalletWalletConnect,
+      onClick: connectByWalletConnect,
       type: 'evm',
     },
     {

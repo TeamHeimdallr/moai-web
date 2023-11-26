@@ -1,8 +1,6 @@
-import { publicProvider } from '@wagmi/core/providers/public';
-import { ConnectKitProvider, getDefaultConfig } from 'connectkit';
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
+import { Web3Modal } from '@web3modal/react';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-
-import { imageMoai } from '~/assets/images';
 
 import { WALLETCONNECT_PROJECT_ID } from '~/constants';
 
@@ -12,32 +10,21 @@ interface Props {
   children: React.ReactNode;
 }
 
+const chains = [theRootNetwork, xrpEvmSidechain];
 const projectId = WALLETCONNECT_PROJECT_ID as string;
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [theRootNetwork, xrpEvmSidechain],
-  [publicProvider()]
-);
-
-const wagmiConfig = createConfig(
-  getDefaultConfig({
-    autoConnect: true,
-    chains,
-
-    walletConnectProjectId: projectId,
-    appName: 'Moai Finance',
-
-    appUrl: 'https://moai-finance.xyz', // your app's url
-    appIcon: imageMoai,
-
-    publicClient,
-    webSocketPublicClient,
-  })
-);
+const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: w3mConnectors({ projectId, chains }),
+  publicClient,
+});
+const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 const Web3Provider = ({ children }: Props) => {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <ConnectKitProvider>{children}</ConnectKitProvider>
+      {children}
+      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
     </WagmiConfig>
   );
 };

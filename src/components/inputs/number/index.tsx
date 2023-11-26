@@ -126,6 +126,7 @@ export const InputNumber = ({
                   value={handledValue || ''}
                   onValueChange={values => onValueChange(values.floatValue)}
                   customInput={CustomInput}
+                  inputMode="decimal"
                   onFocus={() => {
                     if (focus) {
                       setFocus(true);

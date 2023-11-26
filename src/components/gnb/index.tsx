@@ -9,7 +9,7 @@ import LogoText from '~/assets/logos/logo-text.svg?react';
 import { GNB_MENU } from '~/constants';
 
 import { ButtonPrimaryMedium, ButtonPrimarySmallBlack } from '~/components/buttons/primary';
-import { Notification } from '~/components/notification';
+// import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
 import { useBanner } from '~/hooks/components/use-banner';
@@ -86,7 +86,7 @@ export const Gnb = () => {
             <ButtonWrapper>
               {evm.address || xrp.address ? (
                 <ConnectedButton>
-                  <Notification />
+                  {/* <Notification /> */}
                   <Account />
                 </ConnectedButton>
               ) : (

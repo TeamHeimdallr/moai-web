@@ -144,7 +144,7 @@ export const WithdrawLiquidityPopup = ({
     tokens: tokensOut || [],
     // input value
     bptIn: parseUnits(`${bptIn}`, TOKEN_DECIMAL_WITHDRAW_LP[network || NETWORK.XRPL]),
-    enabled: validAmount && getValidAllowance(),
+    enabled: !!poolId && validAmount && getValidAllowance(),
   });
 
   const txDate = new Date(blockTimestamp ?? 0);
