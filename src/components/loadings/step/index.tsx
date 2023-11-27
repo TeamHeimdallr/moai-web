@@ -1,3 +1,4 @@
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { keyframes } from '@emotion/react';
 import tw, { css, styled } from 'twin.macro';
 
@@ -55,7 +56,7 @@ export const LoadingStep = ({ totalSteps, step, isLoading, isDone = false }: Pro
   );
 };
 
-const LoadingIcon = styled.img`
+const LoadingIcon = styled(LazyLoadImage)`
   animation: ${() => css`
     ${keyframes`
     from {

@@ -1,4 +1,5 @@
 import { HTMLAttributes, ReactNode } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { css, styled } from 'twin.macro';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -73,7 +74,7 @@ const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
       : tw``),
 ]);
 const LeftWrapper = tw.div`flex-center gap-12`;
-const Image = tw.img`w-36 h-36 rounded-18`;
+const Image = tw(LazyLoadImage)`w-36 h-36 rounded-18`;
 
 interface TextProps {
   type: 'selectable' | 'medium' | 'large';

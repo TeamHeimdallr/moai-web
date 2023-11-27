@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -44,7 +45,7 @@ export const Section1 = () => {
 
 const Wrapper = tw.div`flex w-full h-[400vh]`;
 const InnerWrapper = tw.div`flex w-full h-screen py-280 gap-40 justify-start sticky top-0`;
-const QuoteImage = tw.img``;
+const QuoteImage = tw(LazyLoadImage)``;
 const TextWrapper = tw.div`w-732`;
 interface TextProps {
   highlighted?: boolean;

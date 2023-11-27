@@ -1,3 +1,4 @@
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw from 'twin.macro';
 
 import { imageCampaignLighthouse, imageCampaignReward, imageCampaignToken } from '~/assets/images';
@@ -35,4 +36,4 @@ const Container = tw.div`flex w-full items-center gap-24`;
 const TextWrapper = tw.div`w-400 flex flex-col gap-24`;
 const Title = tw.div`font-b-36 text-neutral-100`;
 const Text = tw.div`font-m-20 text-neutral-100`;
-const ImageWrapper = tw.img``;
+const ImageWrapper = tw(LazyLoadImage)``;

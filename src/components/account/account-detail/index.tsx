@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import copy from 'copy-to-clipboard';
 import tw, { styled } from 'twin.macro';
 import { zeroAddress } from 'viem';
@@ -316,10 +317,10 @@ const AddressTextWrapper = tw.div`flex justify-between`;
 const Logo = tw.div`
   rounded-full bg-neutral-0 w-40 h-40 flex-center flex-shrink-0
 `;
-const InnerLogo = tw.img`
+const InnerLogo = tw(LazyLoadImage)`
   rounded-full bg-neutral-0 w-24 h-24 flex-center flex-shrink-0
 `;
-const InnerLogoSmall = tw.img`
+const InnerLogoSmall = tw(LazyLoadImage)`
   rounded-full w-20 h-20 flex-center flex-shrink-0
 `;
 const ConnectText = tw.div`

@@ -1,4 +1,5 @@
 import { HTMLAttributes } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -38,7 +39,7 @@ const Wrapper = styled.div<WrapperProps>(({ selected }) => [
   `,
   selected ? tw`text-neutral-100` : tw`text-neutral-80`,
 ]);
-const Image = tw.img`
+const Image = tw(LazyLoadImage)`
   w-20 h-20 rounded-10 bg-black
 `;
 const TextWrapper = tw.div`flex gap-4`;
