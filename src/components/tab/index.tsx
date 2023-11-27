@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 import tw, { css, styled } from 'twin.macro';
 
 const shadowLeft = (
@@ -59,55 +60,17 @@ interface Props {
 }
 
 export const Tab = ({ tabs, gap = 24, type = 'medium', onClick, selectedTab }: Props) => {
-  const [shadowOnLeft, setShadowOnLeft] = useState(false);
-  const [shadowOnRight, setShadowOnRight] = useState(false);
-  const [bothShowing, setBothShowing] = useState(false);
+  const { ref: ref1, inView: inView1 } = useInView({
+    threshold: 1,
+  });
+  const { ref: ref2, inView: inView2 } = useInView({
+    threshold: 1,
+  });
 
-  const tab0Ref = useRef(null);
-  const tab1Ref = useRef(null);
-
-  useEffect(() => {
-    const options = {
-      root: document.querySelector('#scrollArea'),
-      rootMargin: '0px',
-      threshold: 1.0,
-    };
-
-    const callback = entries => {
-      const tab0Entry = entries.find(entry => entry.target.id === 'tab-0');
-      const tab1Entry = entries.find(entry => entry.target.id === 'tab-1');
-
-      if (tab0Entry && tab1Entry) {
-        setBothShowing(tab0Entry.isIntersecting && tab1Entry.isIntersecting);
-      }
-
-      if (tab0Entry) {
-        setShadowOnLeft(!tab0Entry.isIntersecting);
-      }
-
-      if (tab1Entry) {
-        setShadowOnRight(!tab1Entry.isIntersecting);
-      }
-    };
-
-    const observer = new IntersectionObserver(callback, options);
-
-    if (tab0Ref.current) {
-      observer.observe(tab0Ref.current);
-    }
-
-    if (tab1Ref.current) {
-      observer.observe(tab1Ref.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
   return (
     <Wrapper>
       <InnerWrapper gap={gap}>
-        {!bothShowing && shadowOnLeft && <ShadowLeft>{shadowLeft}</ShadowLeft>}
+        {!inView1 && <ShadowLeft>{shadowLeft}</ShadowLeft>}
         {tabs.map((tab, index) => {
           const handleClick = () => {
             if (tab.disabled) return;
@@ -116,7 +79,7 @@ export const Tab = ({ tabs, gap = 24, type = 'medium', onClick, selectedTab }: P
 
           return (
             <Text
-              ref={index === 0 ? tab0Ref : tab1Ref}
+              ref={index === 0 ? ref1 : ref2}
               id={`tab-${index}`}
               key={tab.key}
               selected={tab.key === selectedTab}
@@ -128,7 +91,7 @@ export const Tab = ({ tabs, gap = 24, type = 'medium', onClick, selectedTab }: P
             </Text>
           );
         })}
-        {!bothShowing && shadowOnRight && <ShadowRight>{shadowRight}</ShadowRight>}
+        {!inView2 && <ShadowRight>{shadowRight}</ShadowRight>}
       </InnerWrapper>
     </Wrapper>
   );
