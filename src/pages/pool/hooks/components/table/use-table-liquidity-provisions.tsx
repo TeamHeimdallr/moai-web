@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { useGetLiquidityProvisionsInfinityQuery } from '~/api/api-server/pools/get-liquidity-provisions';
-import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { COLOR } from '~/assets/colors';
 import { IconMinus, IconPlus } from '~/assets/icons';
@@ -44,18 +43,6 @@ export const useTableLiquidityProvision = () => {
 
   const isMyProvision = selectedTab === 'my-provision';
 
-  const { data: poolData } = useGetPoolQuery(
-    {
-      params: {
-        networkAbbr: network as string,
-        poolId: id as string,
-      },
-    },
-    {
-      enabled: !!network && !!id,
-      staleTime: 1000,
-    }
-  );
   const {
     data: liquidityProvisionData,
     hasNextPage,
@@ -78,9 +65,6 @@ export const useTableLiquidityProvision = () => {
     }
   );
 
-  const { pool } = poolData || {};
-  const { compositions } = pool || {};
-
   const liquidityProvisions = useMemo(
     () => liquidityProvisionData?.pages?.flatMap(page => page.liquidityProvisions) || [],
     [liquidityProvisionData?.pages]
@@ -90,10 +74,8 @@ export const useTableLiquidityProvision = () => {
     () =>
       liquidityProvisions?.map(d => {
         const value = d.liquidityProvisionTokens.reduce((acc, cur) => {
-          const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
           const amount = Math.abs(cur.amounts);
-
-          return (acc += price * amount);
+          return (acc += (cur.price || 0) * amount);
         }, 0);
 
         const time = elapsedTime(new Date(d.time).getTime());
@@ -141,7 +123,7 @@ export const useTableLiquidityProvision = () => {
           ),
         };
       }),
-    [compositions, currentNetwork, isFpass, isXrp, liquidityProvisions, t]
+    [currentNetwork, isFpass, isXrp, liquidityProvisions, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -182,10 +164,8 @@ export const useTableLiquidityProvision = () => {
     () =>
       liquidityProvisions.map((d, i) => {
         const value = d.liquidityProvisionTokens.reduce((acc, cur) => {
-          const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
           const amount = Math.abs(cur.amounts);
-
-          return (acc += price * amount);
+          return (acc += (cur.price || 0) * amount);
         }, 0);
 
         const time = elapsedTime(new Date(d.time).getTime());
@@ -237,7 +217,7 @@ export const useTableLiquidityProvision = () => {
           ],
         };
       }),
-    [compositions, currentNetwork, isFpass, isXrp, liquidityProvisions, t]
+    [currentNetwork, isFpass, isXrp, liquidityProvisions, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

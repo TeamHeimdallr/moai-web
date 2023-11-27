@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 import { toHex } from 'viem';
 
-import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetSwapHistoriesInfinityQuery } from '~/api/api-server/pools/get-swap-histories';
 
 import { SCANNER_URL } from '~/constants';
@@ -35,18 +34,6 @@ export const useTableSwapHistories = () => {
   const { t } = useTranslation();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
-  const { data: poolData } = useGetPoolQuery(
-    {
-      params: {
-        networkAbbr: network as string,
-        poolId: id as string,
-      },
-    },
-    {
-      enabled: !!network && !!id,
-      staleTime: 1000,
-    }
-  );
   const {
     data: swapHistoriesData,
     hasNextPage,
@@ -68,9 +55,6 @@ export const useTableSwapHistories = () => {
     }
   );
 
-  const { pool } = poolData || {};
-  const { compositions } = pool || {};
-
   const swapHistories = useMemo(
     () => swapHistoriesData?.pages?.flatMap(page => page.swapHistories) || [],
     [swapHistoriesData?.pages]
@@ -81,10 +65,8 @@ export const useTableSwapHistories = () => {
       swapHistories
         ? swapHistories?.map(d => {
             const value = d.swapHistoryTokens.reduce((acc, cur) => {
-              const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
               const amount = cur.amounts;
-
-              return (acc += price * amount);
+              return (acc += (cur.price || 0) * amount);
             }, 0);
 
             const tokens = ([
@@ -140,7 +122,7 @@ export const useTableSwapHistories = () => {
             };
           })
         : [],
-    [compositions, currentNetwork, isFpass, isXrp, swapHistories, t]
+    [currentNetwork, isFpass, isXrp, swapHistories, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -180,10 +162,8 @@ export const useTableSwapHistories = () => {
     () =>
       swapHistories.map((d, i) => {
         const value = d.swapHistoryTokens.reduce((acc, cur) => {
-          const price = compositions?.find(c => c.symbol === cur.symbol)?.price || 0;
           const amount = cur.amounts;
-
-          return (acc += price * amount);
+          return (acc += (cur.price || 0) * amount);
         }, 0);
 
         const tokens = ([
@@ -242,7 +222,7 @@ export const useTableSwapHistories = () => {
           ],
         };
       }),
-    [compositions, currentNetwork, isFpass, isXrp, swapHistories, t]
+    [currentNetwork, isFpass, isXrp, swapHistories, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
