@@ -43,7 +43,7 @@ export const Gnb = () => {
 
   const { setWalletType } = useWalletTypeStore();
   const { evm, xrp } = useConnectedWallet();
-  const { text, connectWallet } = useBanner();
+  const { text, type: bannerType, connectWallet, switchNetwork } = useBanner();
 
   const { t } = useTranslation();
 
@@ -57,7 +57,10 @@ export const Gnb = () => {
             <AlertBanner
               text={text}
               button={
-                <ButtonPrimarySmallBlack text={t('Connect wallet')} onClick={connectWallet} />
+                <ButtonPrimarySmallBlack
+                  text={bannerType === 'select' ? t('Connect wallet') : t('Switch network')}
+                  onClick={bannerType === 'select' ? connectWallet : switchNetwork}
+                />
               }
             />
           </BannerWrapper>
