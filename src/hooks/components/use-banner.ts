@@ -10,19 +10,19 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { NETWORK, POPUP_ID } from '~/types';
 
-import { theRootNetwork } from '~/configs/evm-network';
+import { theRootNetwork, xrpEvmSidechain } from '~/configs/evm-network';
 
 export const useBanner = () => {
   const [type, setType] = useState<'select' | 'switch'>('select');
 
   const location = useLocation();
 
-  const { open: web3modalOpen } = useWeb3Modal();
-  const { isConnected } = useAccount();
+  const { open: web3modalOpen, close: web3modalClose } = useWeb3Modal();
+  const { isDisconnected, isConnecting, isReconnecting } = useAccount();
   const { chain } = useNetworkWagmi();
 
   const { t } = useTranslation();
-  const { open, close, opened } = usePopup(POPUP_ID.WALLET_ALERT);
+  const { open, close } = usePopup(POPUP_ID.WALLET_ALERT);
   const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { selectedNetwork } = useNetwork();
@@ -42,8 +42,6 @@ export const useBanner = () => {
   });
 
   useEffect(() => {
-    if (opened) return;
-
     // if wallet not connected or on the swap page, can proceed regardless of the selected network.
     if (!anyAddress || isSwap) {
       close();
@@ -62,20 +60,31 @@ export const useBanner = () => {
     }
     close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evm.isConnected, fpass.isConnected, selectedNetwork, xrp.isConnected, opened]);
+  }, [evm.isConnected, fpass.isConnected, selectedNetwork, xrp.isConnected]);
 
   useEffect(() => {
-    if (!isConnected || opened) return;
+    if (isDisconnected || isConnecting || isReconnecting) {
+      web3modalClose();
+      close();
+      return;
+    }
     const chainId = chain?.id || 0;
 
-    if (selectedNetwork === NETWORK.THE_ROOT_NETWORK && chainId !== theRootNetwork.id) {
+    if (
+      (selectedNetwork === NETWORK.THE_ROOT_NETWORK && chainId !== theRootNetwork.id) ||
+      (selectedNetwork === NETWORK.EVM_SIDECHAIN && chainId !== xrpEvmSidechain.id)
+    ) {
       setType('switch');
       web3modalOpen({ route: 'SelectNetwork' });
-
       open();
+
+      return;
     }
+
+    web3modalClose();
+    close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chain?.id, isConnected, network, opened, selectedNetwork, t]);
+  }, [chain?.id, isDisconnected, isConnecting, isReconnecting, network, selectedNetwork, t]);
 
   const connectWallet = () => {
     setWalletType({
