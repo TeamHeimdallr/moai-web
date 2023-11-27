@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw from 'twin.macro';
 
 import {
@@ -97,7 +98,7 @@ const Wallet = tw.div`
   flex gap-12 px-16 py-15 rounded-8 bg-neutral-15 hover:bg-neutral-20 clickable
 `;
 
-const WalletImage = tw.img`
+const WalletImage = tw(LazyLoadImage)`
   w-36 h-36 rounded-8 flex-center object-cover overflow-hidden
 `;
 const NameWrapper = tw.div`
