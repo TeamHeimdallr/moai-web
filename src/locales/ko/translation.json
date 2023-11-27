@@ -64,6 +64,14 @@
   "Time": "시간",
 
   "Just now": "방금 전",
+
+  "second ago": "{{ time }}초 전",
+  "minute ago": "{{ time }}분 전",
+  "hour ago": "{{ time }}시간 전",
+  "day ago": "{{ time }}일 전",
+  "month ago": "{{ time }}개월 전",
+  "year ago": "{{ time }}년 전",
+
   "seconds ago": "{{ time }}초 전",
   "minutes ago": "{{ time }}분 전",
   "hours ago": "{{ time }}시간 전",
