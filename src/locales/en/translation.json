@@ -64,6 +64,14 @@
   "Time": "Time",
 
   "Just now": "Just now",
+
+  "second ago": "{{ time }} second ago",
+  "minute ago": "{{ time }} minute ago",
+  "hour ago": "{{ time }} hour ago",
+  "day ago": "{{ time }} day ago",
+  "month ago": "{{ time }} month ago",
+  "year ago": "{{ time }} year ago",
+
   "seconds ago": "{{ time }} seconds ago",
   "minutes ago": "{{ time }} minutes ago",
   "hours ago": "{{ time }} hours ago",
