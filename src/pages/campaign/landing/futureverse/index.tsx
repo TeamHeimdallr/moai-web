@@ -1,16 +1,19 @@
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw from 'twin.macro';
 
-import { imageWalletFuturepass } from '~/assets/images';
+import { IconFuturepass } from '~/assets/icons';
 import LogoFutureverse from '~/assets/logos/logo-futureverse.svg?react';
 
+import { useMediaQuery } from '~/hooks/utils';
+
 export const Futureverse = () => {
+  const { isMD } = useMediaQuery();
   return (
     <Wrapper>
       <Text>In collaboration with</Text>
       <LogoWrapper>
-        <LogoImage src={imageWalletFuturepass} />
-        <LogoFutureverse />
+        <IconFuturepass width={isMD ? 80 : 48} />
+        <LogoFutureverse width={isMD ? 276 : 165} />
       </LogoWrapper>
     </Wrapper>
   );
@@ -21,6 +24,9 @@ const Wrapper = tw.div`
   py-119
   md:py-262 
   `;
-const Text = tw.div`font-b-20 text-neutral-60 `;
+const Text = tw.div`
+  font-b-18 text-neutral-60 
+  md:font-b-20
+`;
 const LogoWrapper = tw.div`flex gap-8 flex-center`;
 const LogoImage = tw(LazyLoadImage)`w-80`;

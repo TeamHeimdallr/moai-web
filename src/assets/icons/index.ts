@@ -19,6 +19,7 @@ import IconDownload from './icon-download.svg?react';
 import IconEnglish from './icon-english.svg?react';
 import IconFavorites from './icon-favorites.svg?react';
 import IconFilter from './icon-filter.svg?react';
+import IconFuturepass from './icon-futurepass.svg?react';
 import IconHeart from './icon-heart.svg?react';
 import IconInfo from './icon-info.svg?react';
 import IconKorean from './icon-korean.svg?react';
@@ -79,6 +80,7 @@ export {
   IconEnglish,
   IconFavorites,
   IconFilter,
+  IconFuturepass,
   IconHeart,
   IconInfo,
   IconKorean,
