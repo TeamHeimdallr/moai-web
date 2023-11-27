@@ -24,6 +24,7 @@
 
   "show-all-pools-message": "Switched to {{network}} Liquidity pools",
   "wallet-alert-message": "Please connect to {{network}} wallet",
+  "wallet-alert-message-switch": "Please switch to {{network}} in your wallet",
 
   "My liquidity in Moai pools": "My liquidity in Moai pools",
   "My Moai balance": "My Moai balance",

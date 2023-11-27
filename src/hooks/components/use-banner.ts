@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+import { useWeb3Modal } from '@web3modal/react';
+import { useAccount, useNetwork as useNetworkWagmi } from 'wagmi';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -8,8 +10,16 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { NETWORK, POPUP_ID } from '~/types';
 
+import { theRootNetwork, xrpEvmSidechain } from '~/configs/evm-network';
+
 export const useBanner = () => {
+  const [type, setType] = useState<'select' | 'switch'>('select');
+
   const location = useLocation();
+
+  const { open: web3modalOpen, close: web3modalClose } = useWeb3Modal();
+  const { isDisconnected, isConnecting, isReconnecting } = useAccount();
+  const { chain } = useNetworkWagmi();
 
   const { t } = useTranslation();
   const { open, close } = usePopup(POPUP_ID.WALLET_ALERT);
@@ -27,7 +37,9 @@ export const useBanner = () => {
       ? 'The Root Network'
       : 'XRPL';
 
-  const text = t('wallet-alert-message', { network: network });
+  const text = t(type === 'select' ? 'wallet-alert-message' : 'wallet-alert-message-switch', {
+    network: network,
+  });
 
   useEffect(() => {
     // if wallet not connected or on the swap page, can proceed regardless of the selected network.
@@ -41,12 +53,38 @@ export const useBanner = () => {
       (selectedNetwork === NETWORK.EVM_SIDECHAIN && !evm.isConnected) ||
       (selectedNetwork === NETWORK.THE_ROOT_NETWORK && !fpass.isConnected)
     ) {
+      setType('select');
       open();
+
       return;
     }
     close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [evm.isConnected, fpass.isConnected, selectedNetwork, xrp.isConnected]);
+
+  useEffect(() => {
+    if (isDisconnected || isConnecting || isReconnecting) {
+      web3modalClose();
+      close();
+      return;
+    }
+    const chainId = chain?.id || 0;
+
+    if (
+      (selectedNetwork === NETWORK.THE_ROOT_NETWORK && chainId !== theRootNetwork.id) ||
+      (selectedNetwork === NETWORK.EVM_SIDECHAIN && chainId !== xrpEvmSidechain.id)
+    ) {
+      setType('switch');
+      web3modalOpen({ route: 'SelectNetwork' });
+      open();
+
+      return;
+    }
+
+    web3modalClose();
+    close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chain?.id, isDisconnected, isConnecting, isReconnecting, network, selectedNetwork, t]);
 
   const connectWallet = () => {
     setWalletType({
@@ -56,5 +94,10 @@ export const useBanner = () => {
     openConnectWallet();
   };
 
-  return { text, connectWallet };
+  return {
+    text,
+    type,
+    connectWallet,
+    switchNetwork: () => web3modalOpen({ route: 'SelectNetwork' }),
+  };
 };

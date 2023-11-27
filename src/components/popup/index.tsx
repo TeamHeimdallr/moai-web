@@ -6,6 +6,7 @@ import { COLOR } from '~/assets/colors';
 import { IconCancel } from '~/assets/icons';
 
 import { usePopup } from '~/hooks/components/use-popup';
+import { useMediaQuery } from '~/hooks/utils';
 
 import { ButtonIconLarge } from '../buttons/icon';
 
@@ -18,6 +19,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Popup = ({ id, title, children, button, icon, ...rest }: Props) => {
+  const { isMD } = useMediaQuery();
   const popupRef = useRef<HTMLDivElement>(null);
   const { close } = usePopup(id);
 
@@ -42,7 +44,7 @@ export const Popup = ({ id, title, children, button, icon, ...rest }: Props) => 
           </Footer>
         </InnerWrapper>
       </ContentContainer>
-      <Dim />
+      {isMD && <Dim />}
     </>
   );
 };
@@ -50,14 +52,14 @@ const Dim = tw.div`
   fixed w-screen h-screen bg-neutral-0/60 top-0 left-0 z-20
 `;
 const ContentContainer = tw.div`
-  absolute-center max-w-452 fixed w-full top-0 left-0 z-21 flex justify-center
-  xs:(max-h-[calc(100%-120px)] overflow-y-auto)
-  md:(py-0)
+  absolute-center fixed w-full top-0 left-0 z-21 flex justify-center
+  xs:(h-full)
+  md:(py-0 h-auto max-w-452)
 `;
 const InnerWrapper = tw.div`
-  w-full h-full bg-neutral-10 rounded-12 pop-up-shadow
+  w-full h-full bg-neutral-10 pop-up-shadow
   xs:(overflow-y-auto)
-  md:w-452
+  md:(rounded-12)
 `;
 const Header = tw.div`
   flex items-center justify-between font-b-18 text-neutral-100 px-24 py-20

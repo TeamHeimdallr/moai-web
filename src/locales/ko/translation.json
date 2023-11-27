@@ -24,6 +24,7 @@
 
   "show-all-pools-message": "{{network}} 유동성 풀로 변경되었습니다.",
   "wallet-alert-message": "{{network}} 지갑과 연결해 주세요.",
+  "wallet-alert-message-switch": "지갑의 네트워크를 {{network}}로 전환해 주세요.",
 
   "My liquidity in Moai pools": "나의 유동성",
   "My Moai balance": "나의 MOAI 잔액",
