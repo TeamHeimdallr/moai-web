@@ -8,8 +8,6 @@
 //   useWaitForTransaction,
 // } from 'wagmi';
 
-// import { TOKEN_DECIMAL } from '~/constants';
-
 // import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 // import { useConnectedWallet } from '~/hooks/wallets';
 // import { getNetworkFull } from '~/utils';
@@ -22,6 +20,7 @@
 //   allowanceMin?: number;
 //   spender?: Address;
 //   tokenAddress?: Address;
+//   symbol?: string
 
 //   enabled?: boolean;
 // }
@@ -30,6 +29,7 @@
 //   allowanceMin,
 //   spender,
 //   tokenAddress,
+//   symbol,
 
 //   enabled,
 // }: Props) => {
@@ -58,7 +58,7 @@
 //     onSuccess: (data: string) => {
 //       return setAllowance(
 //         BigInt(data || 0) >=
-//           parseUnits((allowanceMin || 0)?.toString(), TOKEN_DECIMAL[currentNetwork])
+//           parseUnits((allowanceMin || 0)?.toString(),  getTokenDecimal(currentNetwork, symbol))
 //       );
 //     },
 //     onError: () => setAllowance(false),
@@ -68,7 +68,7 @@
 //     ? encodeFunctionData({
 //         abi: ERC20_TOKEN_ABI,
 //         functionName: 'approve',
-//         args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
+//         args: [spender, `${parseUnits(`${amount || 0}`,  getTokenDecimal(currentNetwork, symbol))}`],
 //       })
 //     : '0x0';
 

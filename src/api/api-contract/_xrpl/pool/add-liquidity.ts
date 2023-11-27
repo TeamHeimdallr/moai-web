@@ -1,11 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { parseUnits } from 'viem';
 
-import { TOKEN_DECIMAL } from '~/constants';
-
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { ITokenComposition } from '~/types';
+import { getTokenDecimal } from '~/utils';
+import { ITokenComposition, NETWORK } from '~/types';
 
 interface Props {
   token1: ITokenComposition & { balance: number; amount: number };
@@ -26,7 +25,9 @@ export const useAddLiquidity = ({ token1, token2, enabled }: Props) => {
     if (xrp) {
       const asset1 = { currency: 'XRP' };
       const amount1 = Number(
-        Number(parseUnits((xrp.amount || 0).toString(), TOKEN_DECIMAL.XRPL).toString()).toFixed(5)
+        Number(
+          parseUnits((xrp.amount || 0).toString(), getTokenDecimal(NETWORK.XRPL, 'XRP')).toString()
+        ).toFixed(5)
       ).toString(); // max decimal is 6
 
       const remain = tokens.filter(t => t.currency !== 'XRP')?.[0];
