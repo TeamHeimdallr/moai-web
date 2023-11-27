@@ -5,10 +5,8 @@ import { useAddLiquidity as useAddLiquidityEvm } from '~/api/api-contract/_evm/p
 import { useAddLiquidity as useAddLiquidityFpass } from '~/api/api-contract/_evm/pool/add-liquidity-substrate';
 import { useAddLiquidity as useAddLiquidityXrp } from '~/api/api-contract/_xrpl/pool/add-liquidity';
 
-import { TOKEN_DECIMAL } from '~/constants';
-
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { getNetworkFull } from '~/utils';
+import { getNetworkFull, getTokenDecimal } from '~/utils';
 import { ITokenComposition } from '~/types';
 
 interface Props {
@@ -28,7 +26,7 @@ export const useAddLiquidity = ({ id, tokens, enabled }: Props) => {
     tokens:
       tokens?.map(t => ({
         ...t,
-        amount: parseUnits((t.amount || 0).toString(), TOKEN_DECIMAL[currentNetwork]),
+        amount: parseUnits((t.amount || 0).toString(), getTokenDecimal(currentNetwork, t.symbol)),
       })) ?? [],
     enabled,
   });
@@ -38,7 +36,7 @@ export const useAddLiquidity = ({ id, tokens, enabled }: Props) => {
     tokens:
       tokens?.map(t => ({
         ...t,
-        amount: parseUnits((t.amount || 0).toString(), TOKEN_DECIMAL[currentNetwork]),
+        amount: parseUnits((t.amount || 0).toString(), getTokenDecimal(currentNetwork, t.symbol)),
       })) ?? [],
     enabled,
   });

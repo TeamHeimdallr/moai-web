@@ -8,6 +8,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 
 interface Props {
   amount: number;
+  symbol: string;
   address: string; // token address, for evm
   issuer: string; // token isser, for xrp
 
@@ -17,12 +18,21 @@ interface Props {
   enabled?: boolean;
 }
 
-export const useApprove = ({ amount, address, issuer, spender, currency, enabled }: Props) => {
+export const useApprove = ({
+  amount,
+  symbol,
+  address,
+  issuer,
+  spender,
+  currency,
+  enabled,
+}: Props) => {
   const { isEvm, isFpass } = useNetwork();
 
   const resEvm = useApproveEvm({
     amount: amount * 10,
     allowanceMin: amount,
+    symbol,
     spender: spender as Address,
     tokenAddress: address as Address,
     enabled,
@@ -31,6 +41,7 @@ export const useApprove = ({ amount, address, issuer, spender, currency, enabled
   const resFpass = useApproveFpass({
     amount: amount * 10,
     allowanceMin: amount,
+    symbol,
     spender: spender as Address,
     tokenAddress: address as Address,
     enabled,

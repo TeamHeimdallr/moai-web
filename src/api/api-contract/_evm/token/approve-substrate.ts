@@ -11,11 +11,11 @@ import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create
 import { getTrnApi } from '~/api/api-contract/_evm/substrate/get-trn-api';
 import { sendExtrinsicWithSignature } from '~/api/api-contract/_evm/substrate/send-extrinsic-with-signature';
 
-import { IS_MAINNET, TOKEN_DECIMAL } from '~/constants';
+import { IS_MAINNET } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { getNetworkFull, getTokenDecimal } from '~/utils';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
 
@@ -25,6 +25,7 @@ interface Props {
   amount?: number;
   allowanceMin?: number;
   spender?: Address;
+  symbol?: string;
   tokenAddress?: Address;
 
   enabled?: boolean;
@@ -33,6 +34,7 @@ export const useApprove = ({
   amount,
   allowanceMin,
   spender,
+  symbol,
   tokenAddress,
 
   enabled,
@@ -63,7 +65,7 @@ export const useApprove = ({
     onSuccess: (data: string) => {
       return setAllowance(
         BigInt(data || 0) >=
-          parseUnits((allowanceMin || 0)?.toString(), TOKEN_DECIMAL[currentNetwork])
+          parseUnits((allowanceMin || 0)?.toString(), getTokenDecimal(currentNetwork, symbol))
       );
     },
     onError: () => setAllowance(false),
@@ -89,7 +91,10 @@ export const useApprove = ({
         ? encodeFunctionData({
             abi: ERC20_TOKEN_ABI,
             functionName: 'approve',
-            args: [spender, `${parseUnits(`${amount || 0}`, TOKEN_DECIMAL[currentNetwork])}`],
+            args: [
+              spender,
+              `${parseUnits(`${amount || 0}`, getTokenDecimal(currentNetwork, symbol))}`,
+            ],
           })
         : '0x0';
 

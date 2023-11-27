@@ -6,11 +6,9 @@ import { useSwap as useSwapFpass } from '~/api/api-contract/_evm/swap/substrate-
 import { useSwap as useSwapEvm } from '~/api/api-contract/_evm/swap/swap';
 import { useSwap as useSwapXrp } from '~/api/api-contract/_xrpl/swap/swap';
 
-import { TOKEN_DECIMAL } from '~/constants';
-
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { getNetworkFull, getTokenDecimal } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { IToken, SwapKind } from '~/types';
 
@@ -43,11 +41,14 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
       SwapKind.GivenIn,
       fromToken?.address || '',
       toToken?.address || '',
-      parseUnits(`${fromInput || 0}`, TOKEN_DECIMAL[currentNetwork]),
+      parseUnits(`${fromInput || 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
       '0x0',
     ],
     fundManagement: [evmAddress, false, evmAddress, false],
-    limit: parseUnits(`${(toInput ?? 0) * (1 - slippage / 100)}`, TOKEN_DECIMAL[currentNetwork]),
+    limit: parseUnits(
+      `${(toInput ?? 0) * (1 - slippage / 100)}`,
+      getTokenDecimal(currentNetwork, toToken?.symbol)
+    ),
     enabled,
   });
 
@@ -58,11 +59,14 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
       SwapKind.GivenIn,
       fromToken?.address || '',
       toToken?.address || '',
-      parseUnits(`${fromInput ?? 0}`, TOKEN_DECIMAL[currentNetwork]),
+      parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
       '0x0',
     ],
     fundManagement: [fpassAddress, false, fpassAddress, false],
-    limit: parseUnits(`${(toInput ?? 0) * (1 - slippage / 100)}`, TOKEN_DECIMAL[currentNetwork]),
+    limit: parseUnits(
+      `${(toInput ?? 0) * (1 - slippage / 100)}`,
+      getTokenDecimal(currentNetwork, toToken?.symbol)
+    ),
     proxyEnabled: enabled,
   });
 

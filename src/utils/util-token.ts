@@ -19,3 +19,13 @@ export const getWrappedTokenAddress = (network: NETWORK) => {
   if (network === NETWORK.EVM_SIDECHAIN) return EVM_TOKEN_ADDRESS[NETWORK.EVM_SIDECHAIN].WXRP;
   return undefined;
 };
+
+export const getTokenDecimal = (network: NETWORK, symbol?: string) => {
+  if (network === NETWORK.THE_ROOT_NETWORK) {
+    if (symbol === 'XRP' || symbol === 'ROOT') return 6;
+    return 18;
+  }
+  if (network === NETWORK.EVM_SIDECHAIN) return 18;
+  if (network === NETWORK.XRPL) return 6;
+  return 6;
+};
