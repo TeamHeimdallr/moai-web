@@ -15,7 +15,6 @@ export const Section1 = () => {
   const { isMD } = useMediaQuery();
 
   const handleHighlight = (progress: number) => {
-    console.log(progress);
     if (progress < 1 / 3) setHighlightedTextNumber(1);
     else if (progress < 2 / 3) setHighlightedTextNumber(2);
     else setHighlightedTextNumber(3);
@@ -48,11 +47,14 @@ export const Section1 = () => {
 };
 
 const Wrapper = tw.div`flex w-full h-[400vh]`;
-const InnerWrapper = tw.div`relative flex w-full h-screen py-280 gap-20 justify-center sticky top-0
-  md:(justify-start gap-40)
+const InnerWrapper = tw.div`relative flex w-full h-screen py-140 gap-20 justify-center sticky top-0
+  md:(justify-start gap-40 py-280)
 `;
 const QuoteImage = tw(LazyLoadImage)``;
-const TextWrapper = tw.div`w-266 md:w-732`;
+const TextWrapper = tw.div`
+  w-266 
+  md:w-405 
+  lg:w-732`;
 interface TextProps {
   highlighted?: boolean;
 }
@@ -62,6 +64,6 @@ const Text = styled(motion.span)<TextProps>(({ highlighted }) => [
   `,
   highlighted ? tw`text-primary-60` : tw`text-neutral-40`,
   css`
-    transition: color 0.5s;
+    transition: color 0.7s;
   `,
 ]);
