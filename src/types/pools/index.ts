@@ -147,6 +147,18 @@ export type SwapSingleSwapInput = [
   string, // 0x0 하드코딩
 ];
 
+export type SwapBatchSwapInput = [
+  string, // pool id
+  bigint, // asset in index
+  bigint, // asset out index
+  bigint, // amount
+  string, // 0x0 하드코딩
+];
+
+export type SwapBatchSwapAsset = [
+  string, // token address
+];
+
 /**
  * XRP
  */

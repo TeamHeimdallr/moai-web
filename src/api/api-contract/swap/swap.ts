@@ -2,7 +2,8 @@ import { useParams } from 'react-router-dom';
 import { parseUnits } from 'viem';
 import { Address } from 'wagmi';
 
-import { useSwap as useSwapFpass } from '~/api/api-contract/_evm/swap/substrate-swap';
+import { useBatchSwap as useBatchSwapFpass } from '~/api/api-contract/_evm/swap/substrate-batch-swap';
+// import { useSwap as useSwapFpass } from '~/api/api-contract/_evm/swap/substrate-swap';
 import { useSwap as useSwapEvm } from '~/api/api-contract/_evm/swap/swap';
 import { useSwap as useSwapXrp } from '~/api/api-contract/_xrpl/swap/swap';
 
@@ -52,16 +53,10 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
     enabled,
   });
 
-  const resFpass = useSwapFpass({
-    poolId: id,
-    singleSwap: [
-      id as Address, // pool id
-      SwapKind.GivenIn,
-      fromToken?.address || '',
-      toToken?.address || '',
-      parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
-      '0x0',
-    ],
+  const resFpass = useBatchSwapFpass({
+    fromToken: (fromToken?.address || '0x0') as Address,
+    toToken: (toToken?.address || '0x0') as Address,
+    swapAmount: parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
     fundManagement: [fpassAddress, false, fpassAddress, false],
     limit: parseUnits(
       `${(toInput ?? 0) * (1 - slippage / 100)}`,
