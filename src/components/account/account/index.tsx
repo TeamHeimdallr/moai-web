@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
@@ -129,7 +130,7 @@ const ConnectedRoot = styled.div<DivProps>(({ tripleConnected }) => [
   tripleConnected ? tw`absolute-center` : tw`left-9`,
 ]);
 
-const Image = tw.img`
+const Image = tw(LazyLoadImage)`
   w-20 h-20 object-cover flex-center rounded-full
 `;
 

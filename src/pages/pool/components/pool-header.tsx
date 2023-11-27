@@ -1,3 +1,4 @@
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
@@ -92,7 +93,7 @@ const BadgeWrapper = tw.div`
 const Badge = tw.div`
   w-40 h-40 absolute flex-center
 `;
-const Image = tw.img`
+const Image = tw(LazyLoadImage)`
   w-40 h-40 object-cover flex-center
 `;
 

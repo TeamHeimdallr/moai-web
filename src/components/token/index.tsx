@@ -1,5 +1,6 @@
 import { HTMLAttributes, ReactNode } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { css, styled } from 'twin.macro';
 import { toHex } from 'viem';
 
@@ -110,7 +111,7 @@ const Percentage = tw.div`
 interface TokenImageWrapperProps {
   type?: 'large' | 'small';
 }
-const TokenImageWrapper = styled.img<TokenImageWrapperProps>(({ type }) => [
+const TokenImageWrapper = styled(LazyLoadImage)<TokenImageWrapperProps>(({ type }) => [
   tw`flex-shrink-0 flex-center`,
   type === 'large' && tw`w-24 h-24`,
   type === 'small' && tw`w-20 h-20`,

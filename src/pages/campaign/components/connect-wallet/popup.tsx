@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { styled } from 'twin.macro';
 
 import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
@@ -103,7 +104,7 @@ const Tab = styled.div<Props>(({ selected }) => [
   tw`font-b-16 clickable`,
   selected ? tw`text-primary-60` : tw`text-neutral-60`,
 ]);
-const WalletImage = tw.img`
+const WalletImage = tw(LazyLoadImage)`
   w-36 h-36 rounded-8 flex-center object-cover overflow-hidden
 `;
 const NameWrapper = tw.div`

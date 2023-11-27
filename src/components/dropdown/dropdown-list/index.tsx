@@ -1,4 +1,5 @@
 import { HTMLAttributes } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -64,7 +65,7 @@ const Wrapper = styled.div<WrapperProps>(({ disabled }) => [
     `,
 ]);
 
-const Image = tw.img`
+const Image = tw(LazyLoadImage)`
   w-24 h-24 object-cover flex-shrink-0 flex-center
 `;
 

@@ -1,3 +1,4 @@
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw from 'twin.macro';
 
 import { imageWalletFuturepass } from '~/assets/images';
@@ -22,4 +23,4 @@ const Wrapper = tw.div`
   `;
 const Text = tw.div`font-b-20 text-neutral-60 `;
 const LogoWrapper = tw.div`flex gap-8 flex-center`;
-const LogoImage = tw.img`w-80`;
+const LogoImage = tw(LazyLoadImage)`w-80`;

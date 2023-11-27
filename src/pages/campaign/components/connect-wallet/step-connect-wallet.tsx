@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { keyframes } from '@emotion/react';
 import tw, { css, styled } from 'twin.macro';
 
@@ -91,8 +92,8 @@ const Wallet = styled.div<WalletProps>(({ isLoading }) => [
   isLoading && tw`bg-neutral-20`,
 ]);
 const WalletWrapper = tw.div`flex flex-col gap-8`;
-const NetworkImage = tw.img`w-24 h-24`;
-const WalletImage = tw.img`
+const NetworkImage = tw(LazyLoadImage)`w-24 h-24`;
+const WalletImage = tw(LazyLoadImage)`
   w-36 h-36 rounded-8 flex-center object-cover overflow-hidden
 `;
 const WalletInnerWrapper = tw.div`
@@ -101,7 +102,7 @@ const WalletInnerWrapper = tw.div`
 const Name = tw.div`
   font-m-16 text-neutral-100
 `;
-const LoadingIcon = styled.img`
+const LoadingIcon = styled(LazyLoadImage)`
   animation: ${() => css`
     ${keyframes`
     from {

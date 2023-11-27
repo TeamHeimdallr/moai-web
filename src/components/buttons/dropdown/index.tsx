@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -80,7 +81,7 @@ const Icon = styled.div<Props>(({ opened }) => [
 
 const Text = tw.div`font-m-14`;
 
-const Image = tw.img`
+const Image = tw(LazyLoadImage)`
   flex-center object-cover w-20 h-20
   md:(w-24 h-24)
 `;
