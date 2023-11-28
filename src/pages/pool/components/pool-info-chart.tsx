@@ -117,7 +117,12 @@ export const PoolInfoChart = () => {
                 },
                 layout: {
                   autoPadding: false,
-                  padding: 0,
+                  padding: {
+                    top: 0,
+                    right: 5,
+                    bottom: 0,
+                    left: 0,
+                  },
                 },
                 scales: {
                   x: {

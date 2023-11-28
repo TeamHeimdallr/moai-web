@@ -4,8 +4,10 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { api } from '~/api/axios';
 
 import { encodeQuery } from '~/utils';
+import { NETWORK } from '~/types';
 
 interface Queries {
+  network: NETWORK;
   from: string;
   to: string;
   amount: string; // bigint

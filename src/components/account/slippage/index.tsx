@@ -64,7 +64,6 @@ export const Slippage = ({ shadow }: Props) => {
               selected={!inputFocus && manual && !!slippage}
             >
               <SlippageInputWrapper>
-                {/* @ts-expect-error Server Component */}
                 <AutosizeInput
                   name="slippage"
                   autoFocus
@@ -153,30 +152,3 @@ const SlippageInputWrapper = styled.div(() => [
     }
   `,
 ]);
-
-//  <SlippageOption
-//             onClick={() => setInputFocus(true)}
-//             ref={manualSlippageRef}
-//             selected={inputFocus || (manual && !!slippage)}
-//           >
-//             {inputFocus || (manual && slippage) ? (
-//               <SlippageInputWrapper>
-//                 {/* @ts-expect-error Server Component */}
-//                 <AutosizeInput
-//                   name="slippage"
-//                   autoFocus
-//                   type="number"
-//                   inputMode="numeric"
-//                   placeholder="0.00"
-//                   extraWidth={0}
-//                   value={slippage}
-//                   onChange={handleInputChange}
-//                   min={0}
-//                   max={100}
-//                 />
-//                 %
-//               </SlippageInputWrapper>
-//             ) : (
-//               t('or enter manually')
-//             )}
-//           </SlippageOption>

@@ -53,7 +53,6 @@ export const useApprove = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const internalEnabled = enabled && !!walletAddress && !!spender && isFpass && !!tokenAddress;
-
   const { isLoading: isReadLoading, refetch } = useContractRead({
     address: tokenAddress,
     abi: ERC20_TOKEN_ABI,

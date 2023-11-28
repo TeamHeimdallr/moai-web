@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { BigNumber } from 'ethers';
 import tw, { css, styled } from 'twin.macro';
+import { formatUnits, parseUnits } from 'viem';
 
 import { useSwap } from '~/api/api-contract/swap/swap';
 import { useApprove } from '~/api/api-contract/token/approve';
-import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
+import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL } from '~/constants';
+import { EVM_VAULT_ADDRESS, SCANNER_URL } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -22,10 +24,16 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { DATE_FORMATTER, formatFloat, formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
+import {
+  DATE_FORMATTER,
+  formatFloat,
+  formatNumber,
+  getNetworkFull,
+  getTokenDecimal,
+} from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
-import { IPool } from '~/types';
+import { IPool, NETWORK } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 interface Props {
@@ -34,14 +42,13 @@ interface Props {
 }
 export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const { t } = useTranslation();
   const { network } = useParams();
   const { selectedNetwork, isXrp } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippage: slippageRaw } = useSlippageStore();
@@ -57,19 +64,29 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   } = useSwapStore();
   const numFromInput = Number(fromInput) || 0;
 
-  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+  const { data: swapInfoData } = useSorQuery(
     {
-      params: {
-        networkAbbr: currentNetworkAbbr,
-        poolId: swapOptimizedPathPool?.poolId || '',
+      queries: {
+        network: currentNetwork,
+        from: fromToken?.address || '',
+        to: toToken?.address || '',
+        amount: parseUnits(
+          (fromInput || 0).toString(),
+          getTokenDecimal(currentNetwork, fromToken?.symbol)
+        ).toString(),
       },
     },
     {
-      enabled: !!swapOptimizedPathPool && !!currentNetworkAbbr,
+      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
+      staleTime: 2000,
     }
   );
-  const { poolVaultAmm } = poolVaultAmmData || {};
-  const { vault } = poolVaultAmm || {};
+  const toInputFromSor = Number(
+    formatUnits(
+      BigNumber.from(swapInfoData?.data?.returnAmountConsideringFees || 0).toBigInt(),
+      getTokenDecimal(currentNetwork, toToken?.symbol)
+    )
+  );
 
   /* swap optimized path pool의 해당 토큰 balance와 price */
   const { balance: fromTokenReserveRaw } = swapOptimizedPathPool?.compositions?.find(
@@ -88,9 +105,9 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   };
   const toTokenReserve = toTokenReserveRaw || 0;
 
-  const fee = swapOptimizedPathPool?.trandingFees || 0;
+  const fee = swapOptimizedPathPool?.tradingFee || 0;
 
-  const toInput =
+  const toInputFromSinglePool =
     fromToken && toToken
       ? fromInput
         ? Number(
@@ -103,6 +120,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
         : undefined
       : undefined;
 
+  const toInput = toInputFromSor || toInputFromSinglePool || 0;
   const numToInput = Number(toInput) || 0;
   const swapRatio =
     fromInput && toInput
@@ -117,11 +135,12 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     refetch: refetchFromTokenAllowance,
   } = useApprove({
     amount: numFromInput,
+    symbol: fromToken?.symbol || '',
     address: fromToken?.address || '',
     issuer: fromToken?.address || '',
-    spender: vault || '',
+    spender: EVM_VAULT_ADDRESS[currentNetwork] || '',
     currency: fromToken?.currency || '',
-    enabled: numFromInput > 0 && !isXrp,
+    enabled: fromToken && numFromInput > 0 && !isXrp,
   });
 
   const {
@@ -132,11 +151,12 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     refetch: refetchToTokenAllowance,
   } = useApprove({
     amount: numToInput,
+    symbol: toToken?.symbol || '',
     address: toToken?.address || '',
     issuer: toToken?.address || '',
-    spender: vault || '',
+    spender: EVM_VAULT_ADDRESS[currentNetwork] || '',
     currency: toToken?.currency || '',
-    enabled: numToInput > 0 && isXrp,
+    enabled: toToken && numToInput > 0 && isXrp,
   });
 
   const validAmount = numFromInput > 0 || numToInput > 0;
@@ -155,7 +175,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     fromInput: numFromInput,
     toToken: toToken,
     toInput: numToInput,
-    enabled: !!swapOptimizedPathPool?.poolId && validAllowance && validAmount,
+    enabled: !!(swapInfoData || swapOptimizedPathPool?.poolId) && validAllowance && validAmount,
   });
 
   const txDate = new Date(blockTimestamp ?? 0);
@@ -168,17 +188,21 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       : '';
 
   const fromTokenPrice =
-    swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol)?.price || 0;
+    fromToken?.price ||
+    swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol)?.price ||
+    0;
   const fromTokenValue = numFromInput * fromTokenPrice;
   const toTokenPrice =
-    swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol)?.price || 0;
+    toToken?.price ||
+    swapOptimizedPathPool?.compositions?.find(c => c.symbol === toToken?.symbol)?.price ||
+    0;
   const toTokenValue = numToInput * toTokenPrice;
 
   const currentValue = selectedDetailInfo === 'TOKEN' ? numToInput : toTokenValue;
   const currentUnit = selectedDetailInfo === 'TOKEN' ? toToken?.symbol || '' : 'USD';
-  const totalAfterFee = (1 - (swapOptimizedPathPool?.trandingFees || 0.003)) * (currentValue || 0);
+  const totalAfterFee = (1 - (swapOptimizedPathPool?.tradingFee || 0.003)) * (currentValue || 0);
 
-  const slippageText = (slippage * 100).toFixed(1);
+  const slippageText = `${Number(slippage.toFixed(2))}%`;
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
 
   const step = useMemo(() => {
@@ -203,7 +227,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   }, [allowFromTokenLoading, allowToTokenLoading, isXrp, step, swapLoading]);
 
   const buttonText = useMemo(() => {
-    if (isSuccess) return t('Return to pool page');
+    if (isSuccess) return t('Close');
 
     if (isXrp) {
       if (!allowanceToToken) return t('approve-swap-message', { token: toToken?.symbol });
@@ -226,9 +250,9 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     if (isLoading) return;
     if (isSuccess) {
       close();
-      navigate(
-        `/pools/${getNetworkAbbr(swapOptimizedPathPool?.network)}/${swapOptimizedPathPool?.poolId}`
-      );
+      // navigate(
+      //   `/pools/${getNetworkAbbr(swapOptimizedPathPool?.network)}/${swapOptimizedPathPool?.poolId}`
+      // );
       return;
     }
 
@@ -294,7 +318,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                 {t('swap-success-message', {
                   fromValue: fromInput,
                   fromToken: fromToken?.symbol,
-                  toValue: totalAfterSlippage,
+                  toValue: formatNumber(totalAfterSlippage, 6),
                   toToken: toToken?.symbol,
                 })}
               </SuccessSubTitle>
@@ -302,7 +326,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
             <List title={t(`Total swap`)}>
               <TokenList
-                title={`${totalAfterSlippage} ${toToken?.symbol}`}
+                title={`${formatNumber(totalAfterSlippage, 6)} ${toToken?.symbol}`}
                 description={`$${formatNumber(toTokenValue, 4)}`}
                 image={toToken?.image}
                 type="large"

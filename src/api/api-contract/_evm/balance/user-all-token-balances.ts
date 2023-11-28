@@ -6,7 +6,7 @@ import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { IToken, NETWORK } from '~/types';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
@@ -21,12 +21,13 @@ export const useUserAllTokenBalances = () => {
   const { address: walletAddress } = isFpass ? fpass : evm;
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
   const chainId = useNetworkId(currentNetwork);
 
   const { data: tokensData } = useGetTokensQuery(
     {
       queries: {
-        filter: 'network:in:trn,evm',
+        filter: `network:in:${currentNetworkAbbr}`,
       },
     },
     { staleTime: 60 * 1000 }
@@ -67,7 +68,7 @@ export const useUserAllTokenBalances = () => {
   const tokenDecimalsRaw = (tokenDecimalsData?.map(d => d.result) || 18) as number[];
 
   const tokenBalances = tokenBalancesRaw.map((balance, i) =>
-    Number(formatUnits(balance, tokenDecimalsRaw?.[i] || 18))
+    Number(formatUnits(balance || 0n, tokenDecimalsRaw?.[i] || 18))
   );
 
   const userAllTokens = (tokens?.map((t, i) => ({ ...t, balance: tokenBalances?.[i] || 0 })) ||

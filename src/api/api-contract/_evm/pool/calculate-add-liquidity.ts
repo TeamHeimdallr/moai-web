@@ -34,7 +34,7 @@ export const useCalculateAddLiquidity = ({ amountsIn }: Props) => {
     }
   );
   const { pool } = poolData ?? {};
-  const { address: poolAddress, compositions, trandingFees } = pool || {};
+  const { address: poolAddress, compositions, tradingFee } = pool || {};
 
   const { data: lpTokenTotalSupplyData } = useContractRead({
     address: poolAddress as Address,
@@ -58,7 +58,7 @@ export const useCalculateAddLiquidity = ({ amountsIn }: Props) => {
     normalizedWeights: compositions?.map(c => c.currentWeight || 0) || [],
     amountsIn,
     bptTotalSupply: lpTokenTotalSupply,
-    swapFeePercentage: trandingFees || 0,
+    swapFeePercentage: tradingFee || 0,
   });
 
   return {

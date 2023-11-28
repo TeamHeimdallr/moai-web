@@ -28,7 +28,7 @@ export const useApprove = ({
   enabled,
 }: Props) => {
   const { network } = useParams();
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const chainId = useNetworkId(currentNetwork);
@@ -43,6 +43,7 @@ export const useApprove = ({
     !!walletAddress &&
     !!spender &&
     isEvm &&
+    !isFpass &&
     !isNativeToken({ address: tokenAddress, network: currentNetwork });
 
   const { isLoading: isReadLoading, refetch } = useContractRead({

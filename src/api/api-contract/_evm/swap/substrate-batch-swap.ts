@@ -4,7 +4,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
 import { Address, encodeFunctionData } from 'viem';
-import { usePublicClient } from 'wagmi';
+import { usePublicClient, useWalletClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
 import { getTrnApi } from '~/api/api-contract/_evm/substrate/get-trn-api';
@@ -18,7 +18,7 @@ import { EVM_VAULT_ADDRESS, IS_MAINNET } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { SwapFundManagementInput, SwapKind } from '~/types';
+import { NETWORK, SwapFundManagementInput, SwapKind } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
 
@@ -30,7 +30,7 @@ interface Props {
   swapAmount: bigint;
 
   fundManagement: SwapFundManagementInput;
-  limit?: bigint;
+  limit?: bigint[];
   deadline?: number;
   proxyEnabled?: boolean;
 }
@@ -39,10 +39,12 @@ export const useBatchSwap = ({
   toToken,
   swapAmount,
   fundManagement,
-  limit = BigInt(10),
+  limit = [BigInt(10)],
   deadline = 2000000000,
   proxyEnabled,
 }: Props) => {
+  const { data: walletClient } = useWalletClient();
+
   const { fpass } = useConnectedWallet();
   const { address: walletAddress, signer } = fpass;
 
@@ -58,6 +60,7 @@ export const useBatchSwap = ({
   const { data } = useSorQuery(
     {
       queries: {
+        network: NETWORK.THE_ROOT_NETWORK,
         from: fromToken,
         to: toToken,
         amount: swapAmount.toString(),
@@ -65,11 +68,21 @@ export const useBatchSwap = ({
     },
     {
       enabled: !!fromToken && !!toToken && !!swapAmount,
+      staleTime: 1000,
     }
   );
 
-  const swaps = data?.data.swaps ?? [];
+  const swapsRaw = data?.data.swaps ?? [];
+  const swaps = swapsRaw.map(({ poolId, assetInIndex, assetOutIndex, amount, userData }) => [
+    poolId,
+    assetInIndex,
+    assetOutIndex,
+    amount,
+    userData,
+  ]);
   const assets = data?.data.tokenAddresses ?? [];
+  const internalSwapLength = swaps.length - 1;
+  const limits = [limit[0], ...Array.from({ length: internalSwapLength }).map(() => 0n), limit[1]];
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
@@ -92,7 +105,7 @@ export const useBatchSwap = ({
           ? encodeFunctionData({
               abi: BALANCER_VAULT_ABI,
               functionName: 'batchSwap',
-              args: [SwapKind.GivenIn, swaps, assets, fundManagement, limit, deadline],
+              args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
             })
           : '0x0';
 
@@ -116,9 +129,9 @@ export const useBatchSwap = ({
         extrinsic.method
       );
 
-      const signature = await window.ethereum.request({
+      const signature = await walletClient?.request({
         method: 'personal_sign',
-        params: [ethPayload, signer],
+        params: [ethPayload, signer as Address],
       });
 
       const signedExtrinsic = extrinsic.addSignature(
