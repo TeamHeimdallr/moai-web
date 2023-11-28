@@ -16,6 +16,8 @@ import {
   imageWalletMetamask,
 } from '~/assets/images';
 
+import { IS_MAINNET } from '~/constants';
+
 import { ButtonIconSmall } from '~/components/buttons/icon';
 
 import { usePopup } from '~/hooks/components';
@@ -139,7 +141,9 @@ export const AccountDetail = () => {
         <AccountNotConnected
           onClick={() => {
             if (evm.address) {
-              openFuturepassCreate();
+              // in mainnet, open futurepass create page
+              if (IS_MAINNET) window.open('https://futurepass.futureverse.app/stuff/');
+              else openFuturepassCreate();
             } else {
               setWalletType({ xrpl: false, evm: true });
               openConnectWallet();
