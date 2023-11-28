@@ -58,8 +58,10 @@ export const Contents = () => {
         transition={{ ease: [0.4, 0, 0.2, 1], duration: 0.6, delay: 0.4 }}
       >
         <TextMain>
-          Your Universal <br />
-          Gateway to <br />
+          Your Universal
+          <br />
+          Gateway to the
+          <br />
           Multi-chain Liquidity
         </TextMain>
         <ButtonWrapper>

@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
+import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
+
 import { ASSET_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
@@ -8,6 +10,7 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { formatNumber } from '~/utils';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID } from '~/types';
 
@@ -15,11 +18,21 @@ export const MainLayout = () => {
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
 
-  const { isEvm, isXrp } = useNetwork();
+  const { selectedNetwork, isEvm, isXrp } = useNetwork();
   const { evm, xrp } = useConnectedWallet();
   const { setWalletType } = useWalletTypeStore();
 
+  const { currentAddress } = useConnectedWallet(selectedNetwork);
   const isConnected = !!evm.address || !!xrp.address;
+
+  const { data } = useGetMyPoolsQuery({
+    queries: {
+      take: 10000,
+      sort: 'value:desc',
+      walletAddress: currentAddress || '',
+    },
+  });
+  const total = data?.pools?.reduce((acc, cur) => (acc += Number(cur.value)), 0);
 
   const { t } = useTranslation();
 
@@ -31,12 +44,11 @@ export const MainLayout = () => {
       {isConnected ? (
         <SubTitleWrapper>
           <Label>{t('My Moai balance')}</Label>
-          {/* TODO: moai balance */}
-          <SubTitle>{`$0`}</SubTitle>
+          <SubTitle>{`$${formatNumber(total)}`}</SubTitle>
         </SubTitleWrapper>
       ) : (
         <>
-          <Title>{'Your Universal Gateway to\nMulti-chain Liquidity'}</Title>
+          <Title>{'Your Universal Gateway to the\nMulti-chain Liquidity'}</Title>
           <ButtonWrapper>
             <ButtonPrimaryLarge
               text={t('Connect wallet')}

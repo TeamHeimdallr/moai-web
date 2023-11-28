@@ -66,13 +66,56 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
   };
 
   const handleOptimize = () => {
-    const criteria = userPoolTokens?.reduce(
-      (max, cur) => ((max?.value ?? 0) < (cur?.value ?? 0) ? max : cur),
-      userPoolTokens?.[0] || {}
-    );
-    const idx = userPoolTokens?.findIndex(t => t.symbol === criteria.symbol);
+    const b1 = compositions?.[0]?.balance || 0;
+    const b2 = compositions?.[1]?.balance || 0;
 
-    handleChangeAuto({ token: criteria, value: criteria.balance, idx });
+    const w1 = b1 + b1 ? b1 / (b1 + b2) : 0;
+    const w2 = b1 + b2 ? b2 / (b1 + b2) : 0;
+
+    // if pool weight 1:0 set second input to max
+    if (w1 === 0) {
+      setInputValues([0, userPoolTokens?.[1]?.balance || 0]);
+      return;
+    }
+    // if pool weight 0:1 set first input to max
+    if (w2 === 0) {
+      setInputValues([userPoolTokens?.[0]?.balance || 0, 0]);
+      return;
+    }
+
+    // all input zero, set first input to 1, second input to optimized
+    if (inputValues.every(v => v === 0)) {
+      const firstInput = 1;
+      const secondInput = strip(1 * (w1 / w2));
+
+      setInputValues([firstInput, secondInput]);
+      return;
+    }
+
+    // all input not zero, remain first input, change second input to optimized
+    if (inputValues.every(v => v !== 0)) {
+      const secondInput = strip(inputValues[0] * (w1 / w2));
+      setInputValues([inputValues[0], secondInput]);
+
+      return;
+    }
+
+    // input1 not zero, remain first input, change second input to optimized
+    if (inputValues[0] !== 0 && inputValues[1] === 0) {
+      const secondInput = strip(inputValues[0] * (w1 / w2));
+      setInputValues([inputValues[0], secondInput]);
+
+      return;
+    }
+    // input1 not zero, remain first input, change second input to optimized
+    if (inputValues[0] === 0 && inputValues[1] !== 0) {
+      const firstInput = strip(inputValues[1] * (w2 / w1));
+      setInputValues([firstInput, inputValues[1]]);
+
+      return;
+    }
+
+    return;
   };
 
   const isValid =
