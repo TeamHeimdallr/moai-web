@@ -36,7 +36,7 @@ export const MainLayout = () => {
         </SubTitleWrapper>
       ) : (
         <>
-          <Title>{'Your Universal Gateway to\nMulti-chain Liquidity'}</Title>
+          <Title>{'Your Universal Gateway to the\nMulti-chain Liquidity'}</Title>
           <ButtonWrapper>
             <ButtonPrimaryLarge
               text={t('Connect wallet')}

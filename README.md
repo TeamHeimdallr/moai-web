@@ -1,6 +1,6 @@
 # MOAI-FINANCE WEB
 
-Official web for the Moai Finance - Your Universal Gateway to Multi-chain Liquidity
+Official web for the Moai Finance - Your Universal Gateway to the Multi-chain Liquidity
 
 ![moai devnet](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-devnet.yml/badge.svg?branch=main)
 ![moai testnet](https://github.com/TeamHeimdallr/moai-web/actions/workflows/deploy-testnet.yml/badge.svg?branch=deploy-xrpl)
