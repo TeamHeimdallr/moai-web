@@ -51,7 +51,7 @@ export interface IPool {
   value: number;
   volume: number;
   apr: number;
-  trandingFees: number;
+  tradingFee: number;
 
   createdAt: Date;
   updatedAt: Date;

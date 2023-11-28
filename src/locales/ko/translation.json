@@ -176,5 +176,7 @@
   "swap-success-message": "{{fromValue}} {{fromToken}}로 {{toValue}} {{toToken}}를 성공적으로 구매했습니다.",
   "Total swap": "총액",
 
-  "Get started": "시작하기"
+  "Get started": "시작하기",
+
+  "Close": "닫기"
 }

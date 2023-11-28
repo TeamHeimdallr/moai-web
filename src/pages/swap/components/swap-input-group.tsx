@@ -3,12 +3,15 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { BigNumber } from 'ethers';
 import { strip } from 'number-precision';
 import tw from 'twin.macro';
+import { formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
 
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetSwapOptimizedPathQuery } from '~/api/api-server/pools/get-swap-optimized-path';
+import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconDown } from '~/assets/icons';
@@ -20,8 +23,15 @@ import { Token } from '~/components/token';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatFloat, formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
+import {
+  formatFloat,
+  formatNumber,
+  getNetworkAbbr,
+  getNetworkFull,
+  getTokenDecimal,
+} from '~/utils';
 import { useSwapStore } from '~/states/pages';
+import { NETWORK } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 import { SelectFromTokenPopup } from './select-token-from-popup';
@@ -90,6 +100,30 @@ export const SwapInputGroup = () => {
   );
   const { pool: swapOptimizedPathPool } = swapOptimizedPathPoolData || {};
 
+  const { data: swapInfoData } = useSorQuery(
+    {
+      queries: {
+        network: currentNetwork,
+        from: fromToken?.address || '',
+        to: toToken?.address || '',
+        amount: parseUnits(
+          (fromInput || 0).toString(),
+          getTokenDecimal(currentNetwork, fromToken?.symbol)
+        ).toString(),
+      },
+    },
+    {
+      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
+      staleTime: 2000,
+    }
+  );
+  const toInputFromSor = Number(
+    formatUnits(
+      BigNumber.from(swapInfoData?.data?.returnAmountConsideringFees || 0).toBigInt(),
+      getTokenDecimal(currentNetwork, toToken?.symbol)
+    )
+  );
+
   /* swap optimized path pool의 해당 토큰 balance와 price */
   const { balance: fromTokenReserveRaw, price: fromTokenPriceRaw } =
     swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol) || {
@@ -97,7 +131,7 @@ export const SwapInputGroup = () => {
       price: 0,
     };
   const fromTokenReserve = fromTokenReserveRaw || 0;
-  const fromTokenPrice = fromTokenPriceRaw || 0;
+  const fromTokenPrice = fromToken?.price || fromTokenPriceRaw || 0;
 
   /* swap 하고자 하는 토큰 유저 balance */
   const fromTokenBalance = Number(
@@ -111,7 +145,7 @@ export const SwapInputGroup = () => {
       price: 0,
     };
   const toTokenReserve = toTokenReserveRaw || 0;
-  const toTokenPrice = toTokenPriceRaw || 0;
+  const toTokenPrice = toToken?.price || toTokenPriceRaw || 0;
 
   /* swap 하고자 하는 토큰 유저 balance */
   const toTokenBalance = Number(
@@ -126,9 +160,9 @@ export const SwapInputGroup = () => {
   const { control, setValue, formState } = useForm<InputFormState>({
     resolver: yupResolver(schema),
   });
-  const fee = swapOptimizedPathPool?.trandingFees || 0;
+  const fee = swapOptimizedPathPool?.tradingFee || 0;
 
-  const toInput =
+  const toInputFromSinglePool =
     fromToken && toToken
       ? fromInput
         ? Number(
@@ -144,6 +178,7 @@ export const SwapInputGroup = () => {
         : undefined
       : undefined;
 
+  const toInput = toInputFromSor || toInputFromSinglePool || 0;
   const swapRatio =
     fromInput && toInput
       ? (toInput || 0) / (Number(fromInput || 0) === 0 ? 0.0001 : Number(fromInput || 0))

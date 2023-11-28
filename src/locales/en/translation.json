@@ -163,5 +163,7 @@
   "swap-success-message": "Successfully swapped {{fromValue}} {{fromToken}} to {{toValue}} {{toToken}}",
   "Total swap": "Total",
 
-  "Get started": "Get started"
+  "Get started": "Get started",
+
+  "Close": "Close"
 }

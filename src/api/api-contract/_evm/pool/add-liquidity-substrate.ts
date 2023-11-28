@@ -105,11 +105,11 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
               functionName: 'joinPool',
               args: [
                 poolId,
-                walletAddress,
-                walletAddress,
+                walletAddress, // address sender, Address sending tokens to the pool
+                walletAddress, // address recipient, Address receiving BPT (usually the same as sender)
                 [
                   sortedTokenAddressses,
-                  sortedAmountsIn,
+                  sortedAmountsIn, // max amount in
                   WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
                   false,
                 ],

@@ -81,7 +81,7 @@ export const useUserPoolTokenBalances = () => {
   const tokenDecimalsRaw = (tokenDecimalsData?.map(d => d.result) || 18) as number[];
 
   const tokenBalances = tokenBalancesRaw.map((balance, i) =>
-    Number(formatUnits(balance, tokenDecimalsRaw?.[i] || 18))
+    Number(formatUnits(balance || 0n, tokenDecimalsRaw?.[i] || 18))
   );
 
   const lpTokenBalance = tokenBalances?.[0] || 0;

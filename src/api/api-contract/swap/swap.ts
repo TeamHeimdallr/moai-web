@@ -58,10 +58,13 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
     toToken: (toToken?.address || '0x0') as Address,
     swapAmount: parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
     fundManagement: [fpassAddress, false, fpassAddress, false],
-    limit: parseUnits(
-      `${(toInput ?? 0) * (1 - slippage / 100)}`,
-      getTokenDecimal(currentNetwork, toToken?.symbol)
-    ),
+    limit: [
+      parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
+      -parseUnits(
+        `${(toInput ?? 0) * (1 - slippage / 100)}`,
+        getTokenDecimal(currentNetwork, toToken?.symbol)
+      ),
+    ],
     proxyEnabled: enabled,
   });
 

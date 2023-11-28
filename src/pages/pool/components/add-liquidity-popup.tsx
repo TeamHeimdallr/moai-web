@@ -84,6 +84,7 @@ export const AddLiquidityPopup = ({
     refetch: refetchAllowance1,
   } = useApprove({
     amount: token1Amount,
+    symbol: tokensIn?.[0]?.symbol || '',
     address: tokensIn?.[0]?.address || '',
     issuer: tokensIn?.[0]?.address || '',
     spender: vault || '',
@@ -99,6 +100,7 @@ export const AddLiquidityPopup = ({
     refetch: refetchAllowance2,
   } = useApprove({
     amount: token2Amount,
+    symbol: tokensIn?.[1]?.symbol || '',
     address: tokensIn?.[1]?.address || '',
     issuer: tokensIn?.[1]?.address || '',
     spender: vault || '',
@@ -114,6 +116,7 @@ export const AddLiquidityPopup = ({
     refetch: refetchAllowance3,
   } = useApprove({
     amount: bptOut,
+    symbol: lpToken?.symbol || '',
     address: lpToken?.address || '',
     issuer: lpToken?.address || '',
     spender: vault || '',

@@ -22,7 +22,7 @@ export const getWrappedTokenAddress = (network: NETWORK) => {
 
 export const getTokenDecimal = (network: NETWORK, symbol?: string) => {
   if (network === NETWORK.THE_ROOT_NETWORK) {
-    if (symbol === 'XRP' || symbol === 'ROOT') return 6;
+    if (symbol === 'XRP' || symbol === 'ROOT' || symbol === 'USDC') return 6;
     return 18;
   }
   if (network === NETWORK.EVM_SIDECHAIN) return 18;
