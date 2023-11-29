@@ -14,7 +14,7 @@ import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { EVM_VAULT_ADDRESS, SCANNER_URL } from '~/constants';
+import { EVM_VAULT_ADDRESS, IS_MAINNET, IS_MAINNET2, SCANNER_URL } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -41,8 +41,10 @@ interface Props {
   refetchBalance?: () => void;
 }
 export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
+  // TODO: remove this when mainnet2 is ready
+  const swapDisabled = IS_MAINNET && !IS_MAINNET2;
+
   const queryClient = useQueryClient();
-  // const navigate = useNavigate();
 
   const { t } = useTranslation();
   const { network } = useParams();
@@ -77,7 +79,8 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       },
     },
     {
-      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
+      enabled:
+        !swapDisabled && currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
       staleTime: 2000,
     }
   );
@@ -247,6 +250,8 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   ]);
 
   const handleButtonClick = async () => {
+    if (swapDisabled) return;
+
     if (isLoading) return;
     if (isSuccess) {
       close();
@@ -301,7 +306,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={!fromToken || !toToken || isError}
+            disabled={swapDisabled || !fromToken || !toToken || isError}
           />
         </ButtonWrapper>
       }

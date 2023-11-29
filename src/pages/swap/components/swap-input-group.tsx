@@ -16,6 +16,8 @@ import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconDown } from '~/assets/icons';
 
+import { IS_MAINNET, IS_MAINNET2 } from '~/constants';
+
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { Token } from '~/components/token';
@@ -43,6 +45,9 @@ interface InputFormState {
   to: number;
 }
 export const SwapInputGroup = () => {
+  // TODO: remove this when mainnet2 is ready
+  const swapDisabled = IS_MAINNET && !IS_MAINNET2;
+
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { t } = useTranslation();
@@ -94,7 +99,7 @@ export const SwapInputGroup = () => {
       },
     },
     {
-      enabled: rightNetwork && !!currentNetworkAbbr,
+      enabled: !swapDisabled && rightNetwork && !!currentNetworkAbbr,
       staleTime: 1000 * 3,
     }
   );
@@ -113,7 +118,8 @@ export const SwapInputGroup = () => {
       },
     },
     {
-      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
+      enabled:
+        !swapDisabled && currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
       staleTime: 2000,
     }
   );
