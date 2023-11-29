@@ -14,7 +14,7 @@ import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-a
 import { COLOR } from '~/assets/colors';
 import { IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL } from '~/constants';
+import { IS_MAINNET, IS_MAINNET2, SCANNER_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -45,6 +45,9 @@ export const AddLiquidityPopup = ({
   priceImpact,
   refetchBalance,
 }: Props) => {
+  // TODO: temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+  const disableAddLiquidity = IS_MAINNET && !IS_MAINNET2;
+
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -340,7 +343,7 @@ export const AddLiquidityPopup = ({
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled
+            disabled={disableAddLiquidity}
           />
         </ButtonWrapper>
       }
