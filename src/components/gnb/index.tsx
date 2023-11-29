@@ -78,7 +78,10 @@ export const Gnb = () => {
               GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
                 <MenuWrapper
                   key={id}
-                  onClick={() => navigate(path)}
+                  onClick={() => {
+                    if (disabled || commingSoon) return;
+                    navigate(path);
+                  }}
                   selected={location.pathname === path}
                   disabled={!!disabled}
                   data-tooltip-id={commingSoon ? TOOLTIP_ID.COMMING_SOON : undefined}
