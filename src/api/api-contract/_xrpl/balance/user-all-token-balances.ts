@@ -73,11 +73,11 @@ export const useUserAllTokenBalances = () => {
           ...xrpToken,
           balance: formatUnits(BigInt(xrpTokenBalanceData?.result?.account_data?.Balance || 0), 6),
         },
-      ] as (IToken & { balance: string })[])
-    : ([] as (IToken & { balance: string })[]);
+      ] as (IToken & { balance: string; totalSupply: number })[])
+    : ([] as (IToken & { balance: string; totalSupply: number })[]);
 
   const tokenBalances = tokenBalancesData?.flatMap(d => {
-    const res: (IToken & { balance: number })[] = [];
+    const res: (IToken & { balance: number; totalSupply: number })[] = [];
 
     const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
     for (const key in assets) {
@@ -85,7 +85,7 @@ export const useUserAllTokenBalances = () => {
       const asset = assets[key];
 
       if (asset && composition)
-        res.push({ ...composition, balance: Number(asset?.[0]?.value || 0) });
+        res.push({ ...composition, balance: Number(asset?.[0]?.value || 0), totalSupply: 0 });
     }
 
     return res;
@@ -96,7 +96,10 @@ export const useUserAllTokenBalances = () => {
     tokenBalancesRefetch();
   };
 
-  const userAllTokens = [...xrpBalance, ...tokenBalances] as (IToken & { balance: number })[];
+  const userAllTokens = [...xrpBalance, ...tokenBalances] as (IToken & {
+    balance: number;
+    totalSupply: number; // TODO: totalSupply
+  })[];
 
   return {
     userAllTokenBalances: userAllTokens,

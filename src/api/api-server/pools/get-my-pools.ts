@@ -1,9 +1,5 @@
-import {
-  useInfiniteQuery,
-  UseInfiniteQueryOptions,
-  useQuery,
-  UseQueryOptions,
-} from '@tanstack/react-query';
+import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { AxiosError, AxiosResponse } from 'axios';
 
 import { api } from '~/api/axios';
 
@@ -12,18 +8,14 @@ import {
   IFilterMetadata,
   IFilterRequestQuery,
   IMyPoolList,
+  IMyPoolListRequest,
   IPaginationMetadata,
   IPaginationRequestQuery,
   ISortMetadata,
   ISortRequestQuery,
 } from '~/types';
 
-interface Queries extends IPaginationRequestQuery, IFilterRequestQuery, ISortRequestQuery {
-  walletAddress: string;
-}
-
-interface QueryOption extends UseQueryOptions<Response> {}
-interface InfinityQueryOption extends UseInfiniteQueryOptions<Response> {}
+interface Queries extends IPaginationRequestQuery, IFilterRequestQuery, ISortRequestQuery {}
 
 interface Request {
   queries: Queries;
@@ -38,14 +30,28 @@ interface Response {
   };
 }
 
-const axios = async (queries?: Queries) =>
-  (await api.get<Response>(`/pools/my${encodeQuery(queries)}`)).data;
+const axios = async (body: IMyPoolListRequest, queries?: Queries) =>
+  (
+    await api.post<Response, AxiosResponse<Response>, IMyPoolListRequest>(
+      `/pools/my${encodeQuery(queries)}`,
+      body
+    )
+  ).data;
 
-export const useGetMyPoolsQuery = (request: Request, options?: QueryOption) => {
+type MutateOptions = UseMutationOptions<
+  Response,
+  AxiosError<Response, IMyPoolListRequest>,
+  IMyPoolListRequest
+>;
+export const useGetMyPoolsQuery = (request: Request, options?: MutateOptions) => {
   const { queries } = request;
 
-  const queryKey = ['GET', 'POOLS', 'MY', queries];
-  const data = useQuery<Response>(queryKey, () => axios(queries), options);
+  const queryKey = ['POST', 'POOLS', 'MY', queries];
+  const data = useMutation<Response, AxiosError<Response, IMyPoolListRequest>, IMyPoolListRequest>(
+    queryKey,
+    axios,
+    options
+  );
 
   return {
     queryKey,
@@ -53,6 +59,7 @@ export const useGetMyPoolsQuery = (request: Request, options?: QueryOption) => {
   };
 };
 
+/*
 export const useGetMyPoolsInfinityQuery = (request: Request, options?: InfinityQueryOption) => {
   const { queries } = request;
 
@@ -77,3 +84,4 @@ export const useGetMyPoolsInfinityQuery = (request: Request, options?: InfinityQ
     ...data,
   };
 };
+*/

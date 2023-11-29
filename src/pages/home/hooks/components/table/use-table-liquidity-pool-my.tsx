@@ -1,8 +1,9 @@
-import { ReactNode, useEffect, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { useGetMyPoolsInfinityQuery } from '~/api/api-server/pools/get-my-pools';
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 
 import {
   TableColumn,
@@ -20,6 +21,8 @@ import { formatNumber } from '~/utils/util-number';
 import { useTableMyLiquidityPoolSortStore } from '~/states/components';
 
 export const useTableMyLiquidityPool = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [data, setData] = useState<any>([]);
   const navigate = useNavigate();
   const { selectedNetwork } = useNetwork();
   const { sort, setSort } = useTableMyLiquidityPoolSortStore();
@@ -29,14 +32,36 @@ export const useTableMyLiquidityPool = () => {
   const netwokrAbbr = getNetworkAbbr(selectedNetwork);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
 
-  const { data, hasNextPage, fetchNextPage } = useGetMyPoolsInfinityQuery({
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const userLpTokens = userAllTokenBalances.filter(item => item.isLpToken && item.balance > 0);
+
+  const { mutateAsync } = useGetMyPoolsQuery({
     queries: {
       take: 5,
       filter: `network:eq:${netwokrAbbr}`,
       sort: sort ? `${sort.key}:${sort.order}` : undefined,
-      walletAddress: currentAddress || '',
     },
   });
+
+  useEffect(() => {
+    if (!currentAddress || userLpTokens.length === 0) return;
+
+    const fetch = async () => {
+      const res = await mutateAsync?.({
+        walletAddress: currentAddress || '',
+        lpTokens: userLpTokens.map(item => ({
+          address: item.address,
+          balance: item.balance,
+          totalSupply: item.totalSupply,
+        })),
+      });
+      console.log(res);
+      setData(res);
+    };
+
+    fetch();
+  }, [currentAddress, userLpTokens, userLpTokens.length]);
+
   const pools = useMemo(() => data?.pages?.flatMap(page => page.pools) || [], [data?.pages]);
 
   const tableData = useMemo(

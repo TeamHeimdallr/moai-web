@@ -26,6 +26,15 @@ export interface IMyPoolList {
   apr: number;
 }
 
+export interface IMyPoolListRequest {
+  walletAddress: string;
+  lpTokens: {
+    address: string;
+    totalSupply: number;
+    balance: number;
+  }[];
+}
+
 export interface ITokenComposition extends IToken {
   balance?: number;
   price?: number;

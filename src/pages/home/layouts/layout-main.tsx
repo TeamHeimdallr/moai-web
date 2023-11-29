@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 
 import { ASSET_URL } from '~/constants';
@@ -10,7 +12,7 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkAbbr } from '~/utils';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID } from '~/types';
 
@@ -22,19 +24,40 @@ export const MainLayout = () => {
   const { evm, xrp } = useConnectedWallet();
   const { setWalletType } = useWalletTypeStore();
 
+  const netwokrAbbr = getNetworkAbbr(selectedNetwork);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
   const isConnected = !!evm.address || !!xrp.address;
 
-  const { data } = useGetMyPoolsQuery({
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const userLpTokens = userAllTokenBalances.filter(item => item.isLpToken && item.balance > 0);
+
+  const { mutateAsync } = useGetMyPoolsQuery({
     queries: {
-      take: 10000,
+      take: 100,
+      filter: `network:eq:${netwokrAbbr}`,
       sort: 'value:desc',
-      walletAddress: currentAddress || '',
     },
   });
-  const total = data?.pools?.reduce((acc, cur) => (acc += Number(cur.value)), 0);
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!currentAddress || userLpTokens.length === 0) return;
+
+    const fetch = async () => {
+      const res = await mutateAsync?.({
+        walletAddress: currentAddress || '',
+        lpTokens: userLpTokens.map(item => ({
+          address: item.address,
+          balance: item.balance,
+          totalSupply: item.totalSupply,
+        })),
+      });
+      console.log(res);
+    };
+
+    fetch();
+  }, [currentAddress, userLpTokens, userLpTokens.length]);
 
   return (
     <MainWrapper
@@ -44,7 +67,7 @@ export const MainLayout = () => {
       {isConnected ? (
         <SubTitleWrapper>
           <Label>{t('My Moai balance')}</Label>
-          <SubTitle>{`$${formatNumber(total)}`}</SubTitle>
+          <SubTitle>{`$${formatNumber(0)}`}</SubTitle>
         </SubTitleWrapper>
       ) : (
         <>
