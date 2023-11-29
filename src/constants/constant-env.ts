@@ -22,7 +22,7 @@ export const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJE
 
 export const BASE_URL = IS_MAINNET
   ? IS_MAINNET2
-    ? 'https://app-staging.moai-finance.xyz'
+    ? 'https://app-mainnet.moai-finance.xyz'
     : 'https://app.moai-finance.xyz'
   : IS_TESTNET
   ? 'https://app-testnet.moai-finance.xyz'
