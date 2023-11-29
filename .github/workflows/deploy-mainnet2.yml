@@ -1,0 +1,51 @@
+name: moai web deployment - mainnet2
+on:
+  push:
+    branches:
+      - mainnet2
+
+jobs:
+  deploy:
+    name: deploy mainnet
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout source code
+        uses: actions/checkout@master
+
+      - name: set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'latest'
+
+      - name: install packages
+        run: yarn
+
+      - name: create .env
+        run: |
+          jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' <<< "$SECRETS_CONTEXT" > .env
+        env:
+          SECRETS_CONTEXT: ${{ toJson(secrets) }}
+
+      - name: update .env
+        run: |
+          jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' <<< "$VARS_CONTEXT" >> .env
+        env:
+          VARS_CONTEXT: ${{ toJson(vars) }}
+
+      - name: update .env manual
+        run: |
+          echo VITE_IS_LOCAL=false >> .env
+          echo VITE_BLOCKCHAIN_ENV=mainnet2 >> .env
+          echo VITE_IS_MAIN2=true >> .env
+
+      - name: build
+        run: yarn build
+
+      - name: deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
+        run: |
+          aws s3 sync dist s3://${{ secrets.S3_BUCKET_MAINNET2 }}
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_ID_MAINNET2 }}  --paths '/*'
