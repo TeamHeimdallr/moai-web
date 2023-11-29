@@ -340,6 +340,7 @@ export const AddLiquidityPopup = ({
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
+            disabled
           />
         </ButtonWrapper>
       }

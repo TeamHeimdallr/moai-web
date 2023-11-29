@@ -116,6 +116,8 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   };
 
   const writeAsync = async () => {
+    // temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+    return;
     await writeAsyncBase?.();
   };
 

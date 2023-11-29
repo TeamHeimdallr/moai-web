@@ -44,6 +44,9 @@ export const UserPoolBalances = () => {
     compositions?.reduce((acc, cur) => (acc += `${cur.weight}${cur.symbol}`), '') || '';
 
   const handleAddLiquidity = () => {
+    // temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+    return;
+
     if (!address) return;
     navigate(`/pools/${network}/${id}/deposit`);
   };
@@ -86,7 +89,10 @@ export const UserPoolBalances = () => {
             <ButtonPrimary
               text={t('Add liquidity')}
               onClick={handleAddLiquidity}
-              disabled={!address}
+              disabled={
+                // temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+                true || !address
+              }
             />
           ) : isFpass && !fpass.address && evm.address ? (
             <ButtonPrimary
