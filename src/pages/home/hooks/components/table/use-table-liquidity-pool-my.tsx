@@ -1,8 +1,10 @@
-import { ReactNode, useEffect, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
+import { isEqual } from 'lodash-es';
 
-import { useGetMyPoolsInfinityQuery } from '~/api/api-server/pools/get-my-pools';
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 
 import {
   TableColumn,
@@ -13,13 +15,17 @@ import {
 } from '~/components/tables';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { useMediaQuery } from '~/hooks/utils';
+import { useMediaQuery, usePrevious } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { useTableMyLiquidityPoolSortStore } from '~/states/components';
+import { IMyPoolList } from '~/types';
 
 export const useTableMyLiquidityPool = () => {
+  const [poolsRaw, setPools] = useState<IMyPoolList[]>();
+  const [currentTake, setCurrentTake] = useState(5);
+
   const navigate = useNavigate();
   const { selectedNetwork } = useNetwork();
   const { sort, setSort } = useTableMyLiquidityPoolSortStore();
@@ -29,15 +35,60 @@ export const useTableMyLiquidityPool = () => {
   const netwokrAbbr = getNetworkAbbr(selectedNetwork);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
 
-  const { data, hasNextPage, fetchNextPage } = useGetMyPoolsInfinityQuery({
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const userLpTokens = useMemo(
+    () => userAllTokenBalances.filter(item => item.isLpToken && item.balance > 0),
+    [userAllTokenBalances]
+  );
+  const { mutateAsync } = useGetMyPoolsQuery({
     queries: {
-      take: 5,
+      take: 100,
       filter: `network:eq:${netwokrAbbr}`,
       sort: sort ? `${sort.key}:${sort.order}` : undefined,
-      walletAddress: currentAddress || '',
     },
   });
-  const pools = useMemo(() => data?.pages?.flatMap(page => page.pools) || [], [data?.pages]);
+
+  const userLpTokenRequest = userLpTokens.map(item => ({
+    address: item.address,
+    balance: item.balance,
+    totalSupply: item.totalSupply,
+  }));
+
+  const previous = usePrevious<
+    {
+      address: string;
+      balance: number;
+      totalSupply: number;
+    }[]
+  >(userLpTokenRequest);
+  const isRequestEqual = isEqual(previous, userLpTokenRequest);
+
+  useEffect(() => {
+    if (!currentAddress) return;
+
+    const fetch = async () => {
+      const res = await mutateAsync?.({
+        walletAddress: currentAddress || '',
+        lpTokens: userLpTokens.map(item => ({
+          address: item.address,
+          balance: item.balance,
+          totalSupply: item.totalSupply,
+        })),
+      });
+
+      const { pools } = res || {};
+      setPools(pools);
+    };
+
+    fetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAddress, isRequestEqual]);
+
+  const pools = useMemo(() => poolsRaw?.slice(0, currentTake) || [], [currentTake, poolsRaw]);
+  const hasNextPage = (poolsRaw?.length || 0) > currentTake;
+  const fetchNextPage = () => {
+    setCurrentTake(currentTake + 5);
+  };
 
   const tableData = useMemo(
     () =>

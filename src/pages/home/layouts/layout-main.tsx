@@ -1,6 +1,9 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isEqual } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 
 import { ASSET_URL } from '~/constants';
@@ -9,12 +12,15 @@ import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { usePrevious } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkAbbr } from '~/utils';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { POPUP_ID } from '~/types';
 
 export const MainLayout = () => {
+  const [totalValue, setTotalValue] = useState<string>('0');
+
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
 
@@ -22,19 +28,63 @@ export const MainLayout = () => {
   const { evm, xrp } = useConnectedWallet();
   const { setWalletType } = useWalletTypeStore();
 
+  const netwokrAbbr = getNetworkAbbr(selectedNetwork);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
   const isConnected = !!evm.address || !!xrp.address;
 
-  const { data } = useGetMyPoolsQuery({
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const userLpTokens = useMemo(
+    () => userAllTokenBalances.filter(item => item.isLpToken && item.balance > 0),
+    [userAllTokenBalances]
+  );
+
+  const userLpTokenRequest = userLpTokens.map(item => ({
+    address: item.address,
+    balance: item.balance,
+    totalSupply: item.totalSupply,
+  }));
+
+  const previous = usePrevious<
+    {
+      address: string;
+      balance: number;
+      totalSupply: number;
+    }[]
+  >(userLpTokenRequest);
+  const isRequestEqual = isEqual(previous, userLpTokenRequest);
+
+  const { mutateAsync } = useGetMyPoolsQuery({
     queries: {
-      take: 10000,
+      take: 100,
+      filter: `network:eq:${netwokrAbbr}`,
       sort: 'value:desc',
-      walletAddress: currentAddress || '',
     },
   });
-  const total = data?.pools?.reduce((acc, cur) => (acc += Number(cur.value)), 0);
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!currentAddress) return;
+
+    const fetch = async () => {
+      const res = await mutateAsync?.({
+        walletAddress: currentAddress || '',
+        lpTokens: userLpTokens.map(item => ({
+          address: item.address,
+          balance: item.balance,
+          totalSupply: item.totalSupply,
+        })),
+      });
+
+      const { pools } = res || {};
+      const totalMoaiValue = pools?.reduce((acc, cur) => acc + cur.balance, 0) || 0;
+
+      setTotalValue(formatNumber(totalMoaiValue));
+    };
+
+    fetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAddress, isRequestEqual]);
 
   return (
     <MainWrapper
@@ -44,7 +94,7 @@ export const MainLayout = () => {
       {isConnected ? (
         <SubTitleWrapper>
           <Label>{t('My Moai balance')}</Label>
-          <SubTitle>{`$${formatNumber(total)}`}</SubTitle>
+          <SubTitle>{`$${totalValue}`}</SubTitle>
         </SubTitleWrapper>
       ) : (
         <>

@@ -37,6 +37,20 @@ export const useUserAllTokenBalances = () => {
   const evmNetwork = [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK];
   const tokenAddresses =
     tokens?.filter(t => evmNetwork.includes(t.network) && !!t.address)?.map(t => t.address) || [];
+
+  const { data: tokenTotalSupplyData, refetch: lpTokenRefetch } = useContractReads({
+    contracts: tokenAddresses.flatMap(address => [
+      {
+        address: address as Address,
+        abi: ERC20_TOKEN_ABI as Abi,
+        functionName: 'totalSupply',
+        chainId,
+      },
+    ]),
+    staleTime: 1000 * 3,
+    enabled: tokenAddresses.length > 0 && !!chainId && !!walletAddress && isEvm,
+  });
+
   const { data: tokenBalancesData, refetch: tokenBalanceRefetch } = useContractReads({
     contracts: tokenAddresses.flatMap(address => [
       {
@@ -65,16 +79,27 @@ export const useUserAllTokenBalances = () => {
   });
 
   const tokenBalancesRaw = (tokenBalancesData?.map(d => d.result) || []) as bigint[];
-  const tokenDecimalsRaw = (tokenDecimalsData?.map(d => d.result) || 18) as number[];
+  const tokenDecimalsRaw = (tokenDecimalsData?.map(d => d.result) || []) as number[];
+  const tokenTotalSupplyRaw = (tokenTotalSupplyData?.map(d => d.result) || []) as bigint[];
 
   const tokenBalances = tokenBalancesRaw.map((balance, i) =>
     Number(formatUnits(balance || 0n, tokenDecimalsRaw?.[i] || 18))
   );
+  const tokenTotalSupply = tokenTotalSupplyRaw.map((supply, i) =>
+    Number(formatUnits(supply || 0n, tokenDecimalsRaw?.[i] || 18))
+  );
 
-  const userAllTokens = (tokens?.map((t, i) => ({ ...t, balance: tokenBalances?.[i] || 0 })) ||
-    []) as (IToken & { balance: number })[];
+  const userAllTokens = (tokens?.map((t, i) => ({
+    ...t,
+    balance: tokenBalances?.[i] || 0,
+    totalSupply: tokenTotalSupply?.[i] || 0,
+  })) || []) as (IToken & {
+    balance: number;
+    totalSupply: number;
+  })[];
 
   const refetch = () => {
+    lpTokenRefetch();
     tokenBalanceRefetch();
   };
   return {

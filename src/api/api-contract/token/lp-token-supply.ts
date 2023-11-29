@@ -8,7 +8,7 @@ interface Props {
   network: NETWORK;
   poolId: string;
 }
-export const useCalculateAddLiquidity = ({ network, poolId }: Props) => {
+export const useLpTokenTotalSupply = ({ network, poolId }: Props) => {
   const { isEvm } = useNetwork();
 
   const resEvm = useLpTokenTotalSupplyEvm({ network, poolId });
