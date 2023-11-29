@@ -109,6 +109,14 @@ export const InputNumber = ({
           handleChange?.(handledValue);
         };
 
+        const decimal = currentBalance?.toString()?.split('.')?.[1] || '';
+        const length = Math.min(decimal ? decimal.length - 1 : 0, 14);
+
+        const flooredBalance =
+          length === 0 ? currentBalance : Math.floor(currentBalance * 10 ** length) / 10 ** length;
+        const flooredBalanceForSlider =
+          length === 0 ? currentBalance : Math.floor(currentBalance * 10 ** 4) / 10 ** 4;
+
         return (
           <Wrapper focus={focus} focused={focused} error={!!errorMessage}>
             <TokenInputWrapper>
@@ -150,7 +158,7 @@ export const InputNumber = ({
                   <ButtonPrimarySmall
                     text={handledValue === currentBalance ? 'Maxed' : 'Max'}
                     onClick={() => {
-                      onValueChange(currentBalance);
+                      onValueChange(flooredBalance);
                       blurAll?.(false);
                     }}
                     style={{ width: 'auto' }}
@@ -167,7 +175,7 @@ export const InputNumber = ({
                     thumbClassName="thumb"
                     trackClassName="track"
                     min={0}
-                    max={currentBalance || 100}
+                    max={flooredBalanceForSlider || 100}
                     value={handledValue || 0}
                     step={0.00001}
                     onChange={onValueChange}

@@ -132,15 +132,15 @@ export const calcBptInTokenOutAmountAndPriceImpact = ({
 
   const amountsOut = new Array<number>(balances.length).fill(0);
   for (let i = 0; i < balances.length; i++) {
-    amountsOut[i] = balances[i] * bptRatio;
+    amountsOut[i] = Number((balances[i] * bptRatio).toFixed(18));
   }
 
   const priceImpact = calcPriceImpact(
     parseEther(bptTotalSupply.toString()),
-    amountsOut.map(v => parseEther(v.toString())),
-    balances.map(v => parseEther(v.toString())),
-    parseEther(bptIn.toString()),
-    normalizedWeights.map(v => parseEther(v.toString())),
+    amountsOut.map(v => parseEther(v.toFixed(18).toString())),
+    balances.map(v => parseEther(v.toFixed(18).toString())),
+    parseEther(bptIn.toFixed(18).toString()),
+    normalizedWeights.map(v => parseEther(v.toFixed(18).toString())),
     false
   );
 

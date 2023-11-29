@@ -353,7 +353,6 @@ export const WithdrawLiquidityPopup = ({
       button={
         <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
-            // text={isLoading ? 'Confirming' : isSuccess ? 'Return to pool page' : 'Withdraw'}
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
