@@ -1,11 +1,14 @@
 import tw, { css, styled } from 'twin.macro';
 
+import { useAddLiquidity } from '~/api/api-contract/_evm/pool/add-liquidity';
+
+import { ButtonPrimaryLarge } from '~/components/buttons';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
 import { usePopup } from '~/hooks/components';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { POPUP_ID } from '~/types';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { LiquidityPoolLayout } from './layouts/layout-liquidity-pool';
 import { MyLiquidityLayout } from './layouts/layout-liquidity-pool-my';
@@ -17,6 +20,47 @@ const HomePage = () => {
   const { evm, fpass, xrp } = useConnectedWallet();
   const connected = evm.address || fpass.address || xrp.address;
 
+  // 0xcCcCCCCc00000864000000000000000000000000 // sylo
+  // 0xCccCccCc00001064000000000000000000000000 // asto
+
+  const { writeAsync } = useAddLiquidity({
+    poolId: '0xcd1c4de9f374c737944ce2eef413519f9db14434000200000000000000000000',
+    tokens: [
+      {
+        id: 0,
+        symbol: 'ROOT',
+        network: NETWORK.THE_ROOT_NETWORK,
+
+        address: '0xcCcCCccC00000001000000000000000000000000',
+        currency: 'ROOT',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 16588000n,
+        balance: 3000000000000000,
+      },
+      {
+        id: 1,
+        symbol: 'XRP',
+        network: NETWORK.THE_ROOT_NETWORK,
+
+        address: '0xCCCCcCCc00000002000000000000000000000000',
+        currency: 'XRP',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000n,
+        balance: 90000000000000000000,
+      },
+    ],
+    enabled: true,
+  });
+
+  const handleClick = async () => {
+    console.log('here');
+    await writeAsync?.();
+  };
+
   return (
     <>
       <Wrapper>
@@ -25,6 +69,7 @@ const HomePage = () => {
         </GnbWrapper>
         <InnerWrapper>
           <MainLayout />
+          <ButtonPrimaryLarge text="HHHHHHHH" onClick={() => handleClick()}></ButtonPrimaryLarge>
           <ContentWrapper>
             {connected && <MyLiquidityLayout />}
             <LiquidityPoolLayout />

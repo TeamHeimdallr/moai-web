@@ -36,21 +36,21 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const chainId = useNetworkId(currentNetwork);
-  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
-    {
-      params: {
-        networkAbbr: currentNetworkAbbr as string,
-        poolId: poolId as string,
-      },
-    },
-    {
-      enabled: !!poolId && !!currentNetworkAbbr,
-      cacheTime: Infinity,
-      staleTime: Infinity,
-    }
-  );
-  const { poolVaultAmm } = poolVaultAmmData || {};
-  const { vault } = poolVaultAmm || {};
+  // const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+  //   {
+  //     params: {
+  //       networkAbbr: currentNetworkAbbr as string,
+  //       poolId: poolId as string,
+  //     },
+  //   },
+  //   {
+  //     enabled: !!poolId && !!currentNetworkAbbr,
+  //     cacheTime: Infinity,
+  //     staleTime: Infinity,
+  //   }
+  // );
+  // const { poolVaultAmm } = poolVaultAmmData || {};
+  // const { vault } = poolVaultAmm || {};
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
@@ -74,6 +74,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
       network: currentNetwork,
     })
   );
+  const vault = '0xF5bB92ea0f82E01F890ad82AbbECE7B721fC780b';
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: (vault || '') as Address,
@@ -90,7 +91,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
       [
         sortedTokenAddressses,
         sortedAmountsIn,
-        WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+        WeightedPoolEncoder.joinInit(sortedAmountsIn),
         false,
       ],
     ],
