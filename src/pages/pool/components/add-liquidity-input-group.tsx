@@ -226,7 +226,12 @@ export const AddLiquidityInputGroup = () => {
         text={t('Preview')}
         onClick={popupOpen}
         disabled={
-          !isValid || !hasBalances || !tokensInValid || (priceImpactRaw > 3 && !checkedPriceImpact)
+          // temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+          true ||
+          !isValid ||
+          !hasBalances ||
+          !tokensInValid ||
+          (priceImpactRaw > 3 && !checkedPriceImpact)
         }
       />
 

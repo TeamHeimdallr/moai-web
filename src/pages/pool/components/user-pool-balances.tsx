@@ -6,6 +6,8 @@ import { toHex } from 'viem';
 
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
+import { IS_MAINNET } from '~/constants';
+
 import { FuturepassCreatePopup } from '~/components/account/futurepass-create-popup';
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
@@ -44,6 +46,9 @@ export const UserPoolBalances = () => {
     compositions?.reduce((acc, cur) => (acc += `${cur.weight}${cur.symbol}`), '') || '';
 
   const handleAddLiquidity = () => {
+    // temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+    return;
+
     if (!address) return;
     navigate(`/pools/${network}/${id}/deposit`);
   };
@@ -86,7 +91,10 @@ export const UserPoolBalances = () => {
             <ButtonPrimary
               text={t('Add liquidity')}
               onClick={handleAddLiquidity}
-              disabled={!address}
+              disabled={
+                // temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+                true || !address
+              }
             />
           ) : isFpass && !fpass.address && evm.address ? (
             <ButtonPrimary
@@ -94,7 +102,8 @@ export const UserPoolBalances = () => {
               text={t('Create Futurepass')}
               isLoading={!!opened}
               onClick={() => {
-                openFuturepassCreate();
+                if (IS_MAINNET) window.open('https://futurepass.futureverse.app/stuff/');
+                else openFuturepassCreate();
               }}
             />
           ) : (
