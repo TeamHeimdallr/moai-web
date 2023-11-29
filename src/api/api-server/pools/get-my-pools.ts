@@ -20,7 +20,7 @@ interface Queries extends IPaginationRequestQuery, IFilterRequestQuery, ISortReq
 interface Request {
   queries: Queries;
 }
-interface Response {
+export interface Response {
   pools: IMyPoolList[];
 
   metadata: {
@@ -49,7 +49,7 @@ export const useGetMyPoolsQuery = (request: Request, options?: MutateOptions) =>
   const queryKey = ['POST', 'POOLS', 'MY', queries];
   const data = useMutation<Response, AxiosError<Response, IMyPoolListRequest>, IMyPoolListRequest>(
     queryKey,
-    axios,
+    data => axios(data, queries),
     options
   );
 
