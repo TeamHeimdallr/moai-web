@@ -12,6 +12,8 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { IconSetting } from '~/assets/icons';
 
+import { IS_MAINNET, IS_MAINNET2 } from '~/constants';
+
 import { Slippage } from '~/components/account';
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge, ButtonPrimarySmall } from '~/components/buttons';
@@ -33,6 +35,9 @@ interface InputFormState {
   input2: number;
 }
 export const AddLiquidityInputGroup = () => {
+  // TODO: temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+  const disableAddLiquidity = IS_MAINNET && !IS_MAINNET2;
+
   const ref = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
 
@@ -226,8 +231,8 @@ export const AddLiquidityInputGroup = () => {
         text={t('Preview')}
         onClick={popupOpen}
         disabled={
-          // temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
-          true ||
+          // TODO: temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+          disableAddLiquidity ||
           !isValid ||
           !hasBalances ||
           !tokensInValid ||

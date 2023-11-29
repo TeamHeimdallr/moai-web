@@ -11,6 +11,8 @@ import {
 
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
+import { IS_MAINNET, IS_MAINNET2 } from '~/constants';
+
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr, getNetworkFull, getWrappedTokenAddress, isNativeToken } from '~/utils';
@@ -25,6 +27,9 @@ interface Props {
   enabled?: boolean;
 }
 export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
+  // TODO: temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+  const disableAddLiquidity = IS_MAINNET && !IS_MAINNET2;
+
   const publicClient = usePublicClient();
 
   const { network } = useParams();
@@ -116,8 +121,8 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   };
 
   const writeAsync = async () => {
-    // temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
-    return;
+    // TODO: temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
+    if (disableAddLiquidity) return;
     await writeAsyncBase?.();
   };
 
