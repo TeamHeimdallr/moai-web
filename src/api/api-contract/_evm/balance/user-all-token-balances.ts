@@ -50,11 +50,6 @@ export const useUserAllTokenBalances = () => {
     staleTime: 1000 * 3,
     enabled: tokenAddresses.length > 0 && !!chainId && !!walletAddress && isEvm,
   });
-  // {result: 1251160352435284165912n, status: 'success'}
-  // {result: 61040214099625n, status: 'success'}
-  // {result: 12498841392677n, status: 'success'}
-  // {result: 1007130003554671011669716690n, status: 'success'}
-  // {result: 285441387884162419558n, status: 'success'}
 
   const { data: tokenBalancesData, refetch: tokenBalanceRefetch } = useContractReads({
     contracts: tokenAddresses.flatMap(address => [
