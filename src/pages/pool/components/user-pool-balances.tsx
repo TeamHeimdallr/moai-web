@@ -6,6 +6,8 @@ import { toHex } from 'viem';
 
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
+import { IS_MAINNET } from '~/constants';
+
 import { FuturepassCreatePopup } from '~/components/account/futurepass-create-popup';
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
@@ -100,7 +102,8 @@ export const UserPoolBalances = () => {
               text={t('Create Futurepass')}
               isLoading={!!opened}
               onClick={() => {
-                openFuturepassCreate();
+                if (IS_MAINNET) window.open('https://futurepass.futureverse.app/stuff/');
+                else openFuturepassCreate();
               }}
             />
           ) : (
