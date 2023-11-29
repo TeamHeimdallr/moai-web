@@ -1,6 +1,8 @@
 /**
  * @description 블록체인 환경
  */
+export const IS_MAINNET2 = import.meta.env.VITE_IS_MAIN2 === 'true';
+
 export const IS_MAINNET = import.meta.env.VITE_BLOCKCHAIN_ENV === 'mainnet';
 export const IS_TESTNET = import.meta.env.VITE_BLOCKCHAIN_ENV === 'testnet';
 export const IS_DEVNET = import.meta.env.VITE_BLOCKCHAIN_ENV === 'devnet';
@@ -19,7 +21,9 @@ export const IS_LANDING = import.meta.env.VITE_IS_LANDING === 'true';
 export const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
 export const BASE_URL = IS_MAINNET
-  ? 'https://app.moai-finance.xyz'
+  ? IS_MAINNET2
+    ? 'https://app-staging.moai-finance.xyz'
+    : 'https://app.moai-finance.xyz'
   : IS_TESTNET
   ? 'https://app-testnet.moai-finance.xyz'
   : IS_DEVNET
@@ -27,7 +31,9 @@ export const BASE_URL = IS_MAINNET
   : 'http://localhost:3000';
 
 export const API_URL = IS_MAINNET
-  ? 'https://api.moai-finance.xyz'
+  ? IS_MAINNET2
+    ? 'https://api2.moai-finance.xyz'
+    : 'https://api.moai-finance.xyz'
   : IS_TESTNET
   ? 'https://api-testnet.moai-finance.xyz'
   : IS_DEVNET
