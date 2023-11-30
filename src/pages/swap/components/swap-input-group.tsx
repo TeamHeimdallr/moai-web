@@ -233,15 +233,11 @@ export const SwapInputGroup = () => {
   });
 
   const errorMessage = prepareError?.message;
-  const poolImpactError =
-    errorMessage?.includes('304') ||
-    errorMessage?.includes('305') ||
-    errorMessage?.includes('306') ||
-    errorMessage?.includes('307');
+  const poolImpactError = errorMessage?.includes('304') || errorMessage?.includes('305');
 
   const sorError = fromToken && toToken && toInputFromSor === 0 && fromInput;
   const errorTitle = t(
-    poolImpactError || sorError ? 'Price Impact over 30%' : 'Something went wrong'
+    poolImpactError || sorError ? 'Price impact over 30%' : 'Something went wrong'
   );
   const errorDescription = t(
     poolImpactError || sorError ? 'price-impact-error-message' : 'unknown-error-message'

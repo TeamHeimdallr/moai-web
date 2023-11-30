@@ -167,8 +167,14 @@
 
   "Close": "Close",
 
-  "Price Impact over 30%": "Price Impact over 30%",
+  "Price impact over 30%": "Price impact over 30%",
   "price-impact-error-message": "This swap causes high market impact. Try a lower amount.",
+
+  "Deposit impact too high": "Deposit impact too high",
+  "deposit-impact-error-message": "This add liquidity too high impact. Try a lower amount.",
+
+  "Withdraw impact too high": "Withdraw impact too high",
+  "withdraw-impact-error-message": "This withdraw liquidity too high impact. Try a lower amount.",
 
   "Something went wrong": "Something went wrong",
   "unknown-error-message": "Please check your input and try again. If the issue persists, contact to our support team."

@@ -180,8 +180,14 @@
 
   "Close": "닫기",
 
-  "Price Impact over 30%": "가격 영향이 30% 이상입니다.",
+  "Price impact over 30%": "가격 영향이 30% 이상입니다.",
   "price-impact-error-message": "해당 스왑은 높은 시장 영향을 초래합니다. 더 낮은 금액으로 시도해보세요.",
+
+  "Deposit impact too high": "가격 영향이 너무 높습니다.",
+  "deposit-impact-error-message": "해당 유동성 공급은 높은 시장 영향을 초래합니다. 더 낮은 금액으로 시도해보세요.",
+
+  "Withdraw impact too high": "가격 영향이 너무 높습니다.",
+  "withdraw-impact-error-message": "해당 출금은 높은 시장 영향을 초래합니다. 더 낮은 금액으로 시도해보세요.",
 
   "Something went wrong": "문제가 발생했습니다.",
   "unknown-error-message": "입력 값을 확인하고 다시 시도해보세요. 문제가 지속되면, 고객지원팀에 문의해주세요."
