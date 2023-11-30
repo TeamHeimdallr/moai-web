@@ -42,12 +42,12 @@ export const PoolLiquidityProvisions = () => {
     tableData,
     mobileTableColumn,
     mobileTableData,
-    liquidityProvisions,
+    hasMyLiquidityProvision,
     hasNextPage,
     fetchNextPage,
   } = useTableLiquidityProvision();
 
-  const hasMyLiquidity = !!currentAddress && liquidityProvisions.length > 0;
+  const hasMyLiquidity = !!currentAddress && hasMyLiquidityProvision;
 
   return (
     <Wrapper opened={opened}>
