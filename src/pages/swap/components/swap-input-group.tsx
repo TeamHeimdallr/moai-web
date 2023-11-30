@@ -239,11 +239,13 @@ export const SwapInputGroup = () => {
     errorMessage?.includes('306') ||
     errorMessage?.includes('307');
 
-  const errorTitle = t(poolImpactError ? 'Price Impact over 30%' : 'Something went wrong');
-  const errorDescription = t(
-    poolImpactError ? 'price-impack-error-message' : 'unknown-error-message'
-  );
   const sorError = fromToken && toToken && toInputFromSor === 0 && fromInput;
+  const errorTitle = t(
+    poolImpactError || sorError ? 'Price Impact over 30%' : 'Something went wrong'
+  );
+  const errorDescription = t(
+    poolImpactError || sorError ? 'price-impact-error-message' : 'unknown-error-message'
+  );
 
   return (
     <>

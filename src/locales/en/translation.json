@@ -168,7 +168,7 @@
   "Close": "Close",
 
   "Price Impact over 30%": "Price Impact over 30%",
-  "price-impack-error-message": "This swap causes high market impact. Try a lower amount.",
+  "price-impact-error-message": "This swap causes high market impact. Try a lower amount.",
 
   "Something went wrong": "Something went wrong",
   "unknown-error-message": "Please check your input and try again. If the issue persists, contact to our support team."

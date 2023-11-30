@@ -115,7 +115,7 @@ export const WithdrawLiquidityInputGroup = () => {
 
   const errorTitle = t(poolImpactError ? 'Price Impact over 30%' : 'Something went wrong');
   const errorDescription = t(
-    poolImpactError ? 'price-impack-error-message' : 'unknown-error-message'
+    poolImpactError ? 'price-impact-error-message' : 'unknown-error-message'
   );
 
   return (
