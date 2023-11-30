@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Address, parseUnits } from 'viem';
+import { Address } from 'viem';
 import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull, getTokenDecimal, isNativeToken } from '~/utils';
+import { getNetworkFull, isNativeToken } from '~/utils';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
 
 interface Props {
-  amount?: number;
-  allowanceMin?: number;
+  amount?: bigint;
+  allowanceMin?: bigint;
   spender?: Address;
   tokenAddress?: Address;
   symbol?: string;
@@ -23,7 +23,6 @@ export const useApprove = ({
   allowanceMin,
   spender,
   tokenAddress,
-  symbol,
 
   enabled,
 }: Props) => {
@@ -55,10 +54,7 @@ export const useApprove = ({
     enabled: internalEnabled,
 
     onSuccess: (data: string) => {
-      return setAllowance(
-        BigInt(data || 0) >=
-          parseUnits((allowanceMin || 0)?.toString(), getTokenDecimal(currentNetwork, symbol))
-      );
+      return setAllowance(BigInt(data || 0) >= (allowanceMin || 0n));
     },
     onError: () => setAllowance(false),
   });
@@ -69,7 +65,7 @@ export const useApprove = ({
     functionName: 'approve',
     chainId,
     account: walletAddress as Address,
-    args: [spender, `${parseUnits(`${amount || 0}`, getTokenDecimal(currentNetwork, symbol))}`],
+    args: [spender, amount],
     enabled: internalEnabled,
   });
 

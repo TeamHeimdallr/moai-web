@@ -128,6 +128,14 @@ export const useUserPoolTokenBalances = () => {
       asset => asset?.currency === lpTokenInfo?.currency
     )?.value || 0
   );
+
+  // do not use
+  const lpTokenBalanceRaw = BigInt(
+    lpTokenBalanceData?.result?.balances?.[walletAddress]?.find(
+      asset => asset?.currency === lpTokenInfo?.currency
+    )?.value || '0'
+  );
+
   const lpTokenTotalSupply = Number(lpTokenInfo?.value || 0);
   const lpTokenPrice = lpTokenTotalSupply ? Number((pool?.value || 0) / lpTokenTotalSupply) : 0;
   const lpTokenValue = lpTokenBalance * lpTokenPrice;
@@ -176,6 +184,8 @@ export const useUserPoolTokenBalances = () => {
     lpTokenTotalSupply,
 
     userLpTokenBalance: lpTokenBalance,
+    userLpTokenBalanceRaw: lpTokenBalanceRaw,
+
     userLpTokenValue: lpTokenValue,
 
     userPoolTokens,

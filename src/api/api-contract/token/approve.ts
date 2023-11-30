@@ -7,7 +7,7 @@ import { useApprove as useApproveXrp } from '~/api/api-contract/_xrpl/token/appr
 import { useNetwork } from '~/hooks/contexts/use-network';
 
 interface Props {
-  amount: number;
+  amount: bigint;
   symbol: string;
   address: string; // token address, for evm
   issuer: string; // token isser, for xrp
@@ -30,7 +30,7 @@ export const useApprove = ({
   const { isEvm, isFpass } = useNetwork();
 
   const resEvm = useApproveEvm({
-    amount: amount * 10,
+    amount: amount * 10n,
     allowanceMin: amount,
     symbol,
     spender: spender as Address,
@@ -39,7 +39,7 @@ export const useApprove = ({
   });
 
   const resFpass = useApproveFpass({
-    amount: amount * 10,
+    amount: amount * 10n,
     allowanceMin: amount,
     symbol,
     spender: spender as Address,
@@ -48,7 +48,7 @@ export const useApprove = ({
   });
 
   const resXrp = useApproveXrp({
-    amount,
+    amount: Number(amount),
     issuer,
     currency: currency ?? '',
     enabled,

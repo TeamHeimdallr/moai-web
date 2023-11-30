@@ -1,4 +1,4 @@
-import { formatEther, parseEther } from 'viem';
+import { formatEther, parseEther, parseUnits } from 'viem';
 
 import { IToken } from '~/types';
 
@@ -46,11 +46,11 @@ export const calcBptOutAmountAndPriceImpact = ({
 
   const bptOut = invariantRatio > 1 ? bptTotalSupply * (invariantRatio - 1) : 0;
   const priceImpact = calcPriceImpact(
-    parseEther(bptTotalSupply.toString()),
-    amountsIn.map(v => parseEther(v.toString())),
-    balances.map(v => parseEther(v.toString())),
-    parseEther(bptOut.toString()),
-    normalizedWeights.map(v => parseEther(v.toString())),
+    parseEther(bptTotalSupply.toFixed(18)),
+    amountsIn.map(v => parseUnits(v.toFixed(18), 18)),
+    balances.map(v => parseUnits(v.toFixed(18), 18)),
+    parseEther(bptOut.toFixed(18)),
+    normalizedWeights.map(v => parseEther(v.toFixed(18))),
     true
   );
 
@@ -136,11 +136,11 @@ export const calcBptInTokenOutAmountAndPriceImpact = ({
   }
 
   const priceImpact = calcPriceImpact(
-    parseEther(bptTotalSupply.toString()),
-    amountsOut.map(v => parseEther(v.toFixed(18).toString())),
-    balances.map(v => parseEther(v.toFixed(18).toString())),
-    parseEther(bptIn.toFixed(18).toString()),
-    normalizedWeights.map(v => parseEther(v.toFixed(18).toString())),
+    parseEther(bptTotalSupply.toFixed(18)),
+    amountsOut.map(v => parseUnits(v.toFixed(18), 18)),
+    balances.map(v => parseUnits(v.toFixed(18), 18)),
+    parseEther(bptIn.toFixed(18)),
+    normalizedWeights.map(v => parseEther(v.toFixed(18))),
     false
   );
 

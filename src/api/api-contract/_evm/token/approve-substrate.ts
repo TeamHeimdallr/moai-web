@@ -4,7 +4,7 @@ import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
-import { Address, encodeFunctionData, parseUnits } from 'viem';
+import { Address, encodeFunctionData } from 'viem';
 import { useContractRead, usePublicClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
@@ -15,15 +15,15 @@ import { IS_MAINNET } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull, getTokenDecimal } from '~/utils';
+import { getNetworkFull } from '~/utils';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
 
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 interface Props {
-  amount?: number;
-  allowanceMin?: number;
+  amount?: bigint;
+  allowanceMin?: bigint;
   spender?: Address;
   symbol?: string;
   tokenAddress?: Address;
@@ -34,7 +34,6 @@ export const useApprove = ({
   amount,
   allowanceMin,
   spender,
-  symbol,
   tokenAddress,
 
   enabled,
@@ -62,10 +61,7 @@ export const useApprove = ({
     enabled: internalEnabled,
 
     onSuccess: (data: string) => {
-      return setAllowance(
-        BigInt(data || 0) >=
-          parseUnits((allowanceMin || 0)?.toString(), getTokenDecimal(currentNetwork, symbol))
-      );
+      return setAllowance(BigInt(data || 0) >= (allowanceMin || 0n));
     },
     onError: () => setAllowance(false),
   });
@@ -90,10 +86,7 @@ export const useApprove = ({
         ? encodeFunctionData({
             abi: ERC20_TOKEN_ABI,
             functionName: 'approve',
-            args: [
-              spender,
-              `${parseUnits(`${amount || 0}`, getTokenDecimal(currentNetwork, symbol))}`,
-            ],
+            args: [spender, amount],
           })
         : '0x0';
 

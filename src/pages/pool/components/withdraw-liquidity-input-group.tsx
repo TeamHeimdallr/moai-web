@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
-import { parseUnits } from 'viem';
+import { formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
 
 import { useWithdrawLiquidityPrepare as useWithdrawLiquidityPrepareEvm } from '~/api/api-contract/_evm/pool/withdraw-liquidity-substrate';
@@ -49,6 +49,7 @@ export const WithdrawLiquidityInputGroup = () => {
   const { t } = useTranslation();
 
   const [inputValue, setInputValue] = useState<number>();
+  const [inputValueRaw, setInputValueRaw] = useState<bigint>();
 
   const tabs = [
     { key: 'proportional', name: t('Proportional pool tokens') },
@@ -74,7 +75,8 @@ export const WithdrawLiquidityInputGroup = () => {
   const { pool } = poolData || {};
   const { compositions, lpToken } = pool || {};
 
-  const { lpTokenPrice, userLpTokenBalance, refetch } = useUserPoolTokenBalances();
+  const { lpTokenPrice, userLpTokenBalance, userLpTokenBalanceRaw, refetch } =
+    useUserPoolTokenBalances();
   const { proportionalTokensOut, priceImpact: priceImpactRaw } = useCalculateWithdrawLiquidity({
     bptIn: inputValue || 0,
   });
@@ -140,8 +142,16 @@ export const WithdrawLiquidityInputGroup = () => {
             tokenName={lpToken?.symbol || ''}
             tokenValue={withdrawTokenValue}
             balance={userLpTokenBalance || 0}
+            balanceRaw={userLpTokenBalanceRaw || 0n}
             value={inputValue}
-            handleChange={val => setInputValue(val)}
+            handleChange={val => {
+              setInputValue(val);
+              setInputValueRaw(parseUnits((val || 0).toString(), 18));
+            }}
+            handleChangeRaw={val => {
+              setInputValue(Number(formatUnits(val || 0n, 18)));
+              setInputValueRaw(val);
+            }}
             maxButton
             slider
             sliderActive
@@ -190,7 +200,7 @@ export const WithdrawLiquidityInputGroup = () => {
           pool={pool}
           tokensOut={proportionalTokensOut}
           lpTokenPrice={lpTokenPrice}
-          bptIn={inputValue || 0}
+          bptIn={inputValueRaw || 0n}
           priceImpact={priceImpact}
           withdrawTokenWeight={withdrawTokenWeight}
           refetchBalance={refetch}

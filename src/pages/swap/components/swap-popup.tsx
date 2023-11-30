@@ -137,7 +137,10 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     isSuccess: allowFromTokenSuccess,
     refetch: refetchFromTokenAllowance,
   } = useApprove({
-    amount: numFromInput,
+    amount: parseUnits(
+      `${numFromInput || 0}`,
+      getTokenDecimal(currentNetwork, fromToken?.symbol || '')
+    ),
     symbol: fromToken?.symbol || '',
     address: fromToken?.address || '',
     issuer: fromToken?.address || '',
@@ -153,7 +156,10 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     isSuccess: allowToTokenSuccess,
     refetch: refetchToTokenAllowance,
   } = useApprove({
-    amount: numToInput,
+    amount: parseUnits(
+      `${numToInput || 0}`,
+      getTokenDecimal(currentNetwork, toToken?.symbol || '')
+    ),
     symbol: toToken?.symbol || '',
     address: toToken?.address || '',
     issuer: toToken?.address || '',

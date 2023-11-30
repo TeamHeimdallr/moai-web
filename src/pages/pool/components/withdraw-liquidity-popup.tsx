@@ -1,11 +1,11 @@
 import { Fragment, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import tw from 'twin.macro';
-import { parseUnits, toHex } from 'viem';
+import { formatUnits, parseUnits, toHex } from 'viem';
 
 import { useWithdrawLiquidity } from '~/api/api-contract/pool/withdraw-liquidity';
 import { useApprove } from '~/api/api-contract/token/approve';
@@ -24,7 +24,13 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { DATE_FORMATTER, formatNumber, getNetworkAbbr, getTokenDecimal } from '~/utils';
+import {
+  DATE_FORMATTER,
+  formatNumber,
+  getNetworkAbbr,
+  getNetworkFull,
+  getTokenDecimal,
+} from '~/utils';
 import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -32,7 +38,7 @@ interface Props {
   tokensOut?: (ITokenComposition & { amount: number })[];
 
   lpTokenPrice: number;
-  bptIn: number;
+  bptIn: bigint;
   priceImpact: string;
   withdrawTokenWeight: number;
 
@@ -57,6 +63,10 @@ export const WithdrawLiquidityPopup = ({
 
   const networkAbbr = getNetworkAbbr(network);
   const { t } = useTranslation();
+  const { network: networkParam } = useParams();
+  const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(networkParam) ?? selectedNetwork;
 
   const { close } = usePopup(POPUP_ID.WITHDRAW_LP);
 
@@ -87,7 +97,10 @@ export const WithdrawLiquidityPopup = ({
     isSuccess: allowSuccess1,
     refetch: refetchAllowance1,
   } = useApprove({
-    amount: token1Amount,
+    amount: parseUnits(
+      `${token1Amount || 0}`,
+      getTokenDecimal(currentNetwork, tokensOut?.[0]?.symbol || '')
+    ),
     address: tokensOut?.[0]?.address || '',
     issuer: tokensOut?.[0]?.address || '',
     symbol: tokensOut?.[0]?.symbol || '',
@@ -103,7 +116,10 @@ export const WithdrawLiquidityPopup = ({
     isSuccess: allowSuccess2,
     refetch: refetchAllowance2,
   } = useApprove({
-    amount: token2Amount,
+    amount: parseUnits(
+      `${token2Amount || 0}`,
+      getTokenDecimal(currentNetwork, tokensOut?.[1]?.symbol || '')
+    ),
     address: tokensOut?.[1]?.address || '',
     issuer: tokensOut?.[1]?.address || '',
     symbol: tokensOut?.[1]?.symbol || '',
@@ -146,17 +162,14 @@ export const WithdrawLiquidityPopup = ({
     id: poolId || '',
     tokens: tokensOut || [],
     // input value
-    bptIn: parseUnits(
-      `${bptIn}`,
-      getTokenDecimal(network || NETWORK.THE_ROOT_NETWORK, lpToken?.symbol)
-    ),
+    bptIn,
     enabled: !!poolId && validAmount && getValidAllowance(),
   });
 
   const txDate = new Date(blockTimestamp ?? 0);
   const isSuccess = withdrawLiquiditySuccess && !!txData;
   const isLoading = withdrawLiquidityLoading || allowLoading1 || allowLoading2;
-  const totalValue = bptIn * lpTokenPrice;
+  const totalValue = Number(formatUnits(bptIn || 0n, 18)) * lpTokenPrice;
 
   const step = useMemo(() => {
     if (isSuccess) return tokenLength + 1;
@@ -376,7 +389,7 @@ export const WithdrawLiquidityPopup = ({
           <List title={t(`You're providing`)}>
             <TokenList
               type="large"
-              title={`${formatNumber(bptIn, 6)} ${lpToken?.symbol}`}
+              title={`${formatNumber(Number(formatUnits(bptIn || 0n, 18)), 6)} ${lpToken?.symbol}`}
               description={`$${formatNumber(totalValue)} (${withdrawTokenWeight.toFixed(4)}%)`}
               image={
                 <Jazzicon
