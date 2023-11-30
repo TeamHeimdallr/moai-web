@@ -151,15 +151,11 @@ export const AddLiquidityInputGroup = () => {
   });
 
   const errorMessage = prepareError?.message;
-  const poolImpactError =
-    errorMessage?.includes('304') ||
-    errorMessage?.includes('305') ||
-    errorMessage?.includes('306') ||
-    errorMessage?.includes('307');
+  const poolImpactError = errorMessage?.includes('307');
 
-  const errorTitle = t(poolImpactError ? 'Price Impact over 30%' : 'Something went wrong');
+  const errorTitle = t(poolImpactError ? 'Deposit impact too high' : 'Something went wrong');
   const errorDescription = t(
-    poolImpactError ? 'price-impack-error-message' : 'unknown-error-message'
+    poolImpactError ? 'deposit-impact-error-message' : 'unknown-error-message'
   );
 
   return (
