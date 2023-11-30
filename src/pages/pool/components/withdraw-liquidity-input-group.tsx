@@ -4,8 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
+import { parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useWithdrawLiquidityPrepare as useWithdrawLiquidityPrepareEvm } from '~/api/api-contract/_evm/pool/withdraw-liquidity-substrate';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useCalculateWithdrawLiquidity } from '~/api/api-contract/pool/calculate-withdraw-liquidity';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
@@ -13,6 +15,7 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { IconSetting } from '~/assets/icons';
 
 import { Slippage } from '~/components/account';
+import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { Tab } from '~/components/tab';
@@ -20,8 +23,9 @@ import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useOnClickOutside } from '~/hooks/utils';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkFull, getTokenDecimal } from '~/utils';
 import { useWithdrawLiquidityInputGroupTabStore } from '~/states/components/input-group/tab';
 import { POPUP_ID } from '~/types';
 
@@ -40,6 +44,8 @@ export const WithdrawLiquidityInputGroup = () => {
   useOnClickOutside([ref, iconRef], () => open(false));
 
   const { network, id } = useParams();
+  const { selectedNetwork } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { t } = useTranslation();
 
   const [inputValue, setInputValue] = useState<number>();
@@ -90,6 +96,25 @@ export const WithdrawLiquidityInputGroup = () => {
   const isFormError = !!formState?.errors?.input1;
   const isValidToWithdraw =
     (!isFormError && (inputValue || 0) > 0) || (inputValue || 0) <= userLpTokenBalance;
+
+  const { isPrepareLoading, isPrepareError, prepareError } = useWithdrawLiquidityPrepareEvm({
+    poolId: pool?.poolId || '',
+    tokens: proportionalTokensOut || [],
+    bptIn: parseUnits(`${inputValue || 0}`, getTokenDecimal(currentNetwork, lpToken?.symbol)),
+    enabled: !!pool?.poolId && isValidToWithdraw,
+  });
+
+  const errorMessage = prepareError?.message;
+  const poolImpactError =
+    errorMessage?.includes('304') ||
+    errorMessage?.includes('305') ||
+    errorMessage?.includes('306') ||
+    errorMessage?.includes('307');
+
+  const errorTitle = t(poolImpactError ? 'Price Impact over 30%' : 'Something went wrong');
+  const errorDescription = t(
+    poolImpactError ? 'price-impack-error-message' : 'unknown-error-message'
+  );
 
   return (
     <Wrapper>
@@ -150,9 +175,17 @@ export const WithdrawLiquidityInputGroup = () => {
         </PriceImpaceWrapper>
       </InnerWrapper>
 
-      <ButtonPrimaryLarge text={t('Preview')} onClick={popupOpen} disabled={!isValidToWithdraw} />
+      {isPrepareError && (
+        <AlertMessage title={errorTitle} description={errorDescription} type="warning" />
+      )}
 
-      {popupOpened && (
+      <ButtonPrimaryLarge
+        text={t('Preview')}
+        onClick={popupOpen}
+        disabled={!isValidToWithdraw || isPrepareLoading || isPrepareError}
+      />
+
+      {popupOpened && !isPrepareError && (
         <WithdrawLiquidityPopup
           pool={pool}
           tokensOut={proportionalTokensOut}

@@ -4,8 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw, { styled } from 'twin.macro';
+import { parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useAddLiquidityPrepare as useAddLiquidityPrepareEvm } from '~/api/api-contract/_evm/pool/add-liquidity-substrate';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useCalculateAddLiquidity } from '~/api/api-contract/pool/calculate-add-liquidity';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
@@ -23,7 +25,7 @@ import { Token } from '~/components/token';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useOnClickOutside } from '~/hooks/utils';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkAbbr, getNetworkFull, getTokenDecimal } from '~/utils';
 import { IPool, POPUP_ID } from '~/types';
 
 import { useHandleInput } from '../hooks/contexts/use-handle-input';
@@ -47,6 +49,9 @@ export const AddLiquidityInputGroup = () => {
   useOnClickOutside([ref, iconRef], () => open(false));
 
   const { network, id } = useParams();
+  const { selectedNetwork } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const [inputBlured, inputBlurAll] = useState(false);
   const [inputValues, _setInputValues] = useState<number[]>([0, 0]);
@@ -61,7 +66,7 @@ export const AddLiquidityInputGroup = () => {
   const { data: poolData } = useGetPoolQuery(
     {
       params: {
-        networkAbbr: network as string,
+        networkAbbr: currentNetworkAbbr,
         poolId: id as string,
       },
     },
@@ -131,7 +136,31 @@ export const AddLiquidityInputGroup = () => {
     ...token,
     amount: inputValues[i],
   }));
+  const tokensInBigint =
+    tokensIn?.map(t => ({
+      ...t,
+      amount: parseUnits((t.amount || 0).toString(), getTokenDecimal(currentNetwork, t.symbol)),
+      // amount: parseUnits((123123123 || 0).toString(), getTokenDecimal(currentNetwork, t.symbol)),
+    })) ?? [];
   const tokensInValid = tokensIn.filter(token => token.amount > 0).length > 0;
+
+  const { isPrepareLoading, isPrepareError, prepareError } = useAddLiquidityPrepareEvm({
+    poolId: pool?.poolId || '',
+    tokens: tokensInBigint || [],
+    enabled: !!pool?.poolId && tokensInValid,
+  });
+
+  const errorMessage = prepareError?.message;
+  const poolImpactError =
+    errorMessage?.includes('304') ||
+    errorMessage?.includes('305') ||
+    errorMessage?.includes('306') ||
+    errorMessage?.includes('307');
+
+  const errorTitle = t(poolImpactError ? 'Price Impact over 30%' : 'Something went wrong');
+  const errorDescription = t(
+    poolImpactError ? 'price-impack-error-message' : 'unknown-error-message'
+  );
 
   return (
     <Wrapper>
@@ -227,6 +256,10 @@ export const AddLiquidityInputGroup = () => {
         </CheckPriceImpact>
       )}
 
+      {isPrepareError && (
+        <AlertMessage title={errorTitle} description={errorDescription} type="warning" />
+      )}
+
       <ButtonPrimaryLarge
         text={t('Preview')}
         onClick={popupOpen}
@@ -236,11 +269,13 @@ export const AddLiquidityInputGroup = () => {
           !isValid ||
           !hasBalances ||
           !tokensInValid ||
-          (priceImpactRaw > 3 && !checkedPriceImpact)
+          (priceImpactRaw > 3 && !checkedPriceImpact) ||
+          isPrepareLoading ||
+          isPrepareError
         }
       />
 
-      {popupOpened && (
+      {popupOpened && !isPrepareError && (
         <AddLiquidityPopup
           tokensIn={tokensIn}
           pool={pool}
