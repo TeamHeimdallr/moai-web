@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import tw, { css, styled } from 'twin.macro';
 

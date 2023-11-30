@@ -44,9 +44,30 @@ export const useTableLiquidityProvision = () => {
   const isMyProvision = selectedTab === 'my-provision';
 
   const {
-    data: liquidityProvisionData,
-    hasNextPage,
-    fetchNextPage,
+    data: allLiquidityProvisionData,
+    hasNextPage: hasAllNextPage,
+    fetchNextPage: fetchAllNextPage,
+  } = useGetLiquidityProvisionsInfinityQuery(
+    {
+      params: {
+        networkAbbr: network as string,
+        poolId: id as string,
+      },
+      queries: {
+        take: 5,
+        sort: sort ? `${sort.key}:${sort.order}` : undefined,
+      },
+    },
+    {
+      enabled: !!network && !!id,
+      staleTime: 1000,
+    }
+  );
+
+  const {
+    data: myLiquidityProvisionData,
+    hasNextPage: hasMyNextPage,
+    fetchNextPage: fetchMyNextPage,
   } = useGetLiquidityProvisionsInfinityQuery(
     {
       params: {
@@ -64,6 +85,15 @@ export const useTableLiquidityProvision = () => {
       staleTime: 1000,
     }
   );
+
+  const liquidityProvisionData = isMyProvision
+    ? myLiquidityProvisionData
+    : allLiquidityProvisionData;
+  const hasMyLiquidityProvision =
+    (myLiquidityProvisionData?.pages?.flatMap(page => page.liquidityProvisions) || []).length > 0;
+
+  const hasNextPage = isMyProvision ? hasMyNextPage : hasAllNextPage;
+  const fetchNextPage = isMyProvision ? fetchMyNextPage : fetchAllNextPage;
 
   const liquidityProvisions = useMemo(
     () => liquidityProvisionData?.pages?.flatMap(page => page.liquidityProvisions) || [],
@@ -143,7 +173,12 @@ export const useTableLiquidityProvision = () => {
       },
       {
         header: () => (
-          <TableHeaderSortable sortKey="value" label="Value" sort={sort} setSort={setSort} />
+          <TableHeaderSortable
+            sortKey="absoluteValue"
+            label="Value"
+            sort={sort}
+            setSort={setSort}
+          />
         ),
         cell: row => row.renderValue(),
         accessorKey: 'value',
@@ -239,6 +274,8 @@ export const useTableLiquidityProvision = () => {
     mobileTableColumn,
 
     liquidityProvisions,
+    hasMyLiquidityProvision,
+
     hasNextPage,
     fetchNextPage,
   };
