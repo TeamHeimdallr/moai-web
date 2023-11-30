@@ -12,12 +12,15 @@ import { NETWORK, POPUP_ID } from '~/types';
 
 import { theRootNetwork, xrpEvmSidechain } from '~/configs/evm-network';
 
+import { useSwitchAndAddNetwork } from '../wallets/use-add-network';
+
 export const useBanner = () => {
   const [type, setType] = useState<'select' | 'switch'>('select');
 
   const location = useLocation();
 
-  const { open: web3modalOpen, close: web3modalClose } = useWeb3Modal();
+  const { switchNetwork } = useSwitchAndAddNetwork();
+  const { close: web3modalClose } = useWeb3Modal();
   const { isDisconnected, isConnecting, isReconnecting } = useAccount();
   const { chain } = useNetworkWagmi();
 
@@ -75,7 +78,8 @@ export const useBanner = () => {
       (selectedNetwork === NETWORK.EVM_SIDECHAIN && chainId !== xrpEvmSidechain.id)
     ) {
       setType('switch');
-      web3modalOpen({ route: 'SelectNetwork' });
+      switchNetwork();
+      // web3modalOpen({ route: 'SelectNetwork' });
       open();
 
       return;
@@ -98,6 +102,7 @@ export const useBanner = () => {
     text,
     type,
     connectWallet,
-    switchNetwork: () => web3modalOpen({ route: 'SelectNetwork' }),
+    // switchNetwork: () => web3modalOpen({ route: 'SelectNetwork' }),
+    switchNetwork,
   };
 };
