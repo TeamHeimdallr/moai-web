@@ -1,10 +1,10 @@
 import { Fragment, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw from 'twin.macro';
-import { toHex } from 'viem';
+import { parseUnits, toHex } from 'viem';
 import { useQueryClient } from 'wagmi';
 
 import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
@@ -24,7 +24,13 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { DATE_FORMATTER, formatNumber, getNetworkAbbr } from '~/utils';
+import {
+  DATE_FORMATTER,
+  formatNumber,
+  getNetworkAbbr,
+  getNetworkFull,
+  getTokenDecimal,
+} from '~/utils';
 import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -56,6 +62,10 @@ export const AddLiquidityPopup = ({
   const { isXrp } = useNetwork();
   const { network, poolId, lpToken } = pool || {};
   const networkAbbr = getNetworkAbbr(network);
+  const { network: networkParam } = useParams();
+  const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(networkParam) ?? selectedNetwork;
 
   const { close } = usePopup(POPUP_ID.ADD_LP);
 
@@ -86,7 +96,10 @@ export const AddLiquidityPopup = ({
     isSuccess: allowSuccess1,
     refetch: refetchAllowance1,
   } = useApprove({
-    amount: token1Amount,
+    amount: parseUnits(
+      `${token1Amount || 0}`,
+      getTokenDecimal(currentNetwork, tokensIn?.[0]?.symbol || '')
+    ),
     symbol: tokensIn?.[0]?.symbol || '',
     address: tokensIn?.[0]?.address || '',
     issuer: tokensIn?.[0]?.address || '',
@@ -102,7 +115,10 @@ export const AddLiquidityPopup = ({
     isSuccess: allowSuccess2,
     refetch: refetchAllowance2,
   } = useApprove({
-    amount: token2Amount,
+    amount: parseUnits(
+      `${token2Amount || 0}`,
+      getTokenDecimal(currentNetwork, tokensIn?.[1]?.symbol || '')
+    ),
     symbol: tokensIn?.[1]?.symbol || '',
     address: tokensIn?.[1]?.address || '',
     issuer: tokensIn?.[1]?.address || '',
@@ -118,7 +134,7 @@ export const AddLiquidityPopup = ({
     isSuccess: allowSuccess3,
     refetch: refetchAllowance3,
   } = useApprove({
-    amount: bptOut,
+    amount: parseUnits(`${bptOut || 0}`, getTokenDecimal(currentNetwork, lpToken?.symbol || '')),
     symbol: lpToken?.symbol || '',
     address: lpToken?.address || '',
     issuer: lpToken?.address || '',

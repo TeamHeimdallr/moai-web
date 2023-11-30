@@ -15,7 +15,9 @@ import { formatNumber } from '~/utils';
 type OmitType = 'type' | 'onChange' | 'onBlur' | 'autoFocus';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   balance?: number;
+  balanceRaw?: bigint;
   handleChange?: (value?: number) => void;
+  handleChangeRaw?: (value?: bigint) => void;
 
   token?: ReactNode;
   tokenName?: string;
@@ -44,6 +46,7 @@ export const InputNumber = ({
   token,
   tokenValue: defaultTokenValue,
   balance,
+  balanceRaw,
   placeholder = '0',
   maxButton,
   slider,
@@ -51,6 +54,7 @@ export const InputNumber = ({
   focus = true,
   value,
   handleChange,
+  handleChangeRaw,
   handleTokenClick,
   blured,
   blurAll,
@@ -73,6 +77,7 @@ export const InputNumber = ({
 
   const tokenValue = defaultTokenValue ?? 0;
   const currentBalance = balance || 0;
+  const currentBalanceRaw = balanceRaw || 0n;
 
   useEffect(() => {
     if (!focus) return;
@@ -117,6 +122,13 @@ export const InputNumber = ({
         const flooredBalanceForSlider =
           length === 0 ? currentBalance : Math.floor(currentBalance * 10 ** 4) / 10 ** 4;
 
+        const onMaxValue = () => {
+          setFocus(true);
+          onChange(flooredBalance);
+          handleChange?.(flooredBalance);
+          handleChangeRaw?.(currentBalanceRaw);
+        };
+
         return (
           <Wrapper focus={focus} focused={focused} error={!!errorMessage}>
             <TokenInputWrapper>
@@ -158,7 +170,7 @@ export const InputNumber = ({
                   <ButtonPrimarySmall
                     text={handledValue === currentBalance ? 'Maxed' : 'Max'}
                     onClick={() => {
-                      onValueChange(flooredBalance);
+                      onMaxValue();
                       blurAll?.(false);
                     }}
                     style={{ width: 'auto' }}
