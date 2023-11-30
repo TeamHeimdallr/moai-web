@@ -13,9 +13,10 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
     image?: string;
   }[];
   isNew?: boolean;
+  disableSelectedToken?: boolean;
 }
 
-export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
+export const TableColumnToken = ({ tokens, isNew, disableSelectedToken, ...rest }: Props) => {
   const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
   const { isMD } = useMediaQuery();
 
@@ -27,7 +28,7 @@ export const TableColumnToken = ({ tokens, isNew, ...rest }: Props) => {
           token={token.symbol}
           image={true}
           imageUrl={token.image}
-          selected={selectedTokens?.includes(token.symbol)}
+          selected={!disableSelectedToken && selectedTokens?.includes(token.symbol)}
           type={isMD ? 'large' : 'small'}
         />
       ))}

@@ -9,7 +9,6 @@ import {
   TableColumn,
   TableColumnToken,
   TableHeader,
-  TableHeaderAPR,
   TableHeaderComposition,
   TableHeaderSortable,
 } from '~/components/tables';
@@ -115,7 +114,9 @@ export const useTableLiquidityPool = () => {
         accessorKey: 'volume',
       },
       {
-        header: () => <TableHeaderAPR />,
+        header: () => (
+          <TableHeaderSortable sortKey="apr" label="APR" sort={sort} setSort={setSort} />
+        ),
         cell: row => row.renderValue(),
         accessorKey: 'apr',
       },

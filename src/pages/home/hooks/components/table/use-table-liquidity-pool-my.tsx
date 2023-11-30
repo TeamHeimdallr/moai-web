@@ -10,7 +10,6 @@ import {
   TableColumn,
   TableColumnToken,
   TableHeaderComposition,
-  TableHeaderMyAPR,
   TableHeaderSortable,
 } from '~/components/tables';
 
@@ -82,7 +81,7 @@ export const useTableMyLiquidityPool = () => {
 
     fetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAddress, isRequestEqual]);
+  }, [currentAddress, isRequestEqual, sort?.key, sort?.order]);
 
   const pools = useMemo(() => poolsRaw?.slice(0, currentTake) || [], [currentTake, poolsRaw]);
   const hasNextPage = (poolsRaw?.length || 0) > currentTake;
@@ -101,6 +100,7 @@ export const useTableMyLiquidityPool = () => {
         compositions: (
           <TableColumnToken
             tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+            disableSelectedToken
           />
         ),
         balance: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
@@ -134,7 +134,9 @@ export const useTableMyLiquidityPool = () => {
         accessorKey: 'poolValue',
       },
       {
-        header: () => <TableHeaderMyAPR />,
+        header: () => (
+          <TableHeaderSortable sortKey="apr" label="My APR" sort={sort} setSort={setSort} />
+        ),
         cell: row => row.renderValue(),
         accessorKey: 'apr',
       },

@@ -173,7 +173,12 @@ export const useTableLiquidityProvision = () => {
       },
       {
         header: () => (
-          <TableHeaderSortable sortKey="value" label="Value" sort={sort} setSort={setSort} />
+          <TableHeaderSortable
+            sortKey="absoluteValue"
+            label="Value"
+            sort={sort}
+            setSort={setSort}
+          />
         ),
         cell: row => row.renderValue(),
         accessorKey: 'value',
