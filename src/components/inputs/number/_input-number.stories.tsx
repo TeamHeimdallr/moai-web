@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import type { Meta, StoryObj } from '@storybook/react';
+import * as yup from 'yup';
 
 import { IconDown } from '~/assets/icons';
 
@@ -12,7 +15,7 @@ const meta = {
   component: InputNumber,
   tags: ['autodocs'],
   argTypes: {
-    token: { control: { disable: true } },
+    // token: { control: { disable: true } },
   },
 } satisfies Meta<typeof InputNumber>;
 
@@ -23,11 +26,23 @@ export const Normal: Story = {
   render: () => <Template />,
 };
 
+interface InputFormState {
+  input1: number;
+}
+
 const Template = () => {
   const [_inputValue, setInputValue] = useState<number>();
 
+  const schema = yup.object().shape({
+    input1: yup.number().required(),
+  });
+  const { control } = useForm<InputFormState>({
+    resolver: yupResolver(schema),
+  });
+
   return (
     <InputNumber
+      control={control}
       handleChange={setInputValue}
       token={<Token token={'MOAI'} icon={<IconDown />} />}
       handleTokenClick={() => console.log('token clicked')}
@@ -41,6 +56,7 @@ const Template = () => {
 export const SelectableToken: Story = {
   args: {
     token: <Token token={'MOAI'} icon={<IconDown />} />,
+
     handleTokenClick: () => console.log('token clicked'),
   },
 };
