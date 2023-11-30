@@ -5,7 +5,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
 import { Address, encodeFunctionData } from 'viem';
-import { usePublicClient, useWalletClient } from 'wagmi';
+import { usePrepareContractWrite, usePublicClient, useWalletClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
 import { getTrnApi } from '~/api/api-contract/_evm/substrate/get-trn-api';
@@ -177,5 +177,61 @@ export const useSwap = ({
     blockTimestamp,
 
     swap,
+  };
+};
+
+export const useSwapPrepare = ({
+  poolId,
+
+  singleSwap,
+  fundManagement,
+  limit = BigInt(10),
+  deadline = 2000000000,
+  proxyEnabled,
+}: Props) => {
+  const { fpass } = useConnectedWallet();
+  const { address: walletAddress } = fpass;
+
+  const { network } = useParams();
+  const { selectedNetwork, isEvm } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
+
+  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+    {
+      params: {
+        networkAbbr: currentNetworkAbbr as string,
+        poolId: poolId as string,
+      },
+    },
+    {
+      enabled: !!poolId && !!currentNetworkAbbr,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
+  );
+  const { poolVaultAmm } = poolVaultAmmData || {};
+  const { vault } = poolVaultAmm || {};
+
+  const {
+    isLoading: isPrepareLoading,
+    isError: isPrepareError,
+    isSuccess: isPrepareSuccess,
+    error,
+  } = usePrepareContractWrite({
+    address: (vault || '') as Address,
+    abi: BALANCER_VAULT_ABI,
+    functionName: 'exitPool',
+
+    account: walletAddress as Address,
+    args: [singleSwap, fundManagement, limit, deadline],
+    enabled: proxyEnabled && isEvm && !!walletAddress && !!vault,
+  });
+
+  return {
+    isPrepareError,
+    isPrepareLoading,
+    isPrepareSuccess,
+    prepareError: error,
   };
 };

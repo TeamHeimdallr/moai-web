@@ -4,7 +4,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
 import { Address, encodeFunctionData } from 'viem';
-import { usePublicClient, useWalletClient } from 'wagmi';
+import { usePrepareContractWrite, usePublicClient, useWalletClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
 import { getTrnApi } from '~/api/api-contract/_evm/substrate/get-trn-api';
@@ -184,5 +184,71 @@ export const useBatchSwap = ({
     blockTimestamp,
 
     swap,
+  };
+};
+
+export const useBatchSwapPrepare = ({
+  fromToken,
+  toToken,
+  swapAmount,
+  fundManagement,
+  limit = [BigInt(10)],
+  deadline = 2000000000,
+  proxyEnabled,
+}: Props) => {
+  const { fpass } = useConnectedWallet();
+  const { address: walletAddress } = fpass;
+
+  const { selectedNetwork, isEvm } = useNetwork();
+
+  const { data } = useSorQuery(
+    {
+      queries: {
+        network: NETWORK.THE_ROOT_NETWORK,
+        from: fromToken,
+        to: toToken,
+        amount: swapAmount.toString(),
+      },
+    },
+    {
+      enabled: !!fromToken && !!toToken && !!swapAmount,
+      staleTime: 1000,
+    }
+  );
+
+  const swapsRaw = data?.data.swaps ?? [];
+  const swaps = swapsRaw.map(({ poolId, assetInIndex, assetOutIndex, amount, userData }) => [
+    poolId,
+    assetInIndex,
+    assetOutIndex,
+    amount,
+    userData,
+  ]);
+  const assets = data?.data.tokenAddresses ?? [];
+  const internalSwapLength = swaps.length - 1;
+  const limits = [limit[0], ...Array.from({ length: internalSwapLength }).map(() => 0n), limit[1]];
+
+  /* call prepare hook for check evm tx success */
+  const {
+    isLoading: isPrepareLoading,
+    isError: isPrepareError,
+    isSuccess: isPrepareSuccess,
+    error,
+  } = usePrepareContractWrite({
+    address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+    abi: BALANCER_VAULT_ABI,
+    functionName: 'batchSwap',
+    account: walletAddress as Address,
+    args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+    enabled: proxyEnabled && isEvm && !!walletAddress,
+  });
+
+  const approveError = error?.message?.includes('CallerNotApproved');
+
+  return {
+    isPrepareError: isPrepareError && !approveError,
+    isPrepareLoading,
+    isPrepareSuccess,
+    prepareError: error,
   };
 };

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -6,9 +6,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { BigNumber } from 'ethers';
 import { strip } from 'number-precision';
 import tw from 'twin.macro';
-import { formatUnits, parseUnits } from 'viem';
+import { Address, formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useBatchSwapPrepare as useBatchSwapPrepareEvm } from '~/api/api-contract/_evm/swap/substrate-batch-swap';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetSwapOptimizedPathQuery } from '~/api/api-server/pools/get-swap-optimized-path';
 import { useSorQuery } from '~/api/api-server/sor/batch-swap';
@@ -18,6 +19,7 @@ import { IconArrowDown, IconDown } from '~/assets/icons';
 
 import { IS_MAINNET, IS_MAINNET2 } from '~/constants';
 
+import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { Token } from '~/components/token';
@@ -32,6 +34,7 @@ import {
   getNetworkFull,
   getTokenDecimal,
 } from '~/utils';
+import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
 import { NETWORK } from '~/types';
 import { POPUP_ID } from '~/types/components';
@@ -51,6 +54,9 @@ export const SwapInputGroup = () => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { t } = useTranslation();
+
+  const { slippage: slippageRaw } = useSlippageStore();
+  const slippage = Number(slippageRaw || 0);
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
@@ -81,7 +87,10 @@ export const SwapInputGroup = () => {
 
   const { userAllTokenBalances: userAllTokenBalancesWithLpToken, refetch: refetchBalance } =
     useUserAllTokenBalances();
-  const userAllTokenBalances = userAllTokenBalancesWithLpToken?.filter(t => !t.isLpToken);
+  const userAllTokenBalances = useMemo(
+    () => userAllTokenBalancesWithLpToken?.filter(t => !t.isLpToken),
+    [userAllTokenBalancesWithLpToken]
+  );
 
   const rightNetwork =
     !!fromToken &&
@@ -208,6 +217,34 @@ export const SwapInputGroup = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNetwork]);
 
+  const { isPrepareLoading, isPrepareError, prepareError } = useBatchSwapPrepareEvm({
+    fromToken: (fromToken?.address || '0x0') as Address,
+    toToken: (toToken?.address || '0x0') as Address,
+    swapAmount: parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
+    fundManagement: [walletAddress, false, walletAddress, false],
+    limit: [
+      parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
+      -parseUnits(
+        `${(toInput ?? 0) * (1 - slippage / 100)}`,
+        getTokenDecimal(currentNetwork, toToken?.symbol)
+      ),
+    ],
+    proxyEnabled: !!(swapInfoData || swapOptimizedPathPool?.poolId) && !!validToSwap,
+  });
+
+  const errorMessage = prepareError?.message;
+  const poolImpactError =
+    errorMessage?.includes('304') ||
+    errorMessage?.includes('305') ||
+    errorMessage?.includes('306') ||
+    errorMessage?.includes('307');
+
+  const errorTitle = t(poolImpactError ? 'Price Impact over 30%' : 'Something went wrong');
+  const errorDescription = t(
+    poolImpactError ? 'price-impack-error-message' : 'unknown-error-message'
+  );
+  const sorError = fromToken && toToken && toInputFromSor === 0 && fromInput;
+
   return (
     <>
       <Wrapper>
@@ -268,8 +305,18 @@ export const SwapInputGroup = () => {
             }`}</InputLabel>
           )}
         </InputWrapper>
-        <ButtonPrimaryLarge text={t('Preview')} disabled={!validToSwap} onClick={openSwapPopup} />
+
+        {(isPrepareError || sorError) && (
+          <AlertMessage title={errorTitle} description={errorDescription} type="warning" />
+        )}
+
+        <ButtonPrimaryLarge
+          text={t('Preview')}
+          disabled={!validToSwap || isPrepareLoading || isPrepareError}
+          onClick={openSwapPopup}
+        />
       </Wrapper>
+
       {walletAddress && selectTokenFromPopupOpened && (
         <SelectFromTokenPopup
           userAllTokenBalances={userAllTokenBalances}
@@ -279,7 +326,8 @@ export const SwapInputGroup = () => {
       {walletAddress && selectTokenToPopupOpened && (
         <SelectToTokenPopup userAllTokenBalances={userAllTokenBalances} tokenPrice={toTokenPrice} />
       )}
-      {walletAddress && swapPopupOpened && (
+
+      {walletAddress && swapPopupOpened && !isPrepareError && (
         <SwapPopup swapOptimizedPathPool={swapOptimizedPathPool} refetchBalance={refetchBalance} />
       )}
     </>

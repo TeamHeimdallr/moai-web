@@ -6,7 +6,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
 import { Address, encodeFunctionData } from 'viem';
-import { usePublicClient, useWalletClient } from 'wagmi';
+import { usePrepareContractWrite, usePublicClient, useWalletClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
 import { getTrnApi } from '~/api/api-contract/_evm/substrate/get-trn-api';
@@ -19,7 +19,7 @@ import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-a
 import { IS_MAINNET } from '~/constants';
 import { EVM_TOKEN_ADDRESS } from '~/constants';
 
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { ITokenComposition, NETWORK } from '~/types';
@@ -70,6 +70,19 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
+  const handleNativeXrp = (token: string) => {
+    if (currentNetwork !== NETWORK.EVM_SIDECHAIN) return token;
+
+    if (token === EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO)
+      return EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP;
+    return token;
+  };
+
+  const sortedTokens = tokens
+    .slice()
+    .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedTokenAddressses = sortedTokens.map(t => t.address);
+
   const withdrawLiquidity = async () => {
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
@@ -83,19 +96,6 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
       const [api] = await Promise.all([
         getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
       ]);
-
-      const handleNativeXrp = (token: string) => {
-        if (currentNetwork !== NETWORK.EVM_SIDECHAIN) return token;
-
-        if (token === EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO)
-          return EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP;
-        return token;
-      };
-
-      const sortedTokens = tokens
-        .slice()
-        .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
-      const sortedTokenAddressses = sortedTokens.map(t => t.address);
 
       const encodedData =
         isFpass && !!walletAddress && !!signer && !!vault
@@ -188,5 +188,81 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
     blockTimestamp,
 
     writeAsync: withdrawLiquidity,
+  };
+};
+
+export const useWithdrawLiquidityPrepare = ({ poolId, tokens, bptIn, enabled }: Props) => {
+  const { fpass } = useConnectedWallet();
+  const { address: walletAddress } = fpass;
+
+  const { network } = useParams();
+
+  const { selectedNetwork, isEvm } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
+  const chainId = useNetworkId(currentNetwork);
+
+  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
+    {
+      params: {
+        networkAbbr: currentNetworkAbbr as string,
+        poolId: poolId as string,
+      },
+    },
+    {
+      enabled: !!poolId && !!currentNetworkAbbr,
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
+  );
+  const { poolVaultAmm } = poolVaultAmmData || {};
+  const { vault } = poolVaultAmm || {};
+
+  const handleNativeXrp = (token: string) => {
+    if (currentNetwork !== NETWORK.EVM_SIDECHAIN) return token;
+
+    if (token === EVM_TOKEN_ADDRESS?.[currentNetwork]?.ZERO)
+      return EVM_TOKEN_ADDRESS?.[currentNetwork]?.XRP;
+    return token;
+  };
+
+  const sortedTokens = tokens
+    .slice()
+    .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedTokenAddressses = sortedTokens.map(t => t.address);
+
+  const {
+    isLoading: isPrepareLoading,
+    isError: isPrepareError,
+    isSuccess: isPrepareSuccess,
+    error,
+  } = usePrepareContractWrite({
+    address: (vault || '') as Address,
+    abi: BALANCER_VAULT_ABI,
+    functionName: 'exitPool',
+
+    account: walletAddress as Address,
+    chainId,
+    args: [
+      poolId,
+      walletAddress,
+      walletAddress,
+      [
+        sortedTokenAddressses,
+        tokens.map(() => 0n),
+        WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
+        false,
+      ],
+    ],
+    enabled: enabled && isEvm && !!walletAddress && !!vault,
+  });
+
+  const approveError = error?.message?.includes('CallerNotApproved');
+
+  return {
+    isPrepareError: isPrepareError && !approveError,
+    isPrepareLoading,
+    isPrepareSuccess,
+    prepareError: error,
   };
 };
