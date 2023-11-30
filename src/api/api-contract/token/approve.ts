@@ -1,3 +1,4 @@
+import { formatUnits } from 'viem';
 import { Address } from 'wagmi';
 
 import { useApprove as useApproveEvm } from '~/api/api-contract/_evm/token/approve';
@@ -48,7 +49,7 @@ export const useApprove = ({
   });
 
   const resXrp = useApproveXrp({
-    amount: Number(amount),
+    amount: Number(formatUnits(amount, 6)),
     issuer,
     currency: currency ?? '',
     enabled,
