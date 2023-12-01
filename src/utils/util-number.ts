@@ -38,7 +38,8 @@ export const formatNumberWithComma = (num: number) => format(',~')(num);
 export const formatNumber = (
   data?: number | string,
   decimal = 4,
-  type: 'round' | 'floor' = 'round'
+  type: 'round' | 'floor' = 'round',
+  threshold: number = FORMAT_NUMBER_THRESHOLD
 ) => {
   const formattedNumber =
     type === 'round'
@@ -46,7 +47,7 @@ export const formatNumber = (
       : formatFloor(Number(data ?? 0), decimal);
 
   const formattedWithUnit =
-    formattedNumber > FORMAT_NUMBER_THRESHOLD
+    formattedNumber > threshold
       ? formatNumberWithUnit(formattedNumber)
       : formatNumberWithComma(formattedNumber);
 
