@@ -97,7 +97,7 @@ export const AddLiquidityPopup = ({
     refetch: refetchAllowance1,
   } = useApprove({
     amount: parseUnits(
-      `${token1Amount || 0}`,
+      `${(token1Amount || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, tokensIn?.[0]?.symbol || '')
     ),
     symbol: tokensIn?.[0]?.symbol || '',
@@ -116,7 +116,7 @@ export const AddLiquidityPopup = ({
     refetch: refetchAllowance2,
   } = useApprove({
     amount: parseUnits(
-      `${token2Amount || 0}`,
+      `${(token2Amount || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, tokensIn?.[1]?.symbol || '')
     ),
     symbol: tokensIn?.[1]?.symbol || '',
@@ -134,7 +134,10 @@ export const AddLiquidityPopup = ({
     isSuccess: allowSuccess3,
     refetch: refetchAllowance3,
   } = useApprove({
-    amount: parseUnits(`${bptOut || 0}`, getTokenDecimal(currentNetwork, lpToken?.symbol || '')),
+    amount: parseUnits(
+      `${(bptOut || 0).toFixed(18)}`,
+      getTokenDecimal(currentNetwork, lpToken?.symbol || '')
+    ),
     symbol: lpToken?.symbol || '',
     address: lpToken?.address || '',
     issuer: lpToken?.address || '',

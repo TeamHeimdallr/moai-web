@@ -42,12 +42,15 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
       SwapKind.GivenIn,
       fromToken?.address || '',
       toToken?.address || '',
-      parseUnits(`${fromInput || 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
+      parseUnits(
+        `${(fromInput || 0).toFixed(18)}`,
+        getTokenDecimal(currentNetwork, fromToken?.symbol)
+      ),
       '0x0',
     ],
     fundManagement: [evmAddress, false, evmAddress, false],
     limit: parseUnits(
-      `${(toInput ?? 0) * (1 - slippage / 100)}`,
+      `${((toInput ?? 0) * (1 - slippage / 100)).toFixed(18)}`,
       getTokenDecimal(currentNetwork, toToken?.symbol)
     ),
     enabled,
@@ -56,12 +59,18 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
   const resFpass = useBatchSwapFpass({
     fromToken: (fromToken?.address || '0x0') as Address,
     toToken: (toToken?.address || '0x0') as Address,
-    swapAmount: parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
+    swapAmount: parseUnits(
+      `${(fromInput ?? 0).toFixed(18)}`,
+      getTokenDecimal(currentNetwork, fromToken?.symbol)
+    ),
     fundManagement: [fpassAddress, false, fpassAddress, false],
     limit: [
-      parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
+      parseUnits(
+        `${(fromInput ?? 0).toFixed(18)}`,
+        getTokenDecimal(currentNetwork, fromToken?.symbol)
+      ),
       -parseUnits(
-        `${(toInput ?? 0) * (1 - slippage / 100)}`,
+        `${((toInput ?? 0) * (1 - slippage / 100)).toFixed(18)}`,
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],
