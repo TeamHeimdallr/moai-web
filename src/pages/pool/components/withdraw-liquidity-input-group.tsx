@@ -23,9 +23,8 @@ import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
-import { useNetwork } from '~/hooks/contexts/use-network';
 import { useOnClickOutside } from '~/hooks/utils';
-import { formatNumber, getNetworkFull, getTokenDecimal } from '~/utils';
+import { formatNumber } from '~/utils';
 import { useWithdrawLiquidityInputGroupTabStore } from '~/states/components/input-group/tab';
 import { POPUP_ID } from '~/types';
 
@@ -44,8 +43,6 @@ export const WithdrawLiquidityInputGroup = () => {
   useOnClickOutside([ref, iconRef], () => open(false));
 
   const { network, id } = useParams();
-  const { selectedNetwork } = useNetwork();
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { t } = useTranslation();
 
   const [inputValue, setInputValue] = useState<number>();
@@ -102,7 +99,7 @@ export const WithdrawLiquidityInputGroup = () => {
   const { isPrepareLoading, isPrepareError, prepareError } = useWithdrawLiquidityPrepareEvm({
     poolId: pool?.poolId || '',
     tokens: proportionalTokensOut || [],
-    bptIn: parseUnits(`${inputValue || 0}`, getTokenDecimal(currentNetwork, lpToken?.symbol)),
+    bptIn: inputValueRaw || 0n,
     enabled: !!pool?.poolId && isValidToWithdraw,
   });
 
