@@ -26,7 +26,7 @@ export const useAddLiquidity = ({ token1, token2, enabled }: Props) => {
       const asset1 = { currency: 'XRP' };
       const amount1 = Number(
         Number(
-          parseUnits((xrp.amount || 0).toString(), getTokenDecimal(NETWORK.XRPL, 'XRP')).toString()
+          parseUnits((xrp.amount || 0).toFixed(6), getTokenDecimal(NETWORK.XRPL, 'XRP')).toString()
         ).toFixed(5)
       ).toString(); // max decimal is 6
 

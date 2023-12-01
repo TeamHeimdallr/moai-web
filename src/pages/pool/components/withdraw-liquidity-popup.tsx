@@ -98,7 +98,7 @@ export const WithdrawLiquidityPopup = ({
     refetch: refetchAllowance1,
   } = useApprove({
     amount: parseUnits(
-      `${token1Amount || 0}`,
+      `${(token1Amount || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, tokensOut?.[0]?.symbol || '')
     ),
     address: tokensOut?.[0]?.address || '',
@@ -117,7 +117,7 @@ export const WithdrawLiquidityPopup = ({
     refetch: refetchAllowance2,
   } = useApprove({
     amount: parseUnits(
-      `${token2Amount || 0}`,
+      `${(token2Amount || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, tokensOut?.[1]?.symbol || '')
     ),
     address: tokensOut?.[1]?.address || '',

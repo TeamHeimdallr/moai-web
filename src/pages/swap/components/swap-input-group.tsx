@@ -121,7 +121,7 @@ export const SwapInputGroup = () => {
         from: fromToken?.address || '',
         to: toToken?.address || '',
         amount: parseUnits(
-          (fromInput || 0).toString(),
+          (Number(fromInput) || 0).toFixed(18),
           getTokenDecimal(currentNetwork, fromToken?.symbol)
         ).toString(),
       },
@@ -220,12 +220,18 @@ export const SwapInputGroup = () => {
   const { isPrepareLoading, isPrepareError, prepareError } = useBatchSwapPrepareEvm({
     fromToken: (fromToken?.address || '0x0') as Address,
     toToken: (toToken?.address || '0x0') as Address,
-    swapAmount: parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
+    swapAmount: parseUnits(
+      `${(Number(fromInput) ?? 0).toFixed(18)}`,
+      getTokenDecimal(currentNetwork, fromToken?.symbol)
+    ),
     fundManagement: [walletAddress, false, walletAddress, false],
     limit: [
-      parseUnits(`${fromInput ?? 0}`, getTokenDecimal(currentNetwork, fromToken?.symbol)),
+      parseUnits(
+        `${(Number(fromInput) ?? 0).toFixed(18)}`,
+        getTokenDecimal(currentNetwork, fromToken?.symbol)
+      ),
       -parseUnits(
-        `${(toInput ?? 0) * (1 - slippage / 100)}`,
+        `${((toInput ?? 0) * (1 - slippage / 100)).toFixed(18)}`,
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],

@@ -139,7 +139,7 @@ export const AddLiquidityInputGroup = () => {
   const tokensInBigint =
     tokensIn?.map(t => ({
       ...t,
-      amount: parseUnits((t.amount || 0).toString(), getTokenDecimal(currentNetwork, t.symbol)),
+      amount: parseUnits((t.amount || 0).toFixed(18), getTokenDecimal(currentNetwork, t.symbol)),
       // amount: parseUnits((123123123 || 0).toString(), getTokenDecimal(currentNetwork, t.symbol)),
     })) ?? [];
   const tokensInValid = tokensIn.filter(token => token.amount > 0).length > 0;

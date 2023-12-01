@@ -26,7 +26,7 @@ export const useAddLiquidity = ({ id, tokens, enabled }: Props) => {
     tokens:
       tokens?.map(t => ({
         ...t,
-        amount: parseUnits((t.amount || 0).toString(), getTokenDecimal(currentNetwork, t.symbol)),
+        amount: parseUnits((t.amount || 0).toFixed(18), getTokenDecimal(currentNetwork, t.symbol)),
       })) ?? [],
     enabled,
   });
@@ -36,7 +36,7 @@ export const useAddLiquidity = ({ id, tokens, enabled }: Props) => {
     tokens:
       tokens?.map(t => ({
         ...t,
-        amount: parseUnits((t.amount || 0).toString(), getTokenDecimal(currentNetwork, t.symbol)),
+        amount: parseUnits((t.amount || 0).toFixed(18), getTokenDecimal(currentNetwork, t.symbol)),
       })) ?? [],
     enabled,
   });
