@@ -185,8 +185,9 @@ export const AddLiquidityPopup = ({
     }
 
     if (tokenLength === 2) {
-      if (allowance2) return 3;
-      if (allowance1) return 2;
+      if (!allowance1) return 1;
+      if (!allowance2) return 2;
+      return 3;
     }
 
     return 1;
