@@ -23,9 +23,8 @@ const HomePage = () => {
   // 0xcCcCCCCc00000864000000000000000000000000 // sylo
   // 0xCccCccCc00001064000000000000000000000000 // asto
 
-  const { writeAsync } = useAddLiquidity({
-    poolId: '0xcd1c4de9f374c737944ce2eef413519f9db14434000200000000000000000000',
-    tokens: [
+  const allTokens = [
+    [
       {
         id: 0,
         symbol: 'ROOT',
@@ -36,7 +35,7 @@ const HomePage = () => {
 
         isLpToken: false,
         isCexListed: false,
-        amount: 16588000n,
+        amount: 13168000n,
         balance: 3000000000000000,
       },
       {
@@ -50,9 +49,100 @@ const HomePage = () => {
         isLpToken: false,
         isCexListed: false,
         amount: 1000000n,
-        balance: 90000000000000000000,
+        balance: 3000000000000000,
       },
     ],
+    [
+      {
+        id: 0,
+        symbol: 'XRP',
+        network: NETWORK.THE_ROOT_NETWORK,
+
+        address: '0xCCCCcCCc00000002000000000000000000000000',
+        currency: 'XRP',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000n,
+        balance: 3000000000000000,
+      },
+      {
+        id: 1,
+        symbol: 'USDC',
+        network: NETWORK.THE_ROOT_NETWORK,
+
+        address: '0xCCcCCcCC00000C64000000000000000000000000',
+        currency: 'USDC',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 611800n,
+        balance: 3000000000000000,
+      },
+    ],
+
+    [
+      {
+        id: 0,
+        symbol: 'XRP',
+        network: NETWORK.THE_ROOT_NETWORK,
+
+        address: '0xCCCCcCCc00000002000000000000000000000000',
+        currency: 'XRP',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000n,
+        balance: 3000000000000000,
+      },
+      {
+        id: 1,
+        symbol: 'ASTO',
+        network: NETWORK.THE_ROOT_NETWORK,
+
+        address: '0xCccCccCc00001064000000000000000000000000',
+        currency: 'ASTO',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1168500000000000000n,
+        balance: 9000000000000000000000,
+      },
+    ],
+
+    [
+      {
+        id: 0,
+        symbol: 'XRP',
+        network: NETWORK.THE_ROOT_NETWORK,
+
+        address: '0xCCCCcCCc00000002000000000000000000000000',
+        currency: 'XRP',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000n,
+        balance: 3000000000000000,
+      },
+      {
+        id: 1,
+        symbol: 'SYLO',
+        network: NETWORK.THE_ROOT_NETWORK,
+
+        address: '0xcccccccc00000864000000000000000000000000',
+        currency: 'SYLO',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 21003600000000000000n,
+        balance: 9000000000000000000000,
+      },
+    ],
+  ];
+
+  const { writeAsync } = useAddLiquidity({
+    poolId: '0x4ba71e25c34af053a07fae82103c2f52a5ece1a3000200000000000000000003',
+    tokens: allTokens[3],
     enabled: true,
   });
 

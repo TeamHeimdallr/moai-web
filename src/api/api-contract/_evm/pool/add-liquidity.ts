@@ -74,7 +74,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
       network: currentNetwork,
     })
   );
-  const vault = '0xF5bB92ea0f82E01F890ad82AbbECE7B721fC780b';
+  const vault = '0x1D6B655289328a1083EcD70170692002dBED1aBD';
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: (vault || '') as Address,
