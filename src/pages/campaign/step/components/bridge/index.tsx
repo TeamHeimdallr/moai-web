@@ -88,7 +88,7 @@ const Bridge = () => {
               title="From"
               network={NETWORK.XRPL}
               control={control}
-              token={<Token token={'XRP'} image />}
+              token={<Token token={'XRP'} image imageUrl="/src/assets/icons/icon-token-xrp.svg" />}
               tokenName={'XRPL'}
               tokenValue={0}
               balance={0}
