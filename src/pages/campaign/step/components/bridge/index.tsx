@@ -9,11 +9,11 @@ import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconCheck, IconLink, IconTime, IconTokenXrp } from '~/assets/icons';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
+import { InputNumber } from '~/components/inputs';
+import { List } from '~/components/lists';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
-import { InputNumber } from '~/pages/campaign/components/input-number';
-import { List } from '~/pages/campaign/components/list';
 import { TooltipAddress } from '~/pages/campaign/components/tooltip/address';
 
 import { DATE_FORMATTER } from '~/utils';
