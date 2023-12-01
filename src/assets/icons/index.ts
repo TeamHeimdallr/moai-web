@@ -49,6 +49,7 @@ import IconSetting from './icon-setting.svg?react';
 import IconShare from './icon-share.svg?react';
 import IconTelegram from './icon-telegram.svg?react';
 import IconTime from './icon-time.svg?react';
+import IconTokenXrp from './icon-token-xrp.svg?react';
 import IconTokens from './icon-tokens.svg?react';
 import IconTwitter from './icon-twitter.svg?react';
 import IconTwitterX from './icon-twitter-x.svg?react';
@@ -111,6 +112,7 @@ export {
   IconTelegram,
   IconTime,
   IconTokens,
+  IconTokenXrp,
   IconTwitter,
   IconTwitterX,
   IconUnlocked,

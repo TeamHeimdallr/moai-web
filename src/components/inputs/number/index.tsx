@@ -8,9 +8,12 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 
+import { NETWORK_IMAGE_MAPPER } from '~/constants';
+
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
 
 import { formatNumber } from '~/utils';
+import { NETWORK } from '~/types';
 
 type OmitType = 'type' | 'onChange' | 'onBlur' | 'autoFocus';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
@@ -40,6 +43,9 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   control?: Control<any>;
   setValue?: UseFormSetValue<any>;
   formState?: FormState<any>;
+
+  title?: string;
+  network?: NETWORK;
 }
 
 export const InputNumber = ({
@@ -65,6 +71,9 @@ export const InputNumber = ({
   setValue,
   formState,
 
+  title,
+  network,
+
   ...rest
 }: Props) => {
   const [focused, setFocus] = useState(false);
@@ -78,6 +87,8 @@ export const InputNumber = ({
   const tokenValue = defaultTokenValue ?? 0;
   const currentBalance = balance || 0;
   const currentBalanceRaw = balanceRaw || 0n;
+
+  const networkName = network === NETWORK.THE_ROOT_NETWORK ? 'The Root Network' : 'XRPL';
 
   useEffect(() => {
     if (!focus) return;
@@ -130,75 +141,88 @@ export const InputNumber = ({
         };
 
         return (
-          <Wrapper focus={focus} focused={focused} error={!!errorMessage}>
-            <TokenInputWrapper>
-              <TokenWrapper onClick={handleTokenClick}>{token}</TokenWrapper>
-              <InputWrapper>
-                <NumericFormat
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-expect-error
-                  name={name}
-                  allowLeadingZeros={false}
-                  allowNegative={false}
-                  placeholder={placeholder}
-                  thousandSeparator
-                  maxLength={16}
-                  value={handledValue || ''}
-                  onValueChange={values => onValueChange(values.floatValue)}
-                  customInput={CustomInput}
-                  inputMode="decimal"
-                  onFocus={() => {
-                    if (focus) {
-                      setFocus(true);
-                      blurAll?.(false);
-                    }
-                  }}
-                  onBlur={() => {
-                    onBlur();
-                    setFocus(false);
-                    blurAll?.(true);
-                  }}
-                  {...rest}
-                />
-              </InputWrapper>
-            </TokenInputWrapper>
-            <BalanceOuterWrapper>
-              <BalanceWrapper>
-                <BalanceLabel>{t('Balance')}</BalanceLabel>
-                <BalanceValue>{formatNumber(currentBalance ?? 0, 2, 'floor')}</BalanceValue>
-                {maxButton && (
-                  <ButtonPrimarySmall
-                    text={handledValue === currentBalance ? 'Maxed' : 'Max'}
-                    onClick={() => {
-                      onMaxValue();
-                      blurAll?.(false);
-                    }}
-                    style={{ width: 'auto' }}
-                    disabled={handledValue === currentBalance}
-                  />
+          <Wrapper focus={focus} focused={focused} error={!!errorMessage} hasTitle={!!title}>
+            {title && (
+              <TitleWrapper>
+                <Title>{title}</Title>
+                {network && (
+                  <NetworkWrapper>
+                    <NetworkImage src={NETWORK_IMAGE_MAPPER[network]} />
+                    <NetworkName>{networkName}</NetworkName>
+                  </NetworkWrapper>
                 )}
-                <TokenUSDValue>${formatNumber(tokenValue ?? 0, 2, 'floor')}</TokenUSDValue>
-              </BalanceWrapper>
-              {slider && (
-                <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>
-                  <ReactSlider
-                    disabled={!sliderActive}
-                    className="slider"
-                    thumbClassName="thumb"
-                    trackClassName="track"
-                    min={0}
-                    max={flooredBalanceForSlider || 100}
-                    value={handledValue || 0}
-                    step={0.00001}
-                    onChange={onValueChange}
-                    renderThumb={({ key, ...props }) => (
-                      <div className={sliderActive ? 'thumb' : ''} key={key} {...props} />
-                    )}
+              </TitleWrapper>
+            )}
+            <ContentWrapper hasTitle={!!title}>
+              <TokenInputWrapper>
+                <TokenWrapper onClick={handleTokenClick}>{token}</TokenWrapper>
+                <InputWrapper>
+                  <NumericFormat
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    name={name}
+                    allowLeadingZeros={false}
+                    allowNegative={false}
+                    placeholder={placeholder}
+                    thousandSeparator
+                    maxLength={16}
+                    value={handledValue || ''}
+                    onValueChange={values => onValueChange(values.floatValue)}
+                    customInput={CustomInput}
+                    inputMode="decimal"
+                    onFocus={() => {
+                      if (focus) {
+                        setFocus(true);
+                        blurAll?.(false);
+                      }
+                    }}
+                    onBlur={() => {
+                      onBlur();
+                      setFocus(false);
+                      blurAll?.(true);
+                    }}
+                    {...rest}
                   />
-                </SliderWrapper>
-              )}
-              {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-            </BalanceOuterWrapper>
+                </InputWrapper>
+              </TokenInputWrapper>
+              <BalanceOuterWrapper>
+                <BalanceWrapper>
+                  <BalanceLabel>{t('Balance')}</BalanceLabel>
+                  <BalanceValue>{formatNumber(currentBalance ?? 0, 2, 'floor')}</BalanceValue>
+                  {maxButton && (
+                    <ButtonPrimarySmall
+                      text={handledValue === currentBalance ? 'Maxed' : 'Max'}
+                      onClick={() => {
+                        onMaxValue();
+                        blurAll?.(false);
+                      }}
+                      style={{ width: 'auto' }}
+                      disabled={handledValue === currentBalance}
+                    />
+                  )}
+                  <TokenUSDValue>${formatNumber(tokenValue ?? 0, 2, 'floor')}</TokenUSDValue>
+                </BalanceWrapper>
+                {slider && (
+                  <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>
+                    <ReactSlider
+                      disabled={!sliderActive}
+                      className="slider"
+                      thumbClassName="thumb"
+                      trackClassName="track"
+                      min={0}
+                      max={flooredBalanceForSlider || 100}
+                      value={handledValue || 0}
+                      step={0.00001}
+                      onChange={onValueChange}
+                      renderThumb={({ key, ...props }) => (
+                        <div className={sliderActive ? 'thumb' : ''} key={key} {...props} />
+                      )}
+                    />
+                  </SliderWrapper>
+                )}
+                {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+              </BalanceOuterWrapper>
+            </ContentWrapper>
           </Wrapper>
         );
       }}
@@ -210,20 +234,28 @@ interface WrapperProps {
   focus?: boolean;
   focused?: boolean;
   error?: boolean;
+  hasTitle?: boolean;
 }
-const Wrapper = styled.div<WrapperProps>(({ focus, focused, error }) => [
-  tw`w-full flex flex-col gap-12 transition-colors border-transparent border-solid pt-15 pb-11 pl-15 pr-15 bg-neutral-15 rounded-8 border-1`,
-  focus && tw`hover:(border-neutral-80)`,
-  focused && tw`border-primary-50 hover:(border-primary-50)`,
-  error && tw`border-red-50 hover:(border-red-50)`,
+const Wrapper = styled.div<WrapperProps>(({ focus, focused, error, hasTitle }) => [
+  tw`w-full flex flex-col transition-colors bg-neutral-15 rounded-8 outline outline-1 outline-transparent`,
+  focus && tw`hover:(outline-neutral-80)`,
+  focused && tw`outline-primary-50 hover:(outline-primary-50)`,
+  error && tw`outline-red-50 hover:(outline-red-50)`,
   error &&
     css`
       & input {
         color: ${COLOR.RED[50]};
       }
     `,
+  !hasTitle && tw`gap-12 pt-16 pb-12 pl-16 pr-16`,
 ]);
-
+interface ContentWrapperProps {
+  hasTitle?: boolean;
+}
+const ContentWrapper = styled.div<ContentWrapperProps>(({ hasTitle }) => [
+  tw`w-full flex flex-col gap-12`,
+  hasTitle && tw`px-16 py-12`,
+]);
 const TokenInputWrapper = tw.div`
   flex gap-8
 `;
@@ -345,3 +377,17 @@ const SliderWrapper = styled.div<SliderWrapperProps>(({ sliderActive, error }) =
       }
     `,
 ]);
+
+const TitleWrapper = tw.div`
+  w-full flex justify-between items-center bg-neutral-20 px-16 py-12 rounded-t-8
+`;
+const Title = tw.div`
+  text-neutral-80 font-m-14
+`;
+const NetworkWrapper = tw.div`flex gap-8`;
+const NetworkImage = tw.img`
+  w-24 h-24
+`;
+const NetworkName = tw.div`
+  text-neutral-100 font-m-14
+`;
