@@ -39,7 +39,7 @@ export const PoolInfo = () => {
   // TODO: moai pre-mining apr
   // const formattedMoaiApr = apr ? `${formatNumber(9992.193, 4, 'round', 10000)}%` : '0%'; // moai pre-mining apr
 
-  const formattedFees = tradingFee ? `${tradingFee * 100}%` : '0%';
+  const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100, 2)}%` : '0%';
 
   return (
     <Wrapper>
