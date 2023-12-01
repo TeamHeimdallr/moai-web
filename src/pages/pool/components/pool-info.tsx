@@ -69,9 +69,9 @@ const InnerWrapper = tw.div`
   flex flex-1 gap-16
 `;
 
-const ToolTipWrapper = tw.div`
-  absolute
-`;
+// const ToolTipWrapper = tw.div`
+//   absolute
+// `;
 
 interface PoolInfoCardProps {
   name: string;
