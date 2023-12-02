@@ -110,7 +110,11 @@ export const SwapInputGroup = () => {
       },
     },
     {
-      enabled: !isFpass && !swapDisabled && rightNetwork && !!currentNetworkAbbr,
+      enabled:
+        !swapDisabled &&
+        currentNetwork !== NETWORK.THE_ROOT_NETWORK &&
+        rightNetwork &&
+        !!currentNetworkAbbr,
       staleTime: 1000 * 3,
     }
   );
