@@ -36,7 +36,6 @@ import {
 } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
-import { NETWORK } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 import { SelectFromTokenPopup } from './select-token-from-popup';
@@ -99,7 +98,7 @@ export const SwapInputGroup = () => {
     toToken?.network === currentNetwork;
   const {
     data: swapOptimizedPathPoolData,
-    isLoading: isSorFallbackLoading,
+    isFetching: isSorFallbackLoading,
     isError: isSorFallbackError,
   } = useSorFallbackQuery(
     {
