@@ -75,7 +75,7 @@ export const useCalculateWithdrawLiquidity = ({ bptIn }: WithdrawPriceImpactProp
 
   const proportionalTokensOut = (compositions?.map(p => ({
     ...p,
-    amount: withdrawLpTokenWeight * (p?.balance ?? 0),
+    amount: withdrawLpTokenWeight * (p?.balance || 0),
   })) || []) as (ITokenComposition & { amount: number })[];
 
   return {

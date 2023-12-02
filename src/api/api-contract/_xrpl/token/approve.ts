@@ -40,7 +40,7 @@ export const useApprove = ({ currency, issuer, amount, enabled }: Props) => {
   });
 
   const line = trustLines?.find(d => d.currency === currency && d.account === issuer);
-  const limit = Number(line?.limit ?? 0);
+  const limit = Number(line?.limit || 0);
 
   const txRequest = {
     TransactionType: 'TrustSet',
@@ -50,7 +50,7 @@ export const useApprove = ({ currency, issuer, amount, enabled }: Props) => {
     LimitAmount: {
       currency,
       issuer,
-      // value: (Number(amount) + Number(line?.balance ?? 0) + 1).toFixed(6),
+      // value: (Number(amount) + Number(line?.balance || 0) + 1).toFixed(6),
       value: (10 ** 10).toFixed(6),
     },
   } as TrustSet;
@@ -81,7 +81,7 @@ export const useApprove = ({ currency, issuer, amount, enabled }: Props) => {
   return {
     isLoading: isLoading || isReadLoading,
     isSuccess,
-    allowance: !!line && limit >= Number(amount) + Number(line?.balance ?? 0),
+    allowance: !!line && limit >= Number(amount) + Number(line?.balance || 0),
     refetch,
     allow,
   };

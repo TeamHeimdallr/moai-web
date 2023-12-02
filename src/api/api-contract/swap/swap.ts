@@ -50,7 +50,7 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
     ],
     fundManagement: [evmAddress, false, evmAddress, false],
     limit: parseUnits(
-      `${((toInput ?? 0) * (1 - slippage / 100)).toFixed(18)}`,
+      `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
       getTokenDecimal(currentNetwork, toToken?.symbol)
     ),
     enabled,
@@ -60,17 +60,17 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
     fromToken: (fromToken?.address || '0x0') as Address,
     toToken: (toToken?.address || '0x0') as Address,
     swapAmount: parseUnits(
-      `${(fromInput ?? 0).toFixed(18)}`,
+      `${(fromInput || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, fromToken?.symbol)
     ),
     fundManagement: [fpassAddress, false, fpassAddress, false],
     limit: [
       parseUnits(
-        `${(fromInput ?? 0).toFixed(18)}`,
+        `${(fromInput || 0).toFixed(18)}`,
         getTokenDecimal(currentNetwork, fromToken?.symbol)
       ),
       -parseUnits(
-        `${((toInput ?? 0) * (1 - slippage / 100)).toFixed(18)}`,
+        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],

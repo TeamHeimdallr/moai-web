@@ -160,7 +160,7 @@ const calcPriceImpact = (
 ) => {
   let bptZeroPriceImpact = BZERO;
   for (let i = 0; i < tokenAmounts.length; i++) {
-    const price = ((weights?.[i] ?? 0n) * (bptTotalSupply ?? 0n)) / (balances?.[i] || 1n);
+    const price = ((weights?.[i] || 0n) * (bptTotalSupply || 0n)) / (balances?.[i] || 1n);
     const newTerm = (price * tokenAmounts[i]) / ONE;
     bptZeroPriceImpact += newTerm;
   }

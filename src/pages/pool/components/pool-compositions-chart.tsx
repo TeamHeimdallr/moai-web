@@ -30,7 +30,7 @@ export const PoolCompositionsChart = ({ data }: Props) => {
 
     return dataIndex === 0 ? gradient1 : gradient2;
   };
-  const totalValue = data?.reduce((acc, cur) => acc + (cur?.value ?? 0), 0) || 0;
+  const totalValue = data?.reduce((acc, cur) => acc + (cur?.value || 0), 0) || 0;
 
   return (
     <Wrapper>
@@ -39,7 +39,7 @@ export const PoolCompositionsChart = ({ data }: Props) => {
           data={{
             datasets: [
               {
-                data: data.map(d => d?.currentWeight ?? 0),
+                data: data.map(d => d?.currentWeight || 0),
                 backgroundColor: ctx => handleGradient(ctx),
                 borderWidth: 0,
                 circumference: 180,

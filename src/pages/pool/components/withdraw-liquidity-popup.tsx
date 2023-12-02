@@ -166,7 +166,7 @@ export const WithdrawLiquidityPopup = ({
     enabled: !!poolId && validAmount && getValidAllowance(),
   });
 
-  const txDate = new Date(blockTimestamp ?? 0);
+  const txDate = new Date(blockTimestamp || 0);
   const isSuccess = withdrawLiquiditySuccess && !!txData;
   const isLoading = withdrawLiquidityLoading || allowLoading1 || allowLoading2;
   const totalValue = Number(formatUnits(bptIn || 0n, 18)) * lpTokenPrice;

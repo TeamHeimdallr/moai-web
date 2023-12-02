@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useQueries, useQuery } from '@tanstack/react-query';
-import { formatUnits } from 'viem';
+import { formatUnits, parseUnits } from 'viem';
 import { AccountInfoResponse, GatewayBalancesResponse } from 'xrpl';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
@@ -123,18 +123,14 @@ export const useUserPoolTokenBalances = () => {
     tokenBalancesData.forEach(res => res.refetch());
   };
 
-  const lpTokenBalance = Number(
+  const _lpTokenBalanceRaw =
     lpTokenBalanceData?.result?.balances?.[walletAddress]?.find(
       asset => asset?.currency === lpTokenInfo?.currency
-    )?.value || 0
-  );
+    )?.value || '0';
+  const lpTokenBalance = Number(_lpTokenBalanceRaw);
 
   // do not use
-  const lpTokenBalanceRaw = BigInt(
-    lpTokenBalanceData?.result?.balances?.[walletAddress]?.find(
-      asset => asset?.currency === lpTokenInfo?.currency
-    )?.value || '0'
-  );
+  const lpTokenBalanceRaw = parseUnits(lpTokenBalance.toFixed(18), 18);
 
   const lpTokenTotalSupply = Number(lpTokenInfo?.value || 0);
   const lpTokenPrice = lpTokenTotalSupply ? Number((pool?.value || 0) / lpTokenTotalSupply) : 0;

@@ -25,7 +25,7 @@ export const useEvm = () => {
         ? [theRootNetwork, xrpEvmSidechain]
         : [theRootNetwork, xrpEvmSidechain];
 
-    const chainId = chain?.[0]?.id ?? 0;
+    const chainId = chain?.[0]?.id || 0;
 
     setChains(chain);
     setChainId(chainId);

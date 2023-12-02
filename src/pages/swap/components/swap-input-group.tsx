@@ -11,8 +11,8 @@ import * as yup from 'yup';
 
 import { useBatchSwapPrepare as useBatchSwapPrepareEvm } from '~/api/api-contract/_evm/swap/substrate-batch-swap';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
-import { useGetSwapOptimizedPathQuery } from '~/api/api-server/pools/get-swap-optimized-path';
 import { useSorQuery } from '~/api/api-server/sor/batch-swap';
+import { useSorFallbackQuery } from '~/api/api-server/sor/get-swap-fallback';
 
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconDown } from '~/assets/icons';
@@ -97,18 +97,20 @@ export const SwapInputGroup = () => {
     !!toToken &&
     fromToken?.network === currentNetwork &&
     toToken?.network === currentNetwork;
-  const { data: swapOptimizedPathPoolData } = useGetSwapOptimizedPathQuery(
+  const {
+    data: swapOptimizedPathPoolData,
+    isLoading: isSorFallbackLoading,
+    isError: isSorFallbackError,
+  } = useSorFallbackQuery(
     {
-      params: {
-        networkAbbr: currentNetworkAbbr,
-      },
       queries: {
+        networkAbbr: currentNetworkAbbr,
         fromTokenId: fromToken?.id || 0,
         toTokenId: toToken?.id || 0,
       },
     },
     {
-      enabled: !swapDisabled && rightNetwork && !!currentNetworkAbbr,
+      enabled: !swapDisabled && !isFpass && rightNetwork && !!currentNetworkAbbr,
       staleTime: 1000 * 3,
     }
   );
@@ -127,8 +129,7 @@ export const SwapInputGroup = () => {
       },
     },
     {
-      enabled:
-        !swapDisabled && currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
+      enabled: !swapDisabled && isFpass && !!fromToken && !!toToken,
       staleTime: 2000,
     }
   );
@@ -221,17 +222,17 @@ export const SwapInputGroup = () => {
     fromToken: (fromToken?.address || '0x0') as Address,
     toToken: (toToken?.address || '0x0') as Address,
     swapAmount: parseUnits(
-      `${(Number(fromInput) ?? 0).toFixed(18)}`,
+      `${(Number(fromInput) || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, fromToken?.symbol)
     ),
     fundManagement: [walletAddress, false, walletAddress, false],
     limit: [
       parseUnits(
-        `${(Number(fromInput) ?? 0).toFixed(18)}`,
+        `${(Number(fromInput) || 0).toFixed(18)}`,
         getTokenDecimal(currentNetwork, fromToken?.symbol)
       ),
       -parseUnits(
-        `${((toInput ?? 0) * (1 - slippage / 100)).toFixed(18)}`,
+        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],
@@ -241,12 +242,26 @@ export const SwapInputGroup = () => {
   const errorMessage = prepareError?.message;
   const poolImpactError = errorMessage?.includes('304') || errorMessage?.includes('305');
 
-  const sorError = fromToken && toToken && toInputFromSor === 0 && fromInput;
+  const sorError = isFpass && fromToken && toToken && toInputFromSor === 0 && fromInput;
+  const sorFallbackError = isSorFallbackError && !isFpass && fromToken && toToken;
+
   const errorTitle = t(
-    poolImpactError || sorError ? 'Price impact over 30%' : 'Something went wrong'
+    isFpass
+      ? poolImpactError || sorError
+        ? 'Price impact over 30%'
+        : 'Something went wrong'
+      : sorFallbackError
+      ? 'Cannot swap'
+      : 'Something went wrong'
   );
   const errorDescription = t(
-    poolImpactError || sorError ? 'price-impact-error-message' : 'unknown-error-message'
+    isFpass
+      ? poolImpactError || sorError
+        ? 'price-impact-error-message'
+        : 'unknown-error-message'
+      : sorFallbackError
+      ? 'cannot-swap-error-message'
+      : 'unknown-error-message'
   );
 
   return (
@@ -310,13 +325,19 @@ export const SwapInputGroup = () => {
           )}
         </InputWrapper>
 
-        {(isPrepareError || sorError) && (
+        {(isPrepareError || sorError || sorFallbackError) && (
           <AlertMessage title={errorTitle} description={errorDescription} type="warning" />
         )}
 
         <ButtonPrimaryLarge
           text={t('Preview')}
-          disabled={!validToSwap || isPrepareLoading || isPrepareError}
+          disabled={
+            !validToSwap ||
+            isPrepareLoading ||
+            isPrepareError ||
+            isSorFallbackLoading ||
+            isSorFallbackError
+          }
           onClick={openSwapPopup}
         />
       </Wrapper>

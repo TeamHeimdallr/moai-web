@@ -15,7 +15,7 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
   const { isXrp } = useNetwork();
 
   const { xrp } = useConnectedWallet();
-  const { address } = xrp;
+  const { address, connectedConnector } = xrp;
 
   const tokens = [token1, token2];
 
@@ -78,8 +78,11 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
     submitTx
   );
 
-  const txData = data?.result;
-  const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
+  const txData = connectedConnector === 'gem' ? data?.result : data?.response?.data?.resp?.result;
+
+  const blockTimestamp = txData?.date
+    ? (txData?.date || 0) * 1000 + new Date('2000-01-01').getTime()
+    : new Date().getTime();
 
   const writeAsync = async () => {
     if (!address || !isXrp || !enabled) return;
