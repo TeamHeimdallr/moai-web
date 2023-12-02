@@ -257,7 +257,7 @@ export const useWithdrawLiquidityPrepare = ({ poolId, tokens, bptIn, enabled }: 
     enabled: enabled && isEvm && !!walletAddress && !!vault,
   });
 
-  const approveError = error?.message?.includes('CallerNotApproved');
+  const approveError = error?.message?.includes('Approved');
 
   return {
     isPrepareError: isPrepareError && !approveError,

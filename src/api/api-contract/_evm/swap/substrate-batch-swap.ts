@@ -243,7 +243,7 @@ export const useBatchSwapPrepare = ({
     enabled: proxyEnabled && isEvm && !!walletAddress,
   });
 
-  const approveError = error?.message?.includes('CallerNotApproved');
+  const approveError = error?.message?.includes('Approved');
 
   return {
     isPrepareError: isPrepareError && !approveError,

@@ -12,6 +12,7 @@ import { IToken, NETWORK } from '~/types';
 /**
  * @description Get all token handling in moai finance balances for user
  */
+type TokenBalance = IToken & { balance: number; totalSupply: number };
 export const useUserAllTokenBalances = () => {
   const { isXrp } = useNetwork();
 
@@ -44,6 +45,35 @@ export const useUserAllTokenBalances = () => {
       }
     );
 
+  const lpTokens = tokens?.filter(
+    t => t.network === NETWORK.XRPL && !!t.address && t.symbol !== 'XRP' && t.isLpToken
+  );
+  const getLpTokenTotalSupply = (account: string) => ({
+    command: 'gateway_balances',
+    account: account,
+  });
+  const lpTokenTotalSupplyData = useQueries<GatewayBalancesResponse[]>({
+    queries:
+      lpTokens?.map(token => ({
+        queryKey: ['GET', 'XRPL', 'GATEWAY_BALANCES', 'LP_TOKEN', token.address],
+        queryFn: () => client.request(getLpTokenTotalSupply(token.address)),
+        enabled: !!client && isConnected && isXrp,
+        staleTime: 1000 * 3,
+      })) || [],
+  });
+
+  const lpTokenTotalSupplyRaw = lpTokenTotalSupplyData?.flatMap(d => {
+    const supply = (d.data as GatewayBalancesResponse)?.result?.obligations;
+    const currencies = Object.keys(supply || {});
+
+    return [
+      ...currencies.map(currency => ({
+        currency,
+        supply: Number(supply?.[currency] || 0),
+      })),
+    ];
+  });
+
   const getTokenBalanceRequest = (account: string) => ({
     command: 'gateway_balances',
     account: walletAddress,
@@ -71,21 +101,27 @@ export const useUserAllTokenBalances = () => {
     ? ([
         {
           ...xrpToken,
-          balance: formatUnits(BigInt(xrpTokenBalanceData?.result?.account_data?.Balance || 0), 6),
+          balance: Number(
+            formatUnits(BigInt(xrpTokenBalanceData?.result?.account_data?.Balance || 0), 6)
+          ),
+          totalSupply: 0,
         },
-      ] as (IToken & { balance: string; totalSupply: number })[])
-    : ([] as (IToken & { balance: string; totalSupply: number })[]);
+      ] as TokenBalance[])
+    : ([] as TokenBalance[]);
 
   const tokenBalances = tokenBalancesData?.flatMap(d => {
-    const res: (IToken & { balance: number; totalSupply: number })[] = [];
+    const res: TokenBalance[] = [];
 
     const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
     for (const key in assets) {
       const composition = tokens?.find(token => token.address === key);
-      const asset = assets[key];
+      const [asset] = assets[key];
+
+      const totalSupply =
+        lpTokenTotalSupplyRaw?.find(supply => supply.currency === asset?.currency)?.supply || 0;
 
       if (asset && composition)
-        res.push({ ...composition, balance: Number(asset?.[0]?.value || 0), totalSupply: 0 });
+        res.push({ ...composition, balance: Number(asset?.value || 0), totalSupply });
     }
 
     return res;
@@ -96,10 +132,7 @@ export const useUserAllTokenBalances = () => {
     tokenBalancesRefetch();
   };
 
-  const userAllTokens = [...xrpBalance, ...tokenBalances] as (IToken & {
-    balance: number;
-    totalSupply: number; // TODO: totalSupply
-  })[];
+  const userAllTokens = [...xrpBalance, ...tokenBalances] as TokenBalance[];
 
   return {
     userAllTokenBalances: userAllTokens,
