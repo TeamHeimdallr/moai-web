@@ -140,4 +140,4 @@ const ContentContainer = styled.div(() => [
   `,
 ]);
 const TokenLists = tw.div`flex flex-col gap-8`;
-const Tokens = tw.div`flex gap-8`;
+const Tokens = tw.div`flex gap-8 flex-wrap`;
