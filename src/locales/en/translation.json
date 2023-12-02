@@ -177,5 +177,8 @@
   "withdraw-impact-error-message": "This withdraw liquidity too high impact. Try a lower amount.",
 
   "Something went wrong": "Something went wrong",
-  "unknown-error-message": "Please check your input and try again. If the issue persists, contact to our support team."
+  "unknown-error-message": "Please check your input and try again. If the issue persists, contact to our support team.",
+
+  "Cannot swap": "Cannot swap.",
+  "cannot-swap-error-message": "Swap is not possible with this token. Please select another token."
 }

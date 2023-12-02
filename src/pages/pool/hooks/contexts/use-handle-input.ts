@@ -50,7 +50,7 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
     const remainPoolTokenBalance = compositions?.find(c => c.symbol !== token.symbol)?.balance || 0;
 
     const expectedRemainedTokenValue = changingPoolTokenBalance
-      ? strip((remainPoolTokenBalance * (value ?? 0)) / changingPoolTokenBalance)
+      ? strip((remainPoolTokenBalance * (value || 0)) / changingPoolTokenBalance)
       : 0;
 
     const updateValue =
@@ -65,7 +65,7 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
     return;
   };
 
-  const handleOptimize = () => {
+  const handleOptimize = (setMax?: boolean) => {
     const b1 = compositions?.[0]?.balance || 0;
     const b2 = compositions?.[1]?.balance || 0;
 
@@ -85,6 +85,13 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
 
     // all input zero, set first input to 1, second input to optimized
     if (inputValues.every(v => v === 0)) {
+      if (setMax) {
+        const firstInput = userPoolTokens?.[0]?.balance || 0;
+        const secondInput = strip(1 * (w1 / w2));
+
+        setInputValues([firstInput, secondInput]);
+        return;
+      }
       const firstInput = 1;
       const secondInput = strip(1 * (w1 / w2));
 
@@ -126,7 +133,7 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
         const isFormError = formState?.errors?.[`input${i + 1}`] !== undefined;
 
         if (isFormError) return false;
-        return (token?.balance ?? 0) >= currentValue;
+        return (token?.balance || 0) >= currentValue;
       })
       ?.every(v => v) || false;
   const isValidXrp =
@@ -143,7 +150,7 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
   return {
     handleOptimize,
     handleChange: isXrp ? handleChangeAuto : handleChange,
-    handleTotalMax: isXrp ? handleOptimize : handleTotalMax,
+    handleTotalMax: isXrp ? () => handleOptimize(true) : handleTotalMax,
     isValid: isXrp ? isValidXrp : isValid,
     totalValueMaxed: isXrp ? totalValueMaxedXrp : totalValueMaxed,
   };

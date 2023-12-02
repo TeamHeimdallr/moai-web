@@ -84,7 +84,7 @@ export const InputNumber = ({
   const numValue = Number(value) || 0;
   const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
-  const tokenValue = defaultTokenValue ?? 0;
+  const tokenValue = defaultTokenValue || 0;
   const currentBalance = balance || 0;
   const currentBalanceRaw = balanceRaw || 0n;
 
@@ -188,7 +188,7 @@ export const InputNumber = ({
               <BalanceOuterWrapper>
                 <BalanceWrapper>
                   <BalanceLabel>{t('Balance')}</BalanceLabel>
-                  <BalanceValue>{formatNumber(currentBalance ?? 0, 2, 'floor')}</BalanceValue>
+                  <BalanceValue>{formatNumber(currentBalance || 0, 2, 'floor')}</BalanceValue>
                   {maxButton && (
                     <ButtonPrimarySmall
                       text={handledValue === currentBalance ? 'Maxed' : 'Max'}
@@ -200,7 +200,7 @@ export const InputNumber = ({
                       disabled={handledValue === currentBalance}
                     />
                   )}
-                  <TokenUSDValue>${formatNumber(tokenValue ?? 0, 2, 'floor')}</TokenUSDValue>
+                  <TokenUSDValue>${formatNumber(tokenValue || 0, 2, 'floor')}</TokenUSDValue>
                 </BalanceWrapper>
                 {slider && (
                   <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>

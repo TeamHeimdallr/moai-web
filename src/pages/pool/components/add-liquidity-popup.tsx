@@ -166,7 +166,7 @@ export const AddLiquidityPopup = ({
     enabled: !!poolId && validAmount && getValidAllowance(),
   });
 
-  const txDate = new Date(blockTimestamp ?? 0);
+  const txDate = new Date(blockTimestamp || 0);
   const isSuccess = addLiquiditySuccess && !!txData;
   const isLoading = addLiquidityLoading || allowLoading1 || allowLoading2;
 

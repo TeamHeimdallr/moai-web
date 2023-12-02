@@ -187,7 +187,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     enabled: !!(swapInfoData || swapOptimizedPathPool?.poolId) && validAllowance && validAmount,
   });
 
-  const txDate = new Date(blockTimestamp ?? 0);
+  const txDate = new Date(blockTimestamp || 0);
   const isSuccess = swapSuccess && !!txData;
   const isLoading = swapLoading || allowFromTokenLoading || allowToTokenLoading;
 

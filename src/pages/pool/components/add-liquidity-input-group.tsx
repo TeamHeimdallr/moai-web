@@ -95,12 +95,12 @@ export const AddLiquidityInputGroup = () => {
     input1: yup
       .number()
       .min(0)
-      .max(userPoolTokens?.[0]?.balance ?? 0, t('Exceeds wallet balance'))
+      .max(userPoolTokens?.[0]?.balance || 0, t('Exceeds wallet balance'))
       .required(),
     input2: yup
       .number()
       .min(0)
-      .max(userPoolTokens?.[1]?.balance ?? 0, t('Exceeds wallet balance'))
+      .max(userPoolTokens?.[1]?.balance || 0, t('Exceeds wallet balance'))
       .required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
@@ -231,7 +231,7 @@ export const AddLiquidityInputGroup = () => {
               <ButtonPrimarySmall
                 disabled={isXrp || !hasBalances}
                 text={'Optimize'}
-                onClick={handleOptimize}
+                onClick={() => handleOptimize()}
               />
             </ButtonWrapper>
           </PriceImpact>

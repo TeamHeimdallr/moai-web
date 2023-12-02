@@ -43,8 +43,8 @@ export const formatNumber = (
 ) => {
   const formattedNumber =
     type === 'round'
-      ? Number(formatFloat(Number(data ?? 0), decimal))
-      : formatFloor(Number(data ?? 0), decimal);
+      ? Number(formatFloat(Number(data || 0), decimal))
+      : formatFloor(Number(data || 0), decimal);
 
   const formattedWithUnit =
     formattedNumber > threshold

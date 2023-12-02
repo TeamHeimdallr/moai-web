@@ -20,7 +20,7 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
   const { xrp } = useConnectedWallet();
   const { slippage: slippageRaw } = useSlippageStore();
 
-  const { address } = xrp;
+  const { address, connectedConnector } = xrp;
 
   const slippage = Number(slippageRaw || 0);
   const amount =
@@ -71,8 +71,11 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
 
   const { data, isLoading, isSuccess, mutateAsync } = useMutation(['XRPL', 'SWAP'], submitTx);
 
-  const txData = data?.result;
-  const blockTimestamp = (txData?.date ?? 0) * 1000 + new Date('2000-01-01').getTime();
+  const txData = connectedConnector === 'gem' ? data?.result : data?.response?.data?.resp?.result;
+
+  const blockTimestamp = txData?.date
+    ? (txData?.date || 0) * 1000 + new Date('2000-01-01').getTime()
+    : new Date().getTime();
 
   const writeAsync = async () => {
     if (!enabled || !address || !isXrp) return;
