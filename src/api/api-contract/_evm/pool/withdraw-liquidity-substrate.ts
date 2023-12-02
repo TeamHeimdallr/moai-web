@@ -232,7 +232,7 @@ export const useWithdrawLiquidityPrepare = ({ poolId, tokens, bptIn, enabled }: 
   const sortedTokenAddressses = sortedTokens.map(t => t.address);
 
   const {
-    isLoading: isPrepareLoading,
+    isFetching: isPrepareLoading,
     isError: isPrepareError,
     isSuccess: isPrepareSuccess,
     error,

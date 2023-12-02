@@ -214,7 +214,7 @@ export const useSwapPrepare = ({
   const { vault } = poolVaultAmm || {};
 
   const {
-    isLoading: isPrepareLoading,
+    isFetching: isPrepareLoading,
     isError: isPrepareError,
     isSuccess: isPrepareSuccess,
     error,

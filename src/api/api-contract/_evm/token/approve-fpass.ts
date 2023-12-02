@@ -72,7 +72,7 @@
 //       })
 //     : '0x0';
 
-//   const { isLoading: isPrepareLoading, config } = usePrepareContractWrite({
+//   const { isFetching: isPrepareLoading, config } = usePrepareContractWrite({
 //     address: walletAddress as Address,
 //     abi: FUTUREPASS_ABI,
 //     functionName: 'proxyCall',

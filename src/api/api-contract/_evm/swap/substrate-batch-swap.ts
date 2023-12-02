@@ -230,7 +230,7 @@ export const useBatchSwapPrepare = ({
 
   /* call prepare hook for check evm tx success */
   const {
-    isLoading: isPrepareLoading,
+    isFetching: isPrepareLoading,
     isError: isPrepareError,
     isSuccess: isPrepareSuccess,
     error,
