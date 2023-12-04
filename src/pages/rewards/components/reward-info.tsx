@@ -34,12 +34,11 @@ export const RewardInfo = () => {
     }
   );
   const { endsAt, myReward, myVolume, totalReward } = waveInfo || {};
-  const totalReward2 = 10_8901_234_000;
 
   const formattedEndsAt = endsAt ? `${format(new Date(endsAt), DATE_FORMATTER.MMM_d_yyyy)}` : '';
   const formattedEndsAtTime = endsAt ? `${format(new Date(endsAt), DATE_FORMATTER.HH_A_0)}` : '';
   const formattedTotalReward = totalReward
-    ? `${formatNumber(totalReward2, 4, 'floor', 10 ** 8)}`
+    ? `${formatNumber(totalReward, 4, 'floor', 10 ** 8)}`
     : '0';
 
   const formattedMyVolume = myVolume ? `$${formatNumber(myVolume, 4)}` : '$0';
