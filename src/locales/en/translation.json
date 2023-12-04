@@ -41,8 +41,6 @@
   "Confirm withdrawal in wallet": "Confirm withdrawal in wallet",
 
   "Volume": "Volume",
-  "Fees": "Fees",
-
   "Liquidity provision": "Liquidity provision",
   "Swaps": "Swaps",
 
@@ -154,7 +152,7 @@
   "Swap preview": "Swap preview",
   "Effective price": "Effective price",
   "swap-detail": "Swap from {{token}} details",
-  "Total expected after fees": "Total expected after fees",
+  "Total expected after fee": "Total expected after fee",
   "Return to swap page": "Return to swap page",
   "approve-swap-message": "Approve {{token}} for swap",
   "Confirm swap": "Confirm swap",
@@ -197,5 +195,42 @@
 
   "Gas fee": "Gas fee",
   "Not enough balance to pay for Gas Fee.": "Not enough balance to pay for Gas Fee.",
-  "May change when network is busy": "May change when network is busy"
+  "May change when network is busy": "May change when network is busy",
+
+  "Activate your $XRP": "Activate your $XRP",
+  "Activate $XRP": "Activate $XRP",
+  "campaign-landing-main-text": "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders\nwithin XRPL to embark on our 'Voyage to the Future.' By joining this journey, you will \nhave the unique opportunity to provide early liquidity to The Root Network. In return,\n you will gain exclusive access to $MOAI pre-mining and special $ROOT rewards.",
+  "Expected APY": "Expected APY",
+  "My Voyage": "My Voyage",
+  "Rewards": "Rewards",
+  "Pending": "Pending",
+  "continue-campaign": "Continue",
+
+  "description-focusing-text-1": "\"Voyage to the Future\"",
+  "description-focusing-text-2": " marks the beginning of a new era in XRP ecosystem",
+  "description-focusing-text-3": " - one step towards a future of limitless possibilities.",
+  "description-title-1": "Amplified Rewards Await You",
+  "description-title-2": "All you need is $XRP!",
+  "description-title-3": "Exclusive Opportunity for Early Engagement",
+  "description-text-1": "Enjoy extra 10% boosted APR over the standard LP rewards.",
+  "description-text-2": "Experience the convenience of single-token deposits.",
+  "description-text-3": "Be among the first to benefit from our initial liquidity pools.",
+
+  "step-title-1": "Connect to XRPL wallet",
+  "step-title-2": "Connect to the Root Network wallet",
+  "step-title-3": "Bridge your $XRP",
+  "step-title-4": "Add liquidity",
+  "step-title-waiting": "Waiting to connect...",
+
+  "Fee": "Fee",
+  "total-bridge": "Total",
+  "Bridge": "Bridge",
+  "tooltip-text-enough-xrp": "If you already have enough $XRP in your Root Network wallet, go to the next step!",
+  "Bridge confirmed!": "Bridge confirmed!",
+  "bridge-success-message": "Successfully bridged your $XRP to The Root Network",
+  "Continue to add liquidity": "Continue to add liquidity",
+
+  "Expected APY (10%)": "Expected APY (10%)",
+  "Pre-mining $MOAI APY (3%)": "Pre-mining $MOAI APY (3%)",
+  "$ROOT reward (7%)": "$ROOT reward (7%)"
 }
