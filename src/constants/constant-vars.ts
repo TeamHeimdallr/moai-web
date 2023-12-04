@@ -26,9 +26,7 @@ export const GNB_MENU: IGnbMenu[] = [
   {
     id: 'rewards',
     text: 'Rewards',
-    path: '/',
-    disabled: true,
-    commingSoon: true,
+    path: '/rewards',
   },
 ];
 

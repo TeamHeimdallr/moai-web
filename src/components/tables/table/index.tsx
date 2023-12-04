@@ -81,6 +81,8 @@ export const Table = <T extends object>({
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     handleRowClick?.(row.getValue('meta'));
                   }}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  className={(row.getValue('meta') as any)?.className}
                 >
                   {row.getVisibleCells().map((cell, i) => (
                     <Fragment key={cell.id + i}>
