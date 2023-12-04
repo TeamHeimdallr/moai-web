@@ -23,7 +23,8 @@ export const formatPercent = (num: number, decimal?: number) =>
 /**
  * parseNumberWithUnit(42e6) === 42M
  */
-export const formatNumberWithUnit = (num: number, decimal = 4) => format(`.${decimal}s`)(num);
+const formatter = Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 5 });
+export const formatNumberWithUnit = (num: number) => formatter.format(num);
 
 /**
  * parseNumberWithComma(10000) === 10,000

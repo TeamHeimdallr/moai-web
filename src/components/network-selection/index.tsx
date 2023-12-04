@@ -31,7 +31,7 @@ export const NetworkSelection = () => {
     NETWORK_SELECT.find(({ network }) => network === selectedNetwork) || NETWORK_SELECT[0];
   const { pathname } = useLocation();
 
-  const exception = ['/', '/swap'];
+  const exception = ['/', '/swap', '/rewards'];
   const handleSelect = (network: NETWORK) => {
     open(false);
 

@@ -180,5 +180,18 @@
   "unknown-error-message": "Please check your input and try again. If the issue persists, contact to our support team.",
 
   "Cannot swap": "Cannot swap.",
-  "cannot-swap-error-message": "Swap is not possible with this token. Please select another token."
+  "cannot-swap-error-message": "Swap is not possible with this token. Please select another token.",
+
+  "Wave": "Wave {{phase}}",
+  "Switch to The Root Network": "Switch to The Root Network",
+  "rewards-network-alert-message": "Rewards are currently available for The Root Network. Would you like to switch networks to view your rewards?",
+
+  "Ends at": "Ends at",
+  "Total Reward": "Total Reward",
+  "My Volume": "My Volume",
+  "My Reward": "My Reward",
+
+  "Rank": "Rank",
+  "LP volume": "LP volume",
+  "Pre-mined $veMOI": "Pre-mined $veMOI"
 }

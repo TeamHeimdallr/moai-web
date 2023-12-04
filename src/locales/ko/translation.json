@@ -193,5 +193,18 @@
   "unknown-error-message": "입력 값을 확인하고 다시 시도해보세요. 문제가 지속되면, 고객지원팀에 문의해주세요.",
 
   "Cannot swap": "스왑이 불가능합니다.",
-  "cannot-swap-error-message": "해당 토큰으로 스왑이 불가능합니다. 다른 토큰을 선택해주세요."
+  "cannot-swap-error-message": "해당 토큰으로 스왑이 불가능합니다. 다른 토큰을 선택해주세요.",
+
+  "Wave": "Wave {{phase}}",
+  "Switch to The Root Network": "The Root Network로 변경하기",
+  "rewards-network-alert-message": "현재 The Root Network에서 리워드를 확인할 수 있습니다. 리워드를 확인하기 위해 네트워크를 변경할까요?",
+
+  "Ends at": "종료일",
+  "Total Reward": "총 리워드",
+  "My Volume": "나의 유동량",
+  "My Reward": "나의 리워드",
+
+  "Rank": "순위",
+  "LP volume": "계정",
+  "Pre-mined $veMOI": "사전 채굴된 $veMOI"
 }

@@ -2,6 +2,7 @@ import { formatDistanceToNowStrict, formatDuration, intervalToDuration } from 'd
 
 export const DATE_FORMATTER = {
   MMM_d_yyyy: 'MMM d, yyyy',
+  HH_A_0: 'h a O',
   HHMM_AA_mm_dd: 'h:mm aa, MMM d',
   HHMMSS: 'HH:mm:ss',
   FULL: 'ccc, MMM dd, yyyy, hh:mm:ss a O',

@@ -49,7 +49,7 @@ export const TableMobile = ({
       {isEmpty && <EmptyWrapper>No liquidity pools</EmptyWrapper>}
       {!isEmpty &&
         data.map(({ meta, rows, dataRows }, i) => (
-          <ContentWrapper key={i} onClick={() => handleClick?.(meta)}>
+          <ContentWrapper key={i} onClick={() => handleClick?.(meta)} className={meta?.className}>
             {rows.map((row, i) => (
               <Row key={i}>{row}</Row>
             ))}

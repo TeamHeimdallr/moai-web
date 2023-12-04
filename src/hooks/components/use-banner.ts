@@ -33,6 +33,7 @@ export const useBanner = () => {
   const { setWalletType } = useWalletTypeStore();
 
   const isSwap = location.pathname.includes('swap');
+  const isRewards = location.pathname.includes('rewards');
   const network =
     selectedNetwork === NETWORK.EVM_SIDECHAIN
       ? 'EVM sidechain'
@@ -46,7 +47,7 @@ export const useBanner = () => {
 
   useEffect(() => {
     // if wallet not connected or on the swap page, can proceed regardless of the selected network.
-    if (!anyAddress || isSwap) {
+    if (!anyAddress || isSwap || isRewards) {
       close();
       return;
     }
