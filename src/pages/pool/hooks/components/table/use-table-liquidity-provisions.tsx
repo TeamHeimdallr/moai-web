@@ -76,12 +76,12 @@ export const useTableLiquidityProvision = () => {
       },
       queries: {
         take: 5,
-        filter: isMyProvision ? `liquidityProvider:eq:${currentAddress}` : undefined,
+        filter: `liquidityProvider:eq:${currentAddress}`,
         sort: sort ? `${sort.key}:${sort.order}` : undefined,
       },
     },
     {
-      enabled: !!network && !!id,
+      enabled: !!network && !!id && !!currentAddress,
       staleTime: 1000,
     }
   );
