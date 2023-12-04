@@ -69,7 +69,7 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
     const b1 = compositions?.[0]?.balance || 0;
     const b2 = compositions?.[1]?.balance || 0;
 
-    const w1 = b1 + b1 ? b1 / (b1 + b2) : 0;
+    const w1 = b1 + b2 ? b1 / (b1 + b2) : 0;
     const w2 = b1 + b2 ? b2 / (b1 + b2) : 0;
 
     // if pool weight 1:0 set second input to max
@@ -87,13 +87,13 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
     if (inputValues.every(v => v === 0)) {
       if (setMax) {
         const firstInput = userPoolTokens?.[0]?.balance || 0;
-        const secondInput = strip(1 * (w1 / w2));
+        const secondInput = strip(1 * (w2 / w1));
 
         setInputValues([firstInput, secondInput]);
         return;
       }
       const firstInput = 1;
-      const secondInput = strip(1 * (w1 / w2));
+      const secondInput = strip(1 * (w2 / w1));
 
       setInputValues([firstInput, secondInput]);
       return;
@@ -101,7 +101,7 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
 
     // all input not zero, remain first input, change second input to optimized
     if (inputValues.every(v => v !== 0)) {
-      const secondInput = strip(inputValues[0] * (w1 / w2));
+      const secondInput = strip(inputValues[0] * (w2 / w1));
       setInputValues([inputValues[0], secondInput]);
 
       return;
@@ -109,14 +109,14 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
 
     // input1 not zero, remain first input, change second input to optimized
     if (inputValues[0] !== 0 && inputValues[1] === 0) {
-      const secondInput = strip(inputValues[0] * (w1 / w2));
+      const secondInput = strip(inputValues[0] * (w2 / w1));
       setInputValues([inputValues[0], secondInput]);
 
       return;
     }
     // input1 not zero, remain first input, change second input to optimized
     if (inputValues[0] === 0 && inputValues[1] !== 0) {
-      const firstInput = strip(inputValues[1] * (w2 / w1));
+      const firstInput = strip(inputValues[1] * (w1 / w2));
       setInputValues([firstInput, inputValues[1]]);
 
       return;
