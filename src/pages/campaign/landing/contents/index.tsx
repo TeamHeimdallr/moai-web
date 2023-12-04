@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
 import Logo1 from '~/assets/logos/logo-campaign-1.svg?react';
