@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { styled } from 'twin.macro';
 
 import { imageCampaignLighthouse, imageCampaignReward, imageCampaignToken } from '~/assets/images';
 
 export const Section2 = () => {
+  const { t } = useTranslation();
   return (
     <Wrapper>
       <Container textOnLeft>
@@ -11,8 +13,8 @@ export const Section2 = () => {
           <Image src={imageCampaignReward} />
         </ImageWrapper>
         <TextWrapper>
-          <Title>Amplified Rewards Await You</Title>
-          <Text>Enjoy extra 10% boosted APR over the standard LP rewards.</Text>
+          <Title>{t('description-title-1')}</Title>
+          <Text>{t('description-text-1')}</Text>
         </TextWrapper>
       </Container>
       <Container>
@@ -20,8 +22,8 @@ export const Section2 = () => {
           <Image src={imageCampaignToken} />
         </ImageWrapper>
         <TextWrapper>
-          <Title>All you need is $XRP!</Title>
-          <Text>Experience the convenience of single-token deposits.</Text>
+          <Title>{t('description-title-2')}</Title>
+          <Text>{t('description-text-2')}</Text>
         </TextWrapper>
       </Container>
       <Container textOnLeft>
@@ -29,8 +31,8 @@ export const Section2 = () => {
           <Image src={imageCampaignLighthouse} />
         </ImageWrapper>
         <TextWrapper>
-          <Title>Exclusive Opportunity for Early Engagement</Title>
-          <Text>Be among the first to benefit from our initial liquidity pools.</Text>
+          <Title>{t('description-title-3')}</Title>
+          <Text>{t('description-text-3')}</Text>
         </TextWrapper>
       </Container>
     </Wrapper>
@@ -64,7 +66,7 @@ const ImageWrapper = tw.div`
   md:w-2/3
   xl:w-auto
   `;
-const Image = tw.img`
+const Image = tw(LazyLoadImage)`
   w-full
   xl:w-auto
 `;

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
@@ -13,6 +14,7 @@ export const Section1 = () => {
   const [highlightedTextNumber, setHighlightedTextNumber] = useState(0);
 
   const { isMD } = useMediaQuery();
+  const { t } = useTranslation();
 
   const handleHighlight = (progress: number) => {
     if (progress < 1 / 3) setHighlightedTextNumber(1);
@@ -33,13 +35,9 @@ export const Section1 = () => {
       <InnerWrapper>
         <QuoteImage src={imageQuote} width={isMD ? 68 : 34} height={isMD ? 60 : 30} />
         <TextWrapper>
-          <Text highlighted={highlightedTextNumber === 1}>{'"Voyage to the Future" '}</Text>
-          <Text highlighted={highlightedTextNumber === 2}>
-            {'marks the beginning of a new era in XRP ecosystem '}
-          </Text>
-          <Text highlighted={highlightedTextNumber === 3}>
-            {'- one step towards a future of limitless possibilities.'}
-          </Text>
+          <Text highlighted={highlightedTextNumber === 1}>{t('description-focusing-text-1')}</Text>
+          <Text highlighted={highlightedTextNumber === 2}>{t('description-focusing-text-2')}</Text>
+          <Text highlighted={highlightedTextNumber === 3}>{t('description-focusing-text-3')}</Text>
         </TextWrapper>
       </InnerWrapper>
     </Wrapper>

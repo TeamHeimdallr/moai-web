@@ -1,4 +1,4 @@
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw from 'twin.macro';
 
@@ -8,14 +8,15 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
   balance: number;
   value: number;
-  image?: string;
+  image?: string | ReactNode;
 }
 
 export const TokenList = ({ token, balance, value, image, ...rest }: Props) => {
   return (
     <Wrapper {...rest}>
       <Token>
-        <Image src={image} /> {token}
+        {typeof image === 'string' ? <Image src={image} /> : image}
+        {token}
       </Token>
       <Description>
         <Balance>{formatNumberWithComma(balance)}</Balance>
