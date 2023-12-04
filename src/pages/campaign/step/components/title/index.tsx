@@ -21,6 +21,14 @@ export const StepperTitle = () => {
   );
 };
 
-const Wrapper = tw.div`w-full flex flex-col gap-4`;
-const StepText = tw.div`font-m-14 text-primary-60`;
-const Title = tw.div`font-b-24 text-neutral-100`;
+const Wrapper = tw.div`w-full flex flex-col gap-4 px-20
+  md:px-0
+`;
+const StepText = tw.div`
+  font-m-12 text-primary-60
+  md:font-m-14
+`;
+const Title = tw.div`
+  font-b-20 text-neutral-100
+  md:font-b-24
+  `;

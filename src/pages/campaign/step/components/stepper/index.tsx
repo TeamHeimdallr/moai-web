@@ -19,4 +19,7 @@ export const Stepper = () => {
     </Wrapper>
   );
 };
-const Wrapper = tw.div`w-full flex-center flex-col gap-40`;
+const Wrapper = tw.div`
+  w-full flex-center flex-col gap-40 px-20
+  md:px-0
+  `;
