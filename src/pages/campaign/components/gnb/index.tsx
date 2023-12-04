@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
@@ -20,6 +21,7 @@ export const Gnb = () => {
   const { evm, xrp } = useConnectedWallet();
 
   const { isLG } = useMediaQuery();
+  const { t } = useTranslation();
 
   return (
     <Wrapper>
@@ -35,7 +37,7 @@ export const Gnb = () => {
         ) : (
           <ButtonPrimaryMedium
             style={{ padding: '9px 24px' }}
-            text="Connect wallet"
+            text={t('Connect wallet')}
             isLoading={!!opened}
             onClick={() => {
               open();

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
@@ -27,6 +28,8 @@ interface InputFormState {
 const Bridge = () => {
   const [inputValue, setInputValue] = useState<number>();
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
+
+  const { t } = useTranslation();
 
   const address = '0x25adAF52a870a1EEC5F677E111674439D13fAE300';
   // TODO : add validation
@@ -56,10 +59,10 @@ const Bridge = () => {
               <SuccessIconWrapper>
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
-              <SuccessTitle>Bridge confirmed!</SuccessTitle>
-              <SuccessSubTitle>Successfully bridged your $XRP to The Root Network.</SuccessSubTitle>
+              <SuccessTitle>{t('Bridge confirmed!')}</SuccessTitle>
+              <SuccessSubTitle>{t('bridge-success-message')}</SuccessSubTitle>
             </SuccessMessageWrapper>
-            <List title="Total">
+            <List title={t('total-bridge')}>
               <TokenList
                 title={`0 XRP`}
                 description={`$0`}
@@ -76,7 +79,7 @@ const Bridge = () => {
                   <IconLink />
                 </ClickableIcon>
               </TimeWrapper>
-              <ButtonPrimaryLarge text="Continue to add liquidity" />
+              <ButtonPrimaryLarge text={t('Continue to add liquidity')} />
             </SuccessBottomWrapper>
           </SuccessWrapper>
         </>
@@ -106,23 +109,23 @@ const Bridge = () => {
             </IconWrapper>
             <List title="To" network={NETWORK.THE_ROOT_NETWORK}>
               <AccountWrapper>
-                <RegularText>Account</RegularText>
+                <RegularText>{t('Account')}</RegularText>
                 {/* TODO: get truncated address from xrp*/}
                 <Account data-tooltip-id={TOOLTIP_ID.ADDRESS}>{address}</Account>
               </AccountWrapper>
             </List>
             <TotalXrpWrapper>
               <TextWrapper>
-                <TotalExpectedXrp>Total expected after fee</TotalExpectedXrp>
+                <TotalExpectedXrp>{t('Total expected after fee')}</TotalExpectedXrp>
                 <Amount>0 XRP</Amount>
               </TextWrapper>
               <TextWrapper>
-                <RegularText>Fee</RegularText>
+                <RegularText>{t('Fee')}</RegularText>
                 <RegularText>~ 1.01 XRP</RegularText>
               </TextWrapper>
             </TotalXrpWrapper>
             <ButtonPrimaryLarge
-              text={'Bridge'}
+              text={t('Bridge')}
               disabled={!validToBridge}
               onClick={handleButtonClick}
             />
