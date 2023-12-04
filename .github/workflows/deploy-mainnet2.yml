@@ -1,8 +1,8 @@
-name: moai web deployment - mainnet2
+name: moai web deployment - mainnet
 on:
   push:
     branches:
-      - mainnet2
+      - mainnet
 
 jobs:
   deploy:
