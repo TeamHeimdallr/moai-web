@@ -7,7 +7,7 @@ import {
 
 import { IGnbChainList, NETWORK } from '~/types';
 
-import { IS_MAINNET, IS_MAINNET2, IS_TESTNET } from '.';
+import { IS_MAINNET, IS_TESTNET } from '.';
 
 export const NETWORK_IMAGE_MAPPER: Record<string, string> = {
   [NETWORK.THE_ROOT_NETWORK]: imageNetworkROOT,
@@ -62,9 +62,7 @@ export const EVM_TOKEN_ADDRESS: Record<string, Record<string, string>> = {
 
 export const EVM_VAULT_ADDRESS: Record<string, string> = {
   [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET
-    ? IS_MAINNET2
-      ? '0x1D6B655289328a1083EcD70170692002dBED1aBD'
-      : '0x398f18353094b3976FF0bDe42b2724c47dc66418'
+    ? '0x1D6B655289328a1083EcD70170692002dBED1aBD'
     : '0xc922770de79fc31Cce42DF3fa8234c864fA3FeaE',
   [NETWORK.EVM_SIDECHAIN]: IS_MAINNET
     ? '0x1cc5a9f4fd07E97e616F72D829d38c0A6aC5D623'
