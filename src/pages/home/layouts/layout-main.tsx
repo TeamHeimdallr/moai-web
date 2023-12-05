@@ -93,7 +93,7 @@ export const MainLayout = () => {
     >
       {isConnected ? (
         <SubTitleWrapper>
-          <Label>{t('My Moai balance')}</Label>
+          <Label>{t('My Moai Balance')}</Label>
           <SubTitle>{`$${totalValue}`}</SubTitle>
         </SubTitleWrapper>
       ) : (
@@ -142,7 +142,7 @@ const Title = tw.div`
 `;
 
 const SubTitleWrapper = tw.div`
-  flex-center flex-col 
+  flex-center flex-col
   gap-8
   md:(gap-12)
 `;
