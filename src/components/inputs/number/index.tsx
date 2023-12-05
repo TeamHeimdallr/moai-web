@@ -4,6 +4,7 @@ import { Control, Controller, FormState, UseFormSetValue } from 'react-hook-form
 import { useTranslation } from 'react-i18next';
 import { NumericFormat } from 'react-number-format';
 import ReactSlider from 'react-slider';
+import { debounce } from 'lodash-es';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -119,11 +120,11 @@ export const InputNumber = ({
         const { field } = formProps;
         const { onChange, onBlur, name } = field;
 
-        const onValueChange = (handledValue?: number) => {
+        const onValueChange = debounce((handledValue?: number) => {
           setFocus(true);
           onChange(handledValue);
           handleChange?.(handledValue);
-        };
+        }, 300);
 
         const length = currentBalance?.toString()?.split('.')?.[1]?.length || 0;
         const flooredBalance =
