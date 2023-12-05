@@ -3,10 +3,10 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { BigNumber } from 'ethers';
 import { strip } from 'number-precision';
 import tw from 'twin.macro';
 import { Address, formatUnits, parseUnits } from 'viem';
+import { usePrepareContractWrite } from 'wagmi';
 import * as yup from 'yup';
 
 import { useBatchSwapPrepare as useBatchSwapPrepareEvm } from '~/api/api-contract/_evm/swap/substrate-batch-swap';
@@ -16,6 +16,8 @@ import { useSorFallbackQuery } from '~/api/api-server/sor/get-swap-fallback';
 
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconDown } from '~/assets/icons';
+
+import { EVM_VAULT_ADDRESS } from '~/constants';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
@@ -34,7 +36,10 @@ import {
 } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
+import { SwapKind } from '~/types';
 import { POPUP_ID } from '~/types/components';
+
+import { BALANCER_VAULT_ABI } from '~/abi';
 
 import { SelectFromTokenPopup } from './select-token-from-popup';
 import { SelectToTokenPopup } from './select-token-to-popup';
@@ -127,11 +132,32 @@ export const SwapInputGroup = () => {
       staleTime: 2000,
     }
   );
-  const toInputFromSor = Number(
-    formatUnits(
-      BigNumber.from(swapInfoData?.data?.returnAmountConsideringFees || 0).toBigInt(),
-      getTokenDecimal(currentNetwork, toToken?.symbol)
-    )
+  const swapsRaw = swapInfoData?.data.swaps ?? [];
+  const swaps = swapsRaw.map(({ poolId, assetInIndex, assetOutIndex, amount, userData }) => [
+    poolId,
+    assetInIndex,
+    assetOutIndex,
+    amount,
+    userData,
+  ]);
+  const assets = swapInfoData?.data.tokenAddresses ?? [];
+
+  const { data } = usePrepareContractWrite({
+    address: EVM_VAULT_ADDRESS[currentNetwork] as Address,
+    abi: BALANCER_VAULT_ABI,
+    functionName: 'queryBatchSwap',
+    args: [SwapKind.GivenIn, swaps, assets, [walletAddress, false, walletAddress, false]],
+    enabled: !!walletAddress && !!swaps?.length && !!assets?.length,
+    staleTime: 1000 * 10,
+  });
+  // const toInputFromSor = Number(
+  //   formatUnits(
+  //     BigNumber.from(swapInfoData?.data?.returnAmountConsideringFees || 0).toBigInt(),
+  //     getTokenDecimal(currentNetwork, toToken?.symbol)
+  //   )
+  // );
+  const toInputFromSor = -Number(
+    formatUnits(data?.result?.[1] || 0n, getTokenDecimal(currentNetwork, toToken?.symbol))
   );
 
   /* swap optimized path pool의 해당 토큰 balance와 price */
