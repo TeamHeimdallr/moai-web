@@ -214,10 +214,15 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     swapOptimizedPathPool?.compositions?.find(c => c.symbol === toToken?.symbol)?.price ||
     0;
   const toTokenValue = numToInput * toTokenPrice;
+  const toTokenActualAmount = Number(
+    formatUnits(txData?.swapAmountTo ?? 0n, getTokenDecimal(currentNetwork, toToken?.symbol))
+  );
 
-  const currentValue = selectedDetailInfo === 'TOKEN' ? numToInput : toTokenValue;
+  const toTokenFinalValue = toTokenActualAmount * toTokenPrice;
+
+  // const currentValue = selectedDetailInfo === 'TOKEN' ? numToInput : toTokenValue;
   const currentUnit = selectedDetailInfo === 'TOKEN' ? toToken?.symbol || '' : 'USD';
-  const totalAfterFee = (1 - (swapOptimizedPathPool?.tradingFee || 0.003)) * (currentValue || 0);
+  const totalAfterFee = numToInput; // (1 - (swapOptimizedPathPool?.tradingFee || 0.003)) * (currentValue || 0);
 
   const slippageText = `${Number(slippage.toFixed(2))}%`;
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
@@ -264,7 +269,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   ]);
 
   const handleButtonClick = async () => {
-    return; // TODO: remove this line when swap is ready
     if (isLoading) return;
     if (isSuccess) {
       close();
@@ -329,7 +333,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={true || !fromToken || !toToken || isError || gasError} // TODO
+            disabled={!fromToken || !toToken || isError || gasError}
           />
         </ButtonWrapper>
       }
@@ -346,7 +350,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                 {t('swap-success-message', {
                   fromValue: fromInput,
                   fromToken: fromToken?.symbol,
-                  toValue: formatNumber(totalAfterSlippage, 6),
+                  toValue: formatNumber(toTokenActualAmount, 6),
                   toToken: toToken?.symbol,
                 })}
               </SuccessSubTitle>
@@ -354,8 +358,8 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
             <List title={t(`Total swap`)}>
               <TokenList
-                title={`${formatNumber(totalAfterSlippage, 6)} ${toToken?.symbol}`}
-                description={`$${formatNumber(toTokenValue, 4)}`}
+                title={`${formatNumber(toTokenActualAmount, 6)} ${toToken?.symbol}`}
+                description={`$${formatNumber(toTokenFinalValue, 4)}`}
                 image={toToken?.image}
                 type="large"
                 leftAlign
