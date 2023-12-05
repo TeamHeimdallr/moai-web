@@ -34,7 +34,7 @@ import {
   getNetworkFull,
   getTokenDecimal,
 } from '~/utils';
-import { useSlippageStore } from '~/states/data';
+// import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
 import { POPUP_ID } from '~/types/components';
 
@@ -54,8 +54,8 @@ export const SwapInputGroup = () => {
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { t } = useTranslation();
 
-  const { slippage: slippageRaw } = useSlippageStore();
-  const slippage = Number(slippageRaw || 0);
+  // const { slippage: slippageRaw } = useSlippageStore();
+  // const slippage = Number(slippageRaw || 0);
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
@@ -230,10 +230,7 @@ export const SwapInputGroup = () => {
         `${(Number(fromInput) || 0).toFixed(18)}`,
         getTokenDecimal(currentNetwork, fromToken?.symbol)
       ),
-      -parseUnits(
-        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, toToken?.symbol)
-      ),
+      0n,
     ],
     proxyEnabled: !!(swapInfoData || swapOptimizedPathPool?.poolId) && !!validToSwap,
   });
