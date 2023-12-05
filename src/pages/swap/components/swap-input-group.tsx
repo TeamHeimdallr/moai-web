@@ -17,8 +17,6 @@ import { useSorFallbackQuery } from '~/api/api-server/sor/get-swap-fallback';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconDown } from '~/assets/icons';
 
-import { IS_MAINNET, IS_MAINNET2 } from '~/constants';
-
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
@@ -47,9 +45,6 @@ interface InputFormState {
   to: number;
 }
 export const SwapInputGroup = () => {
-  // TODO: remove this when mainnet2 is ready
-  const swapDisabled = IS_MAINNET && !IS_MAINNET2;
-
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { t } = useTranslation();
@@ -109,7 +104,7 @@ export const SwapInputGroup = () => {
       },
     },
     {
-      enabled: !swapDisabled && !isFpass && rightNetwork && !!currentNetworkAbbr,
+      enabled: !isFpass && rightNetwork && !!currentNetworkAbbr,
       staleTime: 1000 * 3,
     }
   );
@@ -128,7 +123,7 @@ export const SwapInputGroup = () => {
       },
     },
     {
-      enabled: !swapDisabled && isFpass && !!fromToken && !!toToken,
+      enabled: isFpass && !!fromToken && !!toToken,
       staleTime: 2000,
     }
   );

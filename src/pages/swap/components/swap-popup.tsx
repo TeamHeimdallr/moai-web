@@ -15,7 +15,7 @@ import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { EVM_VAULT_ADDRESS, IS_MAINNET, IS_MAINNET2, SCANNER_URL } from '~/constants';
+import { EVM_VAULT_ADDRESS, SCANNER_URL } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -46,9 +46,6 @@ interface Props {
   refetchBalance?: () => void;
 }
 export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
-  // TODO: remove this when mainnet2 is ready
-  const swapDisabled = IS_MAINNET && !IS_MAINNET2;
-
   const { error: swapGasError, setError: setSwapGasError } = useSwapNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
@@ -91,8 +88,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       },
     },
     {
-      enabled:
-        !swapDisabled && currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
+      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
       staleTime: 2000,
     }
   );
@@ -268,8 +264,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   ]);
 
   const handleButtonClick = async () => {
-    if (swapDisabled) return;
-
     if (isLoading) return;
     if (isSuccess) {
       close();
@@ -334,7 +328,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={swapDisabled || !fromToken || !toToken || isError || gasError}
+            disabled={!fromToken || !toToken || isError || gasError}
           />
         </ButtonWrapper>
       }
@@ -412,37 +406,39 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                 </DetailButtonWrapper>
               </DetailTitleWrapper>
               <DetailInfoWrapper>
-                <DetailInfoTextWrapper>
-                  <DetailInfoText>{t('Total expected after fees')}</DetailInfoText>
-                  <DetailInfoText>{`${formatNumber(
-                    totalAfterFee,
-                    6
-                  )} ${currentUnit}`}</DetailInfoText>
-                </DetailInfoTextWrapper>
-                <DetailInfoTextWrapper>
-                  <DetailInfoSubtext>
-                    {t('least-user-get-message', { slippage: slippageText })}
-                  </DetailInfoSubtext>
-                  <DetailInfoSubtext>{`${formatNumber(
-                    totalAfterSlippage,
-                    6
-                  )} ${currentUnit}`}</DetailInfoSubtext>
-                </DetailInfoTextWrapper>
+                <DetailInfoInnerWrapper>
+                  <DetailInfoTextWrapper>
+                    <DetailInfoText>{t('Total expected after fees')}</DetailInfoText>
+                    <DetailInfoText>{`${formatNumber(
+                      totalAfterFee,
+                      6
+                    )} ${currentUnit}`}</DetailInfoText>
+                  </DetailInfoTextWrapper>
+                  <DetailInfoTextWrapper>
+                    <DetailInfoSubtext>
+                      {t('least-user-get-message', { slippage: slippageText })}
+                    </DetailInfoSubtext>
+                    <DetailInfoSubtext>{`${formatNumber(
+                      totalAfterSlippage,
+                      6
+                    )} ${currentUnit}`}</DetailInfoSubtext>
+                  </DetailInfoTextWrapper>
+                </DetailInfoInnerWrapper>
+
+                <GasFeeWrapper>
+                  <GasFeeInnerWrapper>
+                    <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
+                    <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
+                  </GasFeeInnerWrapper>
+                  <GasFeeInnerWrapper>
+                    <GasFeeCaption error={gasError}>
+                      {gasError
+                        ? t(`Not enough balance to pay for Gas Fee.`)
+                        : t(`May change when network is busy`)}
+                    </GasFeeCaption>
+                  </GasFeeInnerWrapper>
+                </GasFeeWrapper>
               </DetailInfoWrapper>
-              <Divider />
-              <GasFeeWrapper>
-                <GasFeeInnerWrapper>
-                  <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
-                  <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
-                </GasFeeInnerWrapper>
-                <GasFeeInnerWrapper>
-                  <GasFeeCaption error={gasError}>
-                    {gasError
-                      ? t(`Not enough balance to pay for Gas Fee.`)
-                      : t(`May change when network is busy`)}
-                  </GasFeeCaption>
-                </GasFeeInnerWrapper>
-              </GasFeeWrapper>
             </DetailWrapper>
           </>
         )}
@@ -510,7 +506,11 @@ const DetailButtonWrapper = tw.div`
 `;
 
 const DetailInfoWrapper = tw.div`
-  px-16 py-12 bg-neutral-15 rounded-8 flex flex-col gap-2
+  px-16 py-12 bg-neutral-15 rounded-8 flex flex-col gap-8
+`;
+
+const DetailInfoInnerWrapper = tw.div`
+  flex flex-col gap-2
 `;
 
 const DetailInfoTextWrapper = tw.div`
@@ -552,7 +552,7 @@ const ClickableIcon = styled.div(() => [
 ]);
 
 const GasFeeWrapper = tw.div`
-  px-16 py-8 flex-col
+  flex-col
 `;
 
 const GasFeeInnerWrapper = tw.div`

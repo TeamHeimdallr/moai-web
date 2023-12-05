@@ -1,9 +1,6 @@
 import { IGnbMenu } from '~/types';
 
-import { IS_MAINNET, IS_MAINNET2 } from '.';
-
 // TODO: remove this when mainnet2 is ready
-const gnbSwapDisabled = IS_MAINNET && !IS_MAINNET2;
 export const GNB_MENU: IGnbMenu[] = [
   {
     id: 'pool',
@@ -14,7 +11,6 @@ export const GNB_MENU: IGnbMenu[] = [
     id: 'swap',
     text: 'Swap',
     path: '/swap',
-    disabled: gnbSwapDisabled,
   },
   {
     id: 'launchpad',
@@ -27,8 +23,6 @@ export const GNB_MENU: IGnbMenu[] = [
     id: 'rewards',
     text: 'Rewards',
     path: '/rewards',
-    disabled: true,
-    commingSoon: true,
   },
 ];
 
