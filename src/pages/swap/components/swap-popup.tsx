@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { BigNumber } from 'ethers';
 import tw, { css, styled } from 'twin.macro';
-import { formatUnits, parseUnits } from 'viem';
+import { Address, formatUnits, parseUnits } from 'viem';
+import { usePrepareContractWrite } from 'wagmi';
 
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useSwap } from '~/api/api-contract/swap/swap';
@@ -25,6 +25,7 @@ import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useConnectedWallet } from '~/hooks/wallets';
 import {
   DATE_FORMATTER,
   formatFloat,
@@ -38,8 +39,10 @@ import {
 } from '~/states/contexts/network-fee-error/network-fee-error';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
-import { IPool, NETWORK } from '~/types';
+import { IPool, NETWORK, SwapKind } from '~/types';
 import { POPUP_ID } from '~/types/components';
+
+import { BALANCER_VAULT_ABI } from '~/abi';
 
 interface Props {
   swapOptimizedPathPool?: IPool;
@@ -60,6 +63,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { selectedNetwork, isXrp } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const { currentAddress } = useConnectedWallet(currentNetwork);
 
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippage: slippageRaw } = useSlippageStore();
@@ -92,11 +96,32 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       staleTime: 2000,
     }
   );
-  const toInputFromSor = Number(
-    formatUnits(
-      BigNumber.from(swapInfoData?.data?.returnAmountConsideringFees || 0).toBigInt(),
-      getTokenDecimal(currentNetwork, toToken?.symbol)
-    )
+  const swapsRaw = swapInfoData?.data.swaps ?? [];
+  const swaps = swapsRaw.map(({ poolId, assetInIndex, assetOutIndex, amount, userData }) => [
+    poolId,
+    assetInIndex,
+    assetOutIndex,
+    amount,
+    userData,
+  ]);
+  const assets = swapInfoData?.data.tokenAddresses ?? [];
+  const { data } = usePrepareContractWrite({
+    address: EVM_VAULT_ADDRESS[currentNetwork] as Address,
+    abi: BALANCER_VAULT_ABI,
+    functionName: 'queryBatchSwap',
+    args: [SwapKind.GivenIn, swaps, assets, [currentAddress, false, currentAddress, false]],
+    enabled: !!currentAddress && !!swaps?.length && !!assets?.length,
+    staleTime: 1000 * 10,
+  });
+
+  // const toInputFromSor = Number(
+  //   formatUnits(
+  //     BigNumber.from(swapInfoData?.data?.returnAmountConsideringFees || 0).toBigInt(),
+  //     getTokenDecimal(currentNetwork, toToken?.symbol)
+  //   )
+  // );
+  const toInputFromSor = -Number(
+    formatUnits(data?.result?.[1] || 0n, getTokenDecimal(currentNetwork, toToken?.symbol))
   );
 
   /* swap optimized path pool의 해당 토큰 balance와 price */
