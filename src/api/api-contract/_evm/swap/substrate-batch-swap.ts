@@ -18,6 +18,7 @@ import { EVM_VAULT_ADDRESS, IS_MAINNET } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { useSwapNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { NETWORK, SwapFundManagementInput, SwapKind } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -43,6 +44,8 @@ export const useBatchSwap = ({
   deadline = 2000000000,
   proxyEnabled,
 }: Props) => {
+  const { setError } = useSwapNetworkFeeErrorStore();
+
   const { data: walletClient } = useWalletClient();
 
   const { fpass } = useConnectedWallet();
@@ -156,6 +159,7 @@ export const useBatchSwap = ({
       const error = err as { code?: number; message?: string };
       if (error.code) {
         console.log(error.code);
+        if (error.code === 1010) setError(true);
       } else {
         console.log(error.message);
       }

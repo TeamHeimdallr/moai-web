@@ -7,6 +7,7 @@ import { BigNumber } from 'ethers';
 import tw, { css, styled } from 'twin.macro';
 import { formatUnits, parseUnits } from 'viem';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useSwap } from '~/api/api-contract/swap/swap';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useSorQuery } from '~/api/api-server/sor/batch-swap';
@@ -31,6 +32,10 @@ import {
   getNetworkFull,
   getTokenDecimal,
 } from '~/utils';
+import {
+  useApproveNetworkFeeErrorStore,
+  useSwapNetworkFeeErrorStore,
+} from '~/states/contexts/network-fee-error/network-fee-error';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
 import { IPool, NETWORK } from '~/types';
@@ -43,6 +48,13 @@ interface Props {
 export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   // TODO: remove this when mainnet2 is ready
   const swapDisabled = IS_MAINNET && !IS_MAINNET2;
+
+  const { error: swapGasError, setError: setSwapGasError } = useSwapNetworkFeeErrorStore();
+  const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
+
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const xrpBalance = xrp?.balance || 0;
 
   const queryClient = useQueryClient();
 
@@ -302,6 +314,16 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess, queryClient]);
 
+  useEffect(() => {
+    return () => {
+      setSwapGasError(false);
+      setApproveGasError(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const gasError = xrpBalance <= 3.25 || swapGasError || approveGasError;
+
   return (
     <Popup
       id={POPUP_ID.SWAP}
@@ -312,7 +334,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={swapDisabled || !fromToken || !toToken || isError}
+            disabled={swapDisabled || !fromToken || !toToken || isError || gasError}
           />
         </ButtonWrapper>
       }
@@ -407,6 +429,20 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   )} ${currentUnit}`}</DetailInfoSubtext>
                 </DetailInfoTextWrapper>
               </DetailInfoWrapper>
+              <Divider />
+              <GasFeeWrapper>
+                <GasFeeInnerWrapper>
+                  <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
+                  <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
+                </GasFeeInnerWrapper>
+                <GasFeeInnerWrapper>
+                  <GasFeeCaption error={gasError}>
+                    {gasError
+                      ? t(`Not enough balance to pay for Gas Fee.`)
+                      : t(`May change when network is busy`)}
+                  </GasFeeCaption>
+                </GasFeeInnerWrapper>
+              </GasFeeWrapper>
             </DetailWrapper>
           </>
         )}
@@ -513,4 +549,29 @@ const ClickableIcon = styled.div(() => [
       fill: ${COLOR.NEUTRAL[80]};
     }
   `,
+]);
+
+const GasFeeWrapper = tw.div`
+  px-16 py-8 flex-col
+`;
+
+const GasFeeInnerWrapper = tw.div`
+  flex gap-4
+`;
+
+const GasFeeTitle = tw.div`
+  font-r-14 text-neutral-100 flex-1
+`;
+const GasFeeTitleValue = tw.div`
+  font-m-14 text-neutral-100
+`;
+
+interface GasFeeCaptionProps {
+  error?: boolean;
+}
+const GasFeeCaption = styled.div<GasFeeCaptionProps>(({ error }) => [
+  tw`
+    font-r-12 text-neutral-60 flex-1
+  `,
+  error && tw`text-red-50`,
 ]);

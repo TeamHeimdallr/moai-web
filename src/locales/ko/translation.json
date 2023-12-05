@@ -206,5 +206,9 @@
 
   "Rank": "순위",
   "LP volume": "계정",
-  "Pre-mined $veMOI": "사전 채굴된 $veMOI"
+  "Pre-mined $veMOI": "사전 채굴된 $veMOI",
+
+  "Gas fee": "가스비",
+  "Not enough balance to pay for Gas Fee.": "가스비로 지불할 잔액이 부족합니다.",
+  "May change when network is busy": "네트워크 혼잡도에 따라 변동될 수 있습니다."
 }

@@ -193,5 +193,9 @@
 
   "Rank": "Rank",
   "LP volume": "LP volume",
-  "Pre-mined $veMOI": "Pre-mined $veMOI"
+  "Pre-mined $veMOI": "Pre-mined $veMOI",
+
+  "Gas fee": "Gas fee",
+  "Not enough balance to pay for Gas Fee.": "Not enough balance to pay for Gas Fee.",
+  "May change when network is busy": "May change when network is busy"
 }
