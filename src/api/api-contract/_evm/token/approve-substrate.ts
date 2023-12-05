@@ -4,7 +4,7 @@ import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
-import { Address, encodeFunctionData } from 'viem';
+import { Address, encodeFunctionData, parseEther } from 'viem';
 import { useContractRead, usePublicClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
@@ -16,6 +16,7 @@ import { IS_MAINNET } from '~/constants';
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
+import { useApproveNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
 
@@ -31,13 +32,15 @@ interface Props {
   enabled?: boolean;
 }
 export const useApprove = ({
-  amount,
+  amount: _amount,
   allowanceMin,
   spender,
   tokenAddress,
 
   enabled,
 }: Props) => {
+  const { setError } = useApproveNetworkFeeErrorStore();
+
   const { network } = useParams();
   const { selectedNetwork, isFpass } = useNetwork();
 
@@ -86,7 +89,9 @@ export const useApprove = ({
         ? encodeFunctionData({
             abi: ERC20_TOKEN_ABI,
             functionName: 'approve',
-            args: [spender, amount],
+            // args: [spender, amount],
+            // TODO: approve max
+            args: [spender, parseEther(Number.MAX_SAFE_INTEGER.toString())],
           })
         : '0x0';
 
@@ -134,6 +139,10 @@ export const useApprove = ({
       const error = err as { code?: number; message?: string };
       if (error.code) {
         console.log(error.code);
+        if (error.code === 1010) {
+          setError(true);
+          return;
+        }
       } else {
         console.log(error.message);
       }
@@ -150,6 +159,7 @@ export const useApprove = ({
     isLoading: isReadLoading || isLoading,
     isSuccess,
     allowance: isConnected && allowance,
+
     refetch,
     allow,
   };

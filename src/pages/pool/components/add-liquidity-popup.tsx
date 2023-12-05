@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 import { parseUnits, toHex } from 'viem';
 import { useQueryClient } from 'wagmi';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
@@ -31,6 +32,10 @@ import {
   getNetworkFull,
   getTokenDecimal,
 } from '~/utils';
+import {
+  useAddLiquidityNetworkFeeErrorStore,
+  useApproveNetworkFeeErrorStore,
+} from '~/states/contexts/network-fee-error/network-fee-error';
 import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -53,6 +58,14 @@ export const AddLiquidityPopup = ({
 }: Props) => {
   // TODO: temporary disable add liquidity due to pool redistribution. commented 23-11-29T09:45(+09:00)
   const disableAddLiquidity = IS_MAINNET && !IS_MAINNET2;
+
+  const { error: addLiquidityGasError, setError: setAddLiquidityGasError } =
+    useAddLiquidityNetworkFeeErrorStore();
+  const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
+
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const xrpBalance = xrp?.balance || 0;
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -353,6 +366,16 @@ export const AddLiquidityPopup = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess, queryClient]);
 
+  useEffect(() => {
+    return () => {
+      setAddLiquidityGasError(false);
+      setApproveGasError(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const gasError = xrpBalance <= 3.25 || addLiquidityGasError || approveGasError;
+
   return (
     <Popup
       id={POPUP_ID.ADD_LP}
@@ -363,7 +386,7 @@ export const AddLiquidityPopup = ({
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={disableAddLiquidity}
+            disabled={disableAddLiquidity || gasError}
           />
         </ButtonWrapper>
       }
@@ -431,6 +454,20 @@ export const AddLiquidityPopup = ({
                 <SummaryTextTitle>{t('Price impact')}</SummaryTextTitle>
                 <SummaryText>{priceImpact}%</SummaryText>
               </Summary>
+              <Divider />
+              <GasFeeWrapper>
+                <GasFeeInnerWrapper>
+                  <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
+                  <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
+                </GasFeeInnerWrapper>
+                <GasFeeInnerWrapper>
+                  <GasFeeCaption error={gasError}>
+                    {gasError
+                      ? t(`Not enough balance to pay for Gas Fee.`)
+                      : t(`May change when network is busy`)}
+                  </GasFeeCaption>
+                </GasFeeInnerWrapper>
+              </GasFeeWrapper>
             </List>
 
             <LoadingStep
@@ -495,3 +532,28 @@ const Scanner = tw.div`
 const ScannerText = tw.div`
   font-r-12 text-neutral-60
 `;
+
+const GasFeeWrapper = tw.div`
+  px-16 py-8 flex-col
+`;
+
+const GasFeeInnerWrapper = tw.div`
+  flex gap-4
+`;
+
+const GasFeeTitle = tw.div`
+  font-r-14 text-neutral-100 flex-1
+`;
+const GasFeeTitleValue = tw.div`
+  font-m-14 text-neutral-100
+`;
+
+interface GasFeeCaptionProps {
+  error?: boolean;
+}
+const GasFeeCaption = styled.div<GasFeeCaptionProps>(({ error }) => [
+  tw`
+    font-r-12 text-neutral-60 flex-1
+  `,
+  error && tw`text-red-50`,
+]);

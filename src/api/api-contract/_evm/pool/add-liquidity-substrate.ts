@@ -22,6 +22,7 @@ import { EVM_TOKEN_ADDRESS } from '~/constants';
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr, getNetworkFull, isNativeToken } from '~/utils';
+import { useAddLiquidityNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { ITokenComposition, NETWORK } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -35,6 +36,8 @@ interface Props {
   enabled?: boolean;
 }
 export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
+  const { setError } = useAddLiquidityNetworkFeeErrorStore();
+
   const { data: walletClient } = useWalletClient();
 
   const { fpass } = useConnectedWallet();
@@ -162,6 +165,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
       const error = err as { code?: number; message?: string };
       if (error.code) {
         console.log(error.code);
+        if (error.code === 1010) setError(true);
       } else {
         console.log(error.message);
       }

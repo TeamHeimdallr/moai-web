@@ -20,6 +20,7 @@ import { IS_MAINNET } from '~/constants';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr, getNetworkFull } from '~/utils';
+import { useSwapNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -44,6 +45,7 @@ export const useSwap = ({
   deadline = 2000000000,
   proxyEnabled,
 }: Props) => {
+  const { setError } = useSwapNetworkFeeErrorStore();
   const { data: walletClient } = useWalletClient();
 
   const { fpass } = useConnectedWallet();
@@ -149,6 +151,7 @@ export const useSwap = ({
       const error = err as { code?: number; message?: string };
       if (error.code) {
         console.log(error.code);
+        setError(true);
       } else {
         console.log(error.message);
       }

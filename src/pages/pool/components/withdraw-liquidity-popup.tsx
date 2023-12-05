@@ -4,9 +4,10 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 import { formatUnits, parseUnits, toHex } from 'viem';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useWithdrawLiquidity } from '~/api/api-contract/pool/withdraw-liquidity';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
@@ -31,6 +32,10 @@ import {
   getNetworkFull,
   getTokenDecimal,
 } from '~/utils';
+import {
+  useApproveNetworkFeeErrorStore,
+  useWithdrawLiquidityNetworkFeeErrorStore,
+} from '~/states/contexts/network-fee-error/network-fee-error';
 import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -67,6 +72,14 @@ export const WithdrawLiquidityPopup = ({
   const { selectedNetwork } = useNetwork();
 
   const currentNetwork = getNetworkFull(networkParam) ?? selectedNetwork;
+
+  const { error: withdrawLiquidityGasError, setError: setWithdrawLiquidityGasError } =
+    useWithdrawLiquidityNetworkFeeErrorStore();
+  const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
+
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const xrpBalance = xrp?.balance || 0;
 
   const { close } = usePopup(POPUP_ID.WITHDRAW_LP);
 
@@ -360,6 +373,16 @@ export const WithdrawLiquidityPopup = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess, queryClient]);
 
+  useEffect(() => {
+    return () => {
+      setWithdrawLiquidityGasError(false);
+      setApproveGasError(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const gasError = xrpBalance <= 3.25 || withdrawLiquidityGasError || approveGasError;
+
   return (
     <Popup
       id={POPUP_ID.WITHDRAW_LP}
@@ -370,6 +393,7 @@ export const WithdrawLiquidityPopup = ({
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
+            disabled={gasError}
           />
         </ButtonWrapper>
       }
@@ -439,6 +463,20 @@ export const WithdrawLiquidityPopup = ({
                 <SummaryTextTitle>{t('Price impact')}</SummaryTextTitle>
                 <SummaryText>{priceImpact}%</SummaryText>
               </Summary>
+              <Divider />
+              <GasFeeWrapper>
+                <GasFeeInnerWrapper>
+                  <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
+                  <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
+                </GasFeeInnerWrapper>
+                <GasFeeInnerWrapper>
+                  <GasFeeCaption error={gasError}>
+                    {gasError
+                      ? t(`Not enough balance to pay for Gas Fee.`)
+                      : t(`May change when network is busy`)}
+                  </GasFeeCaption>
+                </GasFeeInnerWrapper>
+              </GasFeeWrapper>
             </List>
 
             <LoadingStep
@@ -501,3 +539,28 @@ const Scanner = tw.div`
 const ScannerText = tw.div`
   font-r-12 text-neutral-60
 `;
+
+const GasFeeWrapper = tw.div`
+  px-16 py-8 flex-col
+`;
+
+const GasFeeInnerWrapper = tw.div`
+  flex gap-4
+`;
+
+const GasFeeTitle = tw.div`
+  font-r-14 text-neutral-100 flex-1
+`;
+const GasFeeTitleValue = tw.div`
+  font-m-14 text-neutral-100
+`;
+
+interface GasFeeCaptionProps {
+  error?: boolean;
+}
+const GasFeeCaption = styled.div<GasFeeCaptionProps>(({ error }) => [
+  tw`
+    font-r-12 text-neutral-60 flex-1
+  `,
+  error && tw`text-red-50`,
+]);
