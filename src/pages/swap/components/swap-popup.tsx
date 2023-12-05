@@ -406,37 +406,39 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                 </DetailButtonWrapper>
               </DetailTitleWrapper>
               <DetailInfoWrapper>
-                <DetailInfoTextWrapper>
-                  <DetailInfoText>{t('Total expected after fees')}</DetailInfoText>
-                  <DetailInfoText>{`${formatNumber(
-                    totalAfterFee,
-                    6
-                  )} ${currentUnit}`}</DetailInfoText>
-                </DetailInfoTextWrapper>
-                <DetailInfoTextWrapper>
-                  <DetailInfoSubtext>
-                    {t('least-user-get-message', { slippage: slippageText })}
-                  </DetailInfoSubtext>
-                  <DetailInfoSubtext>{`${formatNumber(
-                    totalAfterSlippage,
-                    6
-                  )} ${currentUnit}`}</DetailInfoSubtext>
-                </DetailInfoTextWrapper>
+                <DetailInfoInnerWrapper>
+                  <DetailInfoTextWrapper>
+                    <DetailInfoText>{t('Total expected after fees')}</DetailInfoText>
+                    <DetailInfoText>{`${formatNumber(
+                      totalAfterFee,
+                      6
+                    )} ${currentUnit}`}</DetailInfoText>
+                  </DetailInfoTextWrapper>
+                  <DetailInfoTextWrapper>
+                    <DetailInfoSubtext>
+                      {t('least-user-get-message', { slippage: slippageText })}
+                    </DetailInfoSubtext>
+                    <DetailInfoSubtext>{`${formatNumber(
+                      totalAfterSlippage,
+                      6
+                    )} ${currentUnit}`}</DetailInfoSubtext>
+                  </DetailInfoTextWrapper>
+                </DetailInfoInnerWrapper>
+
+                <GasFeeWrapper>
+                  <GasFeeInnerWrapper>
+                    <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
+                    <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
+                  </GasFeeInnerWrapper>
+                  <GasFeeInnerWrapper>
+                    <GasFeeCaption error={gasError}>
+                      {gasError
+                        ? t(`Not enough balance to pay for Gas Fee.`)
+                        : t(`May change when network is busy`)}
+                    </GasFeeCaption>
+                  </GasFeeInnerWrapper>
+                </GasFeeWrapper>
               </DetailInfoWrapper>
-              <Divider />
-              <GasFeeWrapper>
-                <GasFeeInnerWrapper>
-                  <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
-                  <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
-                </GasFeeInnerWrapper>
-                <GasFeeInnerWrapper>
-                  <GasFeeCaption error={gasError}>
-                    {gasError
-                      ? t(`Not enough balance to pay for Gas Fee.`)
-                      : t(`May change when network is busy`)}
-                  </GasFeeCaption>
-                </GasFeeInnerWrapper>
-              </GasFeeWrapper>
             </DetailWrapper>
           </>
         )}
@@ -504,7 +506,11 @@ const DetailButtonWrapper = tw.div`
 `;
 
 const DetailInfoWrapper = tw.div`
-  px-16 py-12 bg-neutral-15 rounded-8 flex flex-col gap-2
+  px-16 py-12 bg-neutral-15 rounded-8 flex flex-col gap-8
+`;
+
+const DetailInfoInnerWrapper = tw.div`
+  flex flex-col gap-2
 `;
 
 const DetailInfoTextWrapper = tw.div`
@@ -546,7 +552,7 @@ const ClickableIcon = styled.div(() => [
 ]);
 
 const GasFeeWrapper = tw.div`
-  px-16 py-8 flex-col
+  flex-col
 `;
 
 const GasFeeInnerWrapper = tw.div`
