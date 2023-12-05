@@ -326,6 +326,7 @@ export const SwapInputGroup = () => {
         <ButtonPrimaryLarge
           text={t('Preview')}
           disabled={
+            true || // TODO
             !validToSwap ||
             isPrepareLoading ||
             isPrepareError ||
