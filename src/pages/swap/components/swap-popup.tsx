@@ -264,6 +264,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   ]);
 
   const handleButtonClick = async () => {
+    return; // TODO: remove this line when swap is ready
     if (isLoading) return;
     if (isSuccess) {
       close();
@@ -328,7 +329,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={!fromToken || !toToken || isError || gasError}
+            disabled={true || !fromToken || !toToken || isError || gasError} // TODO
           />
         </ButtonWrapper>
       }

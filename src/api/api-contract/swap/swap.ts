@@ -69,11 +69,10 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
         `${(fromInput || 0).toFixed(18)}`,
         getTokenDecimal(currentNetwork, fromToken?.symbol)
       ),
-      0n,
-      // -parseUnits(
-      //   `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
-      //   getTokenDecimal(currentNetwork, toToken?.symbol)
-      // ),
+      -parseUnits(
+        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
+        getTokenDecimal(currentNetwork, toToken?.symbol)
+      ),
     ],
     proxyEnabled: enabled,
   });
