@@ -125,11 +125,11 @@ export const InputNumber = ({
           handleChange?.(handledValue);
         };
 
-        const decimal = currentBalance?.toString()?.split('.')?.[1] || '';
-        const length = Math.min(decimal ? decimal.length - 1 : 0, 14);
-
+        const length = currentBalance?.toString()?.split('.')?.[1]?.length || 0;
         const flooredBalance =
-          length === 0 ? currentBalance : Math.floor(currentBalance * 10 ** length) / 10 ** length;
+          length === 0
+            ? currentBalance
+            : Math.floor(currentBalance * 10 ** (length - 1)) / 10 ** (length - 1);
         const flooredBalanceForSlider =
           length === 0 ? currentBalance : Math.floor(currentBalance * 10 ** 4) / 10 ** 4;
 
