@@ -137,12 +137,11 @@ export const AddLiquidityInputGroup = () => {
       amount: parseUnits((t.amount || 0).toFixed(18), getTokenDecimal(currentNetwork, t.symbol)),
     })) ?? [];
   const tokensInValid = tokensIn.filter(token => token.amount > 0).length > 0;
-  const balanceValid = !formState.errors.input1?.message && !formState.errors.input2?.message;
 
   const { isPrepareLoading, isPrepareError, prepareError } = useAddLiquidityPrepareEvm({
     poolId: pool?.poolId || '',
     tokens: tokensInBigint || [],
-    enabled: !!pool?.poolId && tokensInValid && isValidToAddLiquidity && balanceValid,
+    enabled: !!pool?.poolId && tokensInValid,
   });
 
   const errorMessage = prepareError?.message;

@@ -258,7 +258,7 @@ export const useWithdrawLiquidityPrepare = ({ poolId, tokens, bptIn, enabled }: 
         false,
       ],
     ],
-    enabled: enabled && isEvm && !!walletAddress && !!vault,
+    enabled: enabled && isEvm && !!walletAddress && !!vault && !!poolId && !!chainId,
   });
 
   const approveError = error?.message?.includes('Approved');

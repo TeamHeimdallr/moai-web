@@ -269,7 +269,7 @@ export const useAddLiquidityPrepare = ({ poolId, tokens, enabled }: Props) => {
         false,
       ],
     ],
-    enabled: enabled && isEvm && !!walletAddress && !!vault,
+    enabled: enabled && isEvm && !!walletAddress && !!vault && !!poolId && !!chainId,
   });
 
   const approveError = error?.message?.includes('Approved');
