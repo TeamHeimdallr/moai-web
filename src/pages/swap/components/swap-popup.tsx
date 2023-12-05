@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { last } from 'lodash-es';
 import tw, { css, styled } from 'twin.macro';
 import { Address, formatUnits, parseUnits } from 'viem';
 import { usePrepareContractWrite } from 'wagmi';
@@ -121,7 +122,10 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   //   )
   // );
   const toInputFromSor = -Number(
-    formatUnits(data?.result?.[1] || 0n, getTokenDecimal(currentNetwork, toToken?.symbol))
+    formatUnits(
+      last((data?.result || []) as bigint[]) || 0n,
+      getTokenDecimal(currentNetwork, toToken?.symbol)
+    )
   );
 
   /* swap optimized path pool의 해당 토큰 balance와 price */

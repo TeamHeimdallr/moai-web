@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { last } from 'lodash-es';
 import { strip } from 'number-precision';
 import tw from 'twin.macro';
 import { Address, formatUnits, parseUnits } from 'viem';
@@ -157,7 +158,10 @@ export const SwapInputGroup = () => {
   //   )
   // );
   const toInputFromSor = -Number(
-    formatUnits(data?.result?.[1] || 0n, getTokenDecimal(currentNetwork, toToken?.symbol))
+    formatUnits(
+      last((data?.result || []) as bigint[]) || 0n,
+      getTokenDecimal(currentNetwork, toToken?.symbol)
+    )
   );
 
   /* swap optimized path pool의 해당 토큰 balance와 price */
