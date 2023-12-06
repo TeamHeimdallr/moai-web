@@ -85,5 +85,6 @@ export const useApprove = ({
       isNativeToken({ address: tokenAddress, network: currentNetwork }),
     refetch,
     allow,
+    estimateFee: async () => {},
   };
 };

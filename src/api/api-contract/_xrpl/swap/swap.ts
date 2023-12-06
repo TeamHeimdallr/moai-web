@@ -91,5 +91,6 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
     blockTimestamp,
 
     swap: writeAsync,
+    estimateFee: () => {}, // TODO
   };
 };

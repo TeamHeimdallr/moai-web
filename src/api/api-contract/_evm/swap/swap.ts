@@ -123,5 +123,6 @@ export const useSwap = ({
     blockTimestamp,
 
     swap: writeAsync,
+    estimateFee: () => {}, // TODO
   };
 };

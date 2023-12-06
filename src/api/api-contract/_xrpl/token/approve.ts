@@ -84,5 +84,6 @@ export const useApprove = ({ currency, issuer, amount, enabled }: Props) => {
     allowance: !!line && limit >= Number(amount) + Number(line?.balance || 0),
     refetch,
     allow,
+    estimateFee: async () => {},
   };
 };

@@ -4,7 +4,7 @@ import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
-import { Address, encodeFunctionData, parseEther } from 'viem';
+import { Address, encodeFunctionData, formatUnits, parseEther } from 'viem';
 import { useContractRead, usePublicClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
@@ -70,6 +70,50 @@ export const useApprove = ({
   });
 
   const publicClient = usePublicClient();
+
+  const estimateFee = async () => {
+    const feeHistory = await publicClient.getFeeHistory({
+      blockCount: 2,
+      rewardPercentiles: [25, 75],
+    });
+
+    if (!isFpass || !enabled) return;
+
+    try {
+      const [api] = await Promise.all([
+        getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
+      ]);
+
+      const encodedData = internalEnabled
+        ? encodeFunctionData({
+            abi: ERC20_TOKEN_ABI,
+            functionName: 'approve',
+            // args: [spender, amount],
+            // TODO: approve max
+            args: [spender, parseEther(Number.MAX_SAFE_INTEGER.toString())],
+          })
+        : '0x0';
+
+      const evmCall = api.tx.evm.call(
+        walletAddress,
+        tokenAddress,
+        encodedData,
+        0,
+        '300000', // gas limit estimation todo: can be changed
+        feeHistory.baseFeePerGas[0],
+        0,
+        null,
+        []
+      );
+
+      const extrinsic = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
+      const info = await extrinsic.paymentInfo(signer);
+      const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
+      return fee;
+    } catch (err) {
+      console.log('estimation fee error');
+    }
+  };
 
   const allowAsync = async () => {
     const feeHistory = await publicClient.getFeeHistory({
@@ -162,5 +206,6 @@ export const useApprove = ({
 
     refetch,
     allow,
+    estimateFee,
   };
 };
