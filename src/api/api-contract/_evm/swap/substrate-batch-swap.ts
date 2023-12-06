@@ -147,8 +147,8 @@ export const useBatchSwap = ({
 
       setTxData(result);
       setIsLoading(false);
-      setIsSuccess(true);
-      setIsError(false);
+      setIsSuccess(result.isEvmSuccess ?? false);
+      setIsError(!result.isEvmSuccess);
 
       return result.blockHash;
     } catch (err) {

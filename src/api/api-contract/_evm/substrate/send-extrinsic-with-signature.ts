@@ -17,6 +17,7 @@ export interface SubmittableResponse {
   extrinsicId: string;
   swapAmountFrom?: bigint;
   swapAmountTo?: bigint;
+  isEvmSuccess?: boolean;
 
   transactionHash: string; // for compatiable with TransactionReceipt
 }
@@ -40,9 +41,8 @@ export async function sendExtrinsicWithSignature(
           const extrinsicId = `${height}-${index}-${hash}`;
 
           // Note: VAULT's to = User's from and VAULT's from = User's to
-          const [rootFromEvent, rootToEvent, assetFromEvent, assetToEvent] = filterExtrinsicEvents(
-            events,
-            [
+          const [rootFromEvent, rootToEvent, assetFromEvent, assetToEvent, evmFailedEvent] =
+            filterExtrinsicEvents(events, [
               {
                 name: 'Balances.Transfer',
                 key: 'to',
@@ -63,8 +63,8 @@ export async function sendExtrinsicWithSignature(
                 key: 'from',
                 data: { value: EVM_VAULT_ADDRESS[NETWORK.THE_ROOT_NETWORK], type: 'T::AccountId' },
               },
-            ]
-          );
+              'EVM.ExecutedFailed',
+            ]);
 
           const fromAmount = rootFromEvent
             ? BigInt(rootFromEvent.event?.data[2].toString())
@@ -87,6 +87,7 @@ export async function sendExtrinsicWithSignature(
             transactionHash: txHash.toString(),
             swapAmountFrom: fromAmount,
             swapAmountTo: toAmount,
+            isEvmSuccess: evmFailedEvent === undefined,
           });
         }
 
