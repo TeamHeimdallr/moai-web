@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { Navigate, Route, Routes as ReactRoutes, useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import onRouteChange from '@analytics/router-utils';
 
 import { IS_LANDING } from '~/constants';
 
@@ -7,12 +9,13 @@ import { ConnectWallet } from '~/components/connect-wallet';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
-import { useGARouteChangeTracker } from '~/hooks/contexts/use-google-analystics';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { NETWORK, POPUP_ID } from '~/types';
+
+import { analytics } from '~/configs/analystics';
 
 import Campaign from './campaign';
 import Home from './home';
@@ -23,7 +26,6 @@ import Swap from './swap';
 
 const Page = () => {
   useConnectXrpl();
-  useGARouteChangeTracker();
 
   const { network } = useParams();
   const { selectedNetwork } = useNetwork();
@@ -35,6 +37,13 @@ const Page = () => {
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const bothDisconnected = !xrpWallet?.isConnected && !evmWallet?.isConnected;
+
+  useEffect(() => {
+    onRouteChange(newRoutePath => {
+      console.log('new route path', newRoutePath);
+      analytics.page();
+    });
+  }, []);
 
   return (
     <>
