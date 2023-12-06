@@ -133,5 +133,6 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
     blockTimestamp,
 
     writeAsync,
+    estimateFee: () => {},
   };
 };

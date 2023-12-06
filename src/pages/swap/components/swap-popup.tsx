@@ -397,12 +397,12 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isXrp, toApproveEnabled, fromApproveEnabled, step]);
 
-  const gasError = xrpBalance <= 3.25 || swapGasError || approveGasError;
-  const extimatedFee = !isXrp
+  const estimatedFee = !isXrp
     ? step === 1
       ? estimatedFromTokenApproveFee || ''
       : estimatedSwapFee || ''
     : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) || '3.25';
+  const gasError = xrpBalance <= Number(estimatedFee ?? 3.25) || swapGasError || approveGasError;
 
   return (
     <Popup
@@ -521,7 +521,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                       {estimatedFromTokenApproveFee ||
                       estimatedToTokenApproveFee ||
                       estimatedSwapFee
-                        ? `~${extimatedFee} XRP`
+                        ? `~${estimatedFee} XRP`
                         : 'calculating...'}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>

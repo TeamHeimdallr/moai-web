@@ -124,5 +124,6 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
     blockTimestamp,
 
     writeAsync,
+    estimateFee: () => {},
   };
 };

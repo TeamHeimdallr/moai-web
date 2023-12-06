@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -71,6 +71,12 @@ export const WithdrawLiquidityPopup = ({
   const { network: networkParam } = useParams();
   const { selectedNetwork } = useNetwork();
 
+  const [estimatedWithdrawLiquidityFee, setEstimatedWithdrawLiquidityFee] = useState<
+    number | undefined
+  >();
+  const [estimatedToken1ApproveFee, setEstimatedToken1ApproveFee] = useState<number | undefined>();
+  const [estimatedToken2ApproveFee, setEstimatedToken2ApproveFee] = useState<number | undefined>();
+
   const currentNetwork = getNetworkFull(networkParam) ?? selectedNetwork;
 
   const { error: withdrawLiquidityGasError, setError: setWithdrawLiquidityGasError } =
@@ -103,12 +109,16 @@ export const WithdrawLiquidityPopup = ({
   const token1Amount = tokensOut?.[0]?.amount || 0;
   const token2Amount = tokensOut?.[1]?.amount || 0;
 
+  const token1ApproveEnabled = token1Amount > 0 && isXrp;
+  const token2ApproveEnabled = token2Amount > 0 && isXrp;
+
   const {
     allow: allowToken1,
     allowance: allowance1,
     isLoading: allowLoading1,
     isSuccess: allowSuccess1,
     refetch: refetchAllowance1,
+    estimateFee: estimateToken1ApproveFee,
   } = useApprove({
     amount: parseUnits(
       `${(token1Amount || 0).toFixed(18)}`,
@@ -119,7 +129,7 @@ export const WithdrawLiquidityPopup = ({
     symbol: tokensOut?.[0]?.symbol || '',
     spender: vault || '',
     currency: tokensOut?.[0]?.currency || '',
-    enabled: token1Amount > 0 && isXrp,
+    enabled: token1ApproveEnabled,
   });
 
   const {
@@ -128,6 +138,7 @@ export const WithdrawLiquidityPopup = ({
     isLoading: allowLoading2,
     isSuccess: allowSuccess2,
     refetch: refetchAllowance2,
+    estimateFee: estimateToken2ApproveFee,
   } = useApprove({
     amount: parseUnits(
       `${(token2Amount || 0).toFixed(18)}`,
@@ -138,45 +149,31 @@ export const WithdrawLiquidityPopup = ({
     symbol: tokensOut?.[1]?.symbol || '',
     spender: vault || '',
     currency: tokensOut?.[1]?.currency || '',
-    enabled: token2Amount > 0 && isXrp,
-  });
-
-  const {
-    allow: allowToken3,
-    allowance: allowance3,
-    isLoading: allowLoading3,
-    isSuccess: allowSuccess3,
-    refetch: refetchAllowance3,
-  } = useApprove({
-    amount: bptIn,
-    address: lpToken?.address || '',
-    issuer: lpToken?.address || '',
-    symbol: lpToken?.symbol || '',
-    spender: vault || '',
-    currency: lpToken?.currency || '',
-    enabled: bptIn > 0 && !isXrp,
+    enabled: token2ApproveEnabled,
   });
 
   const validAmount = token1Amount > 0 || token2Amount > 0;
   const getValidAllowance = () => {
-    if (!isXrp) return allowance3;
+    if (!isXrp) return true;
     if (token1Amount > 0 && token2Amount > 0) return allowance1 && allowance2;
     if (token1Amount > 0) return allowance1;
     if (token2Amount > 0) return allowance2;
   };
 
+  const withdrawLiquidityEnabled = !!poolId && validAmount && getValidAllowance();
   const {
     isLoading: withdrawLiquidityLoading,
     isSuccess: withdrawLiquiditySuccess,
     txData,
     writeAsync,
     blockTimestamp,
+    estimateFee: estimateWithdrawLiquidityFee,
   } = useWithdrawLiquidity({
     id: poolId || '',
     tokens: tokensOut || [],
     // input value
     bptIn,
-    enabled: !!poolId && validAmount && getValidAllowance(),
+    enabled: withdrawLiquidityEnabled,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -190,7 +187,7 @@ export const WithdrawLiquidityPopup = ({
     // single token deposit or in xrpl case (getting approve for receiving token)
     if (tokenLength === 1) {
       if (!isXrp) {
-        if (allowance3) return 2;
+        return 2;
       } else {
         if (token1Amount > 0 && token2Amount <= 0) {
           if (allowance1) return 2;
@@ -202,27 +199,21 @@ export const WithdrawLiquidityPopup = ({
     }
 
     if (tokenLength === 2) {
-      if (!allowance1) return 1;
-      if (!allowance2) return 2;
+      if (isXrp) {
+        if (!allowance1) return 1;
+        if (!allowance2) return 2;
+      } else {
+        return 3;
+      }
       return 3;
     }
 
     return 1;
-  }, [
-    allowance1,
-    allowance2,
-    allowance3,
-    isSuccess,
-    isXrp,
-    token1Amount,
-    token2Amount,
-    tokenLength,
-  ]);
+  }, [allowance1, allowance2, isSuccess, isXrp, token1Amount, token2Amount, tokenLength]);
 
   const stepLoading = useMemo(() => {
     if (tokenLength === 1) {
       if (!isXrp) {
-        if (step === 1) return allowLoading3;
         if (step === 2) return withdrawLiquidityLoading;
       } else {
         if (token1Amount > 0 && token2Amount <= 0) {
@@ -237,9 +228,13 @@ export const WithdrawLiquidityPopup = ({
     }
 
     if (tokenLength === 2) {
-      if (step === 1) return allowLoading1;
-      if (step === 2) return allowLoading2;
-      if (step === 3) return withdrawLiquidityLoading;
+      if (isXrp) {
+        if (step === 1) return allowLoading1;
+        if (step === 2) return allowLoading2;
+        if (step === 3) return withdrawLiquidityLoading;
+      } else {
+        return withdrawLiquidityLoading;
+      }
     }
 
     return false;
@@ -247,7 +242,6 @@ export const WithdrawLiquidityPopup = ({
     withdrawLiquidityLoading,
     allowLoading1,
     allowLoading2,
-    allowLoading3,
     isXrp,
     step,
     token1Amount,
@@ -261,8 +255,6 @@ export const WithdrawLiquidityPopup = ({
     // single token deposit
     if (tokenLength === 1) {
       if (!isXrp) {
-        if (!allowance3)
-          return t('approve-withdraw-liquidity-token-message', { token: lpToken?.symbol });
         return t('Confirm withdraw liquidity in wallet');
       } else {
         if (token1Amount > 0 && token2Amount <= 0) {
@@ -281,15 +273,16 @@ export const WithdrawLiquidityPopup = ({
     }
 
     if (tokenLength === 2) {
-      if (!allowance1)
-        return t('approve-withdraw-liquidity-token-message', {
-          token: tokensOut?.[0]?.symbol,
-        });
-      if (!allowance2)
-        return t('approve-withdraw-liquidity-token-message', {
-          token: tokensOut?.[1]?.symbol,
-        });
-
+      if (isXrp) {
+        if (!allowance1)
+          return t('approve-withdraw-liquidity-token-message', {
+            token: tokensOut?.[0]?.symbol,
+          });
+        if (!allowance2)
+          return t('approve-withdraw-liquidity-token-message', {
+            token: tokensOut?.[1]?.symbol,
+          });
+      }
       return t('Confirm withdraw liquidity in wallet');
     }
 
@@ -297,10 +290,8 @@ export const WithdrawLiquidityPopup = ({
   }, [
     allowance1,
     allowance2,
-    allowance3,
     isSuccess,
     isXrp,
-    lpToken?.symbol,
     t,
     token1Amount,
     token2Amount,
@@ -319,8 +310,7 @@ export const WithdrawLiquidityPopup = ({
     // single token deposit
     if (tokenLength === 1) {
       if (!isXrp) {
-        if (allowance3) return await writeAsync?.();
-        else await allowToken3();
+        return await writeAsync?.();
       } else {
         if (token1Amount > 0 && token2Amount <= 0) {
           if (allowance1) return await writeAsync?.();
@@ -335,8 +325,10 @@ export const WithdrawLiquidityPopup = ({
 
     // 2 token deposit
     if (tokenLength === 2) {
-      if (!allowance1) return await allowToken1();
-      if (!allowance2) return await allowToken2();
+      if (isXrp) {
+        if (!allowance1) return await allowToken1();
+        if (!allowance2) return await allowToken2();
+      }
 
       return await writeAsync?.();
     }
@@ -354,15 +346,7 @@ export const WithdrawLiquidityPopup = ({
   useEffect(() => {
     if (allowSuccess1) refetchAllowance1();
     if (allowSuccess2) refetchAllowance2();
-    if (allowSuccess3) refetchAllowance3();
-  }, [
-    allowSuccess1,
-    allowSuccess2,
-    allowSuccess3,
-    refetchAllowance1,
-    refetchAllowance2,
-    refetchAllowance3,
-  ]);
+  }, [allowSuccess1, allowSuccess2, refetchAllowance1, refetchAllowance2]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -381,7 +365,74 @@ export const WithdrawLiquidityPopup = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const gasError = xrpBalance <= 3.25 || withdrawLiquidityGasError || approveGasError;
+  useEffect(() => {
+    if (!withdrawLiquidityEnabled || (isXrp && (!allowance1 || !allowance2))) return;
+
+    const estimateWithdrawLiquidityFeeAsync = async () => {
+      const fee = await estimateWithdrawLiquidityFee?.();
+      setEstimatedWithdrawLiquidityFee(fee ?? 3.25);
+    };
+    estimateWithdrawLiquidityFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [withdrawLiquidityEnabled, tokenLength, isXrp, allowance1, allowance2]);
+
+  useEffect(() => {
+    if (!isXrp) return;
+
+    const estimateApproveFeeAsync = async (n: number) => {
+      if (n === 1) {
+        const fee = await estimateToken1ApproveFee?.();
+        setEstimatedToken1ApproveFee(fee ?? 1.5);
+      } else if (n === 2) {
+        const fee = await estimateToken2ApproveFee?.();
+        setEstimatedToken2ApproveFee(fee ?? 1.5);
+      }
+    };
+
+    // single token withdraw
+    if (tokenLength === 1) {
+      if (token1Amount > 0 && token2Amount <= 0) {
+        if (step === 1 && token1ApproveEnabled) {
+          // allow token 1
+          estimateApproveFeeAsync(1);
+        }
+      }
+      if (token2Amount > 0 && token1Amount <= 0) {
+        if (step === 1 && token2ApproveEnabled) {
+          // allow token 2
+          estimateApproveFeeAsync(2);
+        }
+      }
+    }
+
+    // 2 token withdraw
+    if (tokenLength === 2) {
+      if (step === 1 && token1ApproveEnabled) {
+        // allow token 1
+        estimateApproveFeeAsync(1);
+      } else if (step === 2 && token2ApproveEnabled) {
+        // allow token 2
+        estimateApproveFeeAsync(2);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, isXrp, token1ApproveEnabled, token2ApproveEnabled]);
+
+  const estimatedFee = isXrp
+    ? tokenLength === 1
+      ? token1Amount > 0 && token2Amount <= 0 && step === 1
+        ? estimatedToken1ApproveFee || ''
+        : token2Amount > 0 && token1Amount <= 0 && step == 1
+        ? estimatedToken2ApproveFee || ''
+        : estimatedWithdrawLiquidityFee || ''
+      : step === 1
+      ? estimatedToken1ApproveFee || ''
+      : step === 2
+      ? estimatedToken2ApproveFee || ''
+      : estimatedWithdrawLiquidityFee || ''
+    : estimatedWithdrawLiquidityFee || '';
+  const gasError =
+    xrpBalance <= Number(estimatedFee ?? 3.25) || withdrawLiquidityGasError || approveGasError;
 
   return (
     <Popup
@@ -467,7 +518,13 @@ export const WithdrawLiquidityPopup = ({
               <GasFeeWrapper>
                 <GasFeeInnerWrapper>
                   <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
-                  <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
+                  <GasFeeTitleValue>
+                    {estimatedToken1ApproveFee ||
+                    estimatedToken2ApproveFee ||
+                    estimatedWithdrawLiquidityFee
+                      ? `~${estimatedFee} XRP`
+                      : 'calculating...'}
+                  </GasFeeTitleValue>
                 </GasFeeInnerWrapper>
                 <GasFeeInnerWrapper>
                   <GasFeeCaption error={gasError}>
