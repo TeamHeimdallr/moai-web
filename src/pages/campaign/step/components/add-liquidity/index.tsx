@@ -14,6 +14,7 @@ import {
   IconTokenRoot,
   IconTokenXrp,
 } from '~/assets/icons';
+import TokenXrp from '~/assets/icons/icon-token-xrp.svg';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
@@ -95,7 +96,7 @@ export const AddLiquidity = () => {
             name={'input1'}
             title="You're providing"
             control={control}
-            token={<Token token={'XRP'} image imageUrl="/src/assets/icons/icon-token-xrp.svg" />}
+            token={<Token token={'XRP'} image imageUrl={TokenXrp} />}
             tokenName={'XRPL'}
             tokenValue={0}
             balance={0}
@@ -110,7 +111,7 @@ export const AddLiquidity = () => {
               type="campaign"
               title="Pre-mining $MOAI APY (3%)"
               image={<IconTokenMoai width={36} height={36} />}
-              balance="99,999 Moai"
+              balance="99,999 MOAI"
               value="$100"
             />
             <Divider />
@@ -118,7 +119,7 @@ export const AddLiquidity = () => {
               type="campaign"
               title="$ROOT reward (7%)"
               image={<IconTokenRoot width={36} height={36} />}
-              balance="99,999 Root"
+              balance="99,999 ROOT"
               value="$100"
             />
           </List>

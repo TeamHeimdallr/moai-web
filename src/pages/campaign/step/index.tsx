@@ -17,6 +17,9 @@ const StepPage = () => {
   );
 };
 
-const Wrapper = tw.div`w-455 flex-center flex-col py-80 gap-24`;
+const Wrapper = tw.div`
+  w-455 flex-center flex-col py-40 gap-24
+  md:py-80
+  `;
 
 export default StepPage;
