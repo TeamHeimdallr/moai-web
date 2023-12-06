@@ -7,6 +7,7 @@ import * as yup from 'yup';
 
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconCheck, IconLink, IconTime, IconTokenXrp } from '~/assets/icons';
+import TokenXrp from '~/assets/icons/icon-token-xrp.svg';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
@@ -88,7 +89,7 @@ const Bridge = () => {
               title="From"
               network={NETWORK.XRPL}
               control={control}
-              token={<Token token={'XRP'} image imageUrl="/src/assets/icons/icon-token-xrp.svg" />}
+              token={<Token token={'XRP'} image imageUrl={TokenXrp} />}
               tokenName={'XRPL'}
               tokenValue={0}
               balance={0}
