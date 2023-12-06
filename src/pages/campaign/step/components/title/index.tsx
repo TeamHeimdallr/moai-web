@@ -1,22 +1,25 @@
+import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
 import { useCampaignStepStore } from '~/pages/campaign/states/step';
 
 export const StepperTitle = () => {
   const { step, isLoading } = useCampaignStepStore();
-  const network = step === 1 ? 'XRPL' : 'the Root Network';
+  const { t } = useTranslation();
   const titleText =
     step === 1 || step === 2
       ? isLoading
-        ? 'Waiting to connect...'
-        : `Connect to ${network} wallet`
+        ? 'step-title-waiting'
+        : step === 1
+        ? 'step-title-1'
+        : 'step-title-2'
       : step === 3
-      ? 'Bridge your $XRP'
-      : 'Add liquidity';
+      ? 'step-title-3'
+      : 'step-title-4';
   return (
     <Wrapper>
       <StepText>Step {step}</StepText>
-      <Title>{titleText}</Title>
+      <Title>{t(titleText)}</Title>
     </Wrapper>
   );
 };

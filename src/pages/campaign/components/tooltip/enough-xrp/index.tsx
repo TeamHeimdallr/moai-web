@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ITooltip } from 'react-tooltip';
 import tw from 'twin.macro';
 
@@ -10,12 +11,11 @@ interface Props extends Omit<ITooltip, 'id'> {
 }
 
 export const TooltipEnoughXrp = ({ id, ...rest }: Props) => {
+  const { t } = useTranslation();
   return (
     <Tooltip {...rest} id={id ?? TOOLTIP_ID.ENOUGH_XRP} opacity={1} place={'bottom'}>
       <Wrapper>
-        <Description>
-          If you already have enough $XRP in your Root Network wallet, go to the next step!{' '}
-        </Description>
+        <Description>{t('tooltip-text-enough-xrp')}</Description>
       </Wrapper>
     </Tooltip>
   );

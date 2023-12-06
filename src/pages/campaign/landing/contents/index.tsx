@@ -1,4 +1,5 @@
-import tw from 'twin.macro';
+import { useTranslation } from 'react-i18next';
+import tw, { styled } from 'twin.macro';
 
 import Logo1 from '~/assets/logos/logo-campaign-1.svg?react';
 import Logo2 from '~/assets/logos/logo-campaign-2.svg?react';
@@ -12,33 +13,33 @@ export const Contents = () => {
   const value = 125928000;
   const apy = 0.1;
   const { isMD } = useMediaQuery();
+  const { t, i18n } = useTranslation();
   return (
     <Wrapper>
       <ContentWrapper>
-        <Title>Activate your $XRP</Title>
+        <Title>{t('Activate your $XRP')}</Title>
         <LogoWrapper>
           <Logo1 className="svg-shadow" width={isMD ? 249 : 149} height={isMD ? 70 : 24} />
           <Logo2 className="svg-shadow" width={isMD ? 489 : 293} height={isMD ? 70 : 24} />
         </LogoWrapper>
-        <TextMain>
-          {
-            "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders\nwithin XRPL to embark on our 'Voyage to the Future.' By joining this journey, you will \nhave the unique opportunity to provide early liquidity to The Root Network. In return,\n you will gain exclusive access to $MOAI pre-mining and special $ROOT rewards."
-          }
-        </TextMain>
+        <TextMain>{t('campaign-landing-main-text')}</TextMain>
         <InfoWrapper>
           <Info>
             <Label>Total value locked</Label>
             <Text>${formatNumberWithComma(value)}</Text>
           </Info>
           <Info>
-            <Label>Expected APY</Label>
+            <Label>{t('Expected APY')}</Label>
             <Text>{formatPercent(apy)}</Text>
           </Info>
         </InfoWrapper>
       </ContentWrapper>
 
-      <ButtonWrapper>
-        <ButtonPrimaryLarge text="Activate $XRP" />
+      <ButtonWrapper isKorean={i18n.language === 'ko'}>
+        <ButtonPrimaryLarge
+          text={t('Activate $XRP')}
+          onClick={() => window.open('/campaign/step', '_blank')}
+        />
       </ButtonWrapper>
     </Wrapper>
   );
@@ -52,7 +53,10 @@ const Wrapper = tw.div`
 const ContentWrapper = tw.div`flex flex-col gap-24 w-320 md:w-full lg:w-840`;
 const Title = tw.div`font-b-20`;
 const LogoWrapper = tw.div`flex gap-12 flex-col md:(flex-row gap-18)`;
-const ButtonWrapper = tw.div`w-157`;
+interface ButtonProps {
+  isKorean?: boolean;
+}
+const ButtonWrapper = styled.div<ButtonProps>(({ isKorean }) => [isKorean ? tw`w-183` : tw`w-156`]);
 const TextMain = tw.div`w-full font-r-14 md:(font-r-16 whitespace-pre-line)`;
 const InfoWrapper = tw.div`flex gap-20 flex-col md:(flex-row) xl:(gap-40)`;
 const Info = tw.div`

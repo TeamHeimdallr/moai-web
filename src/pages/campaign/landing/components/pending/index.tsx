@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -14,7 +15,7 @@ export const Pending = () => {
   const balance = 123;
   // TODO : navigate step3
   const handleClick = () => {};
-
+  const { t } = useTranslation();
   return (
     <Wrapper>
       <TitleWrapper>
@@ -24,7 +25,7 @@ export const Pending = () => {
         <ButtonWrapper>
           <ButtonPrimaryMedium
             icon={<IconNext fill={COLOR.NEUTRAL[0]} width={20} height={20} />}
-            text="Continue"
+            text={t('Continue')}
             onClick={handleClick}
           />
         </ButtonWrapper>

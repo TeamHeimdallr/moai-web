@@ -1,4 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
+
+import { IconTokenMoai, IconTokenXrp } from '~/assets/icons';
 
 import { ButtonPrimaryMedium } from '~/components/buttons';
 
@@ -16,6 +19,7 @@ export const MyVoyage = () => {
   const { setWalletType } = useWalletTypeStore();
   const { open: campaignOpen } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
   const { open } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { t } = useTranslation();
 
   // TODO : connect API
   const myDepositBalance = 123123;
@@ -50,21 +54,38 @@ export const MyVoyage = () => {
   return (
     <Wrapper>
       <MyInfoWrapper>
-        <Title>My Voyage</Title>
+        <Title>{t('My Voyage')}</Title>
         {!isEmpty ? (
           <CardWrapper>
             <TokenCard
               type="balance"
               title="Balance"
-              token={<TokenList token="XRP" balance={myDepositBalance} value={myDepositValue} />}
+              token={
+                <TokenList
+                  token="XRP"
+                  balance={myDepositBalance}
+                  value={myDepositValue}
+                  image={<IconTokenXrp width={36} height={36} />}
+                />
+              }
             />
             <TokenCard
               type="reward"
               title="Rewards"
               token={
                 <TokenWrapper>
-                  <TokenList token="MOAI" balance={myMoaiRewardBalance} value={myMoaiRewardValue} />
-                  <TokenList token="ROOT" balance={myRootRewardBalance} value={myRootRewardValue} />
+                  <TokenList
+                    token="MOAI"
+                    balance={myMoaiRewardBalance}
+                    value={myMoaiRewardValue}
+                    image={<IconTokenMoai width={36} height={36} />}
+                  />
+                  <TokenList
+                    token="ROOT"
+                    balance={myRootRewardBalance}
+                    value={myRootRewardValue}
+                    image={<IconTokenXrp width={36} height={36} />}
+                  />
                 </TokenWrapper>
               }
             />
@@ -73,7 +94,11 @@ export const MyVoyage = () => {
           <Empty>
             <TextWrapper>{emptyText}</TextWrapper>
             <ButtonWrapper>
-              <ButtonPrimaryMedium text={buttonText} buttonType="outlined" onClick={handleClick} />
+              <ButtonPrimaryMedium
+                text={t(buttonText)}
+                buttonType="outlined"
+                onClick={handleClick}
+              />
             </ButtonWrapper>
           </Empty>
         )}
