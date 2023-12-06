@@ -43,6 +43,6 @@ const NetworkIcon = tw.img`
   w-24 h-24
 `;
 const Header = tw.div`
-  font-m-14 text-neutral-100
+  font-m-14 text-neutral-80
 `;
 const Body = tw.div``;

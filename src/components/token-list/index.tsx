@@ -6,7 +6,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   image: string | ReactNode;
   title: string;
 
-  type?: 'selectable' | 'medium' | 'large';
+  type?: 'selectable' | 'campaign' | 'medium' | 'large';
   description?: string;
   balance?: string;
   value?: string;
@@ -53,7 +53,7 @@ export const TokenList = ({
   );
 };
 interface DivProps {
-  type: 'selectable' | 'medium' | 'large';
+  type: 'selectable' | 'campaign' | 'medium' | 'large';
   backgroundColor?: string;
   selected?: boolean;
 }
@@ -67,6 +67,8 @@ const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
     ? tw`border-transparent border-solid px-11 py-7 rounded-8 border-1 hover:bg-neutral-20 clickable`
     : type === 'medium'
     ? tw`px-24 py-8`
+    : type === 'campaign'
+    ? tw`px-16 py-12`
     : tw`px-24 py-12`,
   type === 'selectable' &&
     (selected
@@ -77,16 +79,16 @@ const LeftWrapper = tw.div`flex-center gap-12`;
 const Image = tw(LazyLoadImage)`w-36 h-36 rounded-18`;
 
 interface TextProps {
-  type: 'selectable' | 'medium' | 'large';
+  type: 'selectable' | 'campaign' | 'medium' | 'large';
 }
 
 const TitleWrapper = tw.div`flex flex-col`;
 const Title = styled.div<TextProps>(({ type }) => [
-  type === 'large' ? tw`font-r-18` : tw`font-r-16`,
+  type === 'large' ? tw`font-r-18` : type === 'campaign' ? tw`font-r-14` : tw`font-r-16`,
   tw`text-neutral-100`,
 ]);
 const SubTitle = styled.div<TextProps>(({ type }) => [
-  type === 'large' ? tw`font-r-18` : tw`font-r-16`,
+  type === 'large' ? tw`font-r-18` : type === 'campaign' ? tw`font-r-14` : tw`font-r-16`,
   tw`text-neutral-60`,
 ]);
 const TitleInnerWrapper = tw.div`flex gap-8`;
@@ -97,10 +99,10 @@ const Description = styled.div<TextProps>(({ type }) => [
 
 const RightWrapper = tw.div`flex flex-col flex-1 truncate`;
 const Balance = styled.div<TextProps>(({ type }) => [
-  type === 'large' ? tw`font-m-20` : tw`font-m-16`,
+  type === 'large' ? tw`font-m-20` : type === 'campaign' ? tw`font-m-18` : tw`font-m-16`,
   tw`text-right truncate text-neutral-100`,
 ]);
 const Value = styled.div<TextProps>(({ type }) => [
-  type === 'large' ? tw`font-r-14` : tw`font-r-12`,
+  type === 'large' ? tw`font-r-14` : type === 'campaign' ? tw`font-r-14` : tw`font-r-12`,
   tw`text-right truncate text-neutral-60`,
 ]);
