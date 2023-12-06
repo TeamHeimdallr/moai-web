@@ -7,6 +7,7 @@ import { ConnectWallet } from '~/components/connect-wallet';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
+import { useGARouteChangeTracker } from '~/hooks/contexts/use-google-analystics';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
@@ -22,6 +23,7 @@ import Swap from './swap';
 
 const Page = () => {
   useConnectXrpl();
+  useGARouteChangeTracker();
 
   const { network } = useParams();
   const { selectedNetwork } = useNetwork();

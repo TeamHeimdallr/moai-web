@@ -33,3 +33,5 @@ export const API_URL = IS_MAINNET
   : IS_DEVNET
   ? 'https://api-devnet.moai-finance.xyz'
   : 'http://localhost:8080';
+
+export const GOOGLE_ANALYTICS_TRAKING_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_TRAKING_ID;

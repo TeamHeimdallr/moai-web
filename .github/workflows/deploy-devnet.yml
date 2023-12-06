@@ -36,6 +36,7 @@ jobs:
         run: |
           echo VITE_IS_LOCAL=false >> .env
           echo VITE_BLOCKCHAIN_ENV=devnet >> .env
+          echo VITE_GOOGLE_ANALYTICS_TRAKING_ID=G-GJTG9W1SM6 >> .env
 
       - name: build
         run: yarn build
