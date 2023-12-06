@@ -230,7 +230,9 @@
   "bridge-success-message": "Successfully bridged your $XRP to The Root Network",
   "Continue to add liquidity": "Continue to add liquidity",
 
+  "campaign-add-liquidity-success-message": "Successfully added liquidity to liquidity voyage.",
   "Expected APY (10%)": "Expected APY (10%)",
   "Pre-mining $MOAI APY (3%)": "Pre-mining $MOAI APY (3%)",
-  "$ROOT reward (7%)": "$ROOT reward (7%)"
+  "$ROOT reward (7%)": "$ROOT reward (7%)",
+  "Return to voyage page": "Return to voyage page"
 }

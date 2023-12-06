@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
@@ -31,6 +32,7 @@ export const AddLiquidity = () => {
   const [inputValue, setInputValue] = useState<number>();
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
+  const { t } = useTranslation();
   // TODO : add validation
   const validToBridge = inputValue && Number(inputValue) > 0;
 
@@ -57,12 +59,12 @@ export const AddLiquidity = () => {
               <SuccessIconWrapper>
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
-              <SuccessTitle>Add liquidity confirmed!</SuccessTitle>
-              <SuccessSubTitle>Successfully added liquidity to liquidity voyage.</SuccessSubTitle>
+              <SuccessTitle>{t('Add liquidity confirmed!')}</SuccessTitle>
+              <SuccessSubTitle>{t('campaign-add-liquidity-success-message')}</SuccessSubTitle>
             </SuccessMessageWrapper>
-            <List title="Expected APY (10%)">
+            <List title={t('Expected APY (10%)')}>
               <TokenList
-                title="Pre-mining $MOAI APY (3%)"
+                title={t('Pre-mining $MOAI APY (3%)')}
                 image={<IconTokenMoai width={36} height={36} />}
                 type="campaign"
                 balance="99,999 MOAI"
@@ -70,7 +72,7 @@ export const AddLiquidity = () => {
               />
               <Divider />
               <TokenList
-                title="$ROOT reward (7%)"
+                title={t('$ROOT reward (7%)')}
                 image={<IconTokenXrp width={36} height={36} />}
                 type="campaign"
                 balance="99,999 MOAI"
@@ -85,7 +87,7 @@ export const AddLiquidity = () => {
                   <IconLink />
                 </ClickableIcon>
               </TimeWrapper>
-              <ButtonPrimaryLarge text="Return to voyage page" buttonType="outlined" />
+              <ButtonPrimaryLarge text={t('Return to voyage page')} buttonType="outlined" />
             </SuccessBottomWrapper>
           </SuccessWrapper>
         </>
@@ -94,7 +96,7 @@ export const AddLiquidity = () => {
         <Wrapper>
           <InputNumber
             name={'input1'}
-            title="You're providing"
+            title={t("You're providing")}
             control={control}
             token={<Token token={'XRP'} image imageUrl={TokenXrp} />}
             tokenName={'XRPL'}
@@ -106,10 +108,10 @@ export const AddLiquidity = () => {
             setValue={setValue}
             formState={formState}
           />
-          <List title={`You're providing`}>
+          <List title={t('Expected APY (10%)')}>
             <TokenList
               type="campaign"
-              title="Pre-mining $MOAI APY (3%)"
+              title={t('Pre-mining $MOAI APY (3%)')}
               image={<IconTokenMoai width={36} height={36} />}
               balance="99,999 MOAI"
               value="$100"
@@ -117,14 +119,14 @@ export const AddLiquidity = () => {
             <Divider />
             <TokenList
               type="campaign"
-              title="$ROOT reward (7%)"
+              title={t('$ROOT reward (7%)')}
               image={<IconTokenRoot width={36} height={36} />}
               balance="99,999 ROOT"
               value="$100"
             />
           </List>
           <ButtonPrimaryLarge
-            text={'Add Liquidity'}
+            text={t('Add liquidity')}
             disabled={!validToBridge}
             onClick={handleButtonClick}
           />
