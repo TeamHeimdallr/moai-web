@@ -398,6 +398,11 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   }, [isXrp, toApproveEnabled, fromApproveEnabled, step]);
 
   const gasError = xrpBalance <= 3.25 || swapGasError || approveGasError;
+  const extimatedFee = !isXrp
+    ? step === 1
+      ? estimatedFromTokenApproveFee || ''
+      : estimatedSwapFee || ''
+    : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) || '3.25';
 
   return (
     <Popup
@@ -513,14 +518,11 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   <GasFeeInnerWrapper>
                     <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                     <GasFeeTitleValue>
-                      ~
-                      {!isXrp
-                        ? step === 1
-                          ? estimatedFromTokenApproveFee
-                          : estimatedSwapFee
-                        : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) ??
-                          '3.25'}{' '}
-                      XRP
+                      {estimatedFromTokenApproveFee ||
+                      estimatedToTokenApproveFee ||
+                      estimatedSwapFee
+                        ? `~${extimatedFee} XRP`
+                        : 'calculating...'}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
                   <GasFeeInnerWrapper>
