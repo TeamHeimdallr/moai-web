@@ -452,12 +452,19 @@ export const AddLiquidityPopup = ({
 
     // 2 token deposit
     if (tokenLength === 2) {
-      if (step === 1 && token1ApproveEnabled) {
-        // allow token 1
-        estimateApproveFeeAsync(1);
-      } else if (step === 2 && token2ApproveEnabled) {
-        // allow token 2
-        estimateApproveFeeAsync(2);
+      if (!isXrp) {
+        if (step === 1 && token1ApproveEnabled) {
+          // allow token 1
+          estimateApproveFeeAsync(1);
+        } else if (step === 2 && token2ApproveEnabled) {
+          // allow token 2
+          estimateApproveFeeAsync(2);
+        }
+      } else {
+        if (step === 1 && token3ApproveEnabled) {
+          // allow token 3
+          estimateApproveFeeAsync(3);
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
