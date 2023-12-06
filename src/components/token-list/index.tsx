@@ -76,13 +76,13 @@ const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
       : tw``),
 ]);
 const LeftWrapper = tw.div`flex-center gap-12`;
-const Image = tw(LazyLoadImage)`w-36 h-36 rounded-18`;
+const Image = tw(LazyLoadImage)`w-36 h-36 rounded-18 shrink-0`;
 
 interface TextProps {
   type: 'selectable' | 'campaign' | 'medium' | 'large';
 }
 
-const TitleWrapper = tw.div`flex flex-col`;
+const TitleWrapper = tw.div`flex flex-col flex-1`;
 const Title = styled.div<TextProps>(({ type }) => [
   type === 'large' ? tw`font-r-18` : type === 'campaign' ? tw`font-r-14` : tw`font-r-16`,
   tw`text-neutral-100`,
@@ -97,12 +97,12 @@ const Description = styled.div<TextProps>(({ type }) => [
   type === 'selectable' ? tw`text-neutral-90` : tw`text-neutral-60`,
 ]);
 
-const RightWrapper = tw.div`flex flex-col flex-1 truncate`;
+const RightWrapper = tw.div`flex flex-col shrink-0`;
 const Balance = styled.div<TextProps>(({ type }) => [
   type === 'large' ? tw`font-m-20` : type === 'campaign' ? tw`font-m-18` : tw`font-m-16`,
-  tw`text-right truncate text-neutral-100`,
+  tw`text-right text-neutral-100`,
 ]);
 const Value = styled.div<TextProps>(({ type }) => [
   type === 'large' ? tw`font-r-14` : type === 'campaign' ? tw`font-r-14` : tw`font-r-12`,
-  tw`text-right truncate text-neutral-60`,
+  tw`text-right text-neutral-60`,
 ]);
