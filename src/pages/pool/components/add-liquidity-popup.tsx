@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -75,6 +75,11 @@ export const AddLiquidityPopup = ({
   const { network: networkParam } = useParams();
   const { selectedNetwork } = useNetwork();
 
+  const [estimatedAddLiquidityFee, setEstimatedAddLiquidityFee] = useState<number | undefined>();
+  const [estimatedToken1ApproveFee, setEstimatedToken1ApproveFee] = useState<number | undefined>();
+  const [estimatedToken2ApproveFee, setEstimatedToken2ApproveFee] = useState<number | undefined>();
+  const [estimatedToken3ApproveFee, setEstimatedToken3ApproveFee] = useState<number | undefined>();
+
   const currentNetwork = getNetworkFull(networkParam) ?? selectedNetwork;
 
   const { close } = usePopup(POPUP_ID.ADD_LP);
@@ -99,12 +104,17 @@ export const AddLiquidityPopup = ({
   const token1Amount = tokensIn?.[0]?.amount || 0;
   const token2Amount = tokensIn?.[1]?.amount || 0;
 
+  const token1ApproveEnabled = token1Amount > 0 && !isXrp;
+  const token2ApproveEnabled = token2Amount > 0 && !isXrp;
+  const token3ApproveEnabled = bptOut > 0 && isXrp;
+
   const {
     allow: allowToken1,
     allowance: allowance1,
     isLoading: allowLoading1,
     isSuccess: allowSuccess1,
     refetch: refetchAllowance1,
+    estimateFee: estimateToken1ApproveFee,
   } = useApprove({
     amount: parseUnits(
       `${(token1Amount || 0).toFixed(18)}`,
@@ -115,7 +125,7 @@ export const AddLiquidityPopup = ({
     issuer: tokensIn?.[0]?.address || '',
     spender: vault || '',
     currency: tokensIn?.[0]?.currency || '',
-    enabled: token1Amount > 0 && !isXrp,
+    enabled: token1ApproveEnabled,
   });
 
   const {
@@ -124,6 +134,7 @@ export const AddLiquidityPopup = ({
     isLoading: allowLoading2,
     isSuccess: allowSuccess2,
     refetch: refetchAllowance2,
+    estimateFee: estimateToken2ApproveFee,
   } = useApprove({
     amount: parseUnits(
       `${(token2Amount || 0).toFixed(18)}`,
@@ -134,7 +145,7 @@ export const AddLiquidityPopup = ({
     issuer: tokensIn?.[1]?.address || '',
     spender: vault || '',
     currency: tokensIn?.[1]?.currency || '',
-    enabled: token2Amount > 0 && !isXrp,
+    enabled: token2ApproveEnabled,
   });
 
   const {
@@ -143,6 +154,7 @@ export const AddLiquidityPopup = ({
     isLoading: allowLoading3,
     isSuccess: allowSuccess3,
     refetch: refetchAllowance3,
+    estimateFee: estimateToken3ApproveFee,
   } = useApprove({
     amount: parseUnits(
       `${(bptOut || 0).toFixed(18)}`,
@@ -153,7 +165,7 @@ export const AddLiquidityPopup = ({
     issuer: lpToken?.address || '',
     spender: vault || '',
     currency: lpToken?.currency || '',
-    enabled: bptOut > 0 && isXrp,
+    enabled: token3ApproveEnabled,
   });
 
   const validAmount = token1Amount > 0 || token2Amount > 0;
@@ -164,16 +176,18 @@ export const AddLiquidityPopup = ({
     if (token2Amount > 0) return allowance2;
   };
 
+  const addLiquidityEnabled = !!poolId && validAmount && getValidAllowance();
   const {
     isLoading: addLiquidityLoading,
     isSuccess: addLiquiditySuccess,
     txData,
     blockTimestamp,
     writeAsync,
+    estimateFee: estimateAddLiquidityFee,
   } = useAddLiquidity({
     id: poolId || '',
     tokens: tokensIn || [],
-    enabled: !!poolId && validAmount && getValidAllowance(),
+    enabled: addLiquidityEnabled,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -371,7 +385,88 @@ export const AddLiquidityPopup = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const gasError = xrpBalance <= 3.25 || addLiquidityGasError || approveGasError;
+  useEffect(() => {
+    if (
+      !addLiquidityEnabled ||
+      !((tokenLength === 2 && step === 3) || (tokenLength !== 2 && step === 2))
+    )
+      return;
+
+    const estimateAddLiquidityFeeAsync = async () => {
+      const fee = await estimateAddLiquidityFee?.();
+      setEstimatedAddLiquidityFee(fee ?? 3.25);
+    };
+    estimateAddLiquidityFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addLiquidityEnabled, tokenLength, step]);
+
+  useEffect(() => {
+    const estimateApproveFeeAsync = async (n: number) => {
+      if (n === 1) {
+        const fee = await estimateToken1ApproveFee?.();
+        setEstimatedToken1ApproveFee(fee ?? 1.5);
+      } else if (n === 2) {
+        const fee = await estimateToken2ApproveFee?.();
+        setEstimatedToken2ApproveFee(fee ?? 1.5);
+      } else if (n === 3) {
+        const fee = await estimateToken3ApproveFee?.();
+        setEstimatedToken3ApproveFee(fee ?? 1.5);
+      }
+    };
+
+    // single token deposit
+    if (tokenLength === 1) {
+      if (isXrp) {
+        if (step === 1 && token3ApproveEnabled) {
+          // allow token 3
+          estimateApproveFeeAsync(3);
+        }
+      } else {
+        if (token1Amount > 0 && token2Amount <= 0) {
+          if (step === 1 && token1ApproveEnabled) {
+            // allow token 1
+            estimateApproveFeeAsync(1);
+          }
+        }
+        if (token2Amount > 0 && token1Amount <= 0) {
+          if (step === 1 && token2ApproveEnabled) {
+            // allow token 2
+            estimateApproveFeeAsync(2);
+          }
+        }
+      }
+    }
+
+    // 2 token deposit
+    if (tokenLength === 2) {
+      if (step === 1 && token1ApproveEnabled) {
+        // allow token 1
+        estimateApproveFeeAsync(1);
+      } else if (step === 2 && token2ApproveEnabled) {
+        // allow token 2
+        estimateApproveFeeAsync(2);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, isXrp, token1ApproveEnabled, token2ApproveEnabled, token3ApproveEnabled]);
+
+  const estimatedFee = !isXrp
+    ? tokenLength === 1
+      ? token1Amount > 0 && token2Amount <= 0 && step === 1
+        ? estimatedToken1ApproveFee || ''
+        : token2Amount > 0 && token1Amount <= 0 && step == 1
+        ? estimatedToken2ApproveFee || ''
+        : estimatedAddLiquidityFee || ''
+      : step === 1
+      ? estimatedToken1ApproveFee || ''
+      : step === 2
+      ? estimatedToken2ApproveFee || ''
+      : estimatedAddLiquidityFee || ''
+    : step === 1
+    ? estimatedToken3ApproveFee || ''
+    : estimatedAddLiquidityFee || '';
+  const gasError =
+    xrpBalance <= Number(estimatedFee ?? 3.25) || addLiquidityGasError || approveGasError;
 
   return (
     <Popup
@@ -455,7 +550,14 @@ export const AddLiquidityPopup = ({
               <GasFeeWrapper>
                 <GasFeeInnerWrapper>
                   <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
-                  <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
+                  <GasFeeTitleValue>
+                    {estimatedToken1ApproveFee ||
+                    estimatedToken2ApproveFee ||
+                    estimatedToken3ApproveFee ||
+                    estimatedAddLiquidityFee
+                      ? `~${estimatedFee} XRP`
+                      : 'calculating...'}
+                  </GasFeeTitleValue>
                 </GasFeeInnerWrapper>
                 <GasFeeInnerWrapper>
                   <GasFeeCaption error={gasError}>

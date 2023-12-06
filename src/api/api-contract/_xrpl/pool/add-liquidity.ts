@@ -97,5 +97,6 @@ export const useAddLiquidity = ({ token1, token2, enabled }: Props) => {
     blockTimestamp,
 
     writeAsync,
+    estimateFee: () => {},
   };
 };
