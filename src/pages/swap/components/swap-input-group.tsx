@@ -268,6 +268,9 @@ export const SwapInputGroup = () => {
 
   const sorError = isFpass && fromToken && toToken && toInputFromSor === 0 && fromInput;
   const sorFallbackError = isSorFallbackError && !isFpass && fromToken && toToken;
+  if (poolImpactError) {
+    console.log(errorMessage);
+  }
 
   const errorTitle = t(
     isFpass

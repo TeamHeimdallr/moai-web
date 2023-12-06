@@ -246,6 +246,9 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const toTokenActualAmount = Number(
     formatUnits(txData?.swapAmountTo ?? 0n, getTokenDecimal(currentNetwork, toToken?.symbol))
   );
+  const fromTokenActualAmount = Number(
+    formatUnits(txData?.swapAmountFrom ?? 0n, getTokenDecimal(currentNetwork, fromToken?.symbol))
+  );
 
   const toTokenFinalValue = toTokenActualAmount * toTokenPrice;
 
@@ -374,15 +377,18 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
               <SuccessIconWrapper>
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
-              <SuccessTitle>{t('Swap confirmed!')}</SuccessTitle>
-              <SuccessSubTitle>
-                {t('swap-success-message', {
-                  fromValue: fromInput,
-                  fromToken: fromToken?.symbol,
-                  toValue: formatNumber(toTokenActualAmount, 6),
-                  toToken: toToken?.symbol,
-                })}
-              </SuccessSubTitle>
+              <SuccessTitle>{t('Swap confirmed!')}</SuccessTitle>(
+              {fromTokenActualAmount && toTokenActualAmount && (
+                <SuccessSubTitle>
+                  {t('swap-success-message', {
+                    fromValue: fromTokenActualAmount,
+                    fromToken: fromToken?.symbol,
+                    toValue: formatNumber(toTokenActualAmount, 6),
+                    toToken: toToken?.symbol,
+                  })}
+                </SuccessSubTitle>
+              )}
+              )
             </SuccessWrapper>
 
             <List title={t(`Total swap`)}>
