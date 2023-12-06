@@ -70,6 +70,13 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { slippage: slippageRaw } = useSlippageStore();
 
   const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
+  const [estimatedSwapFee, setEstimatedSwapFee] = useState<number | undefined>();
+  const [estimatedFromTokenApproveFee, setEstimatedFromTokenApproveFee] = useState<
+    number | undefined
+  >();
+  const [estimatedToTokenApproveFee, setEstimatedToTokenApproveFee] = useState<
+    number | undefined
+  >();
 
   const slippage = Number(slippageRaw || 0);
   const {
@@ -167,12 +174,16 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       ? numToInput / (numFromInput === 0 ? 0.0001 : numFromInput)
       : toTokenReserve - toTokenReserve * (fromTokenReserve / (fromTokenReserve + (1 - fee)));
 
+  const fromApproveEnabled = fromToken && numFromInput > 0 && !isXrp;
+  const toApproveEnabled = toToken && numToInput > 0 && isXrp;
+
   const {
     allow: allowFromToken,
     allowance: allowanceFromToken,
     isLoading: allowFromTokenLoading,
     isSuccess: allowFromTokenSuccess,
     refetch: refetchFromTokenAllowance,
+    estimateFee: estimateFromTokenApproveFee,
   } = useApprove({
     amount: parseUnits(
       `${(numFromInput || 0).toFixed(18)}`,
@@ -183,7 +194,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     issuer: fromToken?.address || '',
     spender: EVM_VAULT_ADDRESS[currentNetwork] || '',
     currency: fromToken?.currency || '',
-    enabled: fromToken && numFromInput > 0 && !isXrp,
+    enabled: fromApproveEnabled,
   });
 
   const {
@@ -192,6 +203,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     isLoading: allowToTokenLoading,
     isSuccess: allowToTokenSuccess,
     refetch: refetchToTokenAllowance,
+    estimateFee: estimateToTokenApproveFee,
   } = useApprove({
     amount: parseUnits(
       `${(numToInput || 0).toFixed(18)}`,
@@ -202,11 +214,13 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     issuer: toToken?.address || '',
     spender: EVM_VAULT_ADDRESS[currentNetwork] || '',
     currency: toToken?.currency || '',
-    enabled: toToken && numToInput > 0 && isXrp,
+    enabled: toApproveEnabled,
   });
 
   const validAmount = numFromInput > 0 || numToInput > 0;
   const validAllowance = isXrp ? allowanceToToken : allowanceFromToken;
+  const swapEnabled =
+    !!(swapInfoData || swapOptimizedPathPool?.poolId) && validAllowance && validAmount;
 
   const {
     txData,
@@ -215,13 +229,14 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     isSuccess: swapSuccess,
     isError,
     swap,
+    estimateFee: estimateSwapFee,
   } = useSwap({
     id: swapOptimizedPathPool?.poolId || '',
     fromToken: fromToken,
     fromInput: numFromInput,
     toToken: toToken,
     toInput: numToInput,
-    enabled: !!(swapInfoData || swapOptimizedPathPool?.poolId) && validAllowance && validAmount,
+    enabled: swapEnabled,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -353,6 +368,35 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!swapEnabled || step !== 2) return;
+
+    const estimateSwapFeeAsync = async () => {
+      const fee = await estimateSwapFee?.();
+      setEstimatedSwapFee(fee ?? 3.25);
+    };
+    estimateSwapFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swapEnabled, step]);
+
+  useEffect(() => {
+    if (step !== 1) return;
+    if (isXrp && !toApproveEnabled) return;
+    if (!isXrp && !fromApproveEnabled) return;
+
+    const estimateApproveFeeAsync = async () => {
+      if (isXrp) {
+        const fee = await estimateToTokenApproveFee?.();
+        setEstimatedToTokenApproveFee(fee ?? 1.5);
+      } else {
+        const fee = await estimateFromTokenApproveFee?.();
+        setEstimatedFromTokenApproveFee(fee ?? 1.5);
+      }
+    };
+    estimateApproveFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isXrp, toApproveEnabled, fromApproveEnabled, step]);
+
   const gasError = xrpBalance <= 3.25 || swapGasError || approveGasError;
 
   return (
@@ -468,7 +512,16 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                 <GasFeeWrapper>
                   <GasFeeInnerWrapper>
                     <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
-                    <GasFeeTitleValue>~3.25 XRP</GasFeeTitleValue>
+                    <GasFeeTitleValue>
+                      ~
+                      {!isXrp
+                        ? step === 1
+                          ? estimatedFromTokenApproveFee
+                          : estimatedSwapFee
+                        : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) ??
+                          '3.25'}{' '}
+                      XRP
+                    </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
                   <GasFeeInnerWrapper>
                     <GasFeeCaption error={gasError}>
