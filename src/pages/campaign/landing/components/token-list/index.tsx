@@ -8,7 +8,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
   balance: number;
   value: number;
-  image?: string | ReactNode;
+  image?: ReactNode;
 }
 
 export const TokenList = ({ token, balance, value, image, ...rest }: Props) => {

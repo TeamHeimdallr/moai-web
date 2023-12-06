@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
-import { IconTokenXrp } from '~/assets/icons';
+import { IconTokenMoai, IconTokenXrp } from '~/assets/icons';
 
 import { ButtonPrimaryMedium } from '~/components/buttons';
 
@@ -78,7 +78,7 @@ export const MyVoyage = () => {
                     token="MOAI"
                     balance={myMoaiRewardBalance}
                     value={myMoaiRewardValue}
-                    image={<IconTokenXrp width={36} height={36} />}
+                    image={<IconTokenMoai width={36} height={36} />}
                   />
                   <TokenList
                     token="ROOT"
