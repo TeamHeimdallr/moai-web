@@ -5,7 +5,7 @@ import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
-import { Address, encodeFunctionData } from 'viem';
+import { Address, encodeFunctionData, formatUnits } from 'viem';
 import { usePrepareContractWrite, usePublicClient, useWalletClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
@@ -85,6 +85,61 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
     .slice()
     .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
   const sortedTokenAddressses = sortedTokens.map(t => t.address);
+
+  const estimateFee = async () => {
+    const feeHistory = await publicClient.getFeeHistory({
+      blockCount: 2,
+      rewardPercentiles: [25, 75],
+    });
+
+    if (!isFpass || !enabled) return;
+
+    try {
+      const [api] = await Promise.all([
+        getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
+      ]);
+
+      const encodedData =
+        isFpass && !!walletAddress && !!signer && !!vault
+          ? encodeFunctionData({
+              abi: BALANCER_VAULT_ABI,
+              functionName: 'exitPool',
+              args: [
+                poolId,
+                walletAddress,
+                walletAddress,
+                [
+                  sortedTokenAddressses,
+                  tokens.map(() => 0n),
+                  WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
+                  false,
+                ],
+              ],
+            })
+          : '0x0';
+
+      const evmCall = api.tx.evm.call(
+        walletAddress,
+        vault,
+        encodedData,
+        0,
+        '300000', // gas limit estimation todo: can be changed
+        feeHistory.baseFeePerGas[0],
+        0,
+        null,
+        []
+      );
+
+      const extrinsic = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
+
+      const info = await extrinsic.paymentInfo(signer);
+      const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
+
+      return fee;
+    } catch (err) {
+      console.log('estimation fee error');
+    }
+  };
 
   const withdrawLiquidity = async () => {
     const feeHistory = await publicClient.getFeeHistory({
@@ -192,6 +247,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
     blockTimestamp,
 
     writeAsync: withdrawLiquidity,
+    estimateFee,
   };
 };
 
