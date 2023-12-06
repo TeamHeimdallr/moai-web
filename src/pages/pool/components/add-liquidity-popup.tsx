@@ -212,8 +212,12 @@ export const AddLiquidityPopup = ({
     }
 
     if (tokenLength === 2) {
-      if (!allowance1) return 1;
-      if (!allowance2) return 2;
+      if (!isXrp) {
+        if (!allowance1) return 1;
+        if (!allowance2) return 2;
+      } else {
+        return 3;
+      }
       return 3;
     }
 
@@ -247,9 +251,14 @@ export const AddLiquidityPopup = ({
     }
 
     if (tokenLength === 2) {
-      if (step === 1) return allowLoading1;
-      if (step === 2) return allowLoading2;
-      if (step === 3) return addLiquidityLoading;
+      if (!isXrp) {
+        if (step === 1) return allowLoading1;
+        if (step === 2) return allowLoading2;
+        if (step === 3) return addLiquidityLoading;
+      } else {
+        if (step === 1) return allowLoading3;
+        if (step === 2) return addLiquidityLoading;
+      }
     }
 
     return false;
@@ -289,10 +298,12 @@ export const AddLiquidityPopup = ({
     }
 
     if (tokenLength === 2) {
-      if (!allowance1)
-        return t('approve-add-liquidity-token-message', { token: tokensIn?.[0]?.symbol });
-      if (!allowance2)
-        return t('approve-add-liquidity-token-message', { token: tokensIn?.[1]?.symbol });
+      if (!isXrp) {
+        if (!allowance1)
+          return t('approve-add-liquidity-token-message', { token: tokensIn?.[0]?.symbol });
+        if (!allowance2)
+          return t('approve-add-liquidity-token-message', { token: tokensIn?.[1]?.symbol });
+      }
 
       return t('Confirm add liquidity in wallet');
     }
@@ -339,8 +350,10 @@ export const AddLiquidityPopup = ({
 
     // 2 token deposit
     if (tokenLength === 2) {
-      if (!allowance1) return await allowToken1();
-      if (!allowance2) return await allowToken2();
+      if (!isXrp) {
+        if (!allowance1) return await allowToken1();
+        if (!allowance2) return await allowToken2();
+      }
 
       return await writeAsync?.();
     }
