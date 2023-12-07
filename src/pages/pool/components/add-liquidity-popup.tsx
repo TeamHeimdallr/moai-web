@@ -497,16 +497,16 @@ export const AddLiquidityPopup = ({
   // TODO change after fee proxy
   const validMaxXrpAmount =
     tokensIn?.[0]?.symbol === 'XRP'
-      ? token1Amount > 0 && token1Amount + Number(estimatedFee || 3.25) < xrpBalance
+      ? token1Amount + Number(estimatedFee || 3.25) < xrpBalance
       : tokensIn?.[1]?.symbol === 'XRP'
-      ? token2Amount > 0 && token2Amount + Number(estimatedFee || 3.25) < xrpBalance
+      ? token2Amount + Number(estimatedFee || 3.25) < xrpBalance
       : true;
 
   const gasError =
     xrpBalance <= Number(estimatedFee || 3.25) ||
     addLiquidityGasError ||
     approveGasError ||
-    validMaxXrpAmount;
+    !validMaxXrpAmount;
 
   return (
     <Popup

@@ -400,9 +400,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   // TODO change after fee proxy
   const validMaxXrpAmount =
-    fromToken?.symbol === 'XRP'
-      ? numFromInput > 0 && numFromInput + Number(estimatedFee || 3.25) < xrpBalance
-      : true;
+    fromToken?.symbol === 'XRP' ? numFromInput + Number(estimatedFee || 3.25) < xrpBalance : true;
 
   const gasError =
     xrpBalance <= Number(estimatedFee || 3.25) ||

@@ -1,7 +1,7 @@
 import { Bar } from 'react-chartjs-2';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { format, sub } from 'date-fns';
+import { add, format, sub } from 'date-fns';
 import { upperFirst } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
@@ -63,8 +63,12 @@ export const PoolInfoChart = () => {
     date: sub(new Date(chartDataRaw?.[0]?.date || new Date()), { days: 1 }),
     value: 0,
   } as IChartData;
+  const chartDataPadding2 = {
+    date: add(new Date(chartDataRaw?.[chartDataRaw?.length - 1]?.date || new Date()), { days: 1 }),
+    value: 0,
+  } as IChartData;
 
-  const chartData = chartDataRaw ? [chartDataPadding, ...chartDataRaw] : [];
+  const chartData = chartDataRaw ? [chartDataPadding, ...chartDataRaw, chartDataPadding2] : [];
   const totalValue = chartData?.reduce((acc, cur) => acc + cur.value, 0) || 0;
 
   return (
@@ -99,7 +103,15 @@ export const PoolInfoChart = () => {
                   {
                     data: chartData || [],
                     backgroundColor: COLOR.PRIMARY[80],
+                    hoverBackgroundColor: COLOR.PRIMARY[100],
                     borderRadius: 4,
+                    minBarLength: 2,
+                    clip: {
+                      left: 0,
+                      top: 0,
+                      right: selectedRange === '90' ? -6 : selectedRange === '180' ? -2 : -1,
+                      bottom: 0,
+                    },
                   },
                 ],
               }}
@@ -119,7 +131,7 @@ export const PoolInfoChart = () => {
                   autoPadding: false,
                   padding: {
                     top: 0,
-                    right: 5,
+                    right: 0,
                     bottom: 0,
                     left: 0,
                   },
@@ -158,7 +170,7 @@ export const PoolInfoChart = () => {
                     ticks: {
                       callback: (value: string | number) => {
                         if (Number(value) < 1) return `$${formatFloat(Number(value), 4)}`;
-                        return `$${formatNumberWithUnit(Number(value), 0)}`;
+                        return `$${formatNumberWithUnit(Number(value))}`;
                       },
                       color: COLOR.NEUTRAL[60],
                       crossAlign: 'far',
