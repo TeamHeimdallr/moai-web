@@ -16,9 +16,10 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
   button?: ReactNode;
   icon?: ReactNode;
+  setting?: ReactNode;
 }
 
-export const Popup = ({ id, title, children, button, icon, ...rest }: Props) => {
+export const Popup = ({ id, title, children, button, icon, setting, ...rest }: Props) => {
   const { isMD } = useMediaQuery();
   const popupRef = useRef<HTMLDivElement>(null);
   const { close } = usePopup(id);
@@ -34,7 +35,10 @@ export const Popup = ({ id, title, children, button, icon, ...rest }: Props) => 
               {title}
             </TitleWrapper>
 
-            <ButtonIconLarge onClick={close} icon={<IconCancel fill={COLOR.NEUTRAL[60]} />} />
+            <Butttons>
+              {setting}
+              <ButtonIconLarge onClick={close} icon={<IconCancel fill={COLOR.NEUTRAL[60]} />} />
+            </Butttons>
           </Header>
 
           <ContentWrapper>{children}</ContentWrapper>
@@ -77,3 +81,4 @@ const Footer = styled.div<FooterProps>(({ button }) => [
   button ? tw`px-24 pb-20` : tw`pb-24`,
 ]);
 const ButtonWrapper = tw.div`flex-center px-24 w-full`;
+const Butttons = tw.div`flex`;

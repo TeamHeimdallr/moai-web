@@ -68,3 +68,11 @@ export const EVM_VAULT_ADDRESS: Record<string, string> = {
     ? '0x1cc5a9f4fd07E97e616F72D829d38c0A6aC5D623'
     : '0x1cc5a9f4fd07E97e616F72D829d38c0A6aC5D623',
 };
+
+export const ROOT_ASSET_ID = {
+  XRP: IS_MAINNET ? 2 : 2,
+  ROOT: IS_MAINNET ? 1 : 1,
+  ASTO: IS_MAINNET ? 4196 : 17508,
+  SYLO: IS_MAINNET ? 2148 : 3172,
+  USDC: IS_MAINNET ? 3172 : 2148,
+};

@@ -19,6 +19,7 @@ import { IconArrowDown, IconCancel, IconCheck, IconLink, IconTime } from '~/asse
 import { EVM_VAULT_ADDRESS, SCANNER_URL } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
+import { FeeProxySelector, FeeToken } from '~/components/fee-proxy-selector';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings';
 import { Popup } from '~/components/popup';
@@ -77,6 +78,10 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const [estimatedToTokenApproveFee, setEstimatedToTokenApproveFee] = useState<
     number | undefined
   >();
+  const [selectedFeeToken, selectFeeToken] = useState<FeeToken>({
+    name: 'XRP',
+    assetId: 2,
+  });
 
   const slippage = Number(slippageRaw || 0);
   const {
@@ -408,6 +413,10 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     approveGasError ||
     !validMaxXrpAmount;
 
+  const handleFeeSelect = (feeToken: FeeToken) => {
+    selectFeeToken(feeToken);
+  };
+
   return (
     <Popup
       id={POPUP_ID.SWAP}
@@ -422,6 +431,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
           />
         </ButtonWrapper>
       }
+      setting={<FeeProxySelector handleSelect={handleFeeSelect} selectedToken={selectedFeeToken} />}
     >
       <Wrapper style={{ gap: isIdle ? 24 : 40 }}>
         {!isIdle && isSuccess && (
@@ -533,7 +543,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                       {estimatedFromTokenApproveFee ||
                       estimatedToTokenApproveFee ||
                       estimatedSwapFee
-                        ? `~${estimatedFee} XRP`
+                        ? `~${estimatedFee} ${selectedFeeToken.name}`
                         : 'calculating...'}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
