@@ -13,7 +13,7 @@ import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
 import { COLOR } from '~/assets/colors';
-import { IconCheck, IconLink, IconTime } from '~/assets/icons';
+import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
 import { SCANNER_URL } from '~/constants';
 
@@ -191,6 +191,7 @@ export const AddLiquidityPopup = ({
   });
 
   const txDate = new Date(blockTimestamp || 0);
+  const isIdle = !txData;
   const isSuccess = addLiquiditySuccess && !!txData;
   const isLoading = addLiquidityLoading || allowLoading1 || allowLoading2;
 
@@ -275,7 +276,10 @@ export const AddLiquidityPopup = ({
   ]);
 
   const buttonText = useMemo(() => {
-    if (isSuccess) return t('Return to pool page');
+    if (!isIdle) {
+      if (isSuccess) return t('Return to pool page');
+      return t('Try again');
+    }
 
     // single token deposit
     if (tokenLength === 1) {
@@ -315,6 +319,7 @@ export const AddLiquidityPopup = ({
     allowance3,
     isSuccess,
     isXrp,
+    isIdle,
     lpToken?.symbol,
     t,
     token1Amount,
@@ -325,12 +330,15 @@ export const AddLiquidityPopup = ({
 
   const handleButtonClick = async () => {
     if (isLoading) return;
-    if (isSuccess) {
+    if (!isIdle) {
+      if (isSuccess) {
+        close();
+        navigate(`/pools/${networkAbbr}/${poolId}`);
+        return;
+      }
       close();
-      navigate(`/pools/${networkAbbr}/${poolId}`);
       return;
     }
-
     // single token deposit
     if (tokenLength === 1) {
       if (isXrp) {
@@ -382,13 +390,13 @@ export const AddLiquidityPopup = ({
   ]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (!isIdle) {
       queryClient.invalidateQueries(['GET', 'POOL']);
       queryClient.invalidateQueries(['GET', 'XRPL']);
       refetchBalance?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, queryClient]);
+  }, [isIdle, queryClient]);
 
   useEffect(() => {
     return () => {
@@ -485,26 +493,38 @@ export const AddLiquidityPopup = ({
     : step === 1
     ? estimatedToken3ApproveFee || ''
     : estimatedAddLiquidityFee || '';
+
+  // TODO change after fee proxy
+  const validMaxXrpAmount =
+    tokensIn?.[0]?.symbol === 'XRP'
+      ? token1Amount > 0 && token1Amount + Number(estimatedFee || 3.25) < xrpBalance
+      : tokensIn?.[1]?.symbol === 'XRP'
+      ? token2Amount > 0 && token2Amount + Number(estimatedFee || 3.25) < xrpBalance
+      : true;
+
   const gasError =
-    xrpBalance <= Number(estimatedFee ?? 3.25) || addLiquidityGasError || approveGasError;
+    xrpBalance <= Number(estimatedFee || 3.25) ||
+    addLiquidityGasError ||
+    approveGasError ||
+    validMaxXrpAmount;
 
   return (
     <Popup
       id={POPUP_ID.ADD_LP}
-      title={isSuccess ? '' : t('Add liquidity preview')}
+      title={isIdle ? t('Add liquidity preview') : ''}
       button={
         <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
             text={buttonText}
             isLoading={isLoading}
-            buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={gasError}
+            buttonType={isIdle ? 'filled' : 'outlined'}
+            disabled={isIdle && gasError}
           />
         </ButtonWrapper>
       }
     >
-      <Wrapper>
-        {isSuccess && (
+      <Wrapper style={{ gap: isIdle ? 24 : 40 }}>
+        {!isIdle && isSuccess && (
           <SuccessWrapper>
             <IconWrapper>
               <IconCheck width={40} height={40} />
@@ -515,7 +535,16 @@ export const AddLiquidityPopup = ({
             </SuccessSubTitle>
           </SuccessWrapper>
         )}
-        {!isSuccess && (
+        {!isIdle && !isSuccess && (
+          <FailedWrapper style={{ paddingBottom: '24px' }}>
+            <FailedIconWrapper>
+              <IconCancel width={40} height={40} />
+            </FailedIconWrapper>
+            <SuccessTitle>{t('Swap failed')}</SuccessTitle>
+            <SuccessSubTitle>{t('swap-fail-message')}</SuccessSubTitle>
+          </FailedWrapper>
+        )}
+        {isIdle && (
           <List title={t(`You're providing`)}>
             {tokensIn?.map(({ symbol, image, amount, price }, idx) => (
               <Fragment key={`${symbol}-${idx}`}>
@@ -531,31 +560,33 @@ export const AddLiquidityPopup = ({
             ))}
           </List>
         )}
-        <List title={t(`You're expected to receive`)}>
-          <TokenList
-            type="large"
-            title={`${formatNumber(bptOut, 6)}`}
-            subTitle={`${lpToken?.symbol || ''}`}
-            description={`$${formatNumber(bptOut * lpTokenPrice, 6)}`}
-            image={
-              <Jazzicon
-                diameter={36}
-                seed={jsNumberForAddress(
-                  isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
-                )}
-              />
-            }
-            leftAlign={true}
-          />
-        </List>
-        {isSuccess && (
+        {!isIdle && isSuccess && (
+          <List title={t(`You're expected to receive`)}>
+            <TokenList
+              type="large"
+              title={`${formatNumber(bptOut, 6)}`}
+              subTitle={`${lpToken?.symbol || ''}`}
+              description={`$${formatNumber(bptOut * lpTokenPrice, 6)}`}
+              image={
+                <Jazzicon
+                  diameter={36}
+                  seed={jsNumberForAddress(
+                    isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
+                  )}
+                />
+              }
+              leftAlign={true}
+            />
+          </List>
+        )}
+        {!isIdle && isSuccess && (
           <Scanner onClick={() => handleLink()}>
             <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
             <ScannerText> {format(new Date(txDate), DATE_FORMATTER.FULL)}</ScannerText>
             <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
         )}
-        {!isSuccess && (
+        {isIdle && (
           <>
             <List title={t(`Summary`)}>
               <Summary>
@@ -622,6 +653,14 @@ const SuccessSubTitle = tw.div`
 
 const SuccessWrapper = tw.div`
   flex-center flex-col gap-12
+`;
+
+const FailedWrapper = tw.div`
+  flex-center flex-col gap-12
+`;
+
+const FailedIconWrapper = tw.div`
+  flex-center w-48 h-48 rounded-full bg-red-50
 `;
 
 const IconWrapper = tw.div`

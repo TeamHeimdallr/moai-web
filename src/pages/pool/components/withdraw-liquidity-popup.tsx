@@ -13,7 +13,7 @@ import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
 import { COLOR } from '~/assets/colors';
-import { IconCheck, IconLink, IconTime } from '~/assets/icons';
+import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
 import { SCANNER_URL } from '~/constants';
 
@@ -177,6 +177,7 @@ export const WithdrawLiquidityPopup = ({
   });
 
   const txDate = new Date(blockTimestamp || 0);
+  const isIdle = !txData;
   const isSuccess = withdrawLiquiditySuccess && !!txData;
   const isLoading = withdrawLiquidityLoading || allowLoading1 || allowLoading2;
   const totalValue = Number(formatUnits(bptIn || 0n, 18)) * lpTokenPrice;
@@ -250,8 +251,10 @@ export const WithdrawLiquidityPopup = ({
   ]);
 
   const buttonText = useMemo(() => {
-    if (isSuccess) return t('Return to pool page');
-
+    if (!isIdle) {
+      if (isSuccess) return t('Return to pool page');
+      return t('Try again');
+    }
     // single token deposit
     if (tokenLength === 1) {
       if (!isXrp) {
@@ -292,6 +295,7 @@ export const WithdrawLiquidityPopup = ({
     allowance2,
     isSuccess,
     isXrp,
+    isIdle,
     t,
     token1Amount,
     token2Amount,
@@ -301,9 +305,13 @@ export const WithdrawLiquidityPopup = ({
 
   const handleButtonClick = async () => {
     if (isLoading) return;
-    if (isSuccess) {
+    if (!isIdle) {
+      if (isSuccess) {
+        close();
+        navigate(`/pools/${networkAbbr}/${poolId}`);
+        return;
+      }
       close();
-      navigate(`/pools/${networkAbbr}/${poolId}`);
       return;
     }
 
@@ -349,13 +357,13 @@ export const WithdrawLiquidityPopup = ({
   }, [allowSuccess1, allowSuccess2, refetchAllowance1, refetchAllowance2]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (!isIdle) {
       queryClient.invalidateQueries(['GET', 'POOL']);
       queryClient.invalidateQueries(['GET', 'XRPL']);
       refetchBalance?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, queryClient]);
+  }, [isIdle, queryClient]);
 
   useEffect(() => {
     return () => {
@@ -431,26 +439,27 @@ export const WithdrawLiquidityPopup = ({
       ? estimatedToken2ApproveFee || ''
       : estimatedWithdrawLiquidityFee || ''
     : estimatedWithdrawLiquidityFee || '';
+
   const gasError =
-    xrpBalance <= Number(estimatedFee ?? 3.25) || withdrawLiquidityGasError || approveGasError;
+    xrpBalance <= Number(estimatedFee || 3.25) || withdrawLiquidityGasError || approveGasError;
 
   return (
     <Popup
       id={POPUP_ID.WITHDRAW_LP}
-      title={isSuccess ? '' : t('Withdrawal preview')}
+      title={isIdle ? t('Withdrawal preview') : ''}
       button={
         <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
             text={buttonText}
             isLoading={isLoading}
-            buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={gasError}
+            buttonType={isIdle ? 'filled' : 'outlined'}
+            disabled={isIdle && gasError}
           />
         </ButtonWrapper>
       }
     >
-      <Wrapper>
-        {isSuccess && (
+      <Wrapper style={{ gap: isIdle ? 24 : 40 }}>
+        {!isIdle && isSuccess && (
           <SuccessWrapper>
             <IconWrapper>
               <IconCheck width={40} height={40} />
@@ -461,7 +470,16 @@ export const WithdrawLiquidityPopup = ({
             </SuccessSubTitle>
           </SuccessWrapper>
         )}
-        {!isSuccess && (
+        {!isIdle && !isSuccess && (
+          <FailedWrapper style={{ paddingBottom: '24px' }}>
+            <FailedIconWrapper>
+              <IconCancel width={40} height={40} />
+            </FailedIconWrapper>
+            <SuccessTitle>{t('Swap failed')}</SuccessTitle>
+            <SuccessSubTitle>{t('swap-fail-message')}</SuccessSubTitle>
+          </FailedWrapper>
+        )}
+        {isIdle && (
           <List title={t(`You're providing`)}>
             <TokenList
               type="large"
@@ -479,31 +497,32 @@ export const WithdrawLiquidityPopup = ({
             />
           </List>
         )}
-        <List title={t(`You're expected to receive`)}>
-          {tokensOut?.map(({ symbol, currentWeight, amount, image, price }, i) => (
-            <Fragment key={`${symbol}-${i}`}>
-              <TokenList
-                type="large"
-                title={`${amount.toFixed(6)} ${symbol}`}
-                description={`$${formatNumber(amount * (price || 0))} (${(
-                  (currentWeight || 0) * 100
-                )?.toFixed(2)}%)`}
-                image={image}
-                leftAlign
-              />
-              {i !== (tokensOut?.length || 0) - 1 && <Divider />}
-            </Fragment>
-          ))}
-        </List>
-
-        {isSuccess && (
+        {!isIdle && isSuccess && (
+          <List title={t(`You're expected to receive`)}>
+            {tokensOut?.map(({ symbol, currentWeight, amount, image, price }, i) => (
+              <Fragment key={`${symbol}-${i}`}>
+                <TokenList
+                  type="large"
+                  title={`${amount.toFixed(6)} ${symbol}`}
+                  description={`$${formatNumber(amount * (price || 0))} (${(
+                    (currentWeight || 0) * 100
+                  )?.toFixed(2)}%)`}
+                  image={image}
+                  leftAlign
+                />
+                {i !== (tokensOut?.length || 0) - 1 && <Divider />}
+              </Fragment>
+            ))}
+          </List>
+        )}
+        {!isIdle && isSuccess && (
           <Scanner onClick={() => handleLink()}>
             <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
             <ScannerText> {format(new Date(txDate), DATE_FORMATTER.FULL)}</ScannerText>
             <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
           </Scanner>
         )}
-        {!isSuccess && (
+        {isIdle && (
           <>
             <List title={t(`Summary`)}>
               <Summary>
@@ -567,6 +586,14 @@ const SuccessSubTitle = tw.div`
 
 const SuccessWrapper = tw.div`
   flex-center flex-col gap-12
+`;
+
+const FailedWrapper = tw.div`
+  flex-center flex-col gap-12
+`;
+
+const FailedIconWrapper = tw.div`
+  flex-center w-48 h-48 rounded-full bg-red-50
 `;
 
 const IconWrapper = tw.div`

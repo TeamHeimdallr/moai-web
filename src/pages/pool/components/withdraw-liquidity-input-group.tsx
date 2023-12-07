@@ -209,7 +209,7 @@ const Wrapper = tw.div`
 `;
 
 const Header = tw.div`
-  flex w-full justify-between items-center gap-12
+  flex w-full justify-between items-center gap-12 relative
 `;
 
 const SlippageWrapper = tw.div`

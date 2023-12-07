@@ -127,7 +127,7 @@ export const InputNumber = ({
 
         const length = currentBalance?.toString()?.split('.')?.[1]?.length || 0;
         const flooredBalance =
-          length === 0
+          length < 6
             ? currentBalance
             : Math.floor(currentBalance * 10 ** (length - 1)) / 10 ** (length - 1);
         const flooredBalanceForSlider =
