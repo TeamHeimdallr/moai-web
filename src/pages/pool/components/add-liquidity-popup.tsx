@@ -506,7 +506,7 @@ export const AddLiquidityPopup = ({
     xrpBalance <= Number(estimatedFee || 3.25) ||
     addLiquidityGasError ||
     approveGasError ||
-    validMaxXrpAmount;
+    !validMaxXrpAmount;
 
   return (
     <Popup
