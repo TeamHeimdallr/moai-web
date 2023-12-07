@@ -14,7 +14,7 @@ import { useApprove } from '~/api/api-contract/token/approve';
 import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 
 import { COLOR } from '~/assets/colors';
-import { IconArrowDown, IconCheck, IconLink, IconTime } from '~/assets/icons';
+import { IconArrowDown, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
 import { EVM_VAULT_ADDRESS, SCANNER_URL } from '~/constants';
 
@@ -122,12 +122,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     staleTime: 1000 * 10,
   });
 
-  // const toInputFromSor = Number(
-  //   formatUnits(
-  //     BigNumber.from(swapInfoData?.data?.returnAmountConsideringFees || 0).toBigInt(),
-  //     getTokenDecimal(currentNetwork, toToken?.symbol)
-  //   )
-  // );
   const toInputFromSor = -Number(
     formatUnits(
       last((data?.result || []) as bigint[]) || 0n,
@@ -227,7 +221,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     blockTimestamp,
     isLoading: swapLoading,
     isSuccess: swapSuccess,
-    isError,
     swap,
     estimateFee: estimateSwapFee,
   } = useSwap({
@@ -240,6 +233,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   });
 
   const txDate = new Date(blockTimestamp || 0);
+  const isIdle = !txData;
   const isSuccess = swapSuccess && !!txData;
   const isLoading = swapLoading || allowFromTokenLoading || allowToTokenLoading;
 
@@ -296,7 +290,10 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   }, [allowFromTokenLoading, allowToTokenLoading, isXrp, step, swapLoading]);
 
   const buttonText = useMemo(() => {
-    if (isSuccess) return t('Close');
+    if (!isIdle) {
+      if (isSuccess) return t('Close');
+      return t('Try again');
+    }
 
     if (isXrp) {
       if (!allowanceToToken) return t('approve-swap-message', { token: toToken?.symbol });
@@ -312,16 +309,14 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     isSuccess,
     isXrp,
     t,
+    isIdle,
     toToken?.symbol,
   ]);
 
   const handleButtonClick = async () => {
     if (isLoading) return;
-    if (isSuccess) {
+    if (!isIdle) {
       close();
-      // navigate(
-      //   `/pools/${getNetworkAbbr(swapOptimizedPathPool?.network)}/${swapOptimizedPathPool?.poolId}`
-      // );
       return;
     }
 
@@ -352,13 +347,13 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   ]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (!isIdle) {
       queryClient.invalidateQueries(['GET', 'POOL']);
       queryClient.invalidateQueries(['GET', 'XRPL']);
       refetchBalance?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, queryClient]);
+  }, [isIdle, queryClient]);
 
   useEffect(() => {
     return () => {
@@ -402,31 +397,42 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       ? estimatedFromTokenApproveFee || ''
       : estimatedSwapFee || ''
     : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) || '3.25';
-  const gasError = xrpBalance <= Number(estimatedFee ?? 3.25) || swapGasError || approveGasError;
+
+  // TODO change after fee proxy
+  const validMaxXrpAmount =
+    fromToken?.symbol === 'XRP'
+      ? numFromInput > 0 && numFromInput + Number(estimatedFee || 3.25) < xrpBalance
+      : true;
+
+  const gasError =
+    xrpBalance <= Number(estimatedFee || 3.25) ||
+    swapGasError ||
+    approveGasError ||
+    !validMaxXrpAmount;
 
   return (
     <Popup
       id={POPUP_ID.SWAP}
-      title={isSuccess ? '' : t('Swap preview')}
+      title={isIdle ? t('Swap preview') : ''}
       button={
         <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
             text={buttonText}
             isLoading={isLoading}
-            buttonType={isSuccess ? 'outlined' : 'filled'}
-            disabled={!fromToken || !toToken || isError || gasError}
+            buttonType={isIdle ? 'filled' : 'outlined'}
+            disabled={isIdle && (!fromToken || !toToken || gasError)}
           />
         </ButtonWrapper>
       }
     >
-      <Wrapper style={{ gap: isSuccess ? 40 : 24 }}>
-        {isSuccess && (
+      <Wrapper style={{ gap: isIdle ? 24 : 40 }}>
+        {!isIdle && isSuccess && (
           <>
             <SuccessWrapper>
               <SuccessIconWrapper>
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
-              <SuccessTitle>{t('Swap confirmed!')}</SuccessTitle>(
+              <SuccessTitle>{t('Swap confirmed!')}</SuccessTitle>
               {fromTokenActualAmount && toTokenActualAmount && (
                 <SuccessSubTitle>
                   {t('swap-success-message', {
@@ -437,7 +443,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   })}
                 </SuccessSubTitle>
               )}
-              )
             </SuccessWrapper>
 
             <List title={t(`Total swap`)}>
@@ -451,7 +456,16 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             </List>
           </>
         )}
-        {!isSuccess && (
+        {!isIdle && !isSuccess && (
+          <FailedWrapper style={{ paddingBottom: '16px' }}>
+            <FailedIconWrapper>
+              <IconCancel width={40} height={40} />
+            </FailedIconWrapper>
+            <SuccessTitle>{t('Swap failed')}</SuccessTitle>
+            <SuccessSubTitle>{t('swap-fail-message')}</SuccessSubTitle>
+          </FailedWrapper>
+        )}
+        {isIdle && (
           <>
             <ListWrapper>
               <List title={`${t('Effective price')}: ${effectivePrice}`}>
@@ -537,7 +551,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             </DetailWrapper>
           </>
         )}
-        {!isSuccess && (
+        {isIdle && (
           <LoadingStep totalSteps={2} step={step} isLoading={stepLoading} isDone={isSuccess} />
         )}
         {isSuccess && (
@@ -574,6 +588,14 @@ const SuccessWrapper = tw.div`
 
 const SuccessIconWrapper = tw.div`
   flex-center w-48 h-48 rounded-full bg-green-50
+`;
+
+const FailedWrapper = tw.div`
+  flex-center flex-col gap-12
+`;
+
+const FailedIconWrapper = tw.div`
+  flex-center w-48 h-48 rounded-full bg-red-50
 `;
 
 const ListWrapper = tw.div`

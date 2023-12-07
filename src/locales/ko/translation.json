@@ -247,5 +247,14 @@
   "Expected APY (10%)": "예상 APY (10%)",
   "Pre-mining $MOAI APY (3%)": "사전 채굴 $MOAI APY (3%)",
   "$ROOT reward (7%)": "$ROOT 리워드 (7%)",
-  "Return to voyage page": "Voyage 화면으로 돌아가기"
+  "Return to voyage page": "Voyage 화면으로 돌아가기",
+
+  "Swap failed": "구매에 실패했습니다.",
+  "swap-fail-message": "스왑에 실패했습니다. 다시 시도해주세요.",
+
+  "Add liquidity failed": "유동성 공급 실패",
+  "add-liquidity-fail-message": "유동성 공급에 실패했습니다. 다시 시도해주세요.",
+
+  "Withdraw liquidity failed": "출금 실패",
+  "withdraw-liquidity-fail-message": "출금에 실패했습니다. 다시 시도해주세요."
 }

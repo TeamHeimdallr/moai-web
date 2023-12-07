@@ -234,5 +234,14 @@
   "Expected APY (10%)": "Expected APY (10%)",
   "Pre-mining $MOAI APY (3%)": "Pre-mining $MOAI APY (3%)",
   "$ROOT reward (7%)": "$ROOT reward (7%)",
-  "Return to voyage page": "Return to voyage page"
+  "Return to voyage page": "Return to voyage page",
+
+  "Swap failed": "Swap failed",
+  "swap-fail-message": "The swap has failed. Please try again.",
+
+  "Add liquidity failed": "Add liquidity failed",
+  "add-liquidity-fail-message": "Add liquidity has failed. Please try again.",
+
+  "Withdraw liquidity failed": "Withdraw liquidity failed",
+  "withdraw-liquidity-fail-message": "Withdraw liquidity has failed. Please try again."
 }

@@ -36,9 +36,9 @@ export function filterExtrinsicEvents(
         event.method
       }` as `${string}.${string}`;
 
-      if (typeof eventFilter === 'string') return name === eventFilter;
+      if (typeof eventFilter === 'string') return name.toLowerCase() === eventFilter.toLowerCase();
 
-      if (name !== eventFilter.name) return;
+      if (name.toLowerCase() !== eventFilter.name.toLowerCase()) return;
       const eventData = formatEventData(event);
       return JSON.stringify(eventData[eventFilter.key]) === JSON.stringify(eventFilter.data);
     });

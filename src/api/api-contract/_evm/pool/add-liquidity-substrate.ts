@@ -47,6 +47,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [txData, setTxData] = useState<SubmittableResponse>();
 
   const { selectedNetwork, isFpass } = useNetwork();
@@ -210,12 +211,14 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
 
       setTxData(result);
       setIsLoading(false);
-      setIsSuccess(true);
+      setIsSuccess(result.isEvmSuccess ?? false);
+      setIsError(!result.isEvmSuccess);
 
       return result.blockHash;
     } catch (err) {
       setIsLoading(false);
       setIsSuccess(false);
+      setIsError(true);
 
       const error = err as { code?: number; message?: string };
       if (error.code) {
@@ -242,6 +245,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   return {
     isLoading,
     isSuccess,
+    isError,
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     txData: txData as any,
