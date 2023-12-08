@@ -212,7 +212,7 @@
   "description-title-1": "Amplified Rewards Await You",
   "description-title-2": "All you need is $XRP!",
   "description-title-3": "Exclusive Opportunity for Early Engagement",
-  "description-text-1": "Enjoy extra 10% boosted APR over the standard LP rewards.",
+  "description-text-1": "Enjoy extra 10% boosted APR in $ROOT over the standard LP rewards.",
   "description-text-2": "Experience the convenience of single-token deposits.",
   "description-text-3": "Be among the first to benefit from our initial liquidity pools.",
 
@@ -243,5 +243,11 @@
   "add-liquidity-fail-message": "Add liquidity has failed. Please try again.",
 
   "Withdraw liquidity failed": "Withdraw liquidity failed",
-  "withdraw-liquidity-fail-message": "Withdraw liquidity has failed. Please try again."
+  "withdraw-liquidity-fail-message": "Withdraw liquidity has failed. Please try again.",
+
+  "disclaimer-text-1": "This is NOT a $XRP staking! By joining the campaign, you might face the <1>risk of impermanent loss</1> as other liquidity provision.",
+  "disclaimer-text-2": "In order to ensure security of the pool, every joined $XRP can be withdrawn after 24 hours from the first join.",
+  "disclaimer-text-3": "10% of extra reward for this campaign will be distributed in $ROOT once you withdraw your $XRP from the pool.",
+  "disclaimer-text-4": "If you need tutorial, please <1>click here</1> for further information.",
+  "disclaimer-text-5": "If you have any problem regarding the campaign, please contact to us via <1>Discord</1> or <2>support@moai-finance.xyz</2>."
 }
