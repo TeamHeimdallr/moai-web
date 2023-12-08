@@ -10,6 +10,7 @@ import { IconLink } from '~/assets/icons';
 import LogoLanding from '~/assets/logos/logo-landing.svg?react';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
+import { Footer } from '~/components/footer';
 
 import { useMediaQuery } from '~/hooks/utils';
 
@@ -100,14 +101,16 @@ export const Contents = () => {
             </DropdownWrapper>
           )}
         </ButtonWrapper>
+        <FooterWrapper>
+          <Footer />
+        </FooterWrapper>
       </BottomWrapper>
     </Wrapper>
   );
 };
-
 const Wrapper = styled(motion.div)(() => [
   tw`
-    absolute w-full flex flex-col justify-center items-center
+    absolute w-full flex flex-col justify-center items-center z-0
     top-240 gap-24
     smd:(top-320)
     mlg:(gap-40)
@@ -159,4 +162,8 @@ const TextMain = tw.div`
   w-full font-eb-32
   smd:(font-eb-60 leading-64)
   mlg:(w-800 font-eb-80)
+`;
+
+const FooterWrapper = tw.div`
+  absolute w-full -bottom-490
 `;
