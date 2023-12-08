@@ -7,6 +7,7 @@ import { MyVoyage } from '../layouts/layout-my-voyage';
 
 import { Contents } from './contents';
 import { Description } from './description';
+import Disclaimer from './disclaimer';
 import { Futureverse } from './futureverse';
 
 const LandingPage = () => {
@@ -20,7 +21,10 @@ const LandingPage = () => {
       <MyVoyage />
       <Futureverse />
       <Description />
-      <Footer />
+      <FooterWrappper>
+        <Disclaimer />
+        <Footer />
+      </FooterWrappper>
     </Wrapper>
   );
 };
@@ -29,4 +33,5 @@ const Wrapper = tw.div`
   relative w-full h-full flex flex-col justify-between
 `;
 const GnbWrapper = tw.div`w-full absolute top-0 left-0 flex-center flex-col z-10`;
+const FooterWrappper = tw.div`w-full`;
 export default LandingPage;
