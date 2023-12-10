@@ -24,6 +24,7 @@ export const useConnectWithEvmWallet = () => {
     _disconnect();
     localStorage.removeItem('wagmi.injected.shimDisconnect');
   };
+
   const connect = async () => {
     if (window.ethereum) {
       await connectInjectedConnector();

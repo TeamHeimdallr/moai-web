@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import tw from 'twin.macro';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { goerli } from 'wagmi/chains';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
@@ -25,8 +26,14 @@ const config = createConfig({
 export const Normal: Story = {
   render: () => (
     <WagmiConfig config={config}>
-      <AccountDetail />
+      <Wrapper>
+        <AccountDetail />
+      </Wrapper>
     </WagmiConfig>
   ),
   args: {},
 };
+
+const Wrapper = tw.div`
+  relative w-290
+`;

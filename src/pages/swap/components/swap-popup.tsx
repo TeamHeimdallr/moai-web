@@ -54,6 +54,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
   const { userAllTokenBalances } = useUserAllTokenBalances();
+
   const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
   const xrpBalance = xrp?.balance || 0;
 
@@ -61,9 +62,11 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const { t } = useTranslation();
   const { network } = useParams();
-  const { selectedNetwork, isXrp } = useNetwork();
+  const { selectedNetwork, isXrp, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
+
   const { currentAddress } = useConnectedWallet(currentNetwork);
 
   const { close } = usePopup(POPUP_ID.SWAP);
@@ -100,7 +103,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       },
     },
     {
-      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!fromToken && !!toToken,
+      enabled: isRoot && !!fromToken && !!toToken,
       staleTime: 2000,
     }
   );
@@ -113,6 +116,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     userData,
   ]);
   const assets = swapInfoData?.data.tokenAddresses ?? [];
+
   const { data } = usePrepareContractWrite({
     address: EVM_VAULT_ADDRESS[currentNetwork] as Address,
     abi: BALANCER_VAULT_ABI,
@@ -261,7 +265,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const toTokenFinalValue = toTokenActualAmount * toTokenPrice;
 
-  // const currentValue = selectedDetailInfo === 'TOKEN' ? numToInput : toTokenValue;
   const currentUnit = selectedDetailInfo === 'TOKEN' ? toToken?.symbol || '' : 'USD';
   const totalAfterFee = numToInput; // (1 - (swapOptimizedPathPool?.tradingFee || 0.003)) * (currentValue || 0);
 
@@ -330,8 +333,10 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   };
 
   const handleLink = () => {
-    const txHash = isXrp ? txData?.hash : txData?.extrinsicId;
-    const url = `${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'extrinsic'}/${txHash}`;
+    const txHash = isFpass ? txData?.extrinsicId : isEvm ? txData?.transactionHash : txData?.hash;
+    const url = `${SCANNER_URL[network || NETWORK.THE_ROOT_NETWORK]}/${
+      isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
+    }/${txHash}`;
 
     window.open(url);
   };

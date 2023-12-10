@@ -64,10 +64,18 @@ export const useBanner = () => {
     }
     close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evm.isConnected, fpass.isConnected, selectedNetwork, xrp.isConnected]);
+  }, [
+    evm.isConnected,
+    fpass.isConnected,
+    selectedNetwork,
+    xrp.isConnected,
+    isSwap,
+    isRewards,
+    anyAddress,
+  ]);
 
   useEffect(() => {
-    if (isDisconnected || isConnecting || isReconnecting) {
+    if (isDisconnected || isConnecting || isReconnecting || !anyAddress || isSwap || isRewards) {
       web3modalClose();
       close();
       return;
@@ -89,7 +97,18 @@ export const useBanner = () => {
     web3modalClose();
     close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chain?.id, isDisconnected, isConnecting, isReconnecting, network, selectedNetwork, t]);
+  }, [
+    chain?.id,
+    isDisconnected,
+    isConnecting,
+    isReconnecting,
+    network,
+    selectedNetwork,
+    t,
+    isSwap,
+    isRewards,
+    anyAddress,
+  ]);
 
   const connectWallet = () => {
     setWalletType({

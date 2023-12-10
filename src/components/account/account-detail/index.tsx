@@ -1,12 +1,13 @@
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useParams } from 'react-router-dom';
 import copy from 'copy-to-clipboard';
 import tw, { styled } from 'twin.macro';
 import { zeroAddress } from 'viem';
 
 import { COLOR } from '~/assets/colors';
-import { IconCopy, IconDepth, IconLink, IconLogout, IconNext } from '~/assets/icons';
+import { IconChange, IconCopy, IconDepth, IconLink, IconLogout, IconNext } from '~/assets/icons';
 import {
   imageNetworkEvmSidechain,
   imageNetworkXRPL,
@@ -19,26 +20,35 @@ import {
 import { IS_MAINNET } from '~/constants';
 
 import { ButtonIconSmall } from '~/components/buttons/icon';
+import { ButtonPrimarySmallIconLeading } from '~/components/buttons/primary/small-icon-leading';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { truncateAddress } from '~/utils';
+import { getNetworkFull, truncateAddress } from '~/utils';
+import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
-import { POPUP_ID } from '~/types';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { FuturepassCreatePopup } from '../futurepass-create-popup';
 import { Slippage } from '../slippage';
 
 export const AccountDetail = () => {
+  const { network } = useParams();
+
   const { evm, xrp, fpass } = useConnectedWallet();
-  const { name, isEvm, isFpass, isXrp } = useNetwork();
+  const { selectedNetwork, name, isEvm, isFpass, isXrp } = useNetwork();
   const { setWalletType } = useWalletTypeStore();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { open: openFuturepassCreate, opened: futurepassCreateOpened } = usePopup(
     POPUP_ID.FUTUREPASS_CREATE
   );
+  const { toggleWallet: toggleWalletTRN, selectedWallet: selectedWalletTRN } =
+    useTheRootNetworkSwitchWalletStore();
 
   const [xrpAddress, setXrpAddress] = useState(xrp.truncatedAddress || '');
   const [fpassAddress, setFpassAddress] = useState(fpass.truncatedAddress || '');
@@ -98,45 +108,85 @@ export const AccountDetail = () => {
   );
 
   const fpassComponent = (
-    <AccountWrapper key="fpass" isConnected={isFpass}>
+    <AccountWrapper key="fpass" isConnected={isRoot}>
       {fpass.address && fpass.address !== zeroAddress ? (
-        <Account key="fpass">
-          <Logo>
-            <InnerLogo src={imageWalletFuturepass} alt="futurepass" />
-          </Logo>
-          <AddressWrapper>
-            <AddressTextWrapper>
-              <MediumText>{fpassAddress}</MediumText>
-              <InnerWrapper>
+        <TRNAccountWrapper>
+          <Account key="fpass">
+            <Logo>
+              <InnerLogo
+                src={selectedWalletTRN === 'fpass' ? imageWalletFuturepass : imageWalletMetamask}
+                alt="futurepass"
+              />
+            </Logo>
+            <AddressWrapper>
+              <AddressTextWrapper>
+                <MediumText>
+                  {selectedWalletTRN === 'fpass' ? fpassAddress : fpassEvmAddress}
+                </MediumText>
+                <InnerWrapper>
+                  <ButtonIconSmall
+                    icon={<IconCopy />}
+                    onClick={() => {
+                      if (selectedWalletTRN === 'fpass')
+                        return handleCopy(fpass.address, setFpassAddress);
+                      return handleCopy(evm.address, setFpassEvmAddress);
+                    }}
+                  />
+                  {selectedWalletTRN === 'fpass' && (
+                    <ButtonIconSmall
+                      icon={<IconLink />}
+                      onClick={() => window.open('https://futurepass.futureverse.app/account/')}
+                    />
+                  )}
+                  <ButtonIconSmall
+                    icon={<IconLogout />}
+                    onClick={() => {
+                      if (selectedWalletTRN === 'fpass') return fpass.disconnect();
+                      return evm.disconnect();
+                    }}
+                  />
+                </InnerWrapper>
+              </AddressTextWrapper>
+
+              <SmallText>The Root Network</SmallText>
+
+              <MetamaskWallet>
+                <IconWrapper>
+                  <IconDepth />
+                </IconWrapper>
+                <IconWrapper>
+                  <InnerLogoSmall
+                    src={
+                      selectedWalletTRN === 'fpass' ? imageWalletMetamask : imageWalletFuturepass
+                    }
+                    alt="metamask"
+                  />
+                </IconWrapper>
+                <SmallTextWhite>
+                  {selectedWalletTRN === 'fpass' ? fpassEvmAddress : fpassAddress}
+                </SmallTextWhite>
                 <ButtonIconSmall
                   icon={<IconCopy />}
-                  onClick={() => handleCopy(fpass.address, setFpassAddress)}
+                  onClick={() => {
+                    if (selectedWalletTRN === 'fpass')
+                      return handleCopy(evm.address, setFpassEvmAddress);
+                    return handleCopy(fpass.address, setFpassAddress);
+                  }}
                 />
-                <ButtonIconSmall
-                  icon={<IconLink />}
-                  onClick={() => window.open('https://futurepass.futureverse.app/account/')}
-                />
-                <ButtonIconSmall icon={<IconLogout />} onClick={fpass.disconnect} />
-              </InnerWrapper>
-            </AddressTextWrapper>
-
-            <SmallText>The Root Network</SmallText>
-
-            <MetamaskWallet>
-              <IconWrapper>
-                <IconDepth />
-              </IconWrapper>
-              <IconWrapper>
-                <InnerLogoSmall src={imageWalletMetamask} alt="metamask" />
-              </IconWrapper>
-              <SmallTextWhite>{fpassEvmAddress}</SmallTextWhite>
-              <ButtonIconSmall
-                icon={<IconCopy />}
-                onClick={() => handleCopy(evm.address, setFpassEvmAddress)}
-              />
-            </MetamaskWallet>
-          </AddressWrapper>
-        </Account>
+              </MetamaskWallet>
+            </AddressWrapper>
+          </Account>
+          <TRNAccountSwitchButtonWrapper>
+            <ButtonPrimarySmallIconLeading
+              style={{ width: '100%' }}
+              text={t(
+                selectedWalletTRN === 'fpass' ? 'Switch to MetaMask' : 'Switch to FuturePass'
+              )}
+              icon={<IconChange width={20} height={20} fill={COLOR.PRIMARY[60]} />}
+              onClick={toggleWalletTRN}
+            />
+          </TRNAccountSwitchButtonWrapper>
+        </TRNAccountWrapper>
       ) : (
         <AccountNotConnected
           onClick={() => {
@@ -166,7 +216,7 @@ export const AccountDetail = () => {
   );
 
   const evmComponent = (
-    <AccountWrapper key="evm" isConnected={isEvm && !isFpass}>
+    <AccountWrapper key="evm" isConnected={!isRoot && isEvm}>
       {evm.address ? (
         <Account key="evm">
           <Logo>
@@ -210,9 +260,9 @@ export const AccountDetail = () => {
       { component: xrpComponent, priority: isXrp ? 13 : 3 },
       {
         component: fpassComponent,
-        priority: isFpass ? 12 : 2,
+        priority: isRoot ? 12 : 2,
       },
-      { component: evmComponent, priority: isEvm && !isFpass ? 11 : 1 },
+      { component: evmComponent, priority: isEvm || isFpass ? 11 : 1 },
     ]
       .sort((a, b) => b.priority - a.priority)
       .map(c => c.component);
@@ -281,8 +331,15 @@ const Divider = tw.div`
 `;
 
 const Account = tw.div`
-  flex gap-12 px-10 py-12 w-full items-center
+  flex gap-12 px-10 py-12 w-full items-start
 `;
+
+const TRNAccountWrapper = tw.div``;
+
+const TRNAccountSwitchButtonWrapper = tw.div`
+  px-10 pb-10 w-full flex
+`;
+
 const AccountNotConnected = tw.div`
   flex gap-12 px-10 py-12 w-full items-center clickable
 `;

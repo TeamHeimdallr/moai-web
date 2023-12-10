@@ -7,6 +7,7 @@ import { zeroAddress } from 'viem';
 import { Transaction } from 'xrpl';
 
 import { truncateAddress } from '~/utils/util-string';
+import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { NETWORK } from '~/types';
 
 import { useFuturepassOf } from './use-futurepass-of';
@@ -36,6 +37,8 @@ interface UseConnectedWallet {
   currentAddress: string | undefined;
 }
 export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
+  const { selectedWallet: selectedWalletTRN } = useTheRootNetworkSwitchWalletStore();
+
   const {
     isConnected: isEvmConnected,
     connect: connectEvm,
@@ -108,7 +111,9 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
   const anyAddress = xrp?.address || evm?.address || fpass?.address;
   const currentAddress =
     network === NETWORK.THE_ROOT_NETWORK
-      ? fpass?.address || evm?.address
+      ? selectedWalletTRN === 'fpass'
+        ? fpass?.address
+        : evm?.address
       : network === NETWORK.EVM_SIDECHAIN
       ? evm?.address
       : xrp?.address;

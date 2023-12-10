@@ -63,7 +63,7 @@ export const WithdrawLiquidityPopup = ({
 }: Props) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { isXrp } = useNetwork();
+  const { isXrp, isEvm, isFpass } = useNetwork();
   const { poolId, network, lpToken } = pool || {};
 
   const networkAbbr = getNetworkAbbr(network);
@@ -343,9 +343,9 @@ export const WithdrawLiquidityPopup = ({
   };
 
   const handleLink = () => {
-    const txHash = isXrp ? txData?.hash : txData?.extrinsicId;
-    const url = `${SCANNER_URL[network || NETWORK.XRPL]}/${
-      isXrp ? 'transactions' : 'extrinsic'
+    const txHash = isFpass ? txData?.extrinsicId : isEvm ? txData?.transactionHash : txData?.hash;
+    const url = `${SCANNER_URL[network || NETWORK.THE_ROOT_NETWORK]}/${
+      isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
     }/${txHash}`;
 
     window.open(url);

@@ -37,7 +37,7 @@ import {
 } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
-import { SwapKind } from '~/types';
+import { NETWORK, SwapKind } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -60,6 +60,8 @@ export const SwapInputGroup = () => {
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
+
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const { opened: selectTokenFromPopupOpened, open: openSelectTokenFromPopup } = usePopup(
     POPUP_ID.SWAP_SELECT_TOKEN_FROM
@@ -97,6 +99,7 @@ export const SwapInputGroup = () => {
     !!toToken &&
     fromToken?.network === currentNetwork &&
     toToken?.network === currentNetwork;
+
   const {
     data: swapOptimizedPathPoolData,
     isFetching: isSorFallbackLoading,
@@ -110,7 +113,7 @@ export const SwapInputGroup = () => {
       },
     },
     {
-      enabled: !isFpass && rightNetwork && !!currentNetworkAbbr,
+      enabled: !isRoot && rightNetwork && !!currentNetworkAbbr,
       staleTime: 1000 * 3,
     }
   );
@@ -129,7 +132,7 @@ export const SwapInputGroup = () => {
       },
     },
     {
-      enabled: isFpass && !!fromToken && !!toToken,
+      enabled: isRoot && !!fromToken && !!toToken,
       staleTime: 2000,
     }
   );
@@ -151,12 +154,7 @@ export const SwapInputGroup = () => {
     enabled: !!walletAddress && !!swaps?.length && !!assets?.length,
     staleTime: 1000 * 10,
   });
-  // const toInputFromSor = Number(
-  //   formatUnits(
-  //     BigNumber.from(swapInfoData?.data?.returnAmountConsideringFees || 0).toBigInt(),
-  //     getTokenDecimal(currentNetwork, toToken?.symbol)
-  //   )
-  // );
+
   const toInputFromSor = -Number(
     formatUnits(
       last((data?.result || []) as bigint[]) || 0n,
@@ -266,14 +264,11 @@ export const SwapInputGroup = () => {
   const errorMessage = prepareError?.message;
   const poolImpactError = errorMessage?.includes('304') || errorMessage?.includes('305');
 
-  const sorError = isFpass && fromToken && toToken && toInputFromSor === 0 && fromInput;
-  const sorFallbackError = isSorFallbackError && !isFpass && fromToken && toToken;
-  if (poolImpactError) {
-    console.log(errorMessage);
-  }
+  const sorError = isRoot && fromToken && toToken && toInputFromSor === 0 && fromInput;
+  const sorFallbackError = isSorFallbackError && !isRoot && fromToken && toToken;
 
   const errorTitle = t(
-    isFpass
+    isRoot
       ? poolImpactError || sorError
         ? 'Price impact over 30%'
         : 'Something went wrong'
@@ -282,7 +277,7 @@ export const SwapInputGroup = () => {
       : 'Something went wrong'
   );
   const errorDescription = t(
-    isFpass
+    isRoot
       ? poolImpactError || sorError
         ? 'price-impact-error-message'
         : 'unknown-error-message'

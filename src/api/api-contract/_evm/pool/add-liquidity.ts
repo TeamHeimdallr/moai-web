@@ -133,6 +133,12 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
     blockTimestamp,
 
     writeAsync,
-    estimateFee: () => {},
+    estimateFee: async () => {
+      // TODO: fee proxy
+      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 2.7;
+
+      // TODO: handle evm sidechain
+      return 2.5;
+    },
   };
 };

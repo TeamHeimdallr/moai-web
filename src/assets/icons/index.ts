@@ -5,6 +5,7 @@ import IconArrowUp from './icon-arrow-up.svg?react';
 import IconBack from './icon-back.svg?react';
 import IconCalendar from './icon-calendar.svg?react';
 import IconCancel from './icon-cancel.svg?react';
+import IconChange from './icon-change.svg?react';
 import IconCheck from './icon-check.svg?react';
 import IconComment from './icon-comment.svg?react';
 import IconCopy from './icon-copy.svg?react';
@@ -69,6 +70,7 @@ export {
   IconBack,
   IconCalendar,
   IconCancel,
+  IconChange,
   IconCheck,
   IconComment,
   IconCopy,
