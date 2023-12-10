@@ -27,7 +27,7 @@ interface Request {
   queries: Queries;
 }
 interface Response {
-  my: IRewardParticipant;
+  my: IRewardParticipant | null;
   participants: IRewardParticipant[];
 
   metadata: {
@@ -42,7 +42,24 @@ export const useGetRewardsListQuery = (request: Request, options?: QueryOption) 
   const { params, queries } = request;
 
   const queryKey = ['GET', 'REWARD', 'LIST', params, queries];
-  const data = useQuery<Response>(queryKey, () => axios(params, queries), options);
+  const data = useQuery<Response>(queryKey, () => axios(params, queries), {
+    ...options,
+    select: data => ({
+      ...data,
+      my: data.my
+        ? {
+            ...data.my,
+            volume: data.my.volume > 0 ? data.my.volume : 0,
+            premined: data.my.premined > 0 ? data.my.premined : 0,
+          }
+        : null,
+      participants: data.participants.map(participant => ({
+        ...participant,
+        volume: participant.volume > 0 ? participant.volume : 0,
+        premined: participant.premined > 0 ? participant.premined : 0,
+      })),
+    }),
+  });
 
   return {
     queryKey,
@@ -66,6 +83,24 @@ export const useGetRewardsListInfinityQuery = (request: Request, options?: Infin
 
       return cursor;
     },
+    select: data => ({
+      ...data,
+      pages: data.pages.map(page => ({
+        ...page,
+        my: page.my
+          ? {
+              ...page.my,
+              volume: page.my.volume > 0 ? page.my.volume : 0,
+              premined: page.my.premined > 0 ? page.my.premined : 0,
+            }
+          : null,
+        participants: page.participants.map(participant => ({
+          ...participant,
+          volume: participant.volume > 0 ? participant.volume : 0,
+          premined: participant.premined > 0 ? participant.premined : 0,
+        })),
+      })),
+    }),
     ...options,
   });
 
