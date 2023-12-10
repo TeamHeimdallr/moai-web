@@ -3,7 +3,8 @@ import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
-import { Address, encodeFunctionData, formatUnits } from 'viem';
+import { BigNumber } from 'ethers';
+import { Address, encodeFunctionData, parseUnits } from 'viem';
 import { usePrepareContractWrite, usePublicClient, useWalletClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
@@ -14,14 +15,19 @@ import {
 } from '~/api/api-contract/_evm/substrate/send-extrinsic-with-signature';
 import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 
-import { EVM_VAULT_ADDRESS, IS_MAINNET } from '~/constants';
+import { EVM_VAULT_ADDRESS, IS_MAINNET, ROOT_ASSET_ID } from '~/constants';
+
+import { FeeToken } from '~/components/fee-proxy-selector';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getTokenDecimal } from '~/utils';
 import { useSwapNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { NETWORK, SwapFundManagementInput, SwapKind } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
+
+import { estimateFeeProxy } from '../substrate/estimate-fee-proxy';
 
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
@@ -89,7 +95,7 @@ export const useBatchSwap = ({
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
-  const estimateFee = async () => {
+  const estimateFee = async (feeToken: FeeToken = { name: 'XRP', assetId: 2 }) => {
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
       rewardPercentiles: [25, 75],
@@ -123,18 +129,37 @@ export const useBatchSwap = ({
         []
       );
 
+      const estimatedGas = await publicClient.estimateContractGas({
+        address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+        abi: BALANCER_VAULT_ABI,
+        functionName: 'batchSwap',
+        args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+        account: walletAddress as Address,
+      });
+
+      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const gasCostInEth = BigNumber.from(estimatedGas).mul(Number(maxFeePerGas).toFixed());
+      const remainder = gasCostInEth.mod(10 ** 12);
+      const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+
       const extrinsic = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
 
-      const info = await extrinsic.paymentInfo(signer);
-      const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
+      const { maxPayment: fee } = await estimateFeeProxy({
+        api,
+        extrinsic,
+        caller: signer ?? '',
+        feeToken,
+        estimateGasCost: gasCostInXRP,
+        enabled: isFpass && proxyEnabled && !!feeToken,
+      });
 
-      return fee;
+      return fee ?? 3.25;
     } catch (err) {
       console.log('estimation fee error');
     }
   };
 
-  const swap = async () => {
+  const swap = async (feeToken: FeeToken = { name: 'XRP', assetId: 2 }) => {
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
       rewardPercentiles: [25, 75],
@@ -171,10 +196,47 @@ export const useBatchSwap = ({
 
       const extrinsic = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
 
+      let extrinsicWithFee = extrinsic;
+      // fee proxy call
+      if (feeToken.assetId !== ROOT_ASSET_ID.XRP) {
+        const estimatedGas = await publicClient.estimateContractGas({
+          address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+          abi: BALANCER_VAULT_ABI,
+          functionName: 'batchSwap',
+          args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+          account: walletAddress as Address,
+        });
+
+        const maxFeePerGas = feeHistory.baseFeePerGas[0];
+        const gasCostInEth = BigNumber.from(estimatedGas).mul(Number(maxFeePerGas).toFixed());
+        const remainder = gasCostInEth.mod(10 ** 12);
+        const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+
+        const { maxPayment } = await estimateFeeProxy({
+          api,
+          extrinsic,
+          caller: signer ?? '',
+          feeToken,
+          estimateGasCost: gasCostInXRP,
+          enabled: isFpass && proxyEnabled && !!feeToken,
+        });
+
+        if (maxPayment) {
+          extrinsicWithFee = api.tx.feeProxy.callWithFeePreferences(
+            feeToken.assetId,
+            parseUnits(
+              maxPayment?.toFixed(),
+              getTokenDecimal(NETWORK.THE_ROOT_NETWORK, feeToken.name)
+            ),
+            extrinsic
+          );
+        }
+      }
+
       const [payload, ethPayload] = await createExtrinsicPayload(
         api as ApiPromise,
         signer ?? '',
-        extrinsic.method
+        extrinsicWithFee.method
       );
 
       const signature = await walletClient?.request({
@@ -182,7 +244,7 @@ export const useBatchSwap = ({
         params: [ethPayload, signer as Address],
       });
 
-      const signedExtrinsic = extrinsic.addSignature(
+      const signedExtrinsic = extrinsicWithFee.addSignature(
         signer ?? '',
         signature as `0x${string}`,
         payload.toPayload()

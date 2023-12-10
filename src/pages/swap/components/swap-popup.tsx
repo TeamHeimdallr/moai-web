@@ -329,7 +329,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       if (allowanceToToken) return await swap?.();
       else await allowToToken();
     } else {
-      if (allowanceFromToken) return await swap?.();
+      if (allowanceFromToken) return await swap?.(selectedFeeToken);
       else await allowFromToken();
     }
   };
@@ -372,12 +372,12 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     if (!swapEnabled || step !== 2) return;
 
     const estimateSwapFeeAsync = async () => {
-      const fee = await estimateSwapFee?.();
+      const fee = await estimateSwapFee?.(selectedFeeToken);
       setEstimatedSwapFee(fee ?? 3.25);
     };
     estimateSwapFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swapEnabled, step]);
+  }, [swapEnabled, step, selectedFeeToken]);
 
   useEffect(() => {
     if (step !== 1) return;
@@ -395,7 +395,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     };
     estimateApproveFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isXrp, toApproveEnabled, fromApproveEnabled, step]);
+  }, [isXrp, toApproveEnabled, fromApproveEnabled, step, selectedFeeToken]);
 
   const estimatedFee = !isXrp
     ? step === 1
