@@ -1,41 +1,41 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { decodeEventLog, zeroAddress } from 'viem';
+import { Address, decodeEventLog } from 'viem';
 import {
-  Address,
   useContractWrite,
   usePrepareContractWrite,
   usePublicClient,
   useWaitForTransaction,
 } from 'wagmi';
 
-import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
+import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 
 import { EVM_VAULT_ADDRESS } from '~/constants';
 
-import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkAbbr, getNetworkFull } from '~/utils';
-import { NETWORK, SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
+import { getNetworkFull } from '~/utils';
+import { NETWORK, SwapFundManagementInput, SwapKind } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
 
 interface Props {
-  poolId: string;
+  fromToken: Address;
+  toToken: Address;
+  swapAmount: bigint;
 
-  singleSwap: SwapSingleSwapInput;
   fundManagement: SwapFundManagementInput;
-  limit?: bigint;
+  limit?: bigint[];
   deadline?: number;
-
   enabled?: boolean;
 }
-export const useSwap = ({
-  poolId,
 
-  singleSwap,
+export const useBatchSwap = ({
+  fromToken,
+  toToken,
+  swapAmount,
   fundManagement,
-  limit = BigInt(10),
+  limit = [BigInt(10)],
   deadline = 2000000000,
   enabled,
 }: Props) => {
@@ -45,53 +45,53 @@ export const useSwap = ({
   const { evm } = useConnectedWallet();
   const { address: walletAddress } = evm;
 
-  const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
-
-  const chainId = useNetworkId(currentNetwork);
-  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
-    {
-      params: {
-        networkAbbr: currentNetworkAbbr as string,
-        poolId: poolId as string,
-      },
-    },
-    {
-      enabled: !!poolId && !!currentNetworkAbbr,
-      cacheTime: Infinity,
-      staleTime: Infinity,
-    }
-  );
-  const { poolVaultAmm } = poolVaultAmmData || {};
-  const { vault } = poolVaultAmm || {};
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
+  const { data: sorData } = useSorQuery(
+    {
+      queries: {
+        network: NETWORK.THE_ROOT_NETWORK,
+        from: fromToken,
+        to: toToken,
+        amount: swapAmount.toString(),
+      },
+    },
+    {
+      enabled: !!fromToken && !!toToken && !!swapAmount,
+      staleTime: 1000,
+    }
+  );
+
+  const swapsRaw = sorData?.data.swaps ?? [];
+  const swaps = swapsRaw.map(({ poolId, assetInIndex, assetOutIndex, amount, userData }) => [
+    poolId,
+    assetInIndex,
+    assetOutIndex,
+    amount,
+    userData,
+  ]);
+  const assets = sorData?.data.tokenAddresses ?? [];
+  const internalSwapLength = swaps.length - 1;
+  const limits = [limit[0], ...Array.from({ length: internalSwapLength }).map(() => 0n), limit[1]];
+
   const {
-    isLoading: prepareLoading,
     config,
+    isFetching: isPrepareLoading,
     isError: isPrepareError,
     error,
   } = usePrepareContractWrite({
-    address: (vault || '') as Address,
+    address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
     abi: BALANCER_VAULT_ABI,
-    functionName: 'swap',
-    chainId,
-    value: singleSwap[2] === zeroAddress ? singleSwap[4] : 0n,
-    args: [singleSwap, fundManagement, limit, deadline],
-    enabled:
-      enabled &&
-      !!vault &&
-      !!singleSwap &&
-      !!fundManagement &&
-      !!walletAddress &&
-      isEvm &&
-      !isFpass,
+    functionName: 'batchSwap',
+    account: walletAddress as Address,
+    args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+    enabled: enabled && isEvm && !!walletAddress,
   });
 
-  const { data, isLoading: isWriteLoading, writeAsync } = useContractWrite(config);
-
+  const { data, writeAsync } = useContractWrite(config);
   const {
     isLoading,
     isSuccess,
@@ -110,6 +110,8 @@ export const useSwap = ({
   };
 
   const swap = async () => {
+    if (!enabled) return;
+
     await writeAsync?.();
   };
 
@@ -137,7 +139,7 @@ export const useSwap = ({
   }
 
   return {
-    isLoading: prepareLoading || isLoading || isWriteLoading,
+    isLoading: isPrepareLoading || isLoading,
     isSuccess,
     isError: (isError || isPrepareError) && !approveError,
 
@@ -146,7 +148,7 @@ export const useSwap = ({
     blockTimestamp,
 
     swap,
-    estimateFee: () => {
+    estimateFee: async () => {
       // TODO: fee proxy
       if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 1.7;
 

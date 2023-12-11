@@ -1,11 +1,17 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Address } from 'viem';
-import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import {
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from 'wagmi';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull, isNativeToken } from '~/utils';
+import { getNetworkFull, getWrappedTokenAddress, isNativeToken } from '~/utils';
+import { NETWORK } from '~/types';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
 
@@ -54,6 +60,12 @@ export const useApprove = ({
     enabled: internalEnabled,
 
     onSuccess: (data: string) => {
+      if (
+        currentNetwork === NETWORK.EVM_SIDECHAIN &&
+        tokenAddress === getWrappedTokenAddress(currentNetwork)
+      ) {
+        return setAllowance(true);
+      }
       return setAllowance(BigInt(data || 0) >= (allowanceMin || 0n));
     },
     onError: () => setAllowance(false),
@@ -69,7 +81,11 @@ export const useApprove = ({
     enabled: internalEnabled,
   });
 
-  const { isLoading, isSuccess, writeAsync } = useContractWrite(config);
+  const { data, isLoading, writeAsync } = useContractWrite(config);
+  const { isSuccess, isLoading: isTxLoading } = useWaitForTransaction({
+    hash: data?.hash,
+    enabled: !!data?.hash,
+  });
 
   const allow = async () => {
     if (!isEvm) return;
@@ -78,13 +94,19 @@ export const useApprove = ({
   };
 
   return {
-    isLoading: isLoading || isReadLoading || isPrepareLoading,
+    isLoading: isLoading || isReadLoading || isPrepareLoading || isTxLoading,
     isSuccess,
     allowance:
       (isConnected && allowance) ||
       isNativeToken({ address: tokenAddress, network: currentNetwork }),
     refetch,
     allow,
-    estimateFee: async () => {},
+    estimateFee: async () => {
+      // TODO: fee proxy
+      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 0.38;
+
+      // TODO: handle evm sidechain
+      return 0.38;
+    },
   };
 };

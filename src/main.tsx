@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 
 import 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
+import '~/configs/bigint';
 
 import App from './app';
 

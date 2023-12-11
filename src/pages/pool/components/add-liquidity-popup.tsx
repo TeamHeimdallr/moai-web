@@ -69,7 +69,7 @@ export const AddLiquidityPopup = ({
 
   const { t } = useTranslation();
 
-  const { isXrp } = useNetwork();
+  const { isXrp, isEvm, isFpass } = useNetwork();
   const { network, poolId, lpToken } = pool || {};
   const networkAbbr = getNetworkAbbr(network);
   const { network: networkParam } = useParams();
@@ -368,9 +368,9 @@ export const AddLiquidityPopup = ({
   };
 
   const handleLink = () => {
-    const txHash = isXrp ? txData?.hash : txData?.extrinsicId;
-    const url = `${SCANNER_URL[network || NETWORK.THE_ROOT_NETWORK]}/${
-      isXrp ? 'transactions' : 'extrinsic'
+    const txHash = isFpass ? txData?.extrinsicId : isEvm ? txData?.transactionHash : txData?.hash;
+    const url = `${SCANNER_URL[currentNetwork || NETWORK.THE_ROOT_NETWORK]}/${
+      isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
     }/${txHash}`;
 
     window.open(url);

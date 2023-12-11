@@ -97,7 +97,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
     enabled: enabled && isConnected && isEvm && !isFpass && !!walletAddress && !!vault,
   });
 
-  const { data, writeAsync: writeAsyncBase } = useContractWrite(config);
+  const { data, isLoading: isWriteLoading, writeAsync: writeAsyncBase } = useContractWrite(config);
 
   const {
     isLoading,
@@ -125,7 +125,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   }, [txData]);
 
   return {
-    isLoading: prepareLoading || isLoading,
+    isLoading: prepareLoading || isLoading || isWriteLoading,
     isSuccess,
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -133,6 +133,12 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
     blockTimestamp,
 
     writeAsync,
-    estimateFee: () => {},
+    estimateFee: async () => {
+      // TODO: fee proxy
+      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 2.7;
+
+      // TODO: handle evm sidechain
+      return 0.0005;
+    },
   };
 };

@@ -262,5 +262,8 @@
   "disclaimer-text-2": "유동성 풀의 안정성을 위해 캠페인 참여자의 유동성은 공급 후 24시간 이후부터 인출이 가능합니다.",
   "disclaimer-text-3": "캠페인의 추가 보상인 10%의 $ROOT 보상은 인출 시에 함께 제공됩니다.",
   "disclaimer-text-4": "튜토리얼이 필요하신 경우, <1>여기</1>를 눌러 더 많은 정보를 확인하세요.",
-  "disclaimer-text-5": "캠페인 참여 과정에 문제가 발생할 경우, <1>디스코드</1>나 <2>support@moai-finance.xyz</2>로 연락해주세요."
+  "disclaimer-text-5": "캠페인 참여 과정에 문제가 발생할 경우, <1>디스코드</1>나 <2>support@moai-finance.xyz</2>로 연락해주세요.",
+
+  "Switch to MetaMask": "메타마스크로 전환하기",
+  "Switch to FuturePass": "FuturePass로 전환하기"
 }

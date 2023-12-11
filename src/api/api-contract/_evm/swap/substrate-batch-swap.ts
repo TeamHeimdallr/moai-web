@@ -293,7 +293,7 @@ export const useBatchSwapPrepare = ({
     enabled: proxyEnabled && isEvm && !!walletAddress,
   });
 
-  const approveError = error?.message?.includes('Approved');
+  const approveError = error?.message?.includes('Approved') || error?.message?.includes('BAL#401');
 
   return {
     isPrepareError: isPrepareError && !approveError,

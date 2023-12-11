@@ -119,5 +119,5 @@ export const xrpEvmSidechainForAdd = {
     decimals: 18,
   },
   rpcUrls: ['https://rpc-evm-sidechain.xrpl.org'],
-  blockExplorers: ['https://evm-sidechain.xrpl.org/'],
+  blockExplorerUrls: ['https://evm-sidechain.xrpl.org/'],
 };

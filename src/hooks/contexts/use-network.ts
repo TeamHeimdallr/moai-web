@@ -1,18 +1,21 @@
 import { useMemo } from 'react';
 
+import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { useSelecteNetworkStore } from '~/states/data';
 import { NETWORK } from '~/types';
 
 import { theRootNetwork, xrpEvmSidechain } from '~/configs/evm-network';
 
 export const useNetwork = () => {
+  const { selectedWallet: selectedWalletTRN } = useTheRootNetworkSwitchWalletStore();
+
   const { selectedNetwork, selectNetwork, targetNetwork, setTargetNetwork, resetTarget } =
     useSelecteNetworkStore();
 
   const isEvm =
     selectedNetwork === NETWORK.EVM_SIDECHAIN || selectedNetwork === NETWORK.THE_ROOT_NETWORK;
   const isXrp = selectedNetwork === NETWORK.XRPL;
-  const isFpass = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
+  const isFpass = selectedNetwork === NETWORK.THE_ROOT_NETWORK && selectedWalletTRN === 'fpass';
 
   const name = useMemo(() => {
     if (selectedNetwork === NETWORK.THE_ROOT_NETWORK) return 'The Root Network';

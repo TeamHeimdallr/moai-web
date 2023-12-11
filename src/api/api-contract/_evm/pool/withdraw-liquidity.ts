@@ -124,6 +124,12 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
     blockTimestamp,
 
     writeAsync,
-    estimateFee: () => {},
+    estimateFee: async () => {
+      // TODO: fee proxy
+      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 2.52;
+
+      // TODO: handle evm sidechain
+      return 0.0005;
+    },
   };
 };
