@@ -79,7 +79,7 @@ export const Gnb = () => {
 };
 
 const Wrapper = tw.div`
-  w-full h-80 flex justify-between items-center bg-transparent px-24 py-20
+  w-full h-80 flex justify-between items-center bg-transparent px-24 py-20 z-0
   smd:(py-16)
 `;
 const ButtonOuterWrapper = tw.div`
