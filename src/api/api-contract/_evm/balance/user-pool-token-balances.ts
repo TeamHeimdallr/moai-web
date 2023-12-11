@@ -1,13 +1,13 @@
 import { useParams } from 'react-router-dom';
 import { Abi, Address, formatEther, formatUnits } from 'viem';
-import { useContractRead, useContractReads } from 'wagmi';
+import { useBalance, useContractRead, useContractReads } from 'wagmi';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
-import { ITokenComposition } from '~/types';
+import { getNetworkFull, getWrappedTokenAddress } from '~/utils';
+import { ITokenComposition, NETWORK } from '~/types';
 
 import { BALANCER_LP_ABI, ERC20_TOKEN_ABI } from '~/abi';
 
@@ -40,6 +40,8 @@ export const useUserPoolTokenBalances = () => {
   const { address: lpTokenAddress } = lpToken || {};
 
   const tokenAddresses = [lpTokenAddress, ...(compositions?.map(c => c.address) || [])];
+
+  const { data: nativeBalance } = useBalance({ address: walletAddress as Address, chainId });
 
   const { data: lpTokenTotalSupplyData, refetch: lpTokenRefetch } = useContractRead({
     address: poolAddress as Address,
@@ -92,10 +94,23 @@ export const useUserPoolTokenBalances = () => {
   const lpTokenValue = lpTokenBalance * lpTokenPrice;
 
   const userPoolTokenBalances = tokenBalances?.slice(1) || [];
-  const userPoolTokens = (compositions?.map((composition, i) => ({
-    ...composition,
-    balance: userPoolTokenBalances?.[i] || 0,
-  })) || []) as (ITokenComposition & { balance: number })[];
+  const userPoolTokens = (compositions?.map((composition, i) => {
+    if (
+      currentNetwork === NETWORK.EVM_SIDECHAIN &&
+      composition.address === getWrappedTokenAddress(currentNetwork)
+    ) {
+      return {
+        ...composition,
+        balance: Number(nativeBalance?.formatted || 0),
+      };
+    }
+
+    return {
+      ...composition,
+      balance: userPoolTokenBalances?.[i] || 0,
+    };
+  }) || []) as (ITokenComposition & { balance: number })[];
+
   const userPoolTokenTotalValue = userPoolTokens.reduce((acc, cur) => {
     const tokenValue = (cur?.balance || 0) * (cur?.price || 0);
     return (acc += tokenValue);

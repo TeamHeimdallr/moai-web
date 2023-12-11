@@ -61,7 +61,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const { t } = useTranslation();
   const { network } = useParams();
-  const { selectedNetwork, isXrp } = useNetwork();
+  const { selectedNetwork, isXrp, isFpass, isEvm } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { currentAddress } = useConnectedWallet(currentNetwork);
@@ -330,8 +330,10 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   };
 
   const handleLink = () => {
-    const txHash = isXrp ? txData?.hash : txData?.extrinsicId;
-    const url = `${SCANNER_URL[currentNetwork]}/${isXrp ? 'transactions' : 'extrinsic'}/${txHash}`;
+    const txHash = isFpass ? txData?.extrinsicId : isEvm ? txData?.transactionHash : txData?.hash;
+    const url = `${SCANNER_URL[network || NETWORK.THE_ROOT_NETWORK]}/${
+      isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
+    }/${txHash}`;
 
     window.open(url);
   };

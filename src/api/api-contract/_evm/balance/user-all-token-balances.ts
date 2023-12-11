@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { Abi, Address, formatUnits } from 'viem';
-import { useContractReads } from 'wagmi';
+import { useBalance, useContractReads } from 'wagmi';
 
 import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkAbbr, getNetworkFull } from '~/utils';
+import { getNetworkAbbr, getNetworkFull, getWrappedTokenAddress } from '~/utils';
 import { IToken, NETWORK } from '~/types';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
@@ -23,6 +23,8 @@ export const useUserAllTokenBalances = () => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
   const chainId = useNetworkId(currentNetwork);
+
+  const { data: nativeBalance } = useBalance({ address: walletAddress as Address, chainId });
 
   const { data: tokensData } = useGetTokensQuery(
     {
@@ -89,11 +91,24 @@ export const useUserAllTokenBalances = () => {
     Number(formatUnits(supply || 0n, tokenDecimalsRaw?.[i] || 18))
   );
 
-  const userAllTokens = (tokens?.map((t, i) => ({
-    ...t,
-    balance: tokenBalances?.[i] || 0,
-    totalSupply: tokenTotalSupply?.[i] || 0,
-  })) || []) as (IToken & {
+  const userAllTokens = (tokens?.map((t, i) => {
+    if (
+      currentNetwork === NETWORK.EVM_SIDECHAIN &&
+      t.address === getWrappedTokenAddress(currentNetwork)
+    ) {
+      return {
+        ...t,
+        balance: Number(nativeBalance?.formatted || 0),
+        totalSupply: 0,
+      };
+    }
+
+    return {
+      ...t,
+      balance: tokenBalances?.[i] || 0,
+      totalSupply: tokenTotalSupply?.[i] || 0,
+    };
+  }) || []) as (IToken & {
     balance: number;
     totalSupply: number;
   })[];
