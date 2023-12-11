@@ -168,4 +168,6 @@ const TextMain = tw.div`
   mlg:(w-800 font-eb-80)
 `;
 
-const FooterWrapper = styled(motion.div)(() => [tw`absolute w-full -bottom-490`]);
+const FooterWrapper = tw.div`
+  absolute w-full -bottom-490
+`;
