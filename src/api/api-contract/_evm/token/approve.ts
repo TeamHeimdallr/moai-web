@@ -10,7 +10,7 @@ import {
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull, isNativeToken } from '~/utils';
+import { getNetworkFull, getWrappedTokenAddress, isNativeToken } from '~/utils';
 import { NETWORK } from '~/types';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
@@ -60,6 +60,12 @@ export const useApprove = ({
     enabled: internalEnabled,
 
     onSuccess: (data: string) => {
+      if (
+        currentNetwork === NETWORK.EVM_SIDECHAIN &&
+        tokenAddress === getWrappedTokenAddress(currentNetwork)
+      ) {
+        return setAllowance(true);
+      }
       return setAllowance(BigInt(data || 0) >= (allowanceMin || 0n));
     },
     onError: () => setAllowance(false),
