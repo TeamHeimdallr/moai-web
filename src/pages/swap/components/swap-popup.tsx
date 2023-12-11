@@ -334,7 +334,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const handleLink = () => {
     const txHash = isFpass ? txData?.extrinsicId : isEvm ? txData?.transactionHash : txData?.hash;
-    const url = `${SCANNER_URL[network || NETWORK.THE_ROOT_NETWORK]}/${
+    const url = `${SCANNER_URL[currentNetwork || NETWORK.THE_ROOT_NETWORK]}/${
       isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
     }/${txHash}`;
 

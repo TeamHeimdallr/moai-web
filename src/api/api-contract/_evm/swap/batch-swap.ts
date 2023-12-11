@@ -153,7 +153,7 @@ export const useBatchSwap = ({
       if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 1.7;
 
       // TODO: handle evm sidechain
-      return 1.7;
+      return 0.0005;
     },
   };
 };

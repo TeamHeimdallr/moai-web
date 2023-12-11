@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { zeroAddress } from 'viem';
+import { decodeEventLog, zeroAddress } from 'viem';
 import {
   Address,
   useContractWrite,
@@ -11,10 +11,12 @@ import {
 
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
+import { EVM_VAULT_ADDRESS } from '~/constants';
+
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr, getNetworkFull } from '~/utils';
-import { SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
+import { NETWORK, SwapFundManagementInput, SwapSingleSwapInput } from '~/types';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
 
@@ -69,7 +71,8 @@ export const useSwap = ({
   const {
     isLoading: prepareLoading,
     config,
-    isError,
+    isError: isPrepareError,
+    error,
   } = usePrepareContractWrite({
     address: (vault || '') as Address,
     abi: BALANCER_VAULT_ABI,
@@ -87,11 +90,12 @@ export const useSwap = ({
       !isFpass,
   });
 
-  const { data, writeAsync: writeAsyncBase } = useContractWrite(config);
+  const { data, isLoading: isWriteLoading, writeAsync } = useContractWrite(config);
 
   const {
     isLoading,
     isSuccess,
+    isError,
     data: txData,
   } = useWaitForTransaction({
     hash: data?.hash,
@@ -105,24 +109,49 @@ export const useSwap = ({
     setBlockTimestamp(Number(timestamp) * 1000);
   };
 
+  const swap = async () => {
+    await writeAsync?.();
+  };
+
   useEffect(() => {
     getBlockTimestamp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txData]);
 
-  const writeAsync = async () => {
-    await writeAsyncBase?.();
-  };
+  const approveError = error?.message?.includes('Approved') || error?.message?.includes('BAL#401');
+
+  const log = txData?.logs?.find(
+    ({ address }) => address.toLowerCase() === EVM_VAULT_ADDRESS[selectedNetwork].toLowerCase()
+  );
+  if (log && txData) {
+    const topics = decodeEventLog({
+      abi: BALANCER_VAULT_ABI,
+      data: log.data,
+      topics: log.topics,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (txData as any).swapAmountTo = (topics.args as any).amountOut;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (txData as any).swapAmountFrom = (topics.args as any).amountIn;
+  }
 
   return {
-    isLoading: prepareLoading || isLoading,
+    isLoading: prepareLoading || isLoading || isWriteLoading,
     isSuccess,
-    isError,
+    isError: (isError || isPrepareError) && !approveError,
 
-    txData,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    txData: txData as any,
     blockTimestamp,
 
-    swap: writeAsync,
-    estimateFee: () => {}, // TODO
+    swap,
+    estimateFee: () => {
+      // TODO: fee proxy
+      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 1.7;
+
+      // TODO: handle evm sidechain
+      return 0.0005;
+    },
   };
 };

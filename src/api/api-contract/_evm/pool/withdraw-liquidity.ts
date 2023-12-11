@@ -129,7 +129,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
       if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 2.52;
 
       // TODO: handle evm sidechain
-      return 2.5;
+      return 0.0005;
     },
   };
 };
