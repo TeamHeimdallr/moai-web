@@ -59,6 +59,8 @@
   "Withdrawal": "출금",
   "Claim": "수령하기",
 
+  "Last application at": "마지막 접속",
+
   "Trader": "지갑 주소",
   "Trade details": "거래 내용",
   "Time": "시간",
@@ -219,7 +221,7 @@
   "My Voyage": "나의 Voyage",
   "Rewards": "리워드",
   "Pending": "Pending",
-  "continue-campaign": "이어서하기",
+  "continue-campaign": "이어서 하기",
 
   "description-focusing-text-1": "“Voyage to the Future” 캠페인은",
   "description-focusing-text-2": " XRP 생태계의 새로운 지평을 여는 시작점입니다.",
