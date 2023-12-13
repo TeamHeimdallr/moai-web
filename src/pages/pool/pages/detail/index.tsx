@@ -8,6 +8,7 @@ import { usePopup } from '~/hooks/components';
 import { useRequirePrarams } from '~/hooks/utils';
 import { POPUP_ID } from '~/types';
 
+import { CampaignTool } from '../../components/campaign-tool';
 import { PoolCompositions } from '../../components/pool-compositions';
 import { PoolHeader } from '../../components/pool-header';
 import { PoolInfo } from '../../components/pool-info';
@@ -41,6 +42,7 @@ const PoolDetailMainPage = () => {
               </LeftContentWrapper>
               <RightContentWrapper>
                 <UserPoolBalances />
+                <CampaignTool />
               </RightContentWrapper>
             </ContentWrapper>
           </ContentOuterWrapper>
@@ -94,7 +96,7 @@ const LeftContentWrapper = tw.div`
 `;
 
 const RightContentWrapper = tw.div`
-  w-full flex order-1
+  w-full flex flex-col gap-24 order-1
   lg:(order-2 w-400 items-start)
 `;
 

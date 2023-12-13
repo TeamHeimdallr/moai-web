@@ -35,6 +35,7 @@
 
   "Pool composition": "풀 구성",
   "My liquidity": "나의 유동량",
+  "My liquidities": "나의 유동성",
   "Add liquidity": "유동성 공급하기",
 
   "Confirm add liquidity in wallet": "지갑 서명을 완료해주세요.",
@@ -56,6 +57,7 @@
   "Add tokens": "공급",
   "Withdraw": "출금하기",
   "Withdrawal": "출금",
+  "Claim": "수령하기",
 
   "Trader": "지갑 주소",
   "Trade details": "거래 내용",

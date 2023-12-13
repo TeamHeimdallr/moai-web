@@ -35,6 +35,7 @@
 
   "Pool composition": "Pool composition",
   "My liquidity": "My liquidity",
+  "My liquidities": "My liquidity",
   "Add liquidity": "Add liquidity",
 
   "Confirm add liquidity in wallet": "Confirm add liquidity in wallet",
@@ -56,6 +57,7 @@
   "Add tokens": "Add tokens",
   "Withdraw": "Withdraw",
   "Withdrawal": "Withdraw",
+  "Claim": "Claim",
 
   "Trader": "Trader",
   "Trade details": "Trade details",
