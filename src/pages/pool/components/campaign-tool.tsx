@@ -10,7 +10,8 @@ import {
   ButtonPrimaryMediumIconTrailing,
 } from '~/components/buttons';
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
-import { TokenInfo } from '~/components/token-info-transparent';
+
+import { TokenList } from '~/pages/campaign/landing/components/token-list';
 
 import { useMediaQuery } from '~/hooks/utils';
 
@@ -33,11 +34,12 @@ export const CampaignTool = () => {
       <ContentWrapper>
         <ContentInnerWrapper>
           <TitleSmall>{t('My liquidity')}</TitleSmall>
-          <TokenInfo
+          <TokenList
+            transparent
             token="XRP"
-            icon={<IconTokenXrp width={36} height={36} />}
-            balance="0.000000"
-            value="$0.00"
+            image={<IconTokenXrp width={36} height={36} />}
+            balance={123456}
+            value={123123}
             button={
               isMD ? (
                 <ButtonPrimaryLarge buttonType="outlined" text={t('Withdraw')} />
@@ -50,17 +52,19 @@ export const CampaignTool = () => {
         <ContentInnerWrapper>
           <TitleSmall>{t('Rewards')}</TitleSmall>
           <TokenInfoWrapper>
-            <TokenInfo
+            <TokenList
+              transparent
               token="veMOI"
-              icon={<IconTokenMoai width={36} height={36} />}
-              balance="0.000000"
-              value="$0.00"
+              image={<IconTokenMoai width={36} height={36} />}
+              balance={123456}
+              value={123123}
             />
-            <TokenInfo
-              token="XRP"
-              icon={<IconTokenRoot width={36} height={36} />}
-              balance="0.000000"
-              value="$0.00"
+            <TokenList
+              transparent
+              token="ROOT"
+              image={<IconTokenRoot width={36} height={36} />}
+              balance={123456}
+              value={123123}
               button={
                 isMD ? (
                   <ButtonPrimaryLarge buttonType="outlined" text={t('Claim')} />
