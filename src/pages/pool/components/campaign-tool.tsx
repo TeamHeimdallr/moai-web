@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
@@ -15,22 +16,23 @@ import { useMediaQuery } from '~/hooks/utils';
 
 export const CampaignTool = () => {
   const { isMD } = useMediaQuery();
+  const { t } = useTranslation();
   return (
     <Wrapper>
       <TitleWrapper>
-        <Title>My voyage</Title>
+        <Title>{t('My Voyage')}</Title>
         <ButtonWrapper>
           {isMD ? (
-            <ButtonPrimaryLargeIconTrailing text="Add liquidity" icon={<IconNext />} />
+            <ButtonPrimaryLargeIconTrailing text={t('Add liquidity')} icon={<IconNext />} />
           ) : (
-            <ButtonPrimaryMediumIconTrailing text="Add liquidity" icon={<IconNext />} />
+            <ButtonPrimaryMediumIconTrailing text={t('Add liquidity')} icon={<IconNext />} />
           )}
         </ButtonWrapper>
       </TitleWrapper>
       <Divider></Divider>
       <ContentWrapper>
         <ContentInnerWrapper>
-          <TitleSmall>My liquidity</TitleSmall>
+          <TitleSmall>{t('My liquidity')}</TitleSmall>
           <TokenInfo
             token="XRP"
             icon={<IconTokenXrp width={36} height={36} />}
@@ -38,15 +40,15 @@ export const CampaignTool = () => {
             value="$0.00"
             button={
               isMD ? (
-                <ButtonPrimaryLarge buttonType="outlined" text="Withdraw" />
+                <ButtonPrimaryLarge buttonType="outlined" text={t('Withdraw')} />
               ) : (
-                <ButtonPrimaryMedium buttonType="outlined" text="Withdraw" />
+                <ButtonPrimaryMedium buttonType="outlined" text={t('Withdraw')} />
               )
             }
           />
         </ContentInnerWrapper>
         <ContentInnerWrapper>
-          <TitleSmall>Rewards</TitleSmall>
+          <TitleSmall>{t('Rewards')}</TitleSmall>
           <TokenInfoWrapper>
             <TokenInfo
               token="veMOI"
@@ -61,9 +63,9 @@ export const CampaignTool = () => {
               value="$0.00"
               button={
                 isMD ? (
-                  <ButtonPrimaryLarge buttonType="outlined" text="Claim" />
+                  <ButtonPrimaryLarge buttonType="outlined" text={t('Claim')} />
                 ) : (
-                  <ButtonPrimaryMedium buttonType="outlined" text="Claim" />
+                  <ButtonPrimaryMedium buttonType="outlined" text={t('Claim')} />
                 )
               }
             />
