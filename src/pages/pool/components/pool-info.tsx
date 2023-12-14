@@ -31,7 +31,8 @@ export const PoolInfo = () => {
   );
 
   const { pool } = data || {};
-  const { value, volume, apr, moiApr, tradingFee } = pool || {};
+  const { value, volume, apr, moiApr, } = pool || {};
+  const tradingFee = 0.0035; // TODO: hard-coded
 
   const formattedValue = value ? `$${formatNumber(value, 2)}` : '$0';
   const formattedVolume = volume ? `$${formatNumber(volume, 2)}` : '$0';

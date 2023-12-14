@@ -249,7 +249,7 @@ export const useBatchSwapPrepare = ({
   const { fpass } = useConnectedWallet();
   const { address: walletAddress } = fpass;
 
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
 
   const { data } = useSorQuery(
     {
@@ -290,7 +290,7 @@ export const useBatchSwapPrepare = ({
     functionName: 'batchSwap',
     account: walletAddress as Address,
     args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
-    enabled: proxyEnabled && isEvm && !!walletAddress,
+    enabled: proxyEnabled && isEvm && isFpass && !!walletAddress,
   });
 
   const approveError = error?.message?.includes('Approved') || error?.message?.includes('BAL#401');

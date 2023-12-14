@@ -4,8 +4,6 @@ import { IS_MAINNET } from '~/constants';
 
 import { FUTUREPASS_REGISTER_ABI } from '~/abi/futurepass-register';
 
-import { useNetwork } from '../contexts/use-network';
-
 interface Props {
   enabled?: boolean;
 }
@@ -15,7 +13,6 @@ const FUTUREPASS_REGISTER = IS_MAINNET
   : '0x000000000000000000000000000000000000FFff';
 export const useFuturepassOf = ({ enabled }: Props) => {
   const { address: walletAddress } = useAccount();
-  const { isFpass } = useNetwork();
 
   const {
     data: _data,
@@ -27,7 +24,7 @@ export const useFuturepassOf = ({ enabled }: Props) => {
     functionName: 'futurepassOf',
     args: [walletAddress],
 
-    enabled: enabled && !!walletAddress && isFpass,
+    enabled: enabled && !!walletAddress,
   });
 
   const data = _data as `0x${string}` | undefined;

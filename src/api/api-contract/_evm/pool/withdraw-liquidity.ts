@@ -88,7 +88,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
     enabled: enabled && isConnected && isEvm && !isFpass && !!walletAddress && bptIn > 0 && !!vault,
   });
 
-  const { data, writeAsync: writeAsyncBase } = useContractWrite(config);
+  const { data, isLoading: isWriteLoading, writeAsync: writeAsyncBase } = useContractWrite(config);
 
   const {
     isLoading,
@@ -116,7 +116,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
   }, [txData]);
 
   return {
-    isLoading: prepareLoading || isLoading,
+    isLoading: prepareLoading || isLoading || isWriteLoading,
     isSuccess,
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

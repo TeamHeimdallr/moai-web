@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { head, last } from 'lodash-es';
 import { Address, decodeEventLog } from 'viem';
 import {
   useContractWrite,
@@ -91,7 +92,7 @@ export const useBatchSwap = ({
     enabled: enabled && isEvm && !!walletAddress,
   });
 
-  const { data, writeAsync } = useContractWrite(config);
+  const { data, isLoading: isWriteLoading, writeAsync } = useContractWrite(config);
   const {
     isLoading,
     isSuccess,
@@ -122,24 +123,33 @@ export const useBatchSwap = ({
 
   const approveError = error?.message?.includes('Approved') || error?.message?.includes('BAL#401');
 
-  const log = txData?.logs?.find(
-    ({ address }) => address.toLowerCase() === EVM_VAULT_ADDRESS[selectedNetwork].toLowerCase()
+  const logs = txData?.logs?.filter(
+    log => log.address.toLowerCase() === EVM_VAULT_ADDRESS[selectedNetwork].toLowerCase()
   );
-  if (log && txData) {
-    const topics = decodeEventLog({
+  const firstLog = head(logs);
+  const lastLog = last(logs);
+
+  if (firstLog && lastLog && txData) {
+    const firstTopics = decodeEventLog({
       abi: BALANCER_VAULT_ABI,
-      data: log.data,
-      topics: log.topics,
+      data: firstLog.data,
+      topics: firstLog.topics,
+    });
+    const lastTopics = decodeEventLog({
+      abi: BALANCER_VAULT_ABI,
+      data: lastLog.data,
+      topics: lastLog.topics,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (txData as any).swapAmountTo = (topics.args as any).amountOut;
+    (txData as any).swapAmountFrom = (firstTopics.args as any).amountIn;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (txData as any).swapAmountFrom = (topics.args as any).amountIn;
+    (txData as any).swapAmountTo = (lastTopics.args as any).amountOut;
   }
 
   return {
-    isLoading: isPrepareLoading || isLoading,
+    isLoading: isPrepareLoading || isLoading || isWriteLoading,
     isSuccess,
     isError: (isError || isPrepareError) && !approveError,
 
