@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { decodeEventLog, zeroAddress } from 'viem';
+import { BigNumber } from 'ethers';
+import { decodeEventLog, formatUnits, zeroAddress } from 'viem';
 import {
   Address,
   useContractWrite,
@@ -45,9 +46,11 @@ export const useSwap = ({
   const { evm } = useConnectedWallet();
   const { address: walletAddress } = evm;
 
-  const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
+
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const chainId = useNetworkId(currentNetwork);
   const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
@@ -81,13 +84,7 @@ export const useSwap = ({
     value: singleSwap[2] === zeroAddress ? singleSwap[4] : 0n,
     args: [singleSwap, fundManagement, limit, deadline],
     enabled:
-      enabled &&
-      !!vault &&
-      !!singleSwap &&
-      !!fundManagement &&
-      !!walletAddress &&
-      isEvm &&
-      !isFpass,
+      enabled && !!vault && !!singleSwap && !!fundManagement && !!walletAddress && isEvm && !isRoot,
   });
 
   const { data, isLoading: isWriteLoading, writeAsync } = useContractWrite(config);
@@ -113,10 +110,42 @@ export const useSwap = ({
     await writeAsync?.();
   };
 
+  const getEstimatedGas = async () => {
+    if (!isEvm || isRoot) return;
+
+    const feeHistory = await publicClient.getFeeHistory({
+      blockCount: 2,
+      rewardPercentiles: [25, 75],
+    });
+
+    const gas = await publicClient.estimateContractGas({
+      address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+      abi: BALANCER_VAULT_ABI,
+      functionName: 'swap',
+      value: singleSwap[2] === zeroAddress ? singleSwap[4] : 0n,
+      args: [singleSwap, fundManagement, limit, deadline],
+      account: walletAddress as Address,
+    });
+
+    const maxFeePerGas = feeHistory.baseFeePerGas[0];
+    const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
+    const remainder = gasCostInEth.mod(10 ** 12);
+    const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+    const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+
+    const formatted = Number(formatUnits(gasCostInXrpPriority, 6));
+    return formatted;
+  };
+
   useEffect(() => {
     getBlockTimestamp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txData]);
+
+  useEffect(() => {
+    getEstimatedGas();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const approveError = error?.message?.includes('Approved') || error?.message?.includes('BAL#401');
 
@@ -148,7 +177,7 @@ export const useSwap = ({
     swap,
     estimateFee: () => {
       // TODO: fee proxy
-      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 1.7;
+      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return getEstimatedGas();
 
       // TODO: handle evm sidechain
       return 0.0005;

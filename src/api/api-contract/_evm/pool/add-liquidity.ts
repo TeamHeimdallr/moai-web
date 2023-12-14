@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { WeightedPoolEncoder } from '@balancer-labs/sdk';
+import { BigNumber } from 'ethers';
+import { formatUnits } from 'viem';
 import {
   Address,
   useContractWrite,
@@ -10,6 +12,8 @@ import {
 } from 'wagmi';
 
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
+
+import { EVM_VAULT_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -119,6 +123,42 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
     await writeAsyncBase?.();
   };
 
+  const getEstimatedGas = async () => {
+    if (!isEvm || isFpass) return;
+
+    const feeHistory = await publicClient.getFeeHistory({
+      blockCount: 2,
+      rewardPercentiles: [25, 75],
+    });
+
+    const gas = await publicClient.estimateContractGas({
+      address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+      abi: BALANCER_VAULT_ABI,
+      functionName: 'joinPool',
+      args: [
+        poolId,
+        walletAddress,
+        walletAddress,
+        [
+          sortedTokenAddressses,
+          sortedAmountsIn,
+          WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+          false,
+        ],
+      ],
+      account: walletAddress as Address,
+    });
+
+    const maxFeePerGas = feeHistory.baseFeePerGas[0];
+    const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
+    const remainder = gasCostInEth.mod(10 ** 12);
+    const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+    const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+
+    const formatted = Number(formatUnits(gasCostInXrpPriority, 6));
+    return formatted;
+  };
+
   useEffect(() => {
     getBlockTimestamp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -135,7 +175,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
     writeAsync,
     estimateFee: async () => {
       // TODO: fee proxy
-      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 2.7;
+      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return getEstimatedGas();
 
       // TODO: handle evm sidechain
       return 0.0005;

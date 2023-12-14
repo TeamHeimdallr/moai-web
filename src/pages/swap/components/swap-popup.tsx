@@ -369,15 +369,14 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (!swapEnabled || step !== 2) return;
+    if (!estimateSwapFee || !swapEnabled || step !== 2) return;
 
     const estimateSwapFeeAsync = async () => {
       const fee = await estimateSwapFee?.();
-      setEstimatedSwapFee(fee ?? 3.25);
+      setEstimatedSwapFee(fee ?? 3.9262);
     };
     estimateSwapFeeAsync();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swapEnabled, step]);
+  }, [swapEnabled, step, estimateSwapFee]);
 
   useEffect(() => {
     if (step !== 1) return;
@@ -401,14 +400,15 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     ? step === 1
       ? estimatedFromTokenApproveFee || ''
       : estimatedSwapFee || ''
-    : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) || '3.25';
+    : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) || '3.9262';
 
   // TODO change after fee proxy
   const validMaxXrpAmount =
-    fromToken?.symbol === 'XRP' ? numFromInput + Number(estimatedFee || 3.25) < xrpBalance : true;
+    fromToken?.symbol === 'XRP' ? numFromInput + Number(estimatedFee || 3.9262) < xrpBalance : true;
 
   const gasError =
-    xrpBalance <= Number(estimatedFee || 3.25) ||
+    !estimatedFee ||
+    xrpBalance <= Number(estimatedFee || 3.9262) ||
     swapGasError ||
     approveGasError ||
     !validMaxXrpAmount;
@@ -538,7 +538,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                       {estimatedFromTokenApproveFee ||
                       estimatedToTokenApproveFee ||
                       estimatedSwapFee
-                        ? `~${estimatedFee} XRP`
+                        ? `~${formatNumber(estimatedFee)} XRP`
                         : 'calculating...'}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
