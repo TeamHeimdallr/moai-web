@@ -262,7 +262,7 @@ export const useAddLiquidityPrepare = ({ poolId, tokens, enabled }: Props) => {
 
   const { network } = useParams();
 
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
   const chainId = useNetworkId(currentNetwork);
@@ -329,7 +329,7 @@ export const useAddLiquidityPrepare = ({ poolId, tokens, enabled }: Props) => {
         false,
       ],
     ],
-    enabled: enabled && isEvm && !!walletAddress && !!vault && !!poolId && !!chainId,
+    enabled: enabled && isEvm && isFpass && !!walletAddress && !!vault && !!poolId && !!chainId,
   });
 
   const approveError = error?.message?.includes('Approved');

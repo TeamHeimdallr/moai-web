@@ -261,7 +261,7 @@ export const useWithdrawLiquidityPrepare = ({ poolId, tokens, bptIn, enabled }: 
 
   const { network } = useParams();
 
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
   const chainId = useNetworkId(currentNetwork);
@@ -318,7 +318,7 @@ export const useWithdrawLiquidityPrepare = ({ poolId, tokens, bptIn, enabled }: 
         false,
       ],
     ],
-    enabled: enabled && isEvm && !!walletAddress && !!vault && !!poolId && !!chainId,
+    enabled: enabled && isEvm && isFpass && !!walletAddress && !!vault && !!poolId && !!chainId,
   });
 
   const approveError = error?.message?.includes('Approved');
