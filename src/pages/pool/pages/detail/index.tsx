@@ -42,7 +42,7 @@ const PoolDetailMainPage = () => {
               </LeftContentWrapper>
               <RightContentWrapper>
                 <UserPoolBalances />
-                <CampaignTool />
+                {/* <CampaignTool /> */}
               </RightContentWrapper>
             </ContentWrapper>
           </ContentOuterWrapper>
