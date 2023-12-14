@@ -24,15 +24,17 @@ import { formatNumber } from '~/utils/util-number';
 import { truncateAddress } from '~/utils/util-string';
 import { elapsedTime } from '~/utils/util-time';
 import { useTableSwapHistoriesStore } from '~/states/components';
-import { ISwapHistoryToken, SWAP_HISTORY_TOKEN_TYPE } from '~/types';
+import { ISwapHistoryToken, NETWORK, SWAP_HISTORY_TOKEN_TYPE } from '~/types';
 
 export const useTableSwapHistories = () => {
   const { network, id } = useParams();
-  const { selectedNetwork, isXrp, isFpass } = useNetwork();
+  const { selectedNetwork, isXrp } = useNetwork();
   const { sort, setSort } = useTableSwapHistoriesStore();
 
   const { t } = useTranslation();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const {
     data: swapHistoriesData,
@@ -115,14 +117,14 @@ export const useTableSwapHistories = () => {
                   token={translatedTime}
                   align="flex-end"
                   link={`${SCANNER_URL[currentNetwork]}/${
-                    isXrp ? 'transactions' : isFpass ? 'extrinsic' : 'tx'
+                    isXrp ? 'transactions' : isRoot ? 'extrinsic' : 'tx'
                   }/${d.txHash}`}
                 />
               ),
             };
           })
         : [],
-    [currentNetwork, isFpass, isXrp, swapHistories, t]
+    [currentNetwork, isRoot, isXrp, swapHistories, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -219,7 +221,7 @@ export const useTableSwapHistories = () => {
                   token={translatedTime}
                   align="flex-end"
                   link={`${SCANNER_URL[currentNetwork]}/${
-                    isXrp ? 'transactions' : isFpass ? 'extrinsic' : 'tx'
+                    isXrp ? 'transactions' : isRoot ? 'extrinsic' : 'tx'
                   }/${d.txHash}`}
                 />
               ),
@@ -227,7 +229,7 @@ export const useTableSwapHistories = () => {
           ],
         };
       }),
-    [currentNetwork, isFpass, isXrp, swapHistories, t]
+    [currentNetwork, isRoot, isXrp, swapHistories, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

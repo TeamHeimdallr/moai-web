@@ -27,11 +27,11 @@ import { formatNumber } from '~/utils/util-number';
 import { elapsedTime } from '~/utils/util-time';
 import { useTableLiquidityPoolProvisionSortStore } from '~/states/components';
 import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/components/table/tab';
-import { LIQUIDITY_PROVISION_TYPE } from '~/types';
+import { LIQUIDITY_PROVISION_TYPE, NETWORK } from '~/types';
 
 export const useTableLiquidityProvision = () => {
   const { network, id } = useParams();
-  const { selectedNetwork, isXrp, isFpass } = useNetwork();
+  const { selectedNetwork, isXrp } = useNetwork();
   const { sort, setSort } = useTableLiquidityPoolProvisionSortStore();
   const { selectedTab } = useTablePoolLiquidityProvisionSelectTabStore();
 
@@ -40,6 +40,8 @@ export const useTableLiquidityProvision = () => {
   const { t } = useTranslation();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { currentAddress } = useConnectedWallet(currentNetwork);
+
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const isMyProvision = selectedTab === 'my-provision';
 
@@ -147,13 +149,13 @@ export const useTableLiquidityProvision = () => {
               token={translatedTime}
               align="flex-end"
               link={`${SCANNER_URL[currentNetwork]}/${
-                isXrp ? 'transactions' : isFpass ? 'extrinsic' : 'tx'
+                isXrp ? 'transactions' : isRoot ? 'extrinsic' : 'tx'
               }/${d.txHash}`}
             />
           ),
         };
       }),
-    [currentNetwork, isFpass, isXrp, liquidityProvisions, t]
+    [currentNetwork, isRoot, isXrp, liquidityProvisions, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -244,7 +246,7 @@ export const useTableLiquidityProvision = () => {
                   token={translatedTime}
                   align="flex-end"
                   link={`${SCANNER_URL[currentNetwork]}/${
-                    isXrp ? 'transactions' : isFpass ? 'extrinsic' : 'tx'
+                    isXrp ? 'transactions' : isRoot ? 'extrinsic' : 'tx'
                   }/${d.txHash}`}
                 />
               ),
@@ -252,7 +254,7 @@ export const useTableLiquidityProvision = () => {
           ],
         };
       }),
-    [currentNetwork, isFpass, isXrp, liquidityProvisions, t]
+    [currentNetwork, isRoot, isXrp, liquidityProvisions, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
