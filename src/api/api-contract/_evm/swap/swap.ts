@@ -142,11 +142,6 @@ export const useSwap = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txData]);
 
-  useEffect(() => {
-    getEstimatedGas();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const approveError = error?.message?.includes('Approved') || error?.message?.includes('BAL#401');
 
   const log = txData?.logs?.find(
