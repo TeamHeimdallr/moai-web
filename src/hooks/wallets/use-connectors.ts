@@ -3,12 +3,18 @@ import {
   imageWalletGem,
   imageWalletMetamask,
   imageWalletWalletConnect,
+  imageWalletXumm,
 } from '~/assets/images';
 
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { NETWORK } from '~/types';
 
-import { useConnectWithCrossmarkWallet, useConnectWithEvmWallet, useConnectWithGemWallet } from '.';
+import {
+  useConnectWithCrossmarkWallet,
+  useConnectWithEvmWallet,
+  useConnectWithGemWallet,
+  useConnectWithXummWallet,
+} from '.';
 
 export const useConnectors = () => {
   const { network } = useWalletConnectorTypeStore();
@@ -33,7 +39,13 @@ export const useConnectors = () => {
     isInstalled: gemIsInstalled,
   } = useConnectWithGemWallet();
 
-  // TODO: add xumm, dcent wallet
+  const {
+    connect: connectXrpXumm,
+    isConnected: xummConnected,
+    isInstalled: xummIsInstalled,
+  } = useConnectWithXummWallet();
+
+  // TODO: add dcent wallet
 
   const connectors = [
     {
@@ -55,6 +67,16 @@ export const useConnectors = () => {
       connect: connectXrpGem,
       connected: gemConnected,
       isInstalled: gemIsInstalled,
+    },
+    {
+      name: 'Xumm Wallet',
+      connectorName: ['xumm'],
+      image: imageWalletXumm,
+      network: [NETWORK.XRPL],
+
+      connect: connectXrpXumm,
+      connected: xummConnected,
+      isInstalled: xummIsInstalled,
     },
     {
       name: 'Metamask',

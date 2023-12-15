@@ -3,8 +3,10 @@ import crossmarkSdk from '@crossmarkio/sdk';
 import { getPublicKey, isInstalled as gemIsInstalled } from '@gemwallet/api';
 
 import { truncateAddress } from '~/utils/util-string';
+import { useXummStore } from '~/states/contexts/sdk/xumm';
 import { useCrossmarkWalletStore } from '~/states/contexts/wallets/crossmark-wallet';
 import { useXrplWalletStore } from '~/states/contexts/wallets/gem-wallet';
+import { useXummWalletStore } from '~/states/contexts/wallets/xumm-wallet';
 
 export const useConnectWithGemWallet = () => {
   const { isInstalled, isConnected, address, setInfo, setInstalled } = useXrplWalletStore();
@@ -73,6 +75,45 @@ export const useConnectWithCrossmarkWallet = () => {
   const disconnect = () => {
     setInfo({
       isConnected: false,
+      address: '',
+    });
+  };
+
+  return {
+    connect,
+    disconnect,
+    isInstalled,
+    isConnected,
+    address,
+    truncatedAddress: truncateAddress(address),
+  };
+};
+
+export const useConnectWithXummWallet = () => {
+  const { client, authClient } = useXummStore();
+  const { isConnected, address, setInfo } = useXummWalletStore();
+
+  const isInstalled = true; // always true
+  const connect = async () => {
+    if (!client || !authClient) return;
+
+    const res = await authClient.authorize();
+    if (res) {
+      const { me } = res;
+      setInfo({
+        isConnected: true,
+        jwt: res.jwt,
+        address: me.account,
+      });
+    }
+  };
+
+  const disconnect = () => {
+    authClient.logout();
+
+    setInfo({
+      isConnected: false,
+      jwt: '',
       address: '',
     });
   };

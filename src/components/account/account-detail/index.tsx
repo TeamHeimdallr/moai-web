@@ -15,6 +15,7 @@ import {
   imageWalletFuturepass,
   imageWalletGem,
   imageWalletMetamask,
+  imageWalletXumm,
 } from '~/assets/images';
 
 import { IS_MAINNET } from '~/constants';
@@ -63,49 +64,6 @@ export const AccountDetail = () => {
     callback(t('Copied!'));
     setTimeout(() => callback(truncateAddress(address)), 2000);
   };
-
-  const xrpComponent = (
-    <AccountWrapper key="xrp" isConnected={isXrp}>
-      {xrp.address ? (
-        <Account key="xrpl">
-          <Logo>
-            <InnerLogo
-              src={xrp.connectedConnector === 'crossmark' ? imageWalletCrossmark : imageWalletGem}
-              alt="xrpl"
-            />
-          </Logo>
-          <AddressWrapper>
-            <AddressTextWrapper>
-              <MediumText>{xrpAddress}</MediumText>
-              <InnerWrapper>
-                <ButtonIconSmall
-                  icon={<IconCopy />}
-                  onClick={() => handleCopy(xrp.address, setXrpAddress)}
-                />
-                <ButtonIconSmall icon={<IconLogout />} onClick={xrp.disconnect} />
-              </InnerWrapper>
-            </AddressTextWrapper>
-
-            <SmallText>XRPL Network</SmallText>
-          </AddressWrapper>
-        </Account>
-      ) : (
-        <AccountNotConnected
-          onClick={() => {
-            setWalletConnectorType({ network: NETWORK.XRPL });
-            openConnectWallet();
-          }}
-          key="xrpl-not-connected"
-        >
-          <Logo>
-            <InnerLogo src={imageNetworkXRPL} alt="xrpl" />
-          </Logo>
-          <ConnectText>{t('Connect wallet')}</ConnectText>
-          <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
-        </AccountNotConnected>
-      )}
-    </AccountWrapper>
-  );
 
   const fpassComponent = (
     <AccountWrapper key="fpass" isConnected={isRoot}>
@@ -247,6 +205,52 @@ export const AccountDetail = () => {
         >
           <Logo>
             <InnerLogo src={imageNetworkEvmSidechain} alt="evm" />
+          </Logo>
+          <ConnectText>{t('Connect wallet')}</ConnectText>
+          <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
+        </AccountNotConnected>
+      )}
+    </AccountWrapper>
+  );
+
+  const xrpWalletImage =
+    xrp.connectedConnector === 'crossmark'
+      ? imageWalletCrossmark
+      : xrp.connectedConnector === 'xumm'
+      ? imageWalletXumm
+      : imageWalletGem;
+  const xrpComponent = (
+    <AccountWrapper key="xrp" isConnected={isXrp}>
+      {xrp.address ? (
+        <Account key="xrpl">
+          <Logo>
+            <InnerLogo src={xrpWalletImage} alt="xrpl" />
+          </Logo>
+          <AddressWrapper>
+            <AddressTextWrapper>
+              <MediumText>{xrpAddress}</MediumText>
+              <InnerWrapper>
+                <ButtonIconSmall
+                  icon={<IconCopy />}
+                  onClick={() => handleCopy(xrp.address, setXrpAddress)}
+                />
+                <ButtonIconSmall icon={<IconLogout />} onClick={xrp.disconnect} />
+              </InnerWrapper>
+            </AddressTextWrapper>
+
+            <SmallText>XRPL Network</SmallText>
+          </AddressWrapper>
+        </Account>
+      ) : (
+        <AccountNotConnected
+          onClick={() => {
+            setWalletConnectorType({ network: NETWORK.XRPL });
+            openConnectWallet();
+          }}
+          key="xrpl-not-connected"
+        >
+          <Logo>
+            <InnerLogo src={imageNetworkXRPL} alt="xrpl" />
           </Logo>
           <ConnectText>{t('Connect wallet')}</ConnectText>
           <ButtonIconSmall icon={<IconNext width={16} height={16} color={COLOR.NEUTRAL[60]} />} />
