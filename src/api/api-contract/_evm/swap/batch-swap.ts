@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { BigNumber } from 'ethers';
 import { head, last } from 'lodash-es';
-import { Address, decodeEventLog } from 'viem';
+import { Address, decodeEventLog, formatUnits } from 'viem';
 import {
   useContractWrite,
   usePrepareContractWrite,
@@ -48,6 +49,7 @@ export const useBatchSwap = ({
 
   const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
@@ -89,7 +91,7 @@ export const useBatchSwap = ({
     functionName: 'batchSwap',
     account: walletAddress as Address,
     args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
-    enabled: enabled && isEvm && !!walletAddress,
+    enabled: enabled && isEvm && !!walletAddress && isRoot,
   });
 
   const { data, isLoading: isWriteLoading, writeAsync } = useContractWrite(config);
@@ -114,6 +116,32 @@ export const useBatchSwap = ({
     if (!enabled) return;
 
     await writeAsync?.();
+  };
+
+  const getEstimatedGas = async () => {
+    if (!isEvm || !isRoot) return;
+
+    const feeHistory = await publicClient.getFeeHistory({
+      blockCount: 2,
+      rewardPercentiles: [25, 75],
+    });
+
+    const gas = await publicClient.estimateContractGas({
+      address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+      abi: BALANCER_VAULT_ABI,
+      functionName: 'batchSwap',
+      args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+      account: walletAddress as Address,
+    });
+
+    const maxFeePerGas = feeHistory.baseFeePerGas[0];
+    const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
+    const remainder = gasCostInEth.mod(10 ** 12);
+    const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+    const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+
+    const formatted = Number(formatUnits(gasCostInXrpPriority, 6));
+    return formatted;
   };
 
   useEffect(() => {
@@ -160,7 +188,7 @@ export const useBatchSwap = ({
     swap,
     estimateFee: async () => {
       // TODO: fee proxy
-      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 1.7;
+      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return getEstimatedGas();
 
       // TODO: handle evm sidechain
       return 0.0005;

@@ -374,11 +374,16 @@ export const WithdrawLiquidityPopup = ({
   }, []);
 
   useEffect(() => {
-    if (!withdrawLiquidityEnabled || (isXrp && (!allowance1 || !allowance2))) return;
+    if (
+      !estimateWithdrawLiquidityFee ||
+      !withdrawLiquidityEnabled ||
+      (isXrp && (!allowance1 || !allowance2))
+    )
+      return;
 
     const estimateWithdrawLiquidityFeeAsync = async () => {
       const fee = await estimateWithdrawLiquidityFee?.();
-      setEstimatedWithdrawLiquidityFee(fee ?? 3.25);
+      setEstimatedWithdrawLiquidityFee(fee ?? 4.2);
     };
     estimateWithdrawLiquidityFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -441,7 +446,7 @@ export const WithdrawLiquidityPopup = ({
     : estimatedWithdrawLiquidityFee || '';
 
   const gasError =
-    xrpBalance <= Number(estimatedFee || 3.25) || withdrawLiquidityGasError || approveGasError;
+    xrpBalance <= Number(estimatedFee || 4.2) || withdrawLiquidityGasError || approveGasError;
 
   return (
     <Popup
@@ -453,7 +458,7 @@ export const WithdrawLiquidityPopup = ({
             text={buttonText}
             isLoading={isLoading}
             buttonType={isIdle ? 'filled' : 'outlined'}
-            disabled={isIdle && gasError}
+            disabled={(isIdle && gasError) || !estimatedFee}
           />
         </ButtonWrapper>
       }
@@ -538,11 +543,7 @@ export const WithdrawLiquidityPopup = ({
                 <GasFeeInnerWrapper>
                   <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                   <GasFeeTitleValue>
-                    {estimatedToken1ApproveFee ||
-                    estimatedToken2ApproveFee ||
-                    estimatedWithdrawLiquidityFee
-                      ? `~${estimatedFee} XRP`
-                      : 'calculating...'}
+                    {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : 'calculating...'}
                   </GasFeeTitleValue>
                 </GasFeeInnerWrapper>
                 <GasFeeInnerWrapper>

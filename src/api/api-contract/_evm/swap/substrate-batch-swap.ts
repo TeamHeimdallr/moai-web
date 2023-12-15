@@ -3,6 +3,7 @@ import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
+import { BigNumber } from 'ethers';
 import { Address, encodeFunctionData, formatUnits } from 'viem';
 import { usePrepareContractWrite, usePublicClient, useWalletClient } from 'wagmi';
 
@@ -128,7 +129,23 @@ export const useBatchSwap = ({
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
 
-      return fee;
+      const gas = await publicClient.estimateContractGas({
+        address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+        abi: BALANCER_VAULT_ABI,
+        functionName: 'batchSwap',
+        args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+        account: walletAddress as Address,
+      });
+
+      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
+      const remainder = gasCostInEth.mod(10 ** 12);
+      const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+      const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+
+      const evmFee = Number(formatUnits(gasCostInXrpPriority, 6));
+
+      return fee + evmFee;
     } catch (err) {
       console.log('estimation fee error');
     }

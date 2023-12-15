@@ -369,11 +369,11 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (!swapEnabled || step !== 2) return;
+    if (!estimateSwapFee || !swapEnabled || step !== 2) return;
 
     const estimateSwapFeeAsync = async () => {
       const fee = await estimateSwapFee?.();
-      setEstimatedSwapFee(fee ?? 3.25);
+      setEstimatedSwapFee(fee ?? 3.9262);
     };
     estimateSwapFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -401,14 +401,14 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     ? step === 1
       ? estimatedFromTokenApproveFee || ''
       : estimatedSwapFee || ''
-    : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) || '3.25';
+    : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) || '3.9262';
 
   // TODO change after fee proxy
   const validMaxXrpAmount =
-    fromToken?.symbol === 'XRP' ? numFromInput + Number(estimatedFee || 3.25) < xrpBalance : true;
+    fromToken?.symbol === 'XRP' ? numFromInput + Number(estimatedFee || 3.9262) < xrpBalance : true;
 
   const gasError =
-    xrpBalance <= Number(estimatedFee || 3.25) ||
+    xrpBalance <= Number(estimatedFee || 3.9262) ||
     swapGasError ||
     approveGasError ||
     !validMaxXrpAmount;
@@ -423,7 +423,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={isIdle ? 'filled' : 'outlined'}
-            disabled={isIdle && (!fromToken || !toToken || gasError)}
+            disabled={(isIdle && (!fromToken || !toToken || gasError)) || !estimatedFee}
           />
         </ButtonWrapper>
       }
@@ -535,11 +535,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   <GasFeeInnerWrapper>
                     <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                     <GasFeeTitleValue>
-                      {estimatedFromTokenApproveFee ||
-                      estimatedToTokenApproveFee ||
-                      estimatedSwapFee
-                        ? `~${estimatedFee} XRP`
-                        : 'calculating...'}
+                      {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : 'calculating...'}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
                   <GasFeeInnerWrapper>

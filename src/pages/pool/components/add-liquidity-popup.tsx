@@ -409,13 +409,14 @@ export const AddLiquidityPopup = ({
   useEffect(() => {
     if (
       !addLiquidityEnabled ||
-      !((tokenLength === 2 && step === 3) || (tokenLength !== 2 && step === 2))
+      !((tokenLength === 2 && step === 3) || (tokenLength !== 2 && step === 2)) ||
+      !estimateAddLiquidityFee
     )
       return;
 
     const estimateAddLiquidityFeeAsync = async () => {
       const fee = await estimateAddLiquidityFee?.();
-      setEstimatedAddLiquidityFee(fee ?? 3.25);
+      setEstimatedAddLiquidityFee(fee ?? 4.6);
     };
     estimateAddLiquidityFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -497,13 +498,13 @@ export const AddLiquidityPopup = ({
   // TODO change after fee proxy
   const validMaxXrpAmount =
     tokensIn?.[0]?.symbol === 'XRP'
-      ? token1Amount + Number(estimatedFee || 3.25) < xrpBalance
+      ? token1Amount + Number(estimatedFee || 4.6) < xrpBalance
       : tokensIn?.[1]?.symbol === 'XRP'
-      ? token2Amount + Number(estimatedFee || 3.25) < xrpBalance
+      ? token2Amount + Number(estimatedFee || 4.6) < xrpBalance
       : true;
 
   const gasError =
-    xrpBalance <= Number(estimatedFee || 3.25) ||
+    xrpBalance <= Number(estimatedFee || 4.6) ||
     addLiquidityGasError ||
     approveGasError ||
     !validMaxXrpAmount;
@@ -518,7 +519,7 @@ export const AddLiquidityPopup = ({
             text={buttonText}
             isLoading={isLoading}
             buttonType={isIdle ? 'filled' : 'outlined'}
-            disabled={isIdle && gasError}
+            disabled={(isIdle && gasError) || !estimatedFee}
           />
         </ButtonWrapper>
       }
@@ -602,12 +603,7 @@ export const AddLiquidityPopup = ({
                 <GasFeeInnerWrapper>
                   <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                   <GasFeeTitleValue>
-                    {estimatedToken1ApproveFee ||
-                    estimatedToken2ApproveFee ||
-                    estimatedToken3ApproveFee ||
-                    estimatedAddLiquidityFee
-                      ? `~${estimatedFee} XRP`
-                      : 'calculating...'}
+                    {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : 'calculating...'}
                   </GasFeeTitleValue>
                 </GasFeeInnerWrapper>
                 <GasFeeInnerWrapper>

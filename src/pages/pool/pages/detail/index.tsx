@@ -8,7 +8,6 @@ import { usePopup } from '~/hooks/components';
 import { useRequirePrarams } from '~/hooks/utils';
 import { POPUP_ID } from '~/types';
 
-import { CampaignTool } from '../../components/campaign-tool';
 import { PoolCompositions } from '../../components/pool-compositions';
 import { PoolHeader } from '../../components/pool-header';
 import { PoolInfo } from '../../components/pool-info';

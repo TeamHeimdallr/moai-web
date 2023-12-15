@@ -5,6 +5,7 @@ import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
+import { BigNumber } from 'ethers';
 import { Address, encodeFunctionData, formatUnits } from 'viem';
 import { usePrepareContractWrite, usePublicClient, useWalletClient } from 'wagmi';
 
@@ -16,7 +17,7 @@ import {
 } from '~/api/api-contract/_evm/substrate/send-extrinsic-with-signature';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
-import { IS_MAINNET } from '~/constants';
+import { EVM_VAULT_ADDRESS, IS_MAINNET } from '~/constants';
 import { EVM_TOKEN_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
@@ -136,7 +137,33 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
 
-      return fee;
+      const gas = await publicClient.estimateContractGas({
+        address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+        abi: BALANCER_VAULT_ABI,
+        functionName: 'exitPool',
+        args: [
+          poolId,
+          walletAddress,
+          walletAddress,
+          [
+            sortedTokenAddressses,
+            tokens.map(() => 0n),
+            WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
+            false,
+          ],
+        ],
+        account: walletAddress as Address,
+      });
+
+      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
+      const remainder = gasCostInEth.mod(10 ** 12);
+      const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+      const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+
+      const evmFee = Number(formatUnits(gasCostInXrpPriority, 6));
+
+      return fee + evmFee;
     } catch (err) {
       console.log('estimation fee error');
     }
@@ -261,7 +288,7 @@ export const useWithdrawLiquidityPrepare = ({ poolId, tokens, bptIn, enabled }: 
 
   const { network } = useParams();
 
-  const { selectedNetwork, isEvm } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
   const chainId = useNetworkId(currentNetwork);
@@ -318,7 +345,7 @@ export const useWithdrawLiquidityPrepare = ({ poolId, tokens, bptIn, enabled }: 
         false,
       ],
     ],
-    enabled: enabled && isEvm && !!walletAddress && !!vault && !!poolId && !!chainId,
+    enabled: enabled && isEvm && isFpass && !!walletAddress && !!vault && !!poolId && !!chainId,
   });
 
   const approveError = error?.message?.includes('Approved');

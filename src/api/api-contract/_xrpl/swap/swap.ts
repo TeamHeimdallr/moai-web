@@ -1,3 +1,4 @@
+import { parseUnits } from 'viem';
 import { useMutation } from 'wagmi';
 import { PaymentFlags, xrpToDrops } from 'xrpl';
 
@@ -72,6 +73,18 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
   const { data, isLoading, isSuccess, mutateAsync } = useMutation(['XRPL', 'SWAP'], submitTx);
 
   const txData = connectedConnector === 'gem' ? data?.result : data?.response?.data?.resp?.result;
+  if (txData) {
+    if (typeof txData.Amount === 'object') {
+      txData.swapAmountTo = parseUnits(txData.Amount.value, 6);
+    } else {
+      txData.swapAmountTo = txData.Amount;
+    }
+    if (typeof txData.SendMax === 'object') {
+      txData.swapAmountFrom = parseUnits(txData.SendMax.value, 6);
+    } else {
+      txData.swapAmountFrom = txData.SendMax;
+    }
+  }
 
   const blockTimestamp = txData?.date
     ? (txData?.date || 0) * 1000 + new Date('2000-01-01').getTime()
@@ -91,6 +104,6 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
     blockTimestamp,
 
     swap: writeAsync,
-    estimateFee: () => {}, // TODO
+    estimateFee: () => 0.00005,
   };
 };
