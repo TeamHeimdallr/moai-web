@@ -106,10 +106,10 @@ export const useUserAllTokenBalances = () => {
           ),
           totalSupply: 0,
         },
-      ] as TokenBalance[])
-    : ([] as TokenBalance[]);
+      ] as IToken & TokenBalance[])
+    : ([] as (IToken & TokenBalance)[]);
 
-  const tokenBalances = tokenBalancesData?.flatMap(d => {
+  const userTokenBalances = tokenBalancesData?.flatMap(d => {
     const res: TokenBalance[] = [];
 
     const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
@@ -126,13 +126,26 @@ export const useUserAllTokenBalances = () => {
 
     return res;
   });
+  const tokenBalances =
+    tokens?.map(t => {
+      if (t.symbol === 'XRP') return;
+
+      const balance = userTokenBalances?.find(b => b.address === t.address)?.balance || 0;
+      const totalSupply = userTokenBalances?.find(b => b.address === t.address)?.totalSupply || 0;
+      return {
+        ...t,
+        balance,
+        totalSupply,
+      } as IToken & TokenBalance;
+    }) || ([] as (IToken & TokenBalance)[]);
 
   const refetch = () => {
     xrpTokenBalanceRefetch();
     tokenBalancesRefetch();
   };
 
-  const userAllTokens = [...xrpBalance, ...tokenBalances] as TokenBalance[];
+  const userAllTokens = [...xrpBalance, ...tokenBalances].filter(t => !!t) as (IToken &
+    TokenBalance)[];
 
   return {
     userAllTokenBalances: userAllTokens,
