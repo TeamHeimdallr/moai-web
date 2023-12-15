@@ -376,7 +376,8 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       setEstimatedSwapFee(fee ?? 3.9262);
     };
     estimateSwapFeeAsync();
-  }, [swapEnabled, step, estimateSwapFee]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swapEnabled, step]);
 
   useEffect(() => {
     if (step !== 1) return;
@@ -407,7 +408,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     fromToken?.symbol === 'XRP' ? numFromInput + Number(estimatedFee || 3.9262) < xrpBalance : true;
 
   const gasError =
-    !estimatedFee ||
     xrpBalance <= Number(estimatedFee || 3.9262) ||
     swapGasError ||
     approveGasError ||
@@ -423,7 +423,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={isIdle ? 'filled' : 'outlined'}
-            disabled={isIdle && (!fromToken || !toToken || gasError)}
+            disabled={(isIdle && (!fromToken || !toToken || gasError)) || !estimatedFee}
           />
         </ButtonWrapper>
       }
@@ -535,11 +535,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   <GasFeeInnerWrapper>
                     <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                     <GasFeeTitleValue>
-                      {estimatedFromTokenApproveFee ||
-                      estimatedToTokenApproveFee ||
-                      estimatedSwapFee
-                        ? `~${formatNumber(estimatedFee)} XRP`
-                        : 'calculating...'}
+                      {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : 'calculating...'}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
                   <GasFeeInnerWrapper>

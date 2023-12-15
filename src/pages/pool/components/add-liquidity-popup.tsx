@@ -419,7 +419,8 @@ export const AddLiquidityPopup = ({
       setEstimatedAddLiquidityFee(fee ?? 4.6);
     };
     estimateAddLiquidityFeeAsync();
-  }, [addLiquidityEnabled, tokenLength, step, estimateAddLiquidityFee]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addLiquidityEnabled, tokenLength, step]);
 
   useEffect(() => {
     const estimateApproveFeeAsync = async (n: number) => {
@@ -503,7 +504,6 @@ export const AddLiquidityPopup = ({
       : true;
 
   const gasError =
-    !estimatedFee ||
     xrpBalance <= Number(estimatedFee || 4.6) ||
     addLiquidityGasError ||
     approveGasError ||
@@ -519,7 +519,7 @@ export const AddLiquidityPopup = ({
             text={buttonText}
             isLoading={isLoading}
             buttonType={isIdle ? 'filled' : 'outlined'}
-            disabled={isIdle && gasError}
+            disabled={(isIdle && gasError) || !estimatedFee}
           />
         </ButtonWrapper>
       }
@@ -603,12 +603,7 @@ export const AddLiquidityPopup = ({
                 <GasFeeInnerWrapper>
                   <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                   <GasFeeTitleValue>
-                    {estimatedToken1ApproveFee ||
-                    estimatedToken2ApproveFee ||
-                    estimatedToken3ApproveFee ||
-                    estimatedAddLiquidityFee
-                      ? `~${formatNumber(estimatedFee)} XRP`
-                      : 'calculating...'}
+                    {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : 'calculating...'}
                   </GasFeeTitleValue>
                 </GasFeeInnerWrapper>
                 <GasFeeInnerWrapper>

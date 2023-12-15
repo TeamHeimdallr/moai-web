@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Address } from 'viem';
+import { BigNumber } from 'ethers';
+import { Address, formatUnits } from 'viem';
 import {
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
+  usePublicClient,
   useWaitForTransaction,
 } from 'wagmi';
 
@@ -37,6 +39,8 @@ export const useApprove = ({
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const chainId = useNetworkId(currentNetwork);
+
+  const publicClient = usePublicClient();
 
   const [allowance, setAllowance] = useState(false);
 
@@ -93,6 +97,32 @@ export const useApprove = ({
     await writeAsync?.();
   };
 
+  const getEstimatedGas = async () => {
+    if (!isEvm || isFpass) return;
+
+    const feeHistory = await publicClient.getFeeHistory({
+      blockCount: 2,
+      rewardPercentiles: [25, 75],
+    });
+
+    const gas = await publicClient.estimateContractGas({
+      address: tokenAddress as Address,
+      abi: ERC20_TOKEN_ABI,
+      functionName: 'approve',
+      account: walletAddress as Address,
+      args: [spender, amount],
+    });
+
+    const maxFeePerGas = feeHistory.baseFeePerGas[0];
+    const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
+    const remainder = gasCostInEth.mod(10 ** 12);
+    const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+    const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+
+    const formatted = Number(formatUnits(gasCostInXrpPriority, 6));
+    return formatted;
+  };
+
   return {
     isLoading: isLoading || isReadLoading || isPrepareLoading || isTxLoading,
     isSuccess,
@@ -103,10 +133,10 @@ export const useApprove = ({
     allow,
     estimateFee: async () => {
       // TODO: fee proxy
-      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return 0.38;
+      if (currentNetwork === NETWORK.THE_ROOT_NETWORK) return getEstimatedGas();
 
       // TODO: handle evm sidechain
-      return 0.38;
+      return 0.0005;
     },
   };
 };
