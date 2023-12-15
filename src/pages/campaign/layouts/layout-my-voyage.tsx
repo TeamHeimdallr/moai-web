@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
-import { IconTokenMoai, IconTokenXrp } from '~/assets/icons';
+import { IconTokenMoai, IconTokenRoot, IconTokenXrp } from '~/assets/icons';
 
-import { ButtonPrimaryMedium } from '~/components/buttons';
+import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -59,32 +59,54 @@ export const MyVoyage = () => {
           <CardWrapper>
             <TokenCard
               type="balance"
-              title="Balance"
+              title={t('My liquidity')}
               token={
                 <TokenList
                   token="XRP"
                   balance={myDepositBalance}
                   value={myDepositValue}
                   image={<IconTokenXrp width={36} height={36} />}
+                  button={
+                    <ButtonPrimaryLarge
+                      text={t('Withdraw')}
+                      buttonType="outlined"
+                      onClick={handleClick}
+                    />
+                  }
                 />
               }
             />
             <TokenCard
               type="reward"
-              title="Rewards"
+              title={t('Rewards')}
               token={
                 <TokenWrapper>
                   <TokenList
-                    token="MOAI"
+                    token="veMOI"
                     balance={myMoaiRewardBalance}
                     value={myMoaiRewardValue}
                     image={<IconTokenMoai width={36} height={36} />}
+                    button={
+                      <ButtonPrimaryLarge
+                        text={t('Coming soon')}
+                        buttonType="filled"
+                        disabled
+                        onClick={() => console.log('claim')}
+                      />
+                    }
                   />
                   <TokenList
                     token="ROOT"
                     balance={myRootRewardBalance}
                     value={myRootRewardValue}
-                    image={<IconTokenXrp width={36} height={36} />}
+                    image={<IconTokenRoot width={36} height={36} />}
+                    button={
+                      <ButtonPrimaryLarge
+                        text={t('Claim')}
+                        buttonType="outlined"
+                        onClick={() => console.log('claim')}
+                      />
+                    }
                   />
                 </TokenWrapper>
               }
@@ -115,7 +137,7 @@ const Wrapper = tw.div`
 const MyInfoWrapper = tw.div`
   w-full flex flex-col gap-24 justify-center
 `;
-const CardWrapper = tw.div`w-full flex flex-col lg:(grid grid-cols-3) gap-20 xxl:gap-40`;
+const CardWrapper = tw.div`w-full flex flex-col lg:(grid grid-cols-3) gap-20 xl:gap-40`;
 
 const TokenWrapper = tw.div`flex flex-col gap-16 md:flex-row`;
 

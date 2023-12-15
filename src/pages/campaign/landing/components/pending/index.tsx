@@ -2,45 +2,63 @@ import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { IconNext } from '~/assets/icons';
+import { IconLink, IconNext } from '~/assets/icons';
 
-import { ButtonPrimaryMedium } from '~/components/buttons';
+import { ButtonPrimaryMediumIconTrailing } from '~/components/buttons';
+import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
 
-import { formatNumber } from '~/utils';
-
-import { BridgeHistory } from './bridge-history';
+import { useMediaQuery } from '~/hooks/utils';
 
 export const Pending = () => {
   // TODO : connect API
-  const balance = 123;
   // TODO : navigate step3
   const handleClick = () => {};
   const { t } = useTranslation();
+  const { isMD } = useMediaQuery();
   return (
     <Wrapper>
       <TitleWrapper>
         <Title>Pending</Title>
+        <LinkWrapper>
+          {t('Last application at') + ' ' + t('days ago', { time: 3 })}
+          <IconWrapper>
+            <IconLink width={16} height={16} fill={COLOR.NEUTRAL[60]} />
+          </IconWrapper>
+        </LinkWrapper>
+      </TitleWrapper>
 
-        <Balance>{formatNumber(balance, 2)} XRP</Balance>
-        <ButtonWrapper>
-          <ButtonPrimaryMedium
+      <ButtonWrapper>
+        {isMD ? (
+          <ButtonPrimaryLargeIconTrailing
             icon={<IconNext fill={COLOR.NEUTRAL[0]} width={20} height={20} />}
-            text={t('Continue')}
+            text={t('continue-campaign')}
             onClick={handleClick}
           />
-        </ButtonWrapper>
-      </TitleWrapper>
-      <BridgeHistory />
+        ) : (
+          <ButtonPrimaryMediumIconTrailing
+            icon={<IconNext fill={COLOR.NEUTRAL[0]} width={20} height={20} />}
+            text={t('continue-campaign')}
+            onClick={handleClick}
+          />
+        )}
+      </ButtonWrapper>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div(() => [
-  tw`w-full flex flex-col gap-24 bg-neutral-10 rounded-12 px-24 pt-20 pb-24 mt-24`,
+  tw`w-full flex flex-col justify-between items-start gap-20 bg-neutral-10 rounded-12 px-24 pt-20 pb-24
+  md:(flex-row items-center mt-24)
+  `,
 ]);
-const TitleWrapper = tw.div`flex justify-between items-center font-m-20 gap-12`;
-const Title = tw.div`
-  flex-1 text-neutral-100 font-b-18 md:font-b-20
+const TitleWrapper = tw.div`flex flex-col items-start font-m-20 gap-4 text-neutral-100 
+  md:gap-8
 `;
+const Title = tw.div`
+  flex-1 font-b-18 md:font-b-20
+`;
+const LinkWrapper = tw.div`flex items-center font-m-14 gap-2
+  md:font-m-16
+`;
+const IconWrapper = tw.div`flex flex-center clickable w-24 h-24`;
 const ButtonWrapper = tw.div``;
-const Balance = tw.div`flex`;

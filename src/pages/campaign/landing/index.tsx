@@ -30,8 +30,8 @@ const LandingPage = () => {
 };
 
 const Wrapper = tw.div`
-  relative w-full h-full flex flex-col justify-between
+  relative w-full h-full flex flex-col justify-between bg-neutral-5
 `;
 const GnbWrapper = tw.div`w-full absolute top-0 left-0 flex-center flex-col z-10`;
-const FooterWrappper = tw.div`w-full`;
+const FooterWrappper = tw.div`w-full bg-neutral-10`;
 export default LandingPage;

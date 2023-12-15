@@ -50,7 +50,7 @@ const Page = () => {
             <Route path="/swap" element={<Swap />} />
             <Route path="/pools/*" element={<Pool />} />
             <Route path="/rewards/*" element={<Rewards />} />
-            <Route path="/campaign/*" element={<Campaign />} />
+            {/* <Route path="/campaign/*" element={<Campaign />} /> */}
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
