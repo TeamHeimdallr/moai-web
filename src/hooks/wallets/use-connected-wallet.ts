@@ -148,12 +148,20 @@ export const useConnectedXrplWallet = () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         submitTransaction: async (tx: any) => {
           if (!xummWalletClient) return;
-          const payload = xummWalletClient.payload.createAndSubscribe({
-            txjson: tx,
-            options: {
-              force_network: BLOCKCHAIN_ENV,
+
+          const payload = xummWalletClient.payload.createAndSubscribe(
+            {
+              txjson: tx,
+              options: {
+                force_network: BLOCKCHAIN_ENV,
+              },
             },
-          });
+            e => {
+              if (typeof e.data.signed !== 'undefined') {
+                return Promise.resolve(e.data);
+              }
+            }
+          );
           const res = await payload;
 
           window.open(
@@ -161,6 +169,7 @@ export const useConnectedXrplWallet = () => {
             '_blank',
             'width=700, height=600, top=50, left=50, scrollbars=yes'
           );
+
           return res;
         },
       }
