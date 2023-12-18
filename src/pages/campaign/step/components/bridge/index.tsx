@@ -11,7 +11,14 @@ import { useUserAllTokenBalances } from '~/api/api-contract/_xrpl/balance/user-a
 import { useBridgeXrplToRoot } from '~/api/api-contract/_xrpl/bridge/bridge-xrpl-to-root';
 
 import { COLOR } from '~/assets/colors';
-import { IconArrowDown, IconCheck, IconLink, IconTime, IconTokenXrp } from '~/assets/icons';
+import {
+  IconArrowDown,
+  IconCancel,
+  IconCheck,
+  IconLink,
+  IconTime,
+  IconTokenXrp,
+} from '~/assets/icons';
 import TokenXrp from '~/assets/icons/icon-token-xrp.svg';
 
 import { SCANNER_URL } from '~/constants';
@@ -62,6 +69,7 @@ const Bridge = () => {
     isSuccess: bridgeSuccess,
     txData,
     blockTimestamp,
+    reset,
     bridge,
   } = useBridgeXrplToRoot({
     fromInput: Number(inputValue || 0),
@@ -128,6 +136,18 @@ const Bridge = () => {
             <ButtonPrimaryLarge text={t('Continue to add liquidity')} />
           </SuccessBottomWrapper>
         </SuccessWrapper>
+      )}
+      {!isIdle && !isSuccess && (
+        <FailedWrapper>
+          <FailedInnerWrapper>
+            <FailedIconWrapper>
+              <IconCancel width={40} height={40} />
+            </FailedIconWrapper>
+            <SuccessTitle>{t('Bridge failed')}</SuccessTitle>
+            <SuccessSubTitle>{t('bridge-fail-message')}</SuccessSubTitle>
+          </FailedInnerWrapper>
+          <ButtonPrimaryLarge text={t('Try again')} buttonType="outlined" onClick={() => reset()} />
+        </FailedWrapper>
       )}
       {isIdle && (
         <>
@@ -254,4 +274,16 @@ const ClickableIcon = styled.div(() => [
     }
   `,
 ]);
+const FailedWrapper = tw.div`
+  flex-center flex-col gap-40 pt-40 pb-24 px-24 bg-neutral-10 rounded-12
+`;
+
+const FailedInnerWrapper = tw.div`
+  flex-center flex-col gap-12
+`;
+
+const FailedIconWrapper = tw.div`
+  flex-center w-48 h-48 rounded-full bg-red-50
+`;
+
 export default Bridge;
