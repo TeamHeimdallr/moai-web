@@ -21,4 +21,4 @@ export const TooltipAddress = ({ id, address, ...rest }: Props) => {
 };
 
 const Wrapper = tw.div`flex flex-col w-290`;
-const Description = tw.div`font-m-14 break-words`;
+const Description = tw.div`font-m-14 break-words address`;

@@ -150,6 +150,7 @@
   "Withdrawal comfirmed!": "Withdrawal comfirmed!",
   "withdraw-success-message": "Successfully withdrawned from {{pool}} Pool",
   "Exceeds wallet balance": "Exceeds wallet balance",
+  "Too small amount": "Too small amount",
 
   "Swap": "Swap",
   "Select token": "Select token",

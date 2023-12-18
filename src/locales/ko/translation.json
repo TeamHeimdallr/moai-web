@@ -163,6 +163,7 @@
   "Withdrawal confirmed!": "출금을 완료했습니다.",
   "withdraw-success-message": "{{pool}} 풀에서 성공적으로 출금했습니다.",
   "Exceeds wallet balance": "지갑 잔액을 초과하였습니다.",
+  "Too small amount": "너무 적은 금액입니다.",
 
   "Swap": "구매하기",
   "Select token": "토큰 선택",
