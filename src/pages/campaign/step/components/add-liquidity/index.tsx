@@ -62,7 +62,7 @@ export const AddLiquidity = () => {
               <SuccessTitle>{t('Add liquidity confirmed!')}</SuccessTitle>
               <SuccessSubTitle>{t('campaign-add-liquidity-success-message')}</SuccessSubTitle>
             </SuccessMessageWrapper>
-            <List title={t('Expected APY (10%)')}>
+            <List title={t('Expected APR (10%)')}>
               <TokenList
                 title={t('Pre-mining $MOAI APY (3%)')}
                 image={<IconTokenMoai width={36} height={36} />}
@@ -108,7 +108,7 @@ export const AddLiquidity = () => {
             setValue={setValue}
             formState={formState}
           />
-          <List title={t('Expected APY (10%)')}>
+          <List title={t('Expected APR (10%)')}>
             <TokenList
               type="campaign"
               title={t('Pre-mining $MOAI APY (3%)')}
