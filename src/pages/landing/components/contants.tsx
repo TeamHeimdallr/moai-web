@@ -10,7 +10,6 @@ import { IconLink } from '~/assets/icons';
 import LogoLanding from '~/assets/logos/logo-landing.svg?react';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
-import { Footer } from '~/components/footer';
 
 import { useMediaQuery } from '~/hooks/utils';
 
@@ -21,7 +20,6 @@ export const Contents = () => {
   const { isSMD, isMLG } = useMediaQuery();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [footerShowing, footerShow] = useState(false);
   useOnClickOutside(dropdownRef, () => setDropdownOpen(false));
 
   const handleMainnetClick = () => {
@@ -46,7 +44,6 @@ export const Contents = () => {
       initial={{ top: isSMD ? '320px' : '240px' }}
       animate={{ top: '160px' }}
       transition={{ ease: [0.4, 0, 0.2, 1], duration: 0.6, delay: 0.4 }}
-      onAnimationComplete={() => footerShow(true)}
     >
       <LogoWrapper
         initial={{ scale: 1 }}
@@ -103,11 +100,6 @@ export const Contents = () => {
             </DropdownWrapper>
           )}
         </ButtonWrapper>
-        {footerShowing && (
-          <FooterWrapper>
-            <Footer />
-          </FooterWrapper>
-        )}
       </BottomWrapper>
     </Wrapper>
   );
@@ -166,8 +158,4 @@ const TextMain = tw.div`
   w-full font-eb-32
   smd:(font-eb-60 leading-64)
   mlg:(w-800 font-eb-80)
-`;
-
-const FooterWrapper = tw.div`
-  absolute w-full -bottom-490
 `;
