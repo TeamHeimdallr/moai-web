@@ -13,7 +13,7 @@ import { getNetworkFull } from '~/utils';
 import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { NETWORK, POPUP_ID } from '~/types';
 
-import Campaign from './campaign';
+import Campaign from './campaign/pages';
 import Home from './home';
 import Landing from './landing';
 import Pool from './pool';
