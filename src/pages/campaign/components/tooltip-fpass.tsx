@@ -22,6 +22,12 @@ export const TooltipFuturepass = ({ id, ...rest }: Props) => {
   );
 };
 
-const Wrapper = tw.div`flex flex-col w-266`;
-const Title = tw.div`font-b-14`;
-const Description = tw.div`font-m-14`;
+const Wrapper = tw.div`
+  flex flex-col w-266
+`;
+const Title = tw.div`
+  font-b-14
+`;
+const Description = tw.div`
+  font-m-14
+`;

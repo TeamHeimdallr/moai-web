@@ -21,5 +21,9 @@ export const TooltipEnoughXrp = ({ id, ...rest }: Props) => {
   );
 };
 
-const Wrapper = tw.div`flex flex-col w-290`;
-const Description = tw.div`font-m-14`;
+const Wrapper = tw.div`
+  flex flex-col w-290
+`;
+const Description = tw.div`
+  font-m-14
+`;

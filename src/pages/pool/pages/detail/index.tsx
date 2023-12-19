@@ -23,32 +23,30 @@ const PoolDetailMainPage = () => {
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   return (
-    <>
-      <Wrapper>
-        <GnbWrapper banner={!!opened}>
-          <Gnb />
-        </GnbWrapper>
-        <InnerWrapper banner={!!opened}>
-          <ContentOuterWrapper>
-            <PoolHeader />
-            <ContentWrapper>
-              <LeftContentWrapper>
-                <PoolInfo />
-                <PoolCompositions />
-                <PoolInfoChart />
-                <PoolLiquidityProvisions />
-                <PoolSwapHistories />
-              </LeftContentWrapper>
-              <RightContentWrapper>
-                <UserPoolBalances />
-                {/* <CampaignTool /> */}
-              </RightContentWrapper>
-            </ContentWrapper>
-          </ContentOuterWrapper>
-        </InnerWrapper>
-        <Footer />
-      </Wrapper>
-    </>
+    <Wrapper>
+      <GnbWrapper banner={!!opened}>
+        <Gnb />
+      </GnbWrapper>
+      <InnerWrapper banner={!!opened}>
+        <ContentOuterWrapper>
+          <PoolHeader />
+          <ContentWrapper>
+            <LeftContentWrapper>
+              <PoolInfo />
+              <PoolCompositions />
+              <PoolInfoChart />
+              <PoolLiquidityProvisions />
+              <PoolSwapHistories />
+            </LeftContentWrapper>
+            <RightContentWrapper>
+              <UserPoolBalances />
+              {/* <CampaignTool /> */}
+            </RightContentWrapper>
+          </ContentWrapper>
+        </ContentOuterWrapper>
+      </InnerWrapper>
+      <Footer />
+    </Wrapper>
   );
 };
 

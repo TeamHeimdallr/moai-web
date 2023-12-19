@@ -9,7 +9,6 @@ import LogoText from '~/assets/logos/logo-text.svg?react';
 import { GNB_MENU } from '~/constants';
 
 import { ButtonPrimaryMedium, ButtonPrimarySmallBlack } from '~/components/buttons/primary';
-// import { Notification } from '~/components/notification';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
 import { useBanner } from '~/hooks/components/use-banner';
@@ -18,8 +17,8 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
-import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
+import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { Account } from '../account';
 import { AlertBanner } from '../alerts/banner';
@@ -41,9 +40,10 @@ export const Gnb = () => {
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
-  const { setWalletType } = useWalletTypeStore();
   const { evm, xrp } = useConnectedWallet();
   const { text, type: bannerType, connectWallet, switchNetwork } = useBanner();
+
+  const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
   const { t } = useTranslation();
 
@@ -92,7 +92,6 @@ export const Gnb = () => {
             <ButtonWrapper>
               {evm.address || xrp.address ? (
                 <ConnectedButton>
-                  {/* <Notification /> */}
                   <Account />
                 </ConnectedButton>
               ) : (
@@ -101,10 +100,7 @@ export const Gnb = () => {
                   text={t('Connect wallet')}
                   isLoading={!!opened}
                   onClick={() => {
-                    setWalletType({
-                      evm: currentNetwork !== NETWORK.XRPL,
-                      xrpl: currentNetwork === NETWORK.XRPL,
-                    });
+                    setWalletConnectorType({ network: currentNetwork });
                     open();
                   }}
                 />
@@ -127,20 +123,25 @@ export const Gnb = () => {
 };
 
 const Wrapper = styled.div(() => [tw`flex items-center flex-col w-full z-20 bg-transparent`]);
-const BannerWrapper = tw.div`w-full`;
-const NavWrapper = tw.div`w-full flex items-center justify-between 
+const BannerWrapper = tw.div`
+  w-full
+`;
+const NavWrapper = tw.div`
+  w-full flex items-center justify-between 
   px-20 py-16
-  mlg:(px-24 py-20)`;
-const LogoWrapper = tw.div`clickable h-20`;
+  mlg:(px-24 py-20)
+`;
+const LogoWrapper = tw.div`
+  clickable h-20
+`;
 
 const ContentWrapper = tw.div`
   flex items-center gap-24
 `;
 
 const ConnectedButton = tw.div`
-  flex 
-  gap-4 
-  mlg:gap-8
+  flex gap-4 
+  mlg:(gap-8)
 `;
 
 interface MenuProps {
@@ -156,7 +157,10 @@ const MenuWrapper = styled.div(({ selected, disabled }: MenuProps) => [
 const ButtonWrapper = tw.div`
   flex 
   gap-4 
-  mlg:gap-8
+  mlg:(gap-8)
 `;
 
-const HamburgerWrapper = tw.div`flex-center p-8 rounded-10 bg-neutral-10 clickable hover:(bg-neutral-20)`;
+const HamburgerWrapper = tw.div`
+  flex-center p-8 rounded-10 bg-neutral-10 clickable
+  hover:(bg-neutral-20)
+`;

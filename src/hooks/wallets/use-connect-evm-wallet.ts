@@ -32,6 +32,9 @@ export const useConnectWithEvmWallet = () => {
     } else connectByWalletConnect(true);
   };
 
+  const metamaskConnected = isConnected && connectedConnector === 'injected';
+  const walletConnectionConnected = isConnected && connectedConnector !== 'injected';
+
   return {
     connect,
     connectByWalletConnect: () => connectByWalletConnect(true),
@@ -39,6 +42,10 @@ export const useConnectWithEvmWallet = () => {
     disconnect,
     connectedConnector,
     isConnected,
+
+    metamaskConnected,
+    walletConnectionConnected,
+
     isConnecting: isConnecting || isLoading,
     isConnectError: error,
     isInstalled: !!window.ethereum,

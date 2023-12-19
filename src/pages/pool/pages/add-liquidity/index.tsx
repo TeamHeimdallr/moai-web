@@ -24,26 +24,24 @@ const PoolDetailAddLiquidityPage = () => {
   useRequirePrarams([!!id], () => navigate(-1));
 
   return (
-    <>
-      <Wrapper>
-        <GnbWrapper banner={!!opened}>
-          <Gnb />
-        </GnbWrapper>
-        <InnerWrapper>
-          <ContentWrapper>
-            <Header>
-              <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
-              <Title>{t('Add liquidity')}</Title>
-            </Header>
+    <Wrapper>
+      <GnbWrapper banner={!!opened}>
+        <Gnb />
+      </GnbWrapper>
+      <InnerWrapper>
+        <ContentWrapper>
+          <Header>
+            <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
+            <Title>{t('Add liquidity')}</Title>
+          </Header>
 
-            <LiquidityWrapper>
-              <AddLiquidityInputGroup />
-            </LiquidityWrapper>
-          </ContentWrapper>
-        </InnerWrapper>
-        <Footer />
-      </Wrapper>
-    </>
+          <LiquidityWrapper>
+            <AddLiquidityInputGroup />
+          </LiquidityWrapper>
+        </ContentWrapper>
+      </InnerWrapper>
+      <Footer />
+    </Wrapper>
   );
 };
 

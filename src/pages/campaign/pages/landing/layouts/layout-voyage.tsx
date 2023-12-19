@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import Skeleton from 'react-loading-skeleton';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
 import { IconTokenMoai, IconTokenRoot, IconTokenXrp } from '~/assets/icons';
 
@@ -9,8 +9,8 @@ import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
-import { POPUP_ID } from '~/types';
+import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { Pending } from '../components/pending';
 import { TokenList } from '../components/token-list';
@@ -22,22 +22,27 @@ export const LayoutVoyage = () => (
 );
 
 const _LayoutVoyage = () => {
-  const { xrp, fpass } = useConnectedWallet();
-  const { setWalletType } = useWalletTypeStore();
-  const { open: campaignOpen } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
-  const { open } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { xrp, evm } = useConnectedWallet();
+
+  const { setWalletConnectorType } = useWalletConnectorTypeStore();
+
+  const { open } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
   const { t } = useTranslation();
 
   // TODO : connect API
   const myDepositBalance = 123123;
   const myDepositValue = myDepositBalance;
+
   const myMoaiRewardBalance = 123123;
   const myMoaiRewardValue = myMoaiRewardBalance;
+
   const myRootRewardBalance = 123123;
   const myRootRewardValue = myRootRewardBalance;
 
-  const bothConnected = xrp.isConnected && fpass.isConnected;
-  const isEmpty = !bothConnected || !(myDepositBalance > 0);
+  // TODO: handle fpass
+  const bothConnected = xrp.isConnected && evm.isConnected;
+  const isEmpty = bothConnected && myDepositBalance <= 0;
+
   const emptyText = !bothConnected
     ? 'To check your voyage, connect both your XRP\n wallet and Root Network wallet.'
     : "You haven't activated your $XRP yet.";
@@ -45,91 +50,96 @@ const _LayoutVoyage = () => {
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 
   const handleClick = () => {
-    if (!isEmpty) return;
-    if (!bothConnected) {
-      if (!xrp.isConnected && !fpass.isConnected) {
-        campaignOpen();
-        return;
-      }
-      setWalletType({ evm: !fpass.isConnected, xrpl: !xrp.isConnected });
-      open();
+    if (isEmpty) {
+      // TODO: activate xrp
       return;
     }
-    // TODO : connect function
-    console.log('navigate setp1');
+
+    if (bothConnected) {
+      // TODO: navigate to step3
+      return;
+    }
+
+    if (!xrp.isConnected) setWalletConnectorType({ network: NETWORK.XRPL });
+    else if (!evm.isConnected) setWalletConnectorType({ network: NETWORK.THE_ROOT_NETWORK });
+
+    open();
   };
 
   return (
     <Wrapper>
-      <MyInfoWrapper>
-        <Title>{t('My Voyage')}</Title>
-        {isEmpty && (
-          <Empty>
-            <TextWrapper>{emptyText}</TextWrapper>
-            <ButtonWrapper>
-              <ButtonPrimaryMedium
-                text={t(buttonText)}
-                buttonType="outlined"
-                onClick={handleClick}
-              />
-            </ButtonWrapper>
-          </Empty>
-        )}
+      <InnerWrapper>
+        <MyInfoWrapper>
+          <Title>{t('My Voyage')}</Title>
 
-        {!isEmpty && (
-          <CardWrapper>
-            <TokenCard>
-              <TokenCardTitle>{t('My liquidity')}</TokenCardTitle>
-              <TokenList
-                token="XRP"
-                balance={myDepositBalance}
-                value={myDepositValue}
-                image={<IconTokenXrp width={36} height={36} />}
-                button={
-                  <ButtonPrimaryLarge
-                    text={t('Withdraw')}
-                    buttonType="outlined"
-                    onClick={handleClick}
-                  />
-                }
-              />
-            </TokenCard>
-            <TokenCard>
-              <TokenCardTitle>{t('Rewards')}</TokenCardTitle>
-              <TokenListWrapper>
-                <TokenList
-                  token="veMOI"
-                  balance={myMoaiRewardBalance}
-                  value={myMoaiRewardValue}
-                  image={<IconTokenMoai width={36} height={36} />}
-                  button={
-                    <ButtonPrimaryLarge
-                      text={t('Coming soon')}
-                      buttonType="filled"
-                      disabled
-                      onClick={() => console.log('claim')}
-                    />
-                  }
+          {isEmpty && (
+            <Empty>
+              <TextWrapper>{emptyText}</TextWrapper>
+              <ButtonWrapper>
+                <ButtonPrimaryMedium
+                  text={t(buttonText)}
+                  buttonType="outlined"
+                  onClick={handleClick}
                 />
+              </ButtonWrapper>
+            </Empty>
+          )}
+
+          {!isEmpty && (
+            <CardWrapper>
+              <TokenCard>
+                <TokenCardTitle>{t('My liquidity')}</TokenCardTitle>
                 <TokenList
-                  token="ROOT"
-                  balance={myRootRewardBalance}
-                  value={myRootRewardValue}
-                  image={<IconTokenRoot width={36} height={36} />}
+                  token="XRP"
+                  balance={myDepositBalance}
+                  value={myDepositValue}
+                  image={<IconTokenXrp width={36} height={36} />}
                   button={
                     <ButtonPrimaryLarge
-                      text={t('Claim')}
+                      text={t('Withdraw')}
                       buttonType="outlined"
-                      onClick={() => console.log('claim')}
+                      onClick={handleClick}
                     />
                   }
                 />
-              </TokenListWrapper>
-            </TokenCard>
-          </CardWrapper>
-        )}
-      </MyInfoWrapper>
-      {!isEmpty && <Pending />}
+              </TokenCard>
+              <TokenCard col2>
+                <TokenCardTitle>{t('Rewards')}</TokenCardTitle>
+                <TokenListWrapper>
+                  <TokenList
+                    token="veMOI"
+                    balance={myMoaiRewardBalance}
+                    value={myMoaiRewardValue}
+                    image={<IconTokenMoai width={36} height={36} />}
+                    button={
+                      <ButtonPrimaryLarge
+                        text={t('Coming soon')}
+                        buttonType="filled"
+                        disabled
+                        onClick={() => console.log('claim')}
+                      />
+                    }
+                  />
+                  <TokenList
+                    token="ROOT"
+                    balance={myRootRewardBalance}
+                    value={myRootRewardValue}
+                    image={<IconTokenRoot width={36} height={36} />}
+                    button={
+                      <ButtonPrimaryLarge
+                        text={t('Claim')}
+                        buttonType="outlined"
+                        onClick={() => console.log('claim')}
+                      />
+                    }
+                  />
+                </TokenListWrapper>
+              </TokenCard>
+            </CardWrapper>
+          )}
+        </MyInfoWrapper>
+        {!isEmpty && <Pending />}
+      </InnerWrapper>
     </Wrapper>
   );
 };
@@ -151,14 +161,19 @@ const _LayoutVoyageSkeleton = () => {
 };
 
 const Wrapper = tw.div`
-  w-full flex flex-col items-center justify-center pt-60 gap-24 text-neutral-100 mb-120
+  w-full flex-center pt-60 pb-120 text-neutral-100 
   md:(px-20)
   xxl:(px-80)
+`;
+
+const InnerWrapper = tw.div`
+  flex-center flex-col w-full max-w-1280 gap-24
 `;
 
 const MyInfoWrapper = tw.div`
   w-full flex flex-col gap-24 justify-center
 `;
+
 const CardWrapper = tw.div`
   w-full flex flex-col
   gap-20
@@ -166,9 +181,15 @@ const CardWrapper = tw.div`
   xl:(gap-40)
 `;
 
-const TokenCard = tw.div`
-  w-full flex flex-wrap flex-col gap-24 p-24 pt-20 bg-neutral-10 rounded-12
-`;
+interface TokenCardProps {
+  col2?: boolean;
+}
+const TokenCard = styled.div<TokenCardProps>(({ col2 }) => [
+  tw`
+    w-full flex flex-wrap flex-col gap-24 p-24 pt-20 bg-neutral-10 rounded-12
+  `,
+  col2 && tw`lg:(col-span-2)`,
+]);
 
 const TokenCardTitle = tw.div`
   font-b-18

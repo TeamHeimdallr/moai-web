@@ -16,8 +16,9 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
+import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { POPUP_ID } from '~/types';
 
 export const UserPoolBalances = () => {
@@ -27,11 +28,13 @@ export const UserPoolBalances = () => {
   const { network, id } = useParams();
   const { t } = useTranslation();
 
-  const { isFpass, isEvm, isXrp } = useNetwork();
+  const { selectedNetwork, isFpass, isEvm, isXrp } = useNetwork();
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { evm, xrp, fpass } = useConnectedWallet();
-  const { setWalletType } = useWalletTypeStore();
+  const { setWalletConnectorType } = useWalletConnectorTypeStore();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { open: openFuturepassCreate, opened: futurepassCreateOpened } = usePopup(
     POPUP_ID.FUTUREPASS_CREATE
@@ -106,7 +109,7 @@ export const UserPoolBalances = () => {
               text={t('Connect wallet')}
               isLoading={!!opened}
               onClick={() => {
-                setWalletType({ xrpl: !isEvm, evm: isEvm });
+                setWalletConnectorType({ network: currentNetwork });
                 open();
               }}
             />

@@ -27,31 +27,37 @@ const _LayoutMain = () => {
 
   return (
     <Wrapper>
-      <ContentWrapper>
-        <Title>{t('Activate your $XRP')}</Title>
-        <LogoWrapper>
-          <Logo1 className="svg-shadow" width={isMD ? 249 : 149} height={isMD ? 70 : 24} />
-          <Logo2 className="svg-shadow" width={isMD ? 489 : 293} height={isMD ? 70 : 24} />
-        </LogoWrapper>
-        <TextMain>{t('campaign-landing-main-text')}</TextMain>
-        <InfoWrapper>
-          <Info>
-            <Label>Total value locked</Label>
-            <Text>${formatNumberWithComma(value)}</Text>
-          </Info>
-          <Info>
-            <Label>{t('Expected APY')}</Label>
-            <Text>{formatPercent(apy)}</Text>
-          </Info>
-        </InfoWrapper>
-      </ContentWrapper>
+      <InnerWrapper>
+        <ContentWrapper>
+          <Title>{t('Activate your $XRP')}</Title>
+          <LogoWrapper>
+            <Logo1 className="svg-shadow" width={isMD ? 249 : 149} height={isMD ? 70 : 24} />
+            <Logo2 className="svg-shadow" width={isMD ? 489 : 293} height={isMD ? 70 : 24} />
+          </LogoWrapper>
+          <TextMain>
+            {t('campaign-landing-main-text')}
+            {/* TODO: change to quest datetime */}
+            <QuestDate>28th Dec, 2023 ~ 28th Jan, 2024 (UTC)</QuestDate>
+          </TextMain>
+          <InfoWrapper>
+            <Info>
+              <Label>Total value locked</Label>
+              <Text>${formatNumberWithComma(value)}</Text>
+            </Info>
+            <Info>
+              <Label>{t('Expected APY')}</Label>
+              <Text>{formatPercent(apy)}</Text>
+            </Info>
+          </InfoWrapper>
+        </ContentWrapper>
 
-      <ButtonWrapper isKorean={i18n.language === 'ko'}>
-        <ButtonPrimaryLarge
-          text={t('Activate $XRP')}
-          onClick={() => window.open('/campaign/step', '_blank')}
-        />
-      </ButtonWrapper>
+        <ButtonWrapper isKorean={i18n.language === 'ko'}>
+          <ButtonPrimaryLarge
+            text={t('Activate $XRP')}
+            onClick={() => window.open('/campaign/step', '_blank')}
+          />
+        </ButtonWrapper>
+      </InnerWrapper>
     </Wrapper>
   );
 };
@@ -62,53 +68,65 @@ const _LayoutMainSkeleton = () => {
 
   return (
     <Wrapper>
-      <ContentWrapper>
-        <Title>{t('Activate your $XRP')}</Title>
-        <LogoWrapper>
-          <Logo1 className="svg-shadow" width={isMD ? 249 : 149} height={isMD ? 70 : 24} />
-          <Logo2 className="svg-shadow" width={isMD ? 489 : 293} height={isMD ? 70 : 24} />
-        </LogoWrapper>
-        <TextMain>{t('campaign-landing-main-text')}</TextMain>
-        <InfoWrapper>
-          <Skeleton
-            width={isMD ? '400px' : '100%'}
-            height={100}
-            highlightColor="#cccccc"
-            baseColor="#b3b3b3"
-            style={{
-              opacity: 0.5,
-              borderRadius: 12,
-              backdropFilter: 'blur(2px)',
-            }}
-          />
-          <Skeleton
-            width={isMD ? '400px' : '100%'}
-            height={100}
-            highlightColor="#cccccc"
-            baseColor="#b3b3b3"
-            style={{
-              opacity: 0.5,
-              borderRadius: 12,
-              backdropFilter: 'blur(2px)',
-            }}
-          />
-        </InfoWrapper>
-      </ContentWrapper>
+      <InnerWrapper>
+        <ContentWrapper>
+          <Title>{t('Activate your $XRP')}</Title>
+          <LogoWrapper>
+            <Logo1 className="svg-shadow" width={isMD ? 249 : 149} height={isMD ? 70 : 24} />
+            <Logo2 className="svg-shadow" width={isMD ? 489 : 293} height={isMD ? 70 : 24} />
+          </LogoWrapper>
+          <TextMain>
+            {t('campaign-landing-main-text')}
+            {/* TODO: change to quest datetime */}
+            <QuestDate>28th Dec, 2023 ~ 28th Jan, 2024 (UTC)</QuestDate>
+          </TextMain>
+          <InfoWrapper>
+            <Skeleton
+              width={isMD ? '400px' : '100%'}
+              height={100}
+              highlightColor="#cccccc"
+              baseColor="#b3b3b3"
+              style={{
+                opacity: 0.5,
+                borderRadius: 12,
+                backdropFilter: 'blur(2px)',
+              }}
+            />
+            <Skeleton
+              width={isMD ? '400px' : '100%'}
+              height={100}
+              highlightColor="#cccccc"
+              baseColor="#b3b3b3"
+              style={{
+                opacity: 0.5,
+                borderRadius: 12,
+                backdropFilter: 'blur(2px)',
+              }}
+            />
+          </InfoWrapper>
+        </ContentWrapper>
 
-      <ButtonWrapper isKorean={i18n.language === 'ko'}>
-        <ButtonPrimaryLarge
-          text={t('Activate $XRP')}
-          onClick={() => window.open('/campaign/step', '_blank')}
-        />
-      </ButtonWrapper>
+        <ButtonWrapper isKorean={i18n.language === 'ko'}>
+          <ButtonPrimaryLarge
+            text={t('Activate $XRP')}
+            onClick={() => window.open('/campaign/step', '_blank')}
+          />
+        </ButtonWrapper>
+      </InnerWrapper>
     </Wrapper>
   );
 };
 
 export const Wrapper = tw.div`
-  w-full px-20 pt-112 pb-40 flex flex-col gap-40 text-neutral-100 bg-no-repeat bg-campaign bg-cover bg-center
-  md:(gap-40 pt-273 bg-right bg-top)
+  w-full flex text-neutral-100 bg-no-repeat bg-campaign justify-center
+  px-20 pt-96 pb-40 gap-40 bg-cover bg-center
+  md:(gap-40 pt-160 pb-60 bg-right bg-top)
   xxl:(px-80)
+`;
+
+const InnerWrapper = tw.div`
+  flex flex-col justify-center w-full max-w-1280 gap-40
+  md:(h-700)
 `;
 
 const ContentWrapper = tw.div`
@@ -117,7 +135,9 @@ const ContentWrapper = tw.div`
   md:(w-full)
   lg:(w-840)
 `;
-const Title = tw.div`font-b-20`;
+const Title = tw.div`
+  font-b-20
+`;
 
 const LogoWrapper = tw.div`
   flex gap-12 flex-col
@@ -129,9 +149,14 @@ interface ButtonProps {
 const ButtonWrapper = styled.div<ButtonProps>(({ isKorean }) => [isKorean ? tw`w-183` : tw`w-156`]);
 
 const TextMain = tw.div`
-  w-full font-r-14
-  md:(font-r-16 whitespace-pre-line)
+  w-full font-r-14 flex flex-col gap-12
+  md:(font-r-16 whitespace-pre-line gap-16)
 `;
+
+const QuestDate = tw.div`
+  text-primary-60 font-bold
+`;
+
 const InfoWrapper = tw.div`
   flex gap-20 flex-col
   md:(flex-row)

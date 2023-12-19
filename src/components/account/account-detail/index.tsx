@@ -26,8 +26,8 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull, truncateAddress } from '~/utils';
+import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { FuturepassCreatePopup } from '../futurepass-create-popup';
@@ -38,7 +38,7 @@ export const AccountDetail = () => {
 
   const { evm, xrp, fpass } = useConnectedWallet();
   const { selectedNetwork, name, isEvm, isFpass, isXrp } = useNetwork();
-  const { setWalletType } = useWalletTypeStore();
+  const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
@@ -92,7 +92,7 @@ export const AccountDetail = () => {
       ) : (
         <AccountNotConnected
           onClick={() => {
-            setWalletType({ xrpl: true, evm: false });
+            setWalletConnectorType({ network: NETWORK.XRPL });
             openConnectWallet();
           }}
           key="xrpl-not-connected"
@@ -195,7 +195,7 @@ export const AccountDetail = () => {
               if (IS_MAINNET) window.open('https://futurepass.futureverse.app/stuff/');
               else openFuturepassCreate();
             } else {
-              setWalletType({ xrpl: false, evm: true });
+              setWalletConnectorType({ network: NETWORK.THE_ROOT_NETWORK });
               openConnectWallet();
             }
           }}
@@ -240,7 +240,7 @@ export const AccountDetail = () => {
       ) : (
         <AccountNotConnected
           onClick={() => {
-            setWalletType({ xrpl: false, evm: true });
+            setWalletConnectorType({ network: NETWORK.EVM_SIDECHAIN });
             openConnectWallet();
           }}
           key="evm-not-connected"

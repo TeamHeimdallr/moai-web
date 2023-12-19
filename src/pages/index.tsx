@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes as ReactRoutes, useParams } from 'react-router-dom';
+import { Navigate, Route, Routes as ReactRoutes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import { IS_LANDING } from '~/constants';
@@ -7,11 +7,7 @@ import { ConnectWallet } from '~/components/connect-wallet';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
-import { useNetwork } from '~/hooks/contexts/use-network';
-import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
-import { NETWORK, POPUP_ID } from '~/types';
+import { POPUP_ID } from '~/types';
 
 import Campaign from './campaign/pages';
 import Home from './home';
@@ -22,17 +18,7 @@ import Swap from './swap';
 
 const Page = () => {
   useConnectXrpl();
-
-  const { network } = useParams();
-  const { selectedNetwork } = useNetwork();
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-
-  const { evm, xrpl } = useWalletTypeStore();
-  const { xrp: xrpWallet, evm: evmWallet } = useConnectedWallet();
-
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
-
-  const bothDisconnected = !xrpWallet?.isConnected && !evmWallet?.isConnected;
 
   return (
     <>
@@ -58,12 +44,7 @@ const Page = () => {
       </ReactRoutes>
 
       <ToastContainer />
-      {connectWalletOpened && (
-        <ConnectWallet
-          evm={(bothDisconnected && currentNetwork !== NETWORK.XRPL) || evm}
-          xrpl={(bothDisconnected && currentNetwork === NETWORK.XRPL) || xrpl}
-        />
-      )}
+      {connectWalletOpened && <ConnectWallet />}
     </>
   );
 };

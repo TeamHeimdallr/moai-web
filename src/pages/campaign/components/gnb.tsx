@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import tw, { styled } from 'twin.macro';
+import tw from 'twin.macro';
 
 import LogoText from '~/assets/logos/logo-text.svg?react';
 
@@ -39,9 +39,7 @@ export const Gnb = () => {
             style={{ padding: '9px 24px' }}
             text={t('Connect wallet')}
             isLoading={!!opened}
-            onClick={() => {
-              open();
-            }}
+            onClick={() => open()}
           />
         )}
         <LanguageChange />
@@ -50,12 +48,18 @@ export const Gnb = () => {
   );
 };
 
-const Wrapper = styled.div(() => [
-  tw`flex items-end justify-between items-center w-full px-24 py-20 z-20 bg-transparent`,
-]);
+const Wrapper = tw.div`
+  flex items-end justify-between items-center w-full px-24 py-20 z-20 bg-transparent
+`;
+const LogoWrapper = tw.div`
+  clickable h-20
+`;
 
-const LogoWrapper = tw.div`clickable h-20`;
-
-const ConnectedButton = tw.div`flex gap-4 lg:gap-8`;
-
-const ButtonWrapper = tw.div`flex gap-4 lg:gap-8`;
+const ConnectedButton = tw.div`
+  flex gap-4
+  lg:(gap-8)
+`;
+const ButtonWrapper = tw.div`
+  flex gap-4
+  lg:(gap-8)
+`;

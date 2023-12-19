@@ -2,87 +2,52 @@ import { useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { styled } from 'twin.macro';
 
-import { imageWalletCrossmark, imageWalletGem, imageWalletMetamask } from '~/assets/images';
-
 import { Popup } from '~/components/popup';
 
 import { usePopup } from '~/hooks/components/use-popup';
-import {
-  useConnectWithCrossmarkWallet,
-  useConnectWithEvmWallet,
-  useConnectWithGemWallet,
-} from '~/hooks/wallets';
+import { useConnectors } from '~/hooks/wallets/use-connectors';
+import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
+import { NETWORK } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
-interface Wallet {
-  name: string;
-  description: string;
-  image: string;
-  type: string;
-  onClick: () => void;
-}
 export const CampaignConnectWalletPopup = () => {
   const { close } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
-  const { connect: connectEvm } = useConnectWithEvmWallet();
-  const { connect: connectXrpCrossmark } = useConnectWithCrossmarkWallet();
-  const { connect: connectXrpGem } = useConnectWithGemWallet();
+  const { network } = useWalletConnectorTypeStore();
+  const { connectors } = useConnectors();
 
-  const [selectedTab, selectTab] = useState<'evm' | 'xrpl'>('xrpl');
-
-  const wallets: Wallet[] = [
-    {
-      name: 'Metamask',
-      description: 'Supports The Root Network and EVM Sidechain',
-      image: imageWalletMetamask,
-      onClick: connectEvm,
-      type: 'evm',
-    },
-    {
-      name: 'Crossmark Wallet',
-      description: 'Supports XRPL network',
-      image: imageWalletCrossmark,
-      onClick: connectXrpCrossmark,
-      type: 'xrpl',
-    },
-    {
-      name: 'Gem Wallet',
-      description: 'Supports XRPL network',
-      image: imageWalletGem,
-      onClick: connectXrpGem,
-      type: 'xrpl',
-    },
-  ];
+  const [selectedTab, selectTab] = useState<NETWORK>(network || NETWORK.XRPL);
+  const targetConnectors = connectors.filter(w => w.network.includes(selectedTab));
 
   return (
     <Popup id={POPUP_ID.CAMPAIGN_CONNECT_WALLET} title="Connect wallet">
       <Wrapper>
         {
           <TabWrapper>
-            <Tab selected={selectedTab === 'xrpl'} onClick={() => selectTab('xrpl')}>
+            <Tab selected={selectedTab === NETWORK.XRPL} onClick={() => selectTab(NETWORK.XRPL)}>
               XRPL
             </Tab>
-            <Tab selected={selectedTab === 'evm'} onClick={() => selectTab('evm')}>
+            <Tab
+              selected={selectedTab === NETWORK.THE_ROOT_NETWORK}
+              onClick={() => selectTab(NETWORK.THE_ROOT_NETWORK)}
+            >
               The Root Network
             </Tab>
           </TabWrapper>
         }
-        {wallets.map(w =>
-          w.type === selectedTab ? (
-            <Wallet
-              key={w.name}
-              onClick={() => {
-                w.onClick();
-                close();
-              }}
-            >
-              <WalletImage src={w.image} alt={w.name} />
-              <NameWrapper>
-                <Name>{w.name}</Name>
-                <Description>{w.description}</Description>
-              </NameWrapper>
-            </Wallet>
-          ) : null
-        )}
+        {targetConnectors.map(w => (
+          <Wallet
+            key={w.name}
+            onClick={() => {
+              w.connect();
+              close();
+            }}
+          >
+            <WalletImage src={w.image} alt={w.name} />
+            <NameWrapper>
+              <Name>{w.name}</Name>
+            </NameWrapper>
+          </Wallet>
+        ))}
       </Wrapper>
     </Popup>
   );
@@ -112,7 +77,4 @@ const NameWrapper = tw.div`
 `;
 const Name = tw.div`
   font-m-16 text-neutral-100
-`;
-const Description = tw.div`
-  font-r-12 text-neutral-60
 `;

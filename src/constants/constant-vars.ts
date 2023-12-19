@@ -1,6 +1,5 @@
 import { IGnbMenu } from '~/types';
 
-// TODO: remove this when mainnet2 is ready
 export const GNB_MENU: IGnbMenu[] = [
   {
     id: 'pool',
@@ -11,6 +10,13 @@ export const GNB_MENU: IGnbMenu[] = [
     id: 'swap',
     text: 'Swap',
     path: '/swap',
+  },
+  {
+    id: 'lending',
+    text: 'Lending',
+    path: '/',
+    disabled: true,
+    commingSoon: true,
   },
   {
     id: 'launchpad',

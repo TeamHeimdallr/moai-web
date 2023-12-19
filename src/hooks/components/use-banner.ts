@@ -7,7 +7,7 @@ import { useAccount, useNetwork as useNetworkWagmi } from 'wagmi';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
+import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { theRootNetwork, xrpEvmSidechain } from '~/configs/evm-network';
@@ -30,7 +30,7 @@ export const useBanner = () => {
 
   const { selectedNetwork } = useNetwork();
   const { fpass, evm, xrp, anyAddress } = useConnectedWallet();
-  const { setWalletType } = useWalletTypeStore();
+  const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
   const isSwap = location.pathname.includes('swap');
   const isRewards = location.pathname.includes('rewards');
@@ -111,10 +111,7 @@ export const useBanner = () => {
   ]);
 
   const connectWallet = () => {
-    setWalletType({
-      xrpl: selectedNetwork === NETWORK.XRPL,
-      evm: selectedNetwork !== NETWORK.XRPL,
-    });
+    setWalletConnectorType({ network: selectedNetwork });
     openConnectWallet();
   };
 
