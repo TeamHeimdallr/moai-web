@@ -15,6 +15,7 @@ import { TOOLTIP_ID } from '~/types';
 export const MoveStep = () => {
   const { step, setStep } = useCampaignStepStore();
   const { xrp, evm } = useConnectedWallet();
+
   const nextDisabled = useMemo(() => {
     if (step === 1) {
       return !xrp.isConnected;
@@ -22,8 +23,9 @@ export const MoveStep = () => {
     if (step === 2) {
       return !evm.isConnected;
     }
-    // TODP : add condition step3, step4
+    // TODO: add condition step3, step4
   }, [evm.isConnected, step, xrp.isConnected]);
+
   return (
     <Wrapper>
       <ContentWrapper>

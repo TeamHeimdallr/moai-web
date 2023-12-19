@@ -150,6 +150,7 @@
   "Withdrawal comfirmed!": "Withdrawal comfirmed!",
   "withdraw-success-message": "Successfully withdrawned from {{pool}} Pool",
   "Exceeds wallet balance": "Exceeds wallet balance",
+  "Too small amount": "Too small amount",
 
   "Swap": "Swap",
   "Select token": "Select token",
@@ -232,6 +233,8 @@
   "tooltip-text-enough-xrp": "If you already have enough $XRP in your Root Network wallet, go to the next step!",
   "Bridge confirmed!": "Bridge confirmed!",
   "bridge-success-message": "Successfully bridged your $XRP to The Root Network",
+  "Bridge failed!": "Bridge failed",
+  "bridge-fail-message": "Bridge your $XRP has failed. Please try again.",
   "Continue to add liquidity": "Continue to add liquidity",
 
   "campaign-add-liquidity-success-message": "Successfully added liquidity to liquidity voyage.",

@@ -33,3 +33,9 @@ export const API_URL = IS_MAINNET
   : IS_DEVNET
   ? 'https://api-devnet.moai-finance.xyz'
   : 'http://localhost:8080';
+
+const XRPL_BRIDGE_ADDRESS_PORCINI = import.meta.env.VITE_XRPL_BRIDGE_ADDRESS_PORCINI;
+const XRPL_BRIDGE_ADDRESS_MAINNET = import.meta.env.VITE_XRPL_BRIDGE_ADDRESS_MAINNET;
+export const XRPL_BRIDGE_ADDRESS = IS_MAINNET
+  ? XRPL_BRIDGE_ADDRESS_MAINNET
+  : XRPL_BRIDGE_ADDRESS_PORCINI;

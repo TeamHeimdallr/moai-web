@@ -14,7 +14,7 @@ interface ListSkeletonProps {
 export const ListSkeleton = ({ title, network, height }: ListSkeletonProps) => {
   const networkName = network === NETWORK.THE_ROOT_NETWORK ? 'The Root Network' : 'XRPL';
   return (
-    <Wrapper height={String(height)}>
+    <Wrapper height={height}>
       {title && (
         <TitleWrapper>
           <Header>{title}</Header>
@@ -38,7 +38,7 @@ export const ListSkeleton = ({ title, network, height }: ListSkeletonProps) => {
 };
 
 interface WrapperProps {
-  height?: string;
+  height?: number;
 }
 
 const Wrapper = styled.div<WrapperProps>(({ height }) => [
