@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
@@ -18,7 +19,14 @@ interface Meta {
   id: string;
   poolId: string;
 }
-export const MyLiquidityLayout = () => {
+
+export const MyLiquidityLayout = () => (
+  <Suspense fallback={<_MyLiquidityLayoutSkeleton />}>
+    <_MyLiquidityLayout />
+  </Suspense>
+);
+
+const _MyLiquidityLayout = () => {
   const {
     tableColumns,
     tableData,
@@ -69,6 +77,37 @@ export const MyLiquidityLayout = () => {
           hasMore={hasNextPage}
           handleMoreClick={fetchNextPage}
           handleClick={meta => handleMobileRowClick(meta.network, meta.poolId)}
+        />
+      )}
+    </Wrapper>
+  );
+};
+
+const _MyLiquidityLayoutSkeleton = () => {
+  const { tableColumns, tableData, mobileTableData, mobileTableColumn } = useTableMyLiquidityPool();
+
+  const { isMD } = useMediaQuery();
+  const { t } = useTranslation();
+
+  return (
+    <Wrapper>
+      <TitleWrapper>
+        <Title>{t('My liquidity in Moai pools')}</Title>
+      </TitleWrapper>
+      {isMD ? (
+        <Table
+          skeletonHeight={210}
+          data={tableData}
+          columns={tableColumns}
+          ratio={[2, 1, 1, 1]}
+          type="darker"
+        />
+      ) : (
+        <TableMobile
+          skeletonHeight={210}
+          data={mobileTableData}
+          columns={mobileTableColumn}
+          type="darker"
         />
       )}
     </Wrapper>
