@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Skeleton from 'react-loading-skeleton';
 import { differenceInSeconds } from 'date-fns';
 import { isEqual } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
@@ -7,6 +8,8 @@ import tw, { styled } from 'twin.macro';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
+
+import { ASSET_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
@@ -20,7 +23,13 @@ import { POPUP_ID } from '~/types';
 
 import { LayoutMainCampaign } from './layout-main-campaign';
 
-export const MainLayout = () => {
+export const MainLayout = () => (
+  <Suspense fallback={<_MainLayoutSkeleton />}>
+    <_MainLayout />
+  </Suspense>
+);
+
+const _MainLayout = () => {
   const [totalValue, setTotalValue] = useState<string>('0');
 
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
@@ -114,6 +123,54 @@ export const MainLayout = () => {
         <SubTitleWrapper>
           <Label>{t('My Moai Balance')}</Label>
           <SubTitle>{`$${totalValue}`}</SubTitle>
+        </SubTitleWrapper>
+      ) : (
+        <>
+          <Title>{'Your Universal Gateway to the\nMulti-chain Liquidity'}</Title>
+          <ButtonWrapper>
+            <ButtonPrimaryLarge
+              text={t('Connect wallet')}
+              buttonType="outlined"
+              isLoading={!!opened}
+              onClick={() => {
+                setWalletConnectorType({ network: selectedNetwork });
+                open();
+              }}
+            />
+          </ButtonWrapper>
+        </>
+      )}
+    </MainWrapper>
+  );
+};
+
+const _MainLayoutSkeleton = () => {
+  const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
+
+  const { setWalletConnectorType } = useWalletConnectorTypeStore();
+  const { selectedNetwork } = useNetwork();
+  const { evm, xrp } = useConnectedWallet();
+
+  const isConnected = !!evm.address || !!xrp.address;
+
+  const { t } = useTranslation();
+
+  return (
+    <MainWrapper
+      banner={!!openedBanner}
+      style={{ backgroundImage: `url(${ASSET_URL}/images/bg-main.png)` }}
+    >
+      {isConnected ? (
+        <SubTitleWrapper>
+          <Label>{t('My Moai Balance')}</Label>
+          <Skeleton
+            width={200}
+            height={38}
+            baseColor="#b3b3b3"
+            highlightColor="#ffffff"
+            style={{ opacity: 0.3, borderRadius: '40px', marginTop: '6px' }}
+          />
         </SubTitleWrapper>
       ) : (
         <>
