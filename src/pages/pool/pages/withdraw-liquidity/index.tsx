@@ -24,26 +24,24 @@ const PoolDetailWithdrawLiquidityPage = () => {
   useRequirePrarams([!!id], () => navigate(-1));
 
   return (
-    <>
-      <Wrapper>
-        <GnbWrapper banner={!!opened}>
-          <Gnb />
-        </GnbWrapper>
-        <InnerWrapper>
-          <ContentWrapper>
-            <Header>
-              <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
-              <Title>{t('Withdraw from pool')}</Title>
-            </Header>
+    <Wrapper>
+      <GnbWrapper banner={!!opened}>
+        <Gnb />
+      </GnbWrapper>
+      <InnerWrapper>
+        <ContentWrapper>
+          <Header>
+            <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
+            <Title>{t('Withdraw from pool')}</Title>
+          </Header>
 
-            <WithdrawWrapper>
-              <WithdrawLiquidityInputGroup />
-            </WithdrawWrapper>
-          </ContentWrapper>
-        </InnerWrapper>
-        <Footer />
-      </Wrapper>
-    </>
+          <WithdrawWrapper>
+            <WithdrawLiquidityInputGroup />
+          </WithdrawWrapper>
+        </ContentWrapper>
+      </InnerWrapper>
+      <Footer />
+    </Wrapper>
   );
 };
 

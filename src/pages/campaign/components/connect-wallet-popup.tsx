@@ -1,37 +1,40 @@
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { useParams } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
 import { Popup } from '~/components/popup';
 
 import { usePopup } from '~/hooks/components/use-popup';
-import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectors } from '~/hooks/wallets/use-connectors';
-import { getNetworkFull } from '~/utils';
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
+import { NETWORK } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
-export const ConnectWallet = () => {
-  const { close } = usePopup(POPUP_ID.CONNECT_WALLET);
-
+export const CampaignConnectWalletPopup = () => {
+  const { close } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
+  const { network } = useWalletConnectorTypeStore();
   const { connectors } = useConnectors();
-  const { network } = useParams();
-  const { selectedNetwork } = useNetwork();
-  const { network: targetNetwork } = useWalletConnectorTypeStore();
 
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-
-  const { t } = useTranslation();
-
-  const currentConnectors = connectors.filter(c =>
-    c.network.includes(targetNetwork || currentNetwork)
-  );
+  const [selectedTab, selectTab] = useState<NETWORK>(network || NETWORK.XRPL);
+  const targetConnectors = connectors.filter(w => w.network.includes(selectedTab));
 
   return (
-    <Popup id={POPUP_ID.CONNECT_WALLET} title={t('Connect wallet')}>
+    <Popup id={POPUP_ID.CAMPAIGN_CONNECT_WALLET} title="Connect wallet">
       <Wrapper>
-        {currentConnectors.map(w => (
+        {
+          <TabWrapper>
+            <Tab selected={selectedTab === NETWORK.XRPL} onClick={() => selectTab(NETWORK.XRPL)}>
+              XRPL
+            </Tab>
+            <Tab
+              selected={selectedTab === NETWORK.THE_ROOT_NETWORK}
+              onClick={() => selectTab(NETWORK.THE_ROOT_NETWORK)}
+            >
+              The Root Network
+            </Tab>
+          </TabWrapper>
+        }
+        {targetConnectors.map(w => (
           <Wallet
             key={w.name}
             onClick={() => {
@@ -54,7 +57,7 @@ export const ConnectWallet = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col gap-12 px-24 py-0
+  flex flex-col gap-8 px-24 py-0
 `;
 
 interface WalletProps {
@@ -71,6 +74,15 @@ const Wallet = styled.div<WalletProps>(({ disabled }) => [
     `,
 ]);
 
+const TabWrapper = tw.div`flex gap-24 pb-8`;
+
+interface Props {
+  selected?: boolean;
+}
+const Tab = styled.div<Props>(({ selected }) => [
+  tw`font-b-16 clickable`,
+  selected ? tw`text-primary-60` : tw`text-neutral-60`,
+]);
 const WalletImage = tw(LazyLoadImage)`
   w-36 h-36 rounded-8 flex-center object-cover overflow-hidden
 `;

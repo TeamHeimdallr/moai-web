@@ -15,7 +15,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { usePrevious } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr } from '~/utils';
-import { useWalletTypeStore } from '~/states/contexts/wallets/wallet-type';
+import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { POPUP_ID } from '~/types';
 
 export const MainLayout = () => {
@@ -24,9 +24,9 @@ export const MainLayout = () => {
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
 
-  const { selectedNetwork, isEvm, isXrp } = useNetwork();
+  const { selectedNetwork } = useNetwork();
   const { evm, xrp } = useConnectedWallet();
-  const { setWalletType } = useWalletTypeStore();
+  const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
   const netwokrAbbr = getNetworkAbbr(selectedNetwork);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
@@ -105,7 +105,7 @@ export const MainLayout = () => {
               buttonType="outlined"
               isLoading={!!opened}
               onClick={() => {
-                setWalletType({ xrpl: isXrp, evm: isEvm });
+                setWalletConnectorType({ network: selectedNetwork });
                 open();
               }}
             />

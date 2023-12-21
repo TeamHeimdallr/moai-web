@@ -23,7 +23,9 @@ interface ConnectedWallet {
 }
 
 interface UseConnectedWallet {
-  evm: ConnectedWallet;
+  evm: ConnectedWallet & {
+    isConnecting: boolean;
+  };
   xrp: ConnectedWallet & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     submitTransaction: (tx: any) => Promise<any>;
@@ -41,6 +43,7 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
 
   const {
     isConnected: isEvmConnected,
+    isConnecting: isEvmConnecting,
     connect: connectEvm,
     disconnect: disconnectEvm,
     connectedConnector: connectedEvmConnector,
@@ -88,6 +91,7 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
 
   const evm = {
     isConnected: isEvmConnected,
+    isConnecting: isEvmConnecting,
     connect: connectEvm,
     disconnect: disconnectEvm,
     connectedConnector: connectedEvmConnector,
@@ -99,6 +103,7 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
 
   const fpass = {
     isConnected: isEvmConnected,
+    isConnecting: isEvmConnecting,
     connect: connectEvm,
     disconnect: disconnectEvm,
     connectedConnector: connectedEvmConnector,

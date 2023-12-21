@@ -11,7 +11,7 @@ import {
 } from '~/components/buttons';
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
 
-import { TokenList } from '~/pages/campaign/landing/components/token-list';
+import { TokenList } from '~/pages/campaign/pages/landing/components/token-list';
 
 import { useMediaQuery } from '~/hooks/utils';
 

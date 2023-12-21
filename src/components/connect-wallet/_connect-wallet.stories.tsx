@@ -22,7 +22,7 @@ export const Normal = () => {
   return (
     <Wrapper>
       <ButtonPrimarySmall text="open preview popup !" onClick={open} />
-      {opened && <ConnectWallet evm xrpl />}
+      {opened && <ConnectWallet />}
     </Wrapper>
   );
 };

@@ -14,23 +14,21 @@ const SwapPage = () => {
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
 
   return (
-    <>
-      <Wrapper>
-        <GnbWrapper banner={!!bannerOpened}>
-          <Gnb />
-        </GnbWrapper>
-        <InnerWrapper banner={!!bannerOpened}>
-          <ContentWrapper>
-            <Title>{t('Swap')}</Title>
+    <Wrapper>
+      <GnbWrapper banner={!!bannerOpened}>
+        <Gnb />
+      </GnbWrapper>
+      <InnerWrapper banner={!!bannerOpened}>
+        <ContentWrapper>
+          <Title>{t('Swap')}</Title>
 
-            <SwapWrapper>
-              <SwapInputGroup />
-            </SwapWrapper>
-          </ContentWrapper>
-        </InnerWrapper>
-        <Footer />
-      </Wrapper>
-    </>
+          <SwapWrapper>
+            <SwapInputGroup />
+          </SwapWrapper>
+        </ContentWrapper>
+      </InnerWrapper>
+      <Footer />
+    </Wrapper>
   );
 };
 

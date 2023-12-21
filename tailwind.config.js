@@ -117,6 +117,18 @@ module.exports = {
         ...convertSpacing([...Array(101).keys()], true),
       }),
 
+      keyframes: theme => ({
+        ...defaultTheme.keyframes,
+        spin: {
+          from: { transform: 'rotate(0deg)' },
+          to: { transform: 'rotate(360deg)' },
+        },
+      }),
+      animation: theme => ({
+        ...defaultTheme.animation,
+        spin: 'spin 2s linear infinite',
+      }),
+
       backgroundImage: {
         landing: `url('${ASSET_URL}/images/bg-landing.png')`,
         campaign: `url('${ASSET_URL}/images/bg-campaign.png')`,

@@ -10,7 +10,8 @@ export const useConnectWithGemWallet = () => {
   const { isInstalled, isConnected, address, setInfo, setInstalled } = useXrplWalletStore();
 
   const connect = async () => {
-    const installed = (await gemIsInstalled())?.result?.isInstalled || window.gemWallet || false;
+    const installed =
+      (await gemIsInstalled())?.result?.isInstalled || (window.gemWallet as boolean) || false;
 
     if (installed) {
       const { publicKey, address } = (await getPublicKey())?.result || {
@@ -56,7 +57,7 @@ export const useConnectWithGemWallet = () => {
 export const useConnectWithCrossmarkWallet = () => {
   const { isConnected, address, setInfo } = useCrossmarkWalletStore();
 
-  const isInstalled = window.crossmark;
+  const isInstalled = (window.crossmark as boolean) || false;
   const connect = async () => {
     const connected = await crossmarkSdk.connect(60 * 60 * 1000); // 1 minute
     const signed = await crossmarkSdk.signInAndWait();
