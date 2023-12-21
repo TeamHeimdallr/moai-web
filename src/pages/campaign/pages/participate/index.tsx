@@ -5,6 +5,7 @@ import { StepTitle } from './components/step-title';
 import { useStep } from './hooks/use-step';
 import { LayoutStep1WalletconnectXrp } from './layouts/layout-step1-wallet-connect-xrp';
 import { LayoutStep2WalletconnectEvm } from './layouts/layout-step2-wallet-connect-evm';
+import { LayoutStep3Bridge } from './layouts/layout-step3-bridge';
 
 const ParticipatePage = () => {
   const { step } = useStep();
@@ -17,6 +18,7 @@ const ParticipatePage = () => {
 
         {step === 1 && <LayoutStep1WalletconnectXrp />}
         {step === 2 && <LayoutStep2WalletconnectEvm />}
+        {step === 3 && <LayoutStep3Bridge />}
       </StepWrapper>
     </Wrapper>
   );
