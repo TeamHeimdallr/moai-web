@@ -35,6 +35,7 @@ import { TooltipAddress } from '~/pages/campaign/components/tooltip-address';
 
 import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber, getTokenDecimal } from '~/utils';
+import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { NETWORK, TOOLTIP_ID } from '~/types';
 
 interface InputFormState {
@@ -50,14 +51,16 @@ export const LayoutStep3Bridge = () => (
 const _Bridge = () => {
   const [inputValue, setInputValue] = useState<number>();
 
-  const { evm } = useConnectedWallet();
+  const { selectedWallet } = useTheRootNetworkSwitchWalletStore();
+  const { evm, fpass } = useConnectedWallet();
   const { userAllTokenBalances } = useUserAllTokenBalances();
 
   const { t } = useTranslation();
 
   // TODO: futurepass 사용 여부 확인
-  const address = evm.address;
-  const truncatedAddress = evm.truncatedAddress;
+  const address = selectedWallet === 'fpass' ? fpass.address : evm.address;
+  const truncatedAddress =
+    selectedWallet === 'fpass' ? fpass.truncatedAddress : evm.truncatedAddress;
 
   const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
   const xrpBalance = xrp?.balance || 0;
