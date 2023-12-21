@@ -259,5 +259,12 @@
   "disclaimer-text-5": "If you have any problem regarding the campaign, please contact to us via <1>Discord</1> or <2>support@moai-finance.xyz</2>.",
 
   "Switch to MetaMask": "Switch to MetaMask",
-  "Switch to FuturePass": "Switch to FuturePass"
+  "Switch to FuturePass": "Switch to FuturePass",
+
+  "Continue with FuturePass": "Continue with FuturePass",
+  "continue-fpass-description": "Would you like to continue with your FuturePass account? If not, please skip to proceed with Metamask.",
+  "Skip": "Skip",
+
+  "What is Futurepass?": "What is FuturePass?",
+  "futurepass-description": "Futurepass is an all-in-one wallet natively used in the Futureverse."
 }

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useParams } from 'react-router-dom';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
 import { Popup } from '~/components/popup';
 
@@ -35,9 +35,12 @@ export const ConnectWallet = () => {
           <Wallet
             key={w.name}
             onClick={() => {
+              if (!w.isInstalled) return;
+
               w.connect();
               close();
             }}
+            disabled={!w.isInstalled}
           >
             <WalletImage src={w.image} alt={w.name} />
             <NameWrapper>
@@ -54,9 +57,19 @@ const Wrapper = tw.div`
   flex flex-col gap-12 px-24 py-0
 `;
 
-const Wallet = tw.div`
-  flex gap-12 px-16 py-15 rounded-8 bg-neutral-15 hover:bg-neutral-20 clickable
-`;
+interface WalletProps {
+  disabled?: boolean;
+}
+const Wallet = styled.div<WalletProps>(({ disabled }) => [
+  tw`
+    flex gap-12 px-16 py-15 rounded-8 bg-neutral-15 hover:bg-neutral-20 clickable
+  `,
+  disabled &&
+    tw`
+      non-clickable opacity-40
+      hover:(bg-neutral-15)
+    `,
+]);
 
 const WalletImage = tw(LazyLoadImage)`
   w-36 h-36 rounded-8 flex-center object-cover overflow-hidden

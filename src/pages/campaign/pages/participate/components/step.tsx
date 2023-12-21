@@ -1,17 +1,12 @@
 import tw from 'twin.macro';
 
-import { useCampaignStepStore } from '~/pages/campaign/pages/participate/states/step';
-
-import { useConnectedWallet } from '~/hooks/wallets';
+import { useStep } from '../hooks/use-step';
 
 import { StepButton } from './step-buttons';
 import { StepProgress } from './step-progress';
 
 export const Step = () => {
-  const { step } = useCampaignStepStore();
-  const { xrp } = useConnectedWallet();
-
-  const isInitial = step === 1 && !xrp.isConnected;
+  const { isInitial } = useStep();
 
   return (
     <Wrapper>

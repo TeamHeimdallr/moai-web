@@ -1,12 +1,11 @@
 import { useWeb3Modal } from '@web3modal/react';
-import { useAccount, useConfig, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 
 import { truncateAddress } from '~/utils/util-string';
 
 export const useConnectWithEvmWallet = () => {
-  const { connectors } = useConfig();
-  const { address, isConnected, isConnecting } = useAccount();
+  const { address, isConnected, isConnecting, connector } = useAccount();
   const { open: connectByWalletConnect } = useWeb3Modal();
 
   const { disconnect: _disconnect } = useDisconnect();
@@ -16,9 +15,14 @@ export const useConnectWithEvmWallet = () => {
     error,
     isLoading,
   } = useConnect({
-    connector: new InjectedConnector(),
+    connector: new InjectedConnector({
+      options: {
+        name: detectedName =>
+          `${(typeof detectedName === 'string' ? detectedName : '').toLowerCase()}`,
+      },
+    }),
   });
-  const connectedConnector = connectors?.[0]?.name ?? '';
+  const connectedConnector = (connector?.name ?? '').toLowerCase();
 
   const disconnect = () => {
     _disconnect();
@@ -26,14 +30,14 @@ export const useConnectWithEvmWallet = () => {
   };
 
   const connect = async () => {
-    if (window.ethereum) {
+    if (window.ethereum && window.ethereum.isMetaMask) {
       await connectInjectedConnector();
       localStorage.setItem('wagmi.injected.shimDisconnect', 'true');
     } else connectByWalletConnect(true);
   };
 
-  const metamaskConnected = isConnected && connectedConnector === 'injected';
-  const walletConnectionConnected = isConnected && connectedConnector !== 'injected';
+  const metamaskConnected = isConnected && connectedConnector === 'metamask';
+  const walletConnectionConnected = isConnected && connectedConnector !== 'metamask';
 
   return {
     connect,
@@ -48,7 +52,7 @@ export const useConnectWithEvmWallet = () => {
 
     isConnecting: isConnecting || isLoading,
     isConnectError: error,
-    isInstalled: !!window.ethereum,
+    isInstalled: !!window.ethereum && !!window.ethereum.isMetaMask,
 
     address: (address ?? '') as string,
     truncatedAddress: truncateAddress(address),

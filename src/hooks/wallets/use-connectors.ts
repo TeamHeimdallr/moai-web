@@ -38,6 +38,7 @@ export const useConnectors = () => {
   const connectors = [
     {
       name: 'Crossmark',
+      connectorName: ['crossmark'],
       image: imageWalletCrossmark,
       network: [NETWORK.XRPL],
 
@@ -47,6 +48,7 @@ export const useConnectors = () => {
     },
     {
       name: 'Gem Wallet',
+      connectorName: ['gem'],
       image: imageWalletGem,
       network: [NETWORK.XRPL],
 
@@ -56,6 +58,7 @@ export const useConnectors = () => {
     },
     {
       name: 'Metamask',
+      connectorName: ['metamask'],
       image: imageWalletMetamask,
       network: [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN],
 
@@ -65,6 +68,7 @@ export const useConnectors = () => {
     },
     {
       name: 'Wallet Connect',
+      connectorName: ['walletconnect'],
       image: imageWalletWalletConnect,
       network: [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN],
 

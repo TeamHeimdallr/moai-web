@@ -56,19 +56,7 @@ export const LoadingStep = ({ totalSteps, step, isLoading, isDone = false }: Pro
   );
 };
 
-const LoadingIcon = styled(LazyLoadImage)`
-  animation: ${() => css`
-    ${keyframes`
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  `} 2s linear infinite
-  `};
-  position: absolute;
-`;
+const LoadingIcon = styled(LazyLoadImage)(() => [tw`absolute animate-spin`]);
 
 const Wrapper = tw.div`
   flex items-center flex-center

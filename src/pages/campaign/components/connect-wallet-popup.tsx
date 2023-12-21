@@ -38,9 +38,12 @@ export const CampaignConnectWalletPopup = () => {
           <Wallet
             key={w.name}
             onClick={() => {
+              if (!w.isInstalled) return;
+
               w.connect();
               close();
             }}
+            disabled={!w.isInstalled}
           >
             <WalletImage src={w.image} alt={w.name} />
             <NameWrapper>
@@ -57,9 +60,20 @@ const Wrapper = tw.div`
   flex flex-col gap-8 px-24 py-0
 `;
 
-const Wallet = tw.div`
-  flex gap-12 px-16 py-15 rounded-8 bg-neutral-15 hover:bg-neutral-20 clickable
-`;
+interface WalletProps {
+  disabled?: boolean;
+}
+const Wallet = styled.div<WalletProps>(({ disabled }) => [
+  tw`
+    flex gap-12 px-16 py-15 rounded-8 bg-neutral-15 hover:bg-neutral-20 clickable
+  `,
+  disabled &&
+    tw`
+      non-clickable opacity-40
+      hover:(bg-neutral-15)
+    `,
+]);
+
 const TabWrapper = tw.div`flex gap-24 pb-8`;
 
 interface Props {
@@ -73,7 +87,7 @@ const WalletImage = tw(LazyLoadImage)`
   w-36 h-36 rounded-8 flex-center object-cover overflow-hidden
 `;
 const NameWrapper = tw.div`
-  flex flex-col
+  flex-center flex-col
 `;
 const Name = tw.div`
   font-m-16 text-neutral-100

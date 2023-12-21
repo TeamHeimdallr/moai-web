@@ -1,63 +1,36 @@
-import { useEffect, useMemo } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { keyframes } from '@emotion/react';
-import tw, { css, styled } from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconCheck } from '~/assets/icons';
 import { imageStepLoading } from '~/assets/images';
 
-import { useCampaignStepStore } from '~/pages/campaign/pages/participate/states/step';
-
-import { useConnectedWallet } from '~/hooks/wallets';
-
-enum Progress {
-  CURRENT = 0,
-  DONE = 1,
-  TODO = 2,
-}
+import { useStep } from '../hooks/use-step';
 
 export const StepProgress = () => {
-  const { step, isLoading, setLoading } = useCampaignStepStore();
-  const { xrp, evm } = useConnectedWallet();
-
-  const stepDone = useMemo(() => {
-    return [xrp.isConnected, evm.isConnected, false, false];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evm.isConnected, xrp.isConnected]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => setLoading(false), [xrp.isConnected, evm.isConnected]);
+  const { step, stepStatus } = useStep();
 
   return (
     <Wrapper>
-      {stepDone.map((done, i) => {
-        const progress = done ? Progress.DONE : i + 1 === step ? Progress.CURRENT : Progress.TODO;
+      {stepStatus.map(({ status, id }) => {
         return (
-          <Wrapper key={i}>
-            <Step
-              progress={progress}
-              isLoading={progress === Progress.CURRENT && isLoading}
-              key={i}
-            >
-              {progress === Progress.DONE ? (
+          <Wrapper key={id}>
+            <Step status={status} current={id === step}>
+              {status === 'done' && (
                 <IconWrapper>
                   <IconCheck width={24} height={24} fill={COLOR.GREEN[50]} />
                 </IconWrapper>
-              ) : (
-                <>
-                  {progress === Progress.CURRENT && isLoading ? (
-                    <IconAndText>
-                      <LoadingIcon src={imageStepLoading} width={32} height={32} />
-                      {(i + 1).toString()}
-                    </IconAndText>
-                  ) : (
-                    <>{(i + 1).toString()}</>
-                  )}
-                </>
               )}
+              {status === 'loading' && (
+                <IconAndText>
+                  <LoadingIcon src={imageStepLoading} width={32} height={32} />
+                  {id.toString()}
+                </IconAndText>
+              )}
+              {status === 'idle' && <>{id}</>}
             </Step>
-            {i !== stepDone.length - 1 && <Divider key={`divider-${i}`} />}
+
+            {id !== stepStatus.length && <Divider key={`divider-${id}`} />}
           </Wrapper>
         );
       })}
@@ -65,33 +38,26 @@ export const StepProgress = () => {
   );
 };
 
-const loadingKeyframe = keyframes`from { transform: rotate(0deg); } to { transform: rotate(360deg); }`;
-const LoadingIcon = styled(LazyLoadImage)(() => [
-  tw`absolute`,
-  css`
-    animation: ${loadingKeyframe} 2s linear infinite;
-  `,
-]);
+const LoadingIcon = styled(LazyLoadImage)(() => [tw`absolute animate-spin`]);
 
 const Wrapper = tw.div`
   flex items-center flex-center
 `;
 
 interface StepProps {
-  progress: number;
-  isLoading: boolean;
+  current: boolean;
+  status: 'idle' | 'loading' | 'done';
 }
-const Step = styled.div<StepProps>(({ progress, isLoading }) => [
+const Step = styled.div<StepProps>(({ current, status }) => [
   tw`
     flex rounded-16 w-32 h-32 border-1 border-solid p-10 gap-10 border-primary-20
     items-center justify-center font-m-16 text-neutral-80
   `,
-  progress === Progress.CURRENT && tw`border-primary-50 text-primary-50`,
-  progress === Progress.CURRENT && isLoading && tw`border-none`,
 
-  progress === Progress.DONE && tw`border-green-50`,
-
-  progress === Progress.TODO && tw`border-primary-20 text-neutral-80`,
+  status === 'idle' && tw`border-primary-20 text-neutral-80`,
+  status === 'idle' && current && tw`border-primary-50 text-primary-50`,
+  status === 'loading' && tw`border-none`,
+  status === 'done' && tw`border-green-50`,
 ]);
 
 const Divider = tw.div`

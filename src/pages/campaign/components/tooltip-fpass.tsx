@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ITooltip } from 'react-tooltip';
 import tw from 'twin.macro';
 
@@ -10,13 +11,13 @@ interface Props extends Omit<ITooltip, 'id'> {
 }
 
 export const TooltipFuturepass = ({ id, ...rest }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <Tooltip {...rest} id={id ?? TOOLTIP_ID.CAMPAIGN_FUTUREPASS} opacity={1} place={'bottom'}>
       <Wrapper>
-        <Title>What is Futurepass?</Title>
-        <Description>
-          Futurepass is an all-in-one wallet natively used in the Futureverse.
-        </Description>
+        <Title>{t('What is Futurepass?')}</Title>
+        <Description>{t('futurepass-description')}</Description>
       </Wrapper>
     </Tooltip>
   );

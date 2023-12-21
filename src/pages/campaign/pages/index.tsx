@@ -7,13 +7,16 @@ import { POPUP_ID } from '~/types';
 
 import { CampaignConnectWalletPopup } from '../components/connect-wallet-popup';
 
+import { useResetStep } from './participate/hooks/use-step';
 import LandingPage from './landing';
 import ParticipatePage from './participate';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const CampaignPage = () => {
+  useResetStep();
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
+
   return (
     <>
       <Routes>

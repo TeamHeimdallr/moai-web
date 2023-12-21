@@ -271,6 +271,13 @@
   "disclaimer-text-4": "튜토리얼이 필요하신 경우, <1>여기</1>를 눌러 더 많은 정보를 확인하세요.",
   "disclaimer-text-5": "캠페인 참여 과정에 문제가 발생할 경우, <1>디스코드</1>나 <2>support@moai-finance.xyz</2>로 연락해주세요.",
 
-  "Switch to MetaMask": "메타마스크로 전환하기",
-  "Switch to FuturePass": "FuturePass로 전환하기"
+  "Switch to MetaMask": "Metamask로 전환하기",
+  "Switch to FuturePass": "FuturePass로 전환하기",
+
+  "Continue with FuturePass": "FuturePass로 계속하기",
+  "continue-fpass-description": "FuturePass 계정으로 계속하시겠습니까? 원하지 않으시면 건너뛰고 Metamask로 계속 진행하세요.",
+  "Skip": "건너뛰기",
+
+  "What is Futurepass?": "Futurepass 란?",
+  "futurepass-description": "Futurepass는 Futureverse에서 사용되는 올인원 지갑입니다."
 }
