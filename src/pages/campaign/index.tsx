@@ -5,11 +5,10 @@ import ScrollTrigger from 'gsap/ScrollTrigger';
 import { usePopup } from '~/hooks/components';
 import { POPUP_ID } from '~/types';
 
-import { CampaignConnectWalletPopup } from '../components/connect-wallet-popup';
-
-import { useResetStep } from './participate/hooks/use-step';
-import LandingPage from './landing';
-import ParticipatePage from './participate';
+import { CampaignConnectWalletPopup } from './components/connect-wallet-popup';
+import LandingPage from './pages/landing';
+import ParticipatePage from './pages/participate';
+import { useResetStep } from './pages/participate/hooks/use-step';
 
 gsap.registerPlugin(ScrollTrigger);
 

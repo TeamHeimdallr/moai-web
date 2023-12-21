@@ -9,7 +9,7 @@ import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
 import { POPUP_ID } from '~/types';
 
-import Campaign from './campaign/pages';
+// import Campaign from './campaign';
 import Home from './home';
 import Landing from './landing';
 import Pool from './pool';
@@ -36,7 +36,7 @@ const Page = () => {
             <Route path="/swap" element={<Swap />} />
             <Route path="/pools/*" element={<Pool />} />
             <Route path="/rewards/*" element={<Rewards />} />
-            <Route path="/campaign/*" element={<Campaign />} />
+            {/* <Route path="/campaign/*" element={<Campaign />} /> */}
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
