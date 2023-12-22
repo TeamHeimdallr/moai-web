@@ -60,18 +60,17 @@ export const MainLayout = () => {
       queries: {
         filter: `active:eq:true:boolean`,
       },
-    },
-    { staleTime: 5 * 60 * 1000 }
+    }
+    // { staleTime: 5 * 60 * 1000 }
   );
   const campaigns = campaignData?.campaigns || [];
 
   const now = new Date();
-  const activeCampaigns = campaigns.filter(
-    ({ startDate, endDate }) =>
-      differenceInSeconds(now, new Date(startDate)) > 0 &&
-      differenceInSeconds(new Date(endDate), now) > 0
-  );
-  const campaignXrplRoot = activeCampaigns.find(item => item.name === 'campaign-xrpl-root');
+
+  const campaignXrplRoot = campaigns.find(item => item.name === 'campaign-xrpl-root');
+  const showCampaignBanner = campaignXrplRoot
+    ? differenceInSeconds(new Date(campaignXrplRoot?.endDate), now) > 0
+    : false;
 
   const { mutateAsync } = useGetMyPoolsQuery({
     queries: {
@@ -106,7 +105,7 @@ export const MainLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAddress, isRequestEqual]);
 
-  if (campaignXrplRoot) {
+  if (showCampaignBanner) {
     return <LayoutMainCampaign />;
   }
   return (

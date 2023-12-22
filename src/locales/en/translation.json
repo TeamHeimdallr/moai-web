@@ -81,6 +81,20 @@
   "months ago": "{{ time }} months ago",
   "years ago": "{{ time }} years ago",
 
+  "second left": "{{ time }} second left",
+  "minute left": "{{ time }} minute left",
+  "hour left": "{{ time }} hour left",
+  "day left": "{{ time }} day left",
+  "month left": "{{ time }} month left",
+  "year left": "{{ time }} year left",
+
+  "seconds left": "{{ time }} seconds left",
+  "minutes left": "{{ time }} minutes left",
+  "hours left": "{{ time }} hours left",
+  "days left": "{{ time }} days left",
+  "months left": "{{ time }} months left",
+  "years left": "{{ time }} years left",
+
   "Load more": "Load more",
 
   "Total": "Total",

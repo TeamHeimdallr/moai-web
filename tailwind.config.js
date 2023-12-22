@@ -62,6 +62,7 @@ module.exports = {
 
       fontFamily: {
         sans: ['Pretendard Variable', '-apple-system', 'Helvetica', 'Arial', 'sans-serif'],
+        roboto: ['Roboto Mono', 'monospace'],
       },
 
       fontSize: {

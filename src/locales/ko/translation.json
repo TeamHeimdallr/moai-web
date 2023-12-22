@@ -81,6 +81,20 @@
   "months ago": "{{ time }}개월 전",
   "years ago": "{{ time }}년 전",
 
+  "second left": "{{ time }}초 후",
+  "minute left": "{{ time }}분 후",
+  "hour left": "{{ time }}시간 후",
+  "day left": "{{ time }}일 후",
+  "month left": "{{ time }}개월 후",
+  "year aleftgo": "{{ time }}년 후",
+
+  "seconds left": "{{ time }}초 후",
+  "minutes left": "{{ time }}분 후",
+  "hours left": "{{ time }}시간 후",
+  "days left": "{{ time }}일 후",
+  "months left": "{{ time }}개월 후",
+  "years left": "{{ time }}년 후",
+
   "Jan": "1월",
   "Feb": "2월",
   "Mar": "3월",
