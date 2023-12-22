@@ -131,6 +131,7 @@ module.exports = {
 
       backgroundImage: {
         landing: `url('${ASSET_URL}/images/bg-landing.png')`,
+        main: `url('${ASSET_URL}/images/bg-main.png')`,
         campaign: `url('${ASSET_URL}/images/bg-campaign.png')`,
       },
     },

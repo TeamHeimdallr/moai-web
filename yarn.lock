@@ -1712,6 +1712,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.22.15, @babel/runtime@npm:^7.23.2":
+  version: 7.23.6
+  resolution: "@babel/runtime@npm:7.23.6"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: 1a8eaf3d3a103ef5227b60ca7ab5c589118c36ca65ef2d64e65380b32a98a3f3b5b3ef96660fa0471b079a18b619a8317f3e7f03ab2b930c45282a8b69ed9a16
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.22.5":
   version: 7.23.2
   resolution: "@babel/runtime@npm:7.23.2"
@@ -3101,6 +3110,8 @@ __metadata:
     framer-motion: ^10.16.4
     gsap: ^3.12.2
     i18next: ^23.6.0
+    i18next-browser-languagedetector: ^7.2.0
+    i18next-localstorage-backend: ^4.2.0
     immer: ^10.0.3
     lodash-es: ^4.17.21
     lottie-web: ^5.12.2
@@ -11658,6 +11669,24 @@ __metadata:
   version: 1.0.4
   resolution: "hyphenate-style-name@npm:1.0.4"
   checksum: 4f5bf4b055089754924babebaa23c17845937bcca6aee95d5d015f8fa1e6814279002bd6a9e541e3fac2cd02519fc76305396727066c57c8e21a7e73e7a12137
+  languageName: node
+  linkType: hard
+
+"i18next-browser-languagedetector@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "i18next-browser-languagedetector@npm:7.2.0"
+  dependencies:
+    "@babel/runtime": ^7.23.2
+  checksum: 757845c7ae7dfc541f5150855c3a3e4f6d29bcee113796d44dc781594abc7f16f2750a2a70d786904c16d23ba952eba2741c0bcfeaa381016669522a6236998f
+  languageName: node
+  linkType: hard
+
+"i18next-localstorage-backend@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "i18next-localstorage-backend@npm:4.2.0"
+  dependencies:
+    "@babel/runtime": ^7.22.15
+  checksum: 7c75a2cd2bdd47b033d6da6fe00b58aecf9027292b1d5c5e5a094e39680bda83eca722411b5f6f2a5745fad98d03183196bad85c4253d346ff5068d937041797
   languageName: node
   linkType: hard
 
