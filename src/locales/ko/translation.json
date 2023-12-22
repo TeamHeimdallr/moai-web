@@ -81,6 +81,20 @@
   "months ago": "{{ time }}개월 전",
   "years ago": "{{ time }}년 전",
 
+  "second left": "{{ time }}초 후",
+  "minute left": "{{ time }}분 후",
+  "hour left": "{{ time }}시간 후",
+  "day left": "{{ time }}일 후",
+  "month left": "{{ time }}개월 후",
+  "year aleftgo": "{{ time }}년 후",
+
+  "seconds left": "{{ time }}초 후",
+  "minutes left": "{{ time }}분 후",
+  "hours left": "{{ time }}시간 후",
+  "days left": "{{ time }}일 후",
+  "months left": "{{ time }}개월 후",
+  "years left": "{{ time }}년 후",
+
   "Jan": "1월",
   "Feb": "2월",
   "Mar": "3월",
@@ -279,5 +293,7 @@
   "Skip": "건너뛰기",
 
   "What is Futurepass?": "Futurepass 란?",
-  "futurepass-description": "Futurepass는 Futureverse에서 사용되는 올인원 지갑입니다."
+  "futurepass-description": "Futurepass는 Futureverse에서 사용되는 올인원 지갑입니다.",
+
+  "change-to-earn-root": "10%의 추가 APR을 $ROOT로 받을 수 있는 기회!"
 }

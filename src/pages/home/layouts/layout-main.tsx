@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { differenceInSeconds } from 'date-fns';
 import { isEqual } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
-
-import { ASSET_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
@@ -17,6 +17,8 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr } from '~/utils';
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { POPUP_ID } from '~/types';
+
+import { LayoutMainCampaign } from './layout-main-campaign';
 
 export const MainLayout = () => {
   const [totalValue, setTotalValue] = useState<string>('0');
@@ -53,6 +55,23 @@ export const MainLayout = () => {
   >(userLpTokenRequest);
   const isRequestEqual = isEqual(previous, userLpTokenRequest);
 
+  const { data: campaignData } = useGetCampaignsQuery(
+    {
+      queries: {
+        filter: `active:eq:true:boolean`,
+      },
+    }
+    // { staleTime: 5 * 60 * 1000 }
+  );
+  const campaigns = campaignData?.campaigns || [];
+
+  const now = new Date();
+
+  const campaignXrplRoot = campaigns.find(item => item.name === 'campaign-xrpl-root');
+  const showCampaignBanner = campaignXrplRoot
+    ? differenceInSeconds(new Date(campaignXrplRoot?.endDate), now) > 0
+    : false;
+
   const { mutateAsync } = useGetMyPoolsQuery({
     queries: {
       take: 100,
@@ -86,11 +105,11 @@ export const MainLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAddress, isRequestEqual]);
 
+  if (showCampaignBanner) {
+    return <LayoutMainCampaign />;
+  }
   return (
-    <MainWrapper
-      banner={!!openedBanner}
-      style={{ backgroundImage: `url(${ASSET_URL}/images/bg-main.png)` }}
-    >
+    <MainWrapper banner={!!openedBanner}>
       {isConnected ? (
         <SubTitleWrapper>
           <Label>{t('My Moai Balance')}</Label>
@@ -121,7 +140,7 @@ interface MainWrapperProps {
 }
 const MainWrapper = styled.div<MainWrapperProps>(({ banner }) => [
   tw`
-    flex-col w-full bg-center bg-no-repeat bg-cover flex-center
+    flex-col w-full bg-center bg-no-repeat bg-cover flex-center bg-main
 
     pt-120 pb-80 gap-24
     md:(pt-200 pb-140)

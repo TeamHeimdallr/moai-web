@@ -62,6 +62,7 @@ module.exports = {
 
       fontFamily: {
         sans: ['Pretendard Variable', '-apple-system', 'Helvetica', 'Arial', 'sans-serif'],
+        roboto: ['Roboto Mono', 'monospace'],
       },
 
       fontSize: {
@@ -131,6 +132,7 @@ module.exports = {
 
       backgroundImage: {
         landing: `url('${ASSET_URL}/images/bg-landing.png')`,
+        main: `url('${ASSET_URL}/images/bg-main.png')`,
         campaign: `url('${ASSET_URL}/images/bg-campaign.png')`,
       },
     },
