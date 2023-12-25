@@ -1,6 +1,5 @@
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { keyframes } from '@emotion/react';
-import tw, { css, styled } from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconCheck } from '~/assets/icons';

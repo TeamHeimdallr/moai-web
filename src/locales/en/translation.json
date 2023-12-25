@@ -95,6 +95,11 @@
   "months left": "{{ time }} months left",
   "years left": "{{ time }} years left",
 
+  "Secs": "Secs",
+  "Mins": "Mins",
+  "Hours": "Hours",
+  "Days": "Days",
+
   "Load more": "Load more",
 
   "Total": "Total",
@@ -282,5 +287,6 @@
   "What is Futurepass?": "What is FuturePass?",
   "futurepass-description": "Futurepass is an all-in-one wallet natively used in the Futureverse.",
 
-  "change-to-earn-root": "Chance to earn 10% extra APR in $ROOT!"
+  "change-to-earn-root": "Chance to earn 10% extra APR in $ROOT!",
+  "Coming soon": "Coming soon"
 }
