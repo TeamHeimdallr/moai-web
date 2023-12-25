@@ -95,6 +95,11 @@
   "months left": "{{ time }}개월 후",
   "years left": "{{ time }}년 후",
 
+  "Secs": "초",
+  "Mins": "분",
+  "Hours": "시간",
+  "Days": "일",
+
   "Jan": "1월",
   "Feb": "2월",
   "Mar": "3월",
@@ -295,5 +300,6 @@
   "What is Futurepass?": "Futurepass 란?",
   "futurepass-description": "Futurepass는 Futureverse에서 사용되는 올인원 지갑입니다.",
 
-  "change-to-earn-root": "10%의 추가 APR을 $ROOT로 받을 수 있는 기회!"
+  "change-to-earn-root": "10%의 추가 APR을 $ROOT로 받을 수 있는 기회!",
+  "Coming soon": "시작 예정"
 }
