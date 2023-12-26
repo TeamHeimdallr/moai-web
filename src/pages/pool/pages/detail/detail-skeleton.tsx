@@ -122,6 +122,7 @@ const InnerWrapper = styled.div<DivProps>(({ banner }) => [
     smd:(px-20)
     mlg:(pt-120)
     xl:(px-80)
+    xxl:items-center
   `,
   banner &&
     tw`
@@ -130,7 +131,10 @@ const InnerWrapper = styled.div<DivProps>(({ banner }) => [
       mlg:(pt-180)
     `,
 ]);
-const TokenWrapper = tw.div`flex flex-col gap-16 px-20 smd:px-0`;
+const TokenWrapper = tw.div`flex flex-col gap-16 px-20 
+  smd:px-0
+  xxl:(w-full items-start px-20)
+`;
 const TokenTopWrapper = tw.div`flex items-center gap-12`;
 const TokenBottomWrapper = tw.div`flex items-center gap-8`;
 const ContentWrapper = tw.div`
