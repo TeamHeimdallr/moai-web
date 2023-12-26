@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { ButtonChipFilter } from '~/components/buttons/chip/filter';
+import { TableMobileSkeleton } from '~/components/skeleton/table-mobile-skeleton';
+import { TableSkeleton } from '~/components/skeleton/table-skeleton';
 import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 import { Toggle } from '~/components/toggle';
@@ -165,7 +167,7 @@ const _LiquidityPoolLayoutSkeleton = () => {
   const { t } = useTranslation();
 
   const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
-  const { tableData, tableColumns, mobileTableData, mobileTableColumn } = useTableLiquidityPool();
+  const { tableColumns, mobileTableColumn } = useTableLiquidityPool();
 
   const { selectedNetwork } = useNetwork();
 
@@ -225,8 +227,7 @@ const _LiquidityPoolLayoutSkeleton = () => {
       </BadgeWrapper>
       {isMD ? (
         <TableWrapper>
-          <Table
-            data={tableData}
+          <TableSkeleton
             columns={tableColumns}
             skeletonHeight={240}
             ratio={showAllPools ? [1, 2, 1, 1, 1] : [2, 1, 1, 1]}
@@ -234,12 +235,7 @@ const _LiquidityPoolLayoutSkeleton = () => {
           />
         </TableWrapper>
       ) : (
-        <TableMobile
-          data={mobileTableData}
-          columns={mobileTableColumn}
-          skeletonHeight={510}
-          type="darker"
-        />
+        <TableMobileSkeleton columns={mobileTableColumn} skeletonHeight={510} type="darker" />
       )}
     </Wrapper>
   );
