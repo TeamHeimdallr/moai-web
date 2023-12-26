@@ -49,6 +49,16 @@ export const useConnectors = () => {
 
   const connectors = [
     {
+      name: 'Xumm Wallet',
+      connectorName: ['xumm'],
+      image: imageWalletXumm,
+      network: [NETWORK.XRPL],
+
+      connect: connectXrpXumm,
+      connected: xummConnected,
+      isInstalled: xummIsInstalled,
+    },
+    {
       name: 'Crossmark',
       connectorName: ['crossmark'],
       image: imageWalletCrossmark,
@@ -67,16 +77,6 @@ export const useConnectors = () => {
       connect: connectXrpGem,
       connected: gemConnected,
       isInstalled: gemIsInstalled,
-    },
-    {
-      name: 'Xumm Wallet',
-      connectorName: ['xumm'],
-      image: imageWalletXumm,
-      network: [NETWORK.XRPL],
-
-      connect: connectXrpXumm,
-      connected: xummConnected,
-      isInstalled: xummIsInstalled,
     },
     {
       name: 'Metamask',
