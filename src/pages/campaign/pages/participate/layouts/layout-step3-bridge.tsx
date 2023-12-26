@@ -57,7 +57,6 @@ const _Bridge = () => {
 
   const { t } = useTranslation();
 
-  // TODO: futurepass 사용 여부 확인
   const address = selectedWallet === 'fpass' ? fpass.address : evm.address;
   const truncatedAddress =
     selectedWallet === 'fpass' ? fpass.truncatedAddress : evm.truncatedAddress;
@@ -67,9 +66,9 @@ const _Bridge = () => {
   const xrpPrice = xrp?.price || 0;
   const tokenValue = inputValue ? inputValue * xrpPrice : 0;
 
-  const bridgeFee = 0;
+  const bridgeFee = 0; // TODO: check bridge fee
 
-  const xrplFee = 0.000015;
+  const xrplFee = 0.000015; // TODO: get actual fee
   const xrpAfterFee = Number(inputValue || 0) * (1 - bridgeFee);
   const validToBridge =
     !!inputValue && Number(inputValue || 0) > 0 && Number(inputValue || 0) + xrplFee <= xrpBalance;

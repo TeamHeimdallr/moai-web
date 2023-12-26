@@ -41,6 +41,9 @@ export const useStep = () => {
   const nextEnabled = useMemo(() => {
     if (isInitial) return false;
 
+    // in bridge step, always enable next button
+    if (step === 3) return true;
+
     return stepStatus[step - 1].status === 'done';
   }, [isInitial, step, stepStatus]);
 
@@ -48,9 +51,10 @@ export const useStep = () => {
     if (!prevEnabled || step === MIN_STEP) return;
     setStep(step - 1);
   };
-  const goNext = () => {
+  const goNext = (callback?: () => void) => {
     if (!nextEnabled || step === MAX_STEP) return;
     setStep(step + 1);
+    callback?.();
   };
 
   return {
