@@ -288,5 +288,8 @@
   "futurepass-description": "Futurepass is an all-in-one wallet natively used in the Futureverse.",
 
   "change-to-earn-root": "Chance to earn 10% extra APR in $ROOT!",
-  "Coming soon": "Coming soon"
+  "Coming soon": "Coming soon",
+
+  "Action required in wallet": "Action requied in wallet",
+  "xumm-qr-description": "Please scan this QR Code in your XUMM App to continue."
 }

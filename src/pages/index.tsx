@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import { IS_LANDING } from '~/constants';
 
 import { ConnectWallet } from '~/components/connect-wallet';
+import XummQrPopup from '~/components/popup/xumm-qr';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
@@ -20,7 +21,9 @@ import Swap from './swap';
 const Page = () => {
   useConnectXrpl();
   useXummWalletClient();
+
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { opened: xummQrOpened } = usePopup(POPUP_ID.XUMM_QR);
 
   return (
     <>
@@ -47,6 +50,7 @@ const Page = () => {
 
       <ToastContainer />
       {connectWalletOpened && <ConnectWallet />}
+      {xummQrOpened && <XummQrPopup />}
     </>
   );
 };
