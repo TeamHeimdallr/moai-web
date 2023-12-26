@@ -12,7 +12,15 @@ import { TOOLTIP_ID } from '~/types';
 import { useStep } from '../hooks/use-step';
 
 export const StepButton = () => {
-  const { step, goNext, goPrev, prevEnabled, nextEnabled } = useStep();
+  const { step, setStepStatus, goNext, goPrev, prevEnabled, nextEnabled } = useStep();
+
+  const handleNext = () => {
+    if (step === 3) {
+      goNext(() => setStepStatus({ id: 3, status: 'done' }, 2));
+      return;
+    }
+    goNext();
+  };
 
   return (
     <Wrapper>
@@ -28,7 +36,7 @@ export const StepButton = () => {
           text={'Next'}
           icon={<IconNext />}
           disabled={!nextEnabled}
-          onClick={goNext}
+          onClick={handleNext}
         />
       </ContentWrapper>
       {step === 3 && <TooltipEnoughXrp />}
