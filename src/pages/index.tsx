@@ -7,6 +7,7 @@ import { ConnectWallet } from '~/components/connect-wallet';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
+import { useXummWalletClient } from '~/hooks/wallets/use-xumm-wallet-client';
 import { POPUP_ID } from '~/types';
 
 // import Campaign from './campaign';
@@ -18,6 +19,7 @@ import Swap from './swap';
 
 const Page = () => {
   useConnectXrpl();
+  useXummWalletClient();
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   return (

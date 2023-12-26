@@ -8,6 +8,7 @@ import {
   imageWalletFuturepass,
   imageWalletGem,
   imageWalletMetamask,
+  imageWalletXumm,
 } from '~/assets/images';
 
 import { useMediaQuery } from '~/hooks/utils';
@@ -43,6 +44,8 @@ export const Account = () => {
               <ConnectedXrp>
                 {xrp.connectedConnector === 'crossmark' ? (
                   <Image src={imageWalletCrossmark} alt="crossmark wallet" />
+                ) : xrp.connectedConnector === 'xumm' ? (
+                  <Image src={imageWalletXumm} alt="xumm wallet" />
                 ) : (
                   <Image src={imageWalletGem} alt="gem wallet" />
                 )}
@@ -64,12 +67,13 @@ export const Account = () => {
             <InnerWrapper>
               <ConnectedBase>
                 {evm.address && <Image src={imageWalletMetamask} alt="metamask" />}
-                {xrp.address &&
-                  (xrp.connectedConnector === 'crossmark' ? (
-                    <Image src={imageWalletCrossmark} alt="crossmark wallet" />
-                  ) : (
-                    <Image src={imageWalletGem} alt="gem wallet" />
-                  ))}
+                {xrp.connectedConnector === 'crossmark' ? (
+                  <Image src={imageWalletCrossmark} alt="crossmark wallet" />
+                ) : xrp.connectedConnector === 'xumm' ? (
+                  <Image src={imageWalletXumm} alt="xumm wallet" />
+                ) : (
+                  <Image src={imageWalletGem} alt="gem wallet" />
+                )}
               </ConnectedBase>
             </InnerWrapper>
             {isLG && (

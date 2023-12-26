@@ -47,14 +47,14 @@ export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) =>
       : data;
   if (txData) {
     if (typeof txData.Amount === 'object') {
-      txData.bridgeAmountTo = parseUnits(txData.Amount.value, 6);
+      txData.bridgeAmountTo = parseUnits(txData.Amount.value || 0, 6);
     } else {
-      txData.bridgeAmountTo = txData.Amount;
+      txData.bridgeAmountTo = txData.Amount || 0;
     }
     if (typeof txData.SendMax === 'object') {
-      txData.bridgeAmountFrom = parseUnits(txData.SendMax.value, 6);
+      txData.bridgeAmountFrom = parseUnits(txData.SendMax.value || 0, 6);
     } else {
-      txData.bridgeAmountFrom = txData.SendMax;
+      txData.bridgeAmountFrom = txData.SendMax || 0;
     }
   }
 
