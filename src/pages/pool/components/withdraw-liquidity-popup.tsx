@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -21,6 +21,8 @@ import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings';
 import { Popup } from '~/components/popup';
+import { ListSkeleton } from '~/components/skeleton/list-skeleton';
+import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
@@ -51,6 +53,32 @@ interface Props {
 }
 
 export const WithdrawLiquidityPopup = ({
+  pool,
+  tokensOut,
+
+  lpTokenPrice,
+  bptIn,
+  priceImpact,
+  withdrawTokenWeight,
+
+  refetchBalance,
+}: Props) => {
+  return (
+    <Suspense fallback={<_WithdrawLiquidityPopupSkeleton />}>
+      <_WithdrawLiquidityPopup
+        pool={pool}
+        tokensOut={tokensOut}
+        lpTokenPrice={lpTokenPrice}
+        bptIn={bptIn}
+        priceImpact={priceImpact}
+        withdrawTokenWeight={withdrawTokenWeight}
+        refetchBalance={refetchBalance}
+      />
+    </Suspense>
+  );
+};
+
+const _WithdrawLiquidityPopup = ({
   pool,
   tokensOut,
 
@@ -564,6 +592,20 @@ export const WithdrawLiquidityPopup = ({
             />
           </>
         )}
+      </Wrapper>
+    </Popup>
+  );
+};
+
+const _WithdrawLiquidityPopupSkeleton = () => {
+  const { t } = useTranslation();
+  return (
+    <Popup id={POPUP_ID.WITHDRAW_LP} title={t('Withdrawal preview')}>
+      <Wrapper>
+        <ListSkeleton height={114} title={t("You're providing")} />
+        <ListSkeleton height={183} title={t("You're expected to receive")} />
+        <ListSkeleton height={122} title={t('Summary')} />
+        <SkeletonBase height={48} />
       </Wrapper>
     </Popup>
   );

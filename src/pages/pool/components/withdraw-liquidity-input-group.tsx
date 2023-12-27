@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, Suspense, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -18,6 +18,7 @@ import { Slippage } from '~/components/account';
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
+import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { Tab } from '~/components/tab';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
@@ -33,7 +34,16 @@ import { WithdrawLiquidityPopup } from './withdraw-liquidity-popup';
 interface InputFormState {
   input1: number;
 }
+
 export const WithdrawLiquidityInputGroup = () => {
+  return (
+    <Suspense fallback={<_WithdrawLiquidityInputGroupSkeleton />}>
+      <_WithdrawLiquidityInputGroup />
+    </Suspense>
+  );
+};
+
+const _WithdrawLiquidityInputGroup = () => {
   const ref = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
 
@@ -199,6 +209,37 @@ export const WithdrawLiquidityInputGroup = () => {
           refetchBalance={refetch}
         />
       )}
+    </Wrapper>
+  );
+};
+
+const _WithdrawLiquidityInputGroupSkeleton = () => {
+  const { t } = useTranslation();
+  const tabs = [
+    { key: 'proportional', name: t('Proportional pool tokens') },
+    { key: 'single', name: t('Single token'), disabled: true },
+  ];
+  const { selectedTab } = useWithdrawLiquidityInputGroupTabStore();
+  return (
+    <Wrapper>
+      <Header>
+        <Tab tabs={tabs} selectedTab={selectedTab} />
+        <IconWrapper>
+          <IconSetting fill={'#9296AD'} width={20} height={20} />
+        </IconWrapper>
+      </Header>
+      <InnerWrapper>
+        <ContentWrapper>
+          <SubTitle>{t('You provide')}</SubTitle>
+          <SkeletonBase height={128} />
+        </ContentWrapper>
+        <ContentWrapper>
+          <SubTitle>{t('You receive')}</SubTitle>
+          <SkeletonBase height={145} />
+        </ContentWrapper>
+        <SkeletonBase height={46} />
+        <SkeletonBase height={46} />
+      </InnerWrapper>
     </Wrapper>
   );
 };
