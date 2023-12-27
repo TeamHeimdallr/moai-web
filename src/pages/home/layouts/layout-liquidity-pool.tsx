@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Skeleton from 'react-loading-skeleton';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { ButtonChipFilter } from '~/components/buttons/chip/filter';
+import { TableMobileSkeleton } from '~/components/skeleton/table-mobile-skeleton';
+import { TableSkeleton } from '~/components/skeleton/table-skeleton';
 import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 import { Toggle } from '~/components/toggle';
@@ -23,7 +26,13 @@ interface Meta {
   id: string;
   poolId: string;
 }
-export const LiquidityPoolLayout = () => {
+
+export const LiquidityPoolLayout = () => (
+  <Suspense fallback={<_LiquidityPoolLayoutSkeleton />}>
+    <_LiquidityPoolLayout />
+  </Suspense>
+);
+const _LiquidityPoolLayout = () => {
   const isMounted = useRef(false);
 
   const { isMD } = useMediaQuery();
@@ -115,18 +124,18 @@ export const LiquidityPoolLayout = () => {
           <Toggle selected={showAllPools} onClick={() => setShowAllPools(!showAllPools)} />
         </AllChainToggle>
       </TitleWrapper>
+      <BadgeWrapper>
+        {sortedTokens.map(token => (
+          <ButtonChipFilter
+            key={token.symbol}
+            token={token}
+            selected={selectedTokens.includes(token.symbol)}
+            onClick={() => handleTokenClick(token.symbol)}
+          />
+        ))}
+      </BadgeWrapper>
       {isMD ? (
         <TableWrapper>
-          <BadgeWrapper>
-            {sortedTokens.map(token => (
-              <ButtonChipFilter
-                key={token.symbol}
-                token={token}
-                selected={selectedTokens.includes(token.symbol)}
-                onClick={() => handleTokenClick(token.symbol)}
-              />
-            ))}
-          </BadgeWrapper>
           <Table
             data={tableData}
             columns={tableColumns}
@@ -146,6 +155,87 @@ export const LiquidityPoolLayout = () => {
           handleMoreClick={fetchNextPage}
           handleClick={meta => handleMobileRowClick(meta.network, meta.poolId)}
         />
+      )}
+    </Wrapper>
+  );
+};
+
+const _LiquidityPoolLayoutSkeleton = () => {
+  const isMounted = useRef(false);
+
+  const { isMD } = useMediaQuery();
+  const { t } = useTranslation();
+
+  const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
+  const { tableColumns, mobileTableColumn } = useTableLiquidityPool();
+
+  const { selectedNetwork } = useNetwork();
+
+  const [showToastPopup, setShowToastPopup] = useState<boolean>(false);
+
+  const network =
+    selectedNetwork === NETWORK.EVM_SIDECHAIN
+      ? 'EVM sidechain'
+      : selectedNetwork === NETWORK.THE_ROOT_NETWORK
+      ? 'The Root Network'
+      : 'XRPL';
+
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+
+    if (!showAllPools) {
+      setShowToastPopup(true);
+      setTimeout(() => {
+        setShowToastPopup(false);
+      }, 3000);
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAllPools]);
+
+  return (
+    <Wrapper>
+      {showToastPopup && (
+        <ToastPopup>
+          <ToastPopupText>{t('show-all-pools-message', { network: network })}</ToastPopupText>
+        </ToastPopup>
+      )}
+      <TitleWrapper>
+        <Title>{t(`Liquidity pools`)}</Title>
+        <AllChainToggle>
+          {t(`All supported chains`)}
+          <Toggle selected={showAllPools} onClick={() => setShowAllPools(!showAllPools)} />
+        </AllChainToggle>
+      </TitleWrapper>
+      <BadgeWrapper>
+        {Array(4)
+          .fill(0)
+          .map((_, i) => (
+            <Skeleton
+              key={i}
+              width={68}
+              height={24}
+              inline
+              highlightColor="#3F4359"
+              baseColor="#2B2E44"
+              duration={0.9}
+              style={{ borderRadius: '40px' }}
+            />
+          ))}
+      </BadgeWrapper>
+      {isMD ? (
+        <TableWrapper>
+          <TableSkeleton
+            columns={tableColumns}
+            skeletonHeight={240}
+            ratio={showAllPools ? [1, 2, 1, 1, 1] : [2, 1, 1, 1]}
+            type="darker"
+          />
+        </TableWrapper>
+      ) : (
+        <TableMobileSkeleton columns={mobileTableColumn} skeletonHeight={510} type="darker" />
       )}
     </Wrapper>
   );

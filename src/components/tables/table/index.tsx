@@ -1,5 +1,6 @@
 import { Fragment, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import Skeleton from 'react-loading-skeleton';
 import type { ColumnDef } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import tw, { css, styled } from 'twin.macro';
@@ -18,6 +19,8 @@ interface ReactTableProps<T extends object> {
   isLoading?: boolean;
   type?: 'darker' | 'lighter';
 
+  skeletonHeight?: number;
+
   handleMoreClick?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleRowClick?: (meta: any) => void;
@@ -33,6 +36,8 @@ export const Table = <T extends object>({
   hasMore,
   isLoading,
   type,
+
+  skeletonHeight,
 
   handleMoreClick,
   handleRowClick,
@@ -65,7 +70,15 @@ export const Table = <T extends object>({
         ))}
       </Header>
       <Divider type={type} />
-      {table.getRowModel().rows.length === 0 ? (
+      {skeletonHeight ? (
+        <Skeleton
+          height={skeletonHeight}
+          highlightColor="#2B2E44"
+          baseColor="#23263A"
+          duration={0.9}
+          style={{ borderRadius: '0 0 12px 12px' }}
+        />
+      ) : table.getRowModel().rows.length === 0 ? (
         <EmptyText>{emptyText ?? 'No result'}</EmptyText>
       ) : (
         <Body>
@@ -117,9 +130,18 @@ const Header = tw.div`
   px-24 py-20 items-center font-m-16 text-neutral-80
 `;
 
-const Body = tw.div`
-  flex flex-col items-center font-r-16 text-neutral-100 
-`;
+interface BodyProps {
+  height?: number;
+}
+const Body = styled.div<BodyProps>(({ height }) => [
+  tw`
+    flex flex-col items-center font-r-16 text-neutral-100 
+  `,
+  height &&
+    css`
+      height: ${height}px;
+    `,
+]);
 
 const HeaderInnerWrapper = styled.div<TableProps>(({ ratio }) => [
   tw`grid w-full h-full gap-16`,

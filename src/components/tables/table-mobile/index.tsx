@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import Skeleton from 'react-loading-skeleton';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -23,6 +24,8 @@ interface Props {
   isLoading?: boolean;
   type?: 'darker' | 'lighter';
 
+  skeletonHeight?: number;
+
   handleMoreClick?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleClick?: (meta: any) => void;
@@ -35,6 +38,8 @@ export const TableMobile = ({
   hasMore,
   type,
 
+  skeletonHeight,
+
   handleMoreClick,
   handleClick,
 }: Props) => {
@@ -46,8 +51,17 @@ export const TableMobile = ({
     <Wrapper type={type}>
       <Header>{columns}</Header>
       <Divider type={type} />
-      {isEmpty && <EmptyWrapper>No liquidity pools</EmptyWrapper>}
-      {!isEmpty &&
+      {skeletonHeight ? (
+        <Skeleton
+          height={skeletonHeight}
+          highlightColor="#2B2E44"
+          baseColor="#23263A"
+          duration={0.9}
+          style={{ borderRadius: '0 0 12px 12px' }}
+        />
+      ) : isEmpty ? (
+        <EmptyWrapper>No liquidity pools</EmptyWrapper>
+      ) : (
         data.map(({ meta, rows, dataRows }, i) => (
           <ContentWrapper key={i} onClick={() => handleClick?.(meta)} className={meta?.className}>
             {rows.map((row, i) => (
@@ -62,7 +76,8 @@ export const TableMobile = ({
               ))}
             </DataRowWrapper>
           </ContentWrapper>
-        ))}
+        ))
+      )}
       {!isEmpty && hasMore && (
         <More onClick={handleMoreClick}>
           {t('Load more')}
@@ -98,9 +113,19 @@ const EmptyWrapper = tw.div`
   w-full h-218 p-20 flex-center font-r-16 text-neutral-60
 `;
 
-const ContentWrapper = tw.div`
-  flex flex-col gap-16 px-20 py-20
-`;
+interface ContentWrapperProps {
+  height?: number;
+}
+
+const ContentWrapper = styled.div<ContentWrapperProps>(({ height }) => [
+  tw`
+    flex flex-col gap-16 px-20 py-20
+  `,
+  height &&
+    css`
+      height: ${height}px;
+    `,
+]);
 
 const Row = tw.div`
   flex items-center justify-between
