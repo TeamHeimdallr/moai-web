@@ -11,8 +11,14 @@ import { ITokenComposition, NETWORK } from '~/types';
 
 import { BALANCER_LP_ABI, ERC20_TOKEN_ABI } from '~/abi';
 
-export const useUserPoolTokenBalances = () => {
+interface Props {
+  network: string;
+  id: string;
+}
+export const useUserPoolTokenBalances = (props?: Props) => {
+  const { network: networkProps, id: idProps } = props || {};
   const { network, id } = useParams();
+
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
@@ -21,12 +27,12 @@ export const useUserPoolTokenBalances = () => {
   const { evm, fpass } = useConnectedWallet();
   const { address: walletAddress } = isFpass ? fpass : evm;
 
-  const queryEnabled = !!network && !!id;
+  const queryEnabled = !!(network || networkProps) && !!(id || idProps);
   const { data: poolData } = useGetPoolQuery(
     {
       params: {
-        networkAbbr: network as string,
-        poolId: id as string,
+        networkAbbr: (network || networkProps) as string,
+        poolId: (id || idProps) as string,
       },
     },
     {
@@ -94,6 +100,7 @@ export const useUserPoolTokenBalances = () => {
   const lpTokenValue = lpTokenBalance * lpTokenPrice;
 
   const userPoolTokenBalances = tokenBalances?.slice(1) || [];
+  const userPoolTokenBalancesRaw = tokenBalancesRaw?.slice(1) || [];
   const userPoolTokens = (compositions?.map((composition, i) => {
     if (
       currentNetwork === NETWORK.EVM_SIDECHAIN &&
@@ -108,8 +115,9 @@ export const useUserPoolTokenBalances = () => {
     return {
       ...composition,
       balance: userPoolTokenBalances?.[i] || 0,
+      balanceRaw: userPoolTokenBalancesRaw?.[i] || 0n,
     };
-  }) || []) as (ITokenComposition & { balance: number })[];
+  }) || []) as (ITokenComposition & { balance: number; balanceRaw: bigint })[];
 
   const userPoolTokenTotalValue = userPoolTokens.reduce((acc, cur) => {
     const tokenValue = (cur?.balance || 0) * (cur?.price || 0);

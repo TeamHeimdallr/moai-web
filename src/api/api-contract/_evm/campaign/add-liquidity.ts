@@ -20,7 +20,7 @@ import { NETWORK } from '~/types';
 import { CAMPAIGN_ABI } from '~/abi/campaign';
 
 interface Props {
-  xrpAmount: string; // formatted 6 decimal
+  xrpAmount: bigint; // formatted 6 decimal
   enabled?: boolean;
 }
 export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
@@ -41,8 +41,8 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
     functionName: 'participate',
 
     account: walletAddress as Address,
-    value: BigInt(xrpAmount),
-    args: [BigInt(xrpAmount), '0'],
+    value: xrpAmount,
+    args: [xrpAmount, '0'],
     enabled: enabled && isConnected && isEvm && !isFpass && !!walletAddress,
   });
 
@@ -82,8 +82,8 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
       functionName: 'participate',
 
       account: walletAddress as Address,
-      value: BigInt(xrpAmount),
-      args: [BigInt(xrpAmount), '0'],
+      value: xrpAmount,
+      args: [xrpAmount, '0'],
     });
 
     const maxFeePerGas = feeHistory.baseFeePerGas[0];

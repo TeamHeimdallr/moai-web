@@ -6,7 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
+import { formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
+
+import { useAddLiquidity } from '~/api/api-contract/_evm/campaign/add-liquidity';
+import { useAddLiquidity as useAddLiquiditySubstrate } from '~/api/api-contract/_evm/campaign/add-liquidity-substrate';
+import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
 import { COLOR } from '~/assets/colors';
 import {
@@ -19,6 +24,8 @@ import {
 } from '~/assets/icons';
 import TokenXrp from '~/assets/icons/icon-token-xrp.svg';
 
+import { POOL_ID } from '~/constants';
+
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { List } from '~/components/lists';
@@ -27,6 +34,7 @@ import { ListSkeleton } from '~/components/skeleton/list-skeleton';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { DATE_FORMATTER } from '~/utils';
 import { NETWORK } from '~/types';
 interface InputFormState {
@@ -41,14 +49,37 @@ export const LayoutStep4AddLiquidity = () => (
 
 const _AddLiquidity = () => {
   const [inputValue, setInputValue] = useState<number>();
+  const [inputValueRaw, setInputValueRaw] = useState<bigint>();
+
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   const { t } = useTranslation();
+
+  const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
+
+  const { userPoolTokens } = useUserPoolTokenBalances({
+    network: 'trn',
+    id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
+  });
+  const xrpBalance = userPoolTokens?.find(t => t.symbol === 'XRP')?.balance || 0;
+  const xrpBalanceRaw = userPoolTokens?.find(t => t.symbol === 'XRP')?.balanceRaw || 0n;
+
+  const { txData: addLiquidityTxData, writeAsync: addLiquidity } = useAddLiquidity({
+    xrpAmount: inputValueRaw || 0n,
+    enabled: isEvm && !isFpass && isRoot && !!inputValueRaw && inputValueRaw > 0,
+  });
+  const { txData: addLiquiditySubstrateTxData, writeAsync: addLiquiditySubstrate } =
+    useAddLiquiditySubstrate({
+      xrpAmount: inputValueRaw || 0n,
+      enabled: !isEvm && isFpass && isRoot && !!inputValueRaw && inputValueRaw > 0,
+    });
+
   // TODO : add validation
-  const validToBridge = inputValue && Number(inputValue) > 0;
+  const validToBridge = inputValue && inputValue > 0;
 
   const schema = yup.object().shape({
-    input: yup.number().min(0).required(),
+    input: yup.number().min(0).max(xrpBalance).required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
     resolver: yupResolver(schema),
@@ -106,15 +137,23 @@ const _AddLiquidity = () => {
       {!isSuccess && (
         <Wrapper>
           <InputNumber
-            name={'input1'}
+            name={'input'}
             title={t("You're providing")}
             control={control}
             token={<Token token={'XRP'} image imageUrl={TokenXrp} />}
             tokenName={'XRPL'}
             tokenValue={0}
-            balance={0}
+            balance={xrpBalance}
+            balanceRaw={xrpBalanceRaw}
             value={inputValue}
-            handleChange={val => setInputValue(val)}
+            handleChange={val => {
+              setInputValue(val);
+              setInputValueRaw(parseUnits((val || 0).toFixed(6), 6));
+            }}
+            handleChangeRaw={val => {
+              setInputValue(Number(formatUnits(val || 0n, 6)));
+              setInputValueRaw(val);
+            }}
             maxButton
             setValue={setValue}
             formState={formState}
