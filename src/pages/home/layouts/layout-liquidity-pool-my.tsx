@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
+import { TableMobileSkeleton } from '~/components/skeleton/table-mobile-skeleton';
+import { TableSkeleton } from '~/components/skeleton/table-skeleton';
 import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 
@@ -84,7 +86,7 @@ const _MyLiquidityLayout = () => {
 };
 
 const _MyLiquidityLayoutSkeleton = () => {
-  const { tableColumns, tableData, mobileTableData, mobileTableColumn } = useTableMyLiquidityPool();
+  const { tableColumns, mobileTableColumn } = useTableMyLiquidityPool();
 
   const { isMD } = useMediaQuery();
   const { t } = useTranslation();
@@ -95,20 +97,14 @@ const _MyLiquidityLayoutSkeleton = () => {
         <Title>{t('My liquidity in Moai pools')}</Title>
       </TitleWrapper>
       {isMD ? (
-        <Table
+        <TableSkeleton
           skeletonHeight={210}
-          data={tableData}
           columns={tableColumns}
           ratio={[2, 1, 1, 1]}
           type="darker"
         />
       ) : (
-        <TableMobile
-          skeletonHeight={210}
-          data={mobileTableData}
-          columns={mobileTableColumn}
-          type="darker"
-        />
+        <TableMobileSkeleton skeletonHeight={210} columns={mobileTableColumn} type="darker" />
       )}
     </Wrapper>
   );
