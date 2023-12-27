@@ -394,15 +394,15 @@ const _SwapInputGroupSkeleton = () => {
   return (
     <Wrapper>
       <InputInnerWrapper>
-        <SkeletonBase height={108} borderRadius={8} />
+        <SkeletonBase height={108} />
         <IconWrapper>
           <ArrowDownWrapper>
             <IconArrowDown width={20} height={20} fill={COLOR.PRIMARY[50]} />
           </ArrowDownWrapper>
         </IconWrapper>
-        <SkeletonBase height={108} borderRadius={8} />
+        <SkeletonBase height={108} />
       </InputInnerWrapper>
-      <SkeletonBase height={40} style={{ marginTop: 36 }} />
+      <SkeletonBase height={40} borderRadius={12} style={{ marginTop: 36 }} />
     </Wrapper>
   );
 };

@@ -605,7 +605,7 @@ const _WithdrawLiquidityPopupSkeleton = () => {
         <ListSkeleton height={114} title={t("You're providing")} />
         <ListSkeleton height={183} title={t("You're expected to receive")} />
         <ListSkeleton height={122} title={t('Summary')} />
-        <SkeletonBase height={48} />
+        <SkeletonBase height={48} borderRadius={12} />
       </Wrapper>
     </Popup>
   );

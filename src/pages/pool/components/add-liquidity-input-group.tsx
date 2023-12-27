@@ -298,11 +298,11 @@ const _AddLiquidityInputGroupSkeleton = () => {
         </IconWrapper>
       </Header>
       <InnerWrapper>
-        <SkeletonBase type="light" height={108} borderRadius={8} />
-        <SkeletonBase type="light" height={108} borderRadius={8} />
-        <SkeletonBase type="light" height={100} borderRadius={8} />
+        <SkeletonBase type="light" height={108} />
+        <SkeletonBase type="light" height={108} />
+        <SkeletonBase type="light" height={100} />
       </InnerWrapper>
-      <SkeletonBase type="light" height={48} />
+      <SkeletonBase type="light" height={48} borderRadius={12} />
     </SkeletonWrapper>
   );
 };
