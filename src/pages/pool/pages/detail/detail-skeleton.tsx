@@ -8,7 +8,6 @@ import { useMediaQuery } from '~/hooks/utils';
 
 export const PoolDetailSkeleton = () => {
   const { isSMD } = useMediaQuery();
-  console.log(isSMD);
   return isSMD ? <_PoolDetailSkeleton /> : <_PoolDetailMobileSkeleton />;
 };
 
