@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -22,6 +22,8 @@ import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings';
 import { Popup } from '~/components/popup';
+import { ListSkeleton } from '~/components/skeleton/list-skeleton';
+import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
@@ -49,7 +51,16 @@ interface Props {
   swapOptimizedPathPool?: IPool;
   refetchBalance?: () => void;
 }
+
 export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
+  return (
+    <Suspense fallback={<_SwapPopupSkeleton />}>
+      <_SwapPopup swapOptimizedPathPool={swapOptimizedPathPool} refetchBalance={refetchBalance} />
+    </Suspense>
+  );
+};
+
+const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { error: swapGasError, setError: setSwapGasError } = useSwapNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
@@ -72,7 +83,6 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippage: slippageRaw } = useSlippageStore();
 
-  const [selectedDetailInfo, selectDetailInfo] = useState<'TOKEN' | 'USD'>('TOKEN');
   const [estimatedSwapFee, setEstimatedSwapFee] = useState<number | undefined>();
   const [estimatedFromTokenApproveFee, setEstimatedFromTokenApproveFee] = useState<
     number | undefined
@@ -82,12 +92,7 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   >();
 
   const slippage = Number(slippageRaw || 0);
-  const {
-    fromToken,
-    toToken,
-
-    fromInput,
-  } = useSwapStore();
+  const { fromToken, toToken, fromInput, selectedDetailInfo, selectDetailInfo } = useSwapStore();
   const numFromInput = Number(fromInput) || 0;
 
   const { data: swapInfoData } = useSorQuery(
@@ -567,8 +572,34 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   );
 };
 
+const _SwapPopupSkeleton = () => {
+  const { t } = useTranslation();
+  const { fromToken, selectedDetailInfo } = useSwapStore();
+  return (
+    <Popup id={POPUP_ID.SWAP} title={t('Swap preview')}>
+      <SkeletonWrapper>
+        <ListSkeleton height={191} title={t('Effective price')} />
+        <DetailTitleWrapper>
+          {t('swap-detail', { token: fromToken?.symbol })}
+          <DetailButtonWrapper>
+            <ButtonChipSmall text="TOKEN" selected={selectedDetailInfo === 'TOKEN'} />
+            <ButtonChipSmall text="USD" selected={selectedDetailInfo === 'USD'} />
+          </DetailButtonWrapper>
+        </DetailTitleWrapper>
+        <SkeletonBase height={62} />
+        <SkeletonBase height={48} borderRadius={12} />
+      </SkeletonWrapper>
+    </Popup>
+  );
+};
+
 const Wrapper = tw.div`
   px-24 pb-24 flex flex-col
+`;
+
+const SkeletonWrapper = tw.div`
+  px-24 pb-24 flex flex-col gap-20
+  md:gap-24
 `;
 
 const SuccessTitle = tw.div`

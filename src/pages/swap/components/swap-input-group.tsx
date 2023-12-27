@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -23,6 +23,7 @@ import { EVM_VAULT_ADDRESS } from '~/constants';
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
+import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { Token } from '~/components/token';
 
 import { usePopup } from '~/hooks/components';
@@ -50,7 +51,15 @@ interface InputFormState {
   from: number;
   to: number;
 }
+
 export const SwapInputGroup = () => {
+  return (
+    <Suspense fallback={<_SwapInputGroupSkeleton />}>
+      <_SwapInputGroup />
+    </Suspense>
+  );
+};
+const _SwapInputGroup = () => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { t } = useTranslation();
@@ -381,6 +390,23 @@ export const SwapInputGroup = () => {
   );
 };
 
+const _SwapInputGroupSkeleton = () => {
+  return (
+    <Wrapper>
+      <InputInnerWrapper>
+        <SkeletonBase height={108} borderRadius={8} />
+        <IconWrapper>
+          <ArrowDownWrapper>
+            <IconArrowDown width={20} height={20} fill={COLOR.PRIMARY[50]} />
+          </ArrowDownWrapper>
+        </IconWrapper>
+        <SkeletonBase height={108} borderRadius={8} />
+      </InputInnerWrapper>
+      <SkeletonBase height={40} style={{ marginTop: 36 }} />
+    </Wrapper>
+  );
+};
+
 const Wrapper = tw.div`
    w-full flex flex-col flex-shrink-0 rounded-12 bg-neutral-10 gap-20 p-20
    md:(w-452 p-24 gap-24)
@@ -395,7 +421,7 @@ const InputInnerWrapper = tw.div`
 `;
 
 const IconWrapper = tw.div`
-  absolute absolute-center-x bottom-100 z-1 clickable select-none
+  absolute absolute-center-x bottom-100 z-2 clickable select-none
 `;
 
 const ArrowDownWrapper = tw.div`
