@@ -231,13 +231,13 @@ const _WithdrawLiquidityInputGroupSkeleton = () => {
       <InnerWrapper>
         <ContentWrapper>
           <SubTitle>{t('You provide')}</SubTitle>
-          <SkeletonBase height={128} />
+          <SkeletonBase height={128} borderRadius={8} />
         </ContentWrapper>
         <ContentWrapper>
           <SubTitle>{t('You receive')}</SubTitle>
-          <SkeletonBase height={145} />
+          <SkeletonBase height={145} borderRadius={8} />
         </ContentWrapper>
-        <SkeletonBase height={46} />
+        <SkeletonBase height={46} borderRadius={8} />
         <SkeletonBase height={46} />
       </InnerWrapper>
     </Wrapper>
