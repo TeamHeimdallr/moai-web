@@ -9,10 +9,12 @@ import { Transaction } from 'xrpl';
 import { BLOCKCHAIN_ENV, IS_DEVNET } from '~/constants';
 
 import { truncateAddress } from '~/utils/util-string';
+import { useXummQrStore } from '~/states/components/xumm-qr';
 import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { useXummWalletStore } from '~/states/contexts/wallets/xumm-wallet';
-import { NETWORK } from '~/types';
+import { NETWORK, POPUP_ID } from '~/types';
 
+import { usePopup } from '../components';
 import { useXrpl } from '../contexts';
 
 import { useFuturepassOf } from './use-futurepass-of';
@@ -116,6 +118,9 @@ export const useConnectedXrplWallet = () => {
   const { client: xummWalletClient } = useXummWalletStore();
   const { client: xrplClient } = useXrpl();
 
+  const { open, close } = usePopup(POPUP_ID.XUMM_QR);
+  const { setQr } = useXummQrStore();
+
   const {
     isConnected: isXrpCrossmarkConnected,
     connect: connectXrpCrossmark,
@@ -153,7 +158,6 @@ export const useConnectedXrplWallet = () => {
           new Promise((resolve, reject) => {
             if (!xummWalletClient) return;
 
-            let popup: Window | null;
             xummWalletClient.payload
               .createAndSubscribe(
                 { txjson: tx, options: { force_network: IS_DEVNET ? 'testnet' : BLOCKCHAIN_ENV } },
@@ -161,7 +165,7 @@ export const useConnectedXrplWallet = () => {
                   if (typeof e.data.signed === 'undefined') return;
 
                   if (e.data.signed === false) {
-                    popup?.close();
+                    close();
                     reject();
                   }
 
@@ -172,21 +176,18 @@ export const useConnectedXrplWallet = () => {
                       binary: false,
                     })
                     .then(res => {
-                      popup?.close();
+                      close();
                       resolve(res?.result || e.data);
                     })
                     .catch(() => {
-                      popup?.close();
+                      close();
                       resolve(e.data);
                     });
                 }
               )
               .then(res => {
-                popup = window.open(
-                  res.created.next.always,
-                  '_blank',
-                  'width=700, height=600, top=50, left=50, scrollbars=yes'
-                );
+                setQr(res.created.refs.qr_png);
+                open();
               });
           }),
       }
