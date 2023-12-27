@@ -68,3 +68,9 @@ export const EVM_VAULT_ADDRESS: Record<string, string> = {
     ? '0x1cc5a9f4fd07E97e616F72D829d38c0A6aC5D623'
     : '0x1cc5a9f4fd07E97e616F72D829d38c0A6aC5D623',
 };
+
+export const CAMPAIGN_ADDRESS: Record<string, string> = {
+  [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET
+    ? '0x5BBA71fD4aD38a71CDFA0F27eE56719756F1A467'
+    : '0x0d035D7045CfF1a2A481129dEbcdfaEA40edBB73',
+};

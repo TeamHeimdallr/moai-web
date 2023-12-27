@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import Skeleton from 'react-loading-skeleton';
 import tw, { styled } from 'twin.macro';
 
+import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
+
 import { IconTokenMoai, IconTokenRoot, IconTokenXrp } from '~/assets/icons';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
@@ -28,6 +30,8 @@ const _LayoutVoyage = () => {
 
   const { open } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
   const { t } = useTranslation();
+
+  const { refetch } = useUserCampaignInfo();
 
   // TODO : connect API
   const myDepositBalance = 123123;
@@ -161,7 +165,7 @@ const _LayoutVoyageSkeleton = () => {
 };
 
 const Wrapper = tw.div`
-  w-full flex-center pt-60 pb-120 text-neutral-100 
+  w-full flex-center pt-60 pb-120 text-neutral-100
   md:(px-20)
   xxl:(px-80)
 `;
