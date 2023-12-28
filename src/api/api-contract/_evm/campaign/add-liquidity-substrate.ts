@@ -49,12 +49,12 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const estimateFee = async () => {
+    if (!isFpass) return;
+
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
       rewardPercentiles: [25, 75],
     });
-
-    if (!isFpass || !enabled) return;
 
     try {
       const [api] = await Promise.all([
@@ -66,7 +66,7 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
           ? encodeFunctionData({
               abi: CAMPAIGN_ABI,
               functionName: 'participate',
-              args: [xrpAmount, '0'],
+              args: ['1', '0'],
             })
           : '0x0';
 
@@ -91,7 +91,7 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
         address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         abi: CAMPAIGN_ABI,
         functionName: 'participate',
-        args: [xrpAmount, '0'],
+        args: ['1', '0'],
         account: walletAddress as Address,
       });
 
@@ -99,7 +99,8 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
       const remainder = gasCostInEth.mod(10 ** 12);
       const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
-      const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+      // const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+      const gasCostInXrpPriority = gasCostInXRP.toBigInt();
 
       const evmFee = Number(formatUnits(gasCostInXrpPriority, 6));
 
@@ -138,7 +139,7 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
         CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed
+        '400000', // gas limit estimation todo: can be changed
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -200,6 +201,7 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
   }, [txData]);
 
   return {
+    isPrepareLoading: false,
     isLoading,
     isSuccess,
     isError,
@@ -217,7 +219,7 @@ export const useAddLiquidityPrepare = ({ xrpAmount, enabled }: Props) => {
   const { fpass } = useConnectedWallet();
   const { address: walletAddress } = fpass;
 
-  const { isEvm, isFpass } = useNetwork();
+  const { isFpass } = useNetwork();
 
   /* call prepare hook for check evm tx success */
   const {
@@ -231,9 +233,8 @@ export const useAddLiquidityPrepare = ({ xrpAmount, enabled }: Props) => {
     functionName: 'participate',
 
     account: walletAddress as Address,
-    value: xrpAmount,
     args: [xrpAmount, '0'],
-    enabled: enabled && isEvm && isFpass && !!walletAddress,
+    enabled: enabled && isFpass && !!walletAddress,
   });
 
   const approveError = error?.message?.includes('Approved');

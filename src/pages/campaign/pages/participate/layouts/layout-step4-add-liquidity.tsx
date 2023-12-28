@@ -1,8 +1,9 @@
 // lack of root 는 미리 검증해서 티켓 쏘기
 // reward 처럼 일정 시간마다 남은 루트 양 보여주도록 처리
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { format } from 'date-fns';
 import tw, { css, styled } from 'twin.macro';
@@ -10,8 +11,12 @@ import { formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
 
 import { useAddLiquidity } from '~/api/api-contract/_evm/campaign/add-liquidity';
-import { useAddLiquidity as useAddLiquiditySubstrate } from '~/api/api-contract/_evm/campaign/add-liquidity-substrate';
+import {
+  useAddLiquidity as useAddLiquiditySubstrate,
+  useAddLiquidityPrepare,
+} from '~/api/api-contract/_evm/campaign/add-liquidity-substrate';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
+import { useApprove } from '~/api/api-contract/token/approve';
 
 import { COLOR } from '~/assets/colors';
 import {
@@ -24,7 +29,7 @@ import {
 } from '~/assets/icons';
 import TokenXrp from '~/assets/icons/icon-token-xrp.svg';
 
-import { POOL_ID } from '~/constants';
+import { CAMPAIGN_ADDRESS, POOL_ID } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
@@ -48,35 +53,77 @@ export const LayoutStep4AddLiquidity = () => (
 );
 
 const _AddLiquidity = () => {
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState<number>();
   const [inputValueRaw, setInputValueRaw] = useState<bigint>();
 
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [estimatedAddLiquidityFee, setEstimatedAddLiquidityFee] = useState<number | undefined>();
+  const [estimatedApproveFee, setEstimatedApproveFee] = useState<number | undefined>();
 
   const { t } = useTranslation();
 
-  const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const { selectedNetwork, isFpass } = useNetwork();
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
 
-  const { userPoolTokens } = useUserPoolTokenBalances({
+  const { userPoolTokens, refetch: refetchBalance } = useUserPoolTokenBalances({
     network: 'trn',
     id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
   });
-  const xrpBalance = userPoolTokens?.find(t => t.symbol === 'XRP')?.balance || 0;
-  const xrpBalanceRaw = userPoolTokens?.find(t => t.symbol === 'XRP')?.balanceRaw || 0n;
+  const xrp = userPoolTokens?.find(t => t.symbol === 'XRP');
+  const xrpBalance = xrp?.balance || 0;
+  const xrpBalanceRaw = xrp?.balanceRaw || 0n;
 
-  const { txData: addLiquidityTxData, writeAsync: addLiquidity } = useAddLiquidity({
-    xrpAmount: inputValueRaw || 0n,
-    enabled: isEvm && !isFpass && isRoot && !!inputValueRaw && inputValueRaw > 0,
+  const {
+    allow,
+    allowance,
+    isLoading: allowLoading,
+    isSuccess: allowSuccess,
+    refetch: refetchAllowance,
+    estimateFee: estimateApproveFee,
+  } = useApprove({
+    amount: inputValueRaw || 0n,
+    symbol: xrp?.symbol || 'XRP',
+    address: xrp?.address || '',
+    issuer: xrp?.address || '',
+    spender: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK],
+    currency: xrp?.currency || '',
+    enabled: !!xrp && isRoot,
   });
-  const { txData: addLiquiditySubstrateTxData, writeAsync: addLiquiditySubstrate } =
-    useAddLiquiditySubstrate({
-      xrpAmount: inputValueRaw || 0n,
-      enabled: !isEvm && isFpass && isRoot && !!inputValueRaw && inputValueRaw > 0,
-    });
 
-  // TODO : add validation
-  const validToBridge = inputValue && inputValue > 0;
+  const addLiquidityEnabled = !!inputValueRaw && inputValueRaw > 0n && allowance;
+  const addLiquidityEvm = useAddLiquidity({
+    xrpAmount: inputValueRaw || 0n,
+    enabled: !isFpass && isRoot && addLiquidityEnabled,
+  });
+  const addLiquiditySubstrate = useAddLiquiditySubstrate({
+    xrpAmount: inputValueRaw || 0n,
+    enabled: isFpass && isRoot && addLiquidityEnabled,
+  });
+  const {
+    isPrepareLoading: addLiquiditySubstratePrepareLoading,
+    isPrepareError: addLiquiditySubstratePrepareError,
+  } = useAddLiquidityPrepare({
+    xrpAmount: inputValueRaw || 0n,
+    enabled: isFpass && isRoot && addLiquidityEnabled,
+  });
+
+  const addLiquidity = isFpass ? addLiquiditySubstrate : addLiquidityEvm;
+  const {
+    isPrepareLoading: addLiquidityPrepareLoading,
+    isLoading: addLiquidityLoading,
+    isSuccess: addLiquiditySuccess,
+    isError: addLiquidityError,
+    txData,
+    blockTimestamp,
+    writeAsync,
+    estimateFee: estimateAddLiquidityFee,
+  } = addLiquidity;
+
+  const txDate = new Date(blockTimestamp || 0);
+  const isIdle = !txData;
+  const isSuccess = addLiquiditySuccess && !!txData;
+  const isLoading = addLiquidityLoading || allowLoading;
+  const isError = addLiquidityError || addLiquiditySubstratePrepareError;
 
   const schema = yup.object().shape({
     input: yup.number().min(0).max(xrpBalance).required(),
@@ -85,16 +132,66 @@ const _AddLiquidity = () => {
     resolver: yupResolver(schema),
   });
 
-  const handleButtonClick = () => {
-    setIsSuccess(true);
+  const buttonText = useMemo(() => {
+    if (addLiquidityLoading) return t('Confirming...');
+
+    if (!isIdle) {
+      if (isSuccess) return t('Return to voyage page');
+      return t('Try again');
+    }
+
+    if (!allowance)
+      return t('approve-add-liquidity-token-message', { token: xrp?.symbol || 'XRP' });
+
+    return t('Confirm add liquidity in wallet');
+  }, [allowance, isIdle, addLiquidityLoading, isSuccess, t, xrp?.symbol]);
+
+  const handleButtonClick = async () => {
+    if (
+      isLoading ||
+      (!isFpass && addLiquidityPrepareLoading) ||
+      (isFpass && addLiquiditySubstratePrepareLoading)
+    )
+      return;
+
+    if (!allowance) return await allow?.();
+    return await writeAsync?.();
   };
 
-  const handleLink = () => {
-    console.log('link clicked');
-  };
+  useEffect(() => {
+    if (allowSuccess) refetchAllowance();
+  }, [allowSuccess, refetchAllowance]);
+
+  useEffect(() => {
+    if (!isIdle) refetchBalance?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isIdle]);
+
+  useEffect(() => {
+    const estimateFeeAsync = async () => {
+      const approveFee = await estimateApproveFee?.();
+      setEstimatedApproveFee(approveFee);
+    };
+
+    estimateFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xrp?.address]);
+
+  useEffect(() => {
+    const estimateFeeAsync = async () => {
+      const fee = await estimateAddLiquidityFee?.();
+      setEstimatedAddLiquidityFee(fee);
+    };
+
+    estimateFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const estimatedFee = allowance ? estimatedAddLiquidityFee : estimatedApproveFee;
+
   return (
     <>
-      {isSuccess && (
+      {!isIdle && isSuccess && (
         <>
           <SuccessWrapper>
             <SuccessMessageWrapper>
@@ -104,37 +201,25 @@ const _AddLiquidity = () => {
               <SuccessTitle>{t('Add liquidity confirmed!')}</SuccessTitle>
               <SuccessSubTitle>{t('campaign-add-liquidity-success-message')}</SuccessSubTitle>
             </SuccessMessageWrapper>
-            <List title={t('Expected APR (10%)')}>
-              <TokenList
-                title={t('Pre-mining $MOAI APY (3%)')}
-                image={<IconTokenMoai width={36} height={36} />}
-                type="campaign"
-                balance="99,999 MOAI"
-                value="$100"
-              />
-              <Divider />
-              <TokenList
-                title={t('$ROOT reward (7%)')}
-                image={<IconTokenXrp width={36} height={36} />}
-                type="campaign"
-                balance="99,999 MOAI"
-                value="$100"
-              />
-            </List>
             <SuccessBottomWrapper>
               <TimeWrapper>
                 <IconTime />
                 {format(new Date(), DATE_FORMATTER.FULL)}
-                <ClickableIcon onClick={handleLink}>
+                <ClickableIcon>
                   <IconLink />
                 </ClickableIcon>
               </TimeWrapper>
-              <ButtonPrimaryLarge text={t('Return to voyage page')} buttonType="outlined" />
+              <ButtonPrimaryLarge
+                text={t('Return to voyage page')}
+                buttonType="outlined"
+                onClick={() => navigate('/campaign')}
+              />
             </SuccessBottomWrapper>
           </SuccessWrapper>
         </>
       )}
-      {!isSuccess && (
+      {!isIdle && !isSuccess && <></>}
+      {isIdle && (
         <Wrapper>
           <InputNumber
             name={'input'}
@@ -158,26 +243,15 @@ const _AddLiquidity = () => {
             setValue={setValue}
             formState={formState}
           />
-          <List title={t('Expected APR (10%)')}>
-            <TokenList
-              type="campaign"
-              title={t('Pre-mining $MOAI APY (3%)')}
-              image={<IconTokenMoai width={36} height={36} />}
-              balance="99,999 MOAI"
-              value="$100"
-            />
-            <Divider />
-            <TokenList
-              type="campaign"
-              title={t('$ROOT reward (7%)')}
-              image={<IconTokenRoot width={36} height={36} />}
-              balance="99,999 ROOT"
-              value="$100"
-            />
-          </List>
           <ButtonPrimaryLarge
-            text={t('Add liquidity')}
-            disabled={!validToBridge}
+            text={buttonText}
+            isLoading={addLiquidityLoading}
+            disabled={
+              isError ||
+              isLoading ||
+              (!isFpass && addLiquidityPrepareLoading) ||
+              (isFpass && addLiquiditySubstratePrepareLoading)
+            }
             onClick={handleButtonClick}
           />
         </Wrapper>

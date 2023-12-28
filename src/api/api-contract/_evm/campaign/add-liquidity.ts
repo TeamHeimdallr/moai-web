@@ -35,15 +35,18 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
-  const { isLoading: prepareLoading, config } = usePrepareContractWrite({
+  const {
+    isLoading: prepareLoading,
+    isError: prepareError,
+    config,
+  } = usePrepareContractWrite({
     address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
     abi: CAMPAIGN_ABI,
     functionName: 'participate',
 
     account: walletAddress as Address,
-    value: xrpAmount,
     args: [xrpAmount, '0'],
-    enabled: enabled && isConnected && isEvm && !isFpass && !!walletAddress,
+    enabled: enabled && isConnected && !isFpass && !!walletAddress,
   });
 
   const { data, isLoading: isWriteLoading, writeAsync: writeAsyncBase } = useContractWrite(config);
@@ -51,14 +54,15 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
   const {
     isLoading,
     isSuccess,
+    isError,
     data: txData,
   } = useWaitForTransaction({
     hash: data?.hash,
-    enabled: !!data?.hash && isEvm,
+    enabled: !!data?.hash && isEvm && !isFpass,
   });
 
   const getBlockTimestamp = async () => {
-    if (!txData || !txData.blockNumber || !isEvm) return;
+    if (!txData || !txData.blockNumber || !isFpass) return;
 
     const { timestamp } = await publicClient.getBlock({ blockNumber: txData.blockNumber });
     setBlockTimestamp(Number(timestamp) * 1000);
@@ -69,7 +73,7 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
   };
 
   const getEstimatedGas = async () => {
-    if (!isEvm || isFpass) return;
+    if (!isEvm || isFpass || !walletAddress) return;
 
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
@@ -82,15 +86,14 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
       functionName: 'participate',
 
       account: walletAddress as Address,
-      value: xrpAmount,
-      args: [xrpAmount, '0'],
+      args: ['1', '0'],
     });
 
     const maxFeePerGas = feeHistory.baseFeePerGas[0];
     const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
     const remainder = gasCostInEth.mod(10 ** 12);
     const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
-    const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+    const gasCostInXrpPriority = gasCostInXRP.toBigInt();
 
     const formatted = Number(formatUnits(gasCostInXrpPriority, 6));
     return formatted;
@@ -102,8 +105,10 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
   }, [txData]);
 
   return {
-    isLoading: prepareLoading || isLoading || isWriteLoading,
+    isPrepareLoading: prepareLoading,
+    isLoading: isLoading || isWriteLoading,
     isSuccess,
+    isError: isError || prepareError,
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     txData: txData as any,
