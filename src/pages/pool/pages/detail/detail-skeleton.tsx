@@ -26,29 +26,30 @@ const _PoolDetailSkeleton = () => {
               width={200}
               height={32}
               type="light"
-              style={{ borderRadius: 40, left: -20 }}
+              borderRadius={40}
+              style={{ left: -20 }}
             />
           </TokenTopWrapper>
           <TokenBottomWrapper>
-            <SkeletonBase width={104} height={32} type="light" style={{ borderRadius: 8 }} />
-            <SkeletonBase width={104} height={32} type="light" style={{ borderRadius: 8 }} />
+            <SkeletonBase width={104} height={32} type="light" />
+            <SkeletonBase width={104} height={32} type="light" />
           </TokenBottomWrapper>
         </TokenWrapper>
         <ContentWrapper>
           <LeftWrapper>
             <Section1>
-              <SkeletonBase width={198} height={108} type="dark" style={{ borderRadius: 12 }} />
-              <SkeletonBase width={198} height={108} type="dark" style={{ borderRadius: 12 }} />
-              <SkeletonBase width={198} height={108} type="dark" style={{ borderRadius: 12 }} />
-              <SkeletonBase width={198} height={108} type="dark" style={{ borderRadius: 12 }} />
+              <SkeletonBase width={198} height={108} type="dark" borderRadius={12} />
+              <SkeletonBase width={198} height={108} type="dark" borderRadius={12} />
+              <SkeletonBase width={198} height={108} type="dark" borderRadius={12} />
+              <SkeletonBase width={198} height={108} type="dark" borderRadius={12} />
             </Section1>
-            <SkeletonBase height={318} type="dark" style={{ borderRadius: 12 }} />
-            <SkeletonBase height={428} type="dark" style={{ borderRadius: 12 }} />
-            <SkeletonBase height={80} type="dark" style={{ borderRadius: 12 }} />
-            <SkeletonBase height={80} type="dark" style={{ borderRadius: 12 }} />
+            <SkeletonBase height={318} type="dark" borderRadius={12} />
+            <SkeletonBase height={428} type="dark" borderRadius={12} />
+            <SkeletonBase height={80} type="dark" borderRadius={12} />
+            <SkeletonBase height={80} type="dark" borderRadius={12} />
           </LeftWrapper>
           <RightWrapper>
-            <SkeletonBase width={400} height={365} type="dark" style={{ borderRadius: 12 }} />
+            <SkeletonBase width={400} height={365} type="dark" borderRadius={12} />
           </RightWrapper>
         </ContentWrapper>
       </InnerWrapper>

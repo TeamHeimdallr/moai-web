@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { Suspense, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -18,6 +18,7 @@ import { Slippage } from '~/components/account';
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge, ButtonPrimarySmall } from '~/components/buttons';
 import { Checkbox, InputNumber } from '~/components/inputs';
+import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { Token } from '~/components/token';
 
 import { usePopup } from '~/hooks/components';
@@ -34,7 +35,16 @@ interface InputFormState {
   input1: number;
   input2: number;
 }
+
 export const AddLiquidityInputGroup = () => {
+  return (
+    <Suspense fallback={<_AddLiquidityInputGroupSkeleton />}>
+      <_AddLiquidityInputGroup />
+    </Suspense>
+  );
+};
+
+const _AddLiquidityInputGroup = () => {
   const ref = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
 
@@ -277,8 +287,33 @@ export const AddLiquidityInputGroup = () => {
   );
 };
 
+const _AddLiquidityInputGroupSkeleton = () => {
+  const { t } = useTranslation();
+  return (
+    <SkeletonWrapper>
+      <Header>
+        <Title>{t('Enter liquidity amount')}</Title>
+        <IconWrapper>
+          <IconSetting fill={'#9296AD'} width={20} height={20} />
+        </IconWrapper>
+      </Header>
+      <InnerWrapper>
+        <SkeletonBase type="light" height={108} />
+        <SkeletonBase type="light" height={108} />
+        <SkeletonBase type="light" height={100} />
+      </InnerWrapper>
+      <SkeletonBase type="light" height={48} borderRadius={12} />
+    </SkeletonWrapper>
+  );
+};
+
 const Wrapper = tw.div`
   flex flex-col bg-neutral-10 gap-20 px-20 py-16 rounded-12
+  md:(w-452 gap-24 pt-20 px-24 pb-24)
+`;
+
+const SkeletonWrapper = tw.div`
+  w-full flex flex-col bg-neutral-10 gap-20 px-20 py-16 rounded-12
   md:(w-452 gap-24 pt-20 px-24 pb-24)
 `;
 

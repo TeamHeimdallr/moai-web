@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -21,10 +21,13 @@ import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings/step';
 import { Popup } from '~/components/popup';
+import { ListSkeleton } from '~/components/skeleton/list-skeleton';
+import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { TokenList } from '~/components/token-list';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useMediaQuery } from '~/hooks/utils';
 import {
   DATE_FORMATTER,
   formatNumber,
@@ -48,7 +51,30 @@ interface Props {
 
   refetchBalance?: () => void;
 }
+
 export const AddLiquidityPopup = ({
+  tokensIn,
+  pool,
+  lpTokenPrice,
+  bptOut,
+  priceImpact,
+  refetchBalance,
+}: Props) => {
+  return (
+    <Suspense fallback={<_AddLiquidityPopupSkeleton />}>
+      <_AddLiquidityPopup
+        tokensIn={tokensIn}
+        pool={pool}
+        lpTokenPrice={lpTokenPrice}
+        bptOut={bptOut}
+        priceImpact={priceImpact}
+        refetchBalance={refetchBalance}
+      />
+    </Suspense>
+  );
+};
+
+const _AddLiquidityPopup = ({
   tokensIn,
   pool,
   lpTokenPrice,
@@ -74,6 +100,7 @@ export const AddLiquidityPopup = ({
   const networkAbbr = getNetworkAbbr(network);
   const { network: networkParam } = useParams();
   const { selectedNetwork } = useNetwork();
+  const { isMD } = useMediaQuery();
 
   const [estimatedAddLiquidityFee, setEstimatedAddLiquidityFee] = useState<number | undefined>();
   const [estimatedToken1ApproveFee, setEstimatedToken1ApproveFee] = useState<number | undefined>();
@@ -524,7 +551,7 @@ export const AddLiquidityPopup = ({
         </ButtonWrapper>
       }
     >
-      <Wrapper style={{ gap: isIdle ? 24 : 40 }}>
+      <Wrapper style={{ gap: isIdle ? (isMD ? 24 : 20) : 40 }}>
         {!isIdle && isSuccess && (
           <SuccessWrapper>
             <IconWrapper>
@@ -629,12 +656,28 @@ export const AddLiquidityPopup = ({
   );
 };
 
+const _AddLiquidityPopupSkeleton = () => {
+  const { t } = useTranslation();
+  const { isSMD } = useMediaQuery();
+  return (
+    <Popup id={POPUP_ID.ADD_LP} title={t('Add liquidity preview')}>
+      <Wrapper>
+        <ListSkeleton title={t('You’re providing')} height={191} />
+        <ListSkeleton title={t('You’re expected to receive')} height={118} />
+        <ListSkeleton title={t('Summary')} height={isSMD ? 126 : 183} />
+        <SkeletonBase height={48} />
+      </Wrapper>
+    </Popup>
+  );
+};
+
 const Divider = tw.div`
   w-full h-1 flex-shrink-0 bg-neutral-20
 `;
 
 const Wrapper = tw.div`
-  flex flex-col gap-24 px-24 py-0
+  flex flex-col gap-20 px-20 py-0
+  md:(gap-24 px-24)
 `;
 
 const SuccessTitle = tw.div`

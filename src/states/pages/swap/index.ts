@@ -10,11 +10,15 @@ export interface SwapState {
 
   fromInput: number | string;
 
+  selectedDetailInfo: 'TOKEN' | 'USD';
+
   setFromToken: (fromToken?: IToken) => void;
   setToToken: (toToken?: IToken) => void;
 
   setFromInput: (fromInput: number | undefined) => void;
   resetFromValue: () => void;
+
+  selectDetailInfo: (detailInfo: 'TOKEN' | 'USD') => void;
 
   resetAll: () => void;
 }
@@ -29,11 +33,15 @@ export const useSwapStore = create<SwapState>()(
 
       fromInput: '',
 
+      selectedDetailInfo: 'TOKEN',
+
       setFromToken: fromToken => set({ fromToken }),
       setToToken: toToken => set({ toToken }),
 
       setFromInput: fromInput => set({ fromInput }),
       resetFromValue: () => set({ fromInput: '' }),
+
+      selectDetailInfo: selectedDetailInfo => set({ selectedDetailInfo }),
 
       resetAll: () =>
         set({
