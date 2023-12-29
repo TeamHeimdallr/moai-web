@@ -114,7 +114,6 @@ const _Bridge = () => {
     window.open(url);
   };
 
-  // TODO: bridge fail
   return (
     <>
       {!isIdle && isSuccess && (
@@ -195,7 +194,7 @@ const _Bridge = () => {
               </TextWrapper>
               <TextWrapper>
                 <RegularText>{t('Fee')}</RegularText>
-                <RegularText>{`${xrplFee} XRP`}</RegularText>
+                <RegularText>{`~ ${xrplFee} XRP`}</RegularText>
               </TextWrapper>
             </TotalXrpWrapper>
             <ButtonPrimaryLarge

@@ -540,7 +540,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   <GasFeeInnerWrapper>
                     <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                     <GasFeeTitleValue>
-                      {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : 'calculating...'}
+                      {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : t('calculating...')}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
                   <GasFeeInnerWrapper>

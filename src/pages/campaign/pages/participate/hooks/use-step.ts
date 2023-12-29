@@ -91,10 +91,12 @@ export const useStep = () => {
 };
 
 export const useResetStep = () => {
-  const { step, evmWallet, setStep, setStepStatus } = useCampaignStepStore();
+  const { step, stepStatus, evmWallet, setStep, setStepStatus } = useCampaignStepStore();
 
   const { selectNetwork } = useSelecteNetworkStore();
   const { evm, xrp } = useConnectedWallet();
+
+  const stepStatus3 = stepStatus[2];
 
   useEffect(() => {
     if (xrp.address) {
@@ -129,8 +131,12 @@ export const useResetStep = () => {
       }
     }
 
+    if (stepStatus3.status === 'done') {
+      setStep(4);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evm.address, xrp.address, evmWallet]);
+  }, [evm.address, xrp.address, evmWallet, stepStatus3.status]);
 
   useEffect(() => {
     if (step === 3) {

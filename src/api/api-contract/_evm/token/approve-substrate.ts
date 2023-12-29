@@ -65,7 +65,7 @@ export const useApprove = ({
     enabled: internalEnabled,
 
     onSuccess: (data: string) => {
-      return setAllowance(BigInt(data || 0) >= (allowanceMin || 0n));
+      return setAllowance(BigInt(data || 0) > (allowanceMin || 0n));
     },
     onError: () => setAllowance(false),
   });

@@ -227,7 +227,7 @@
   "My Reward": "나의 리워드",
 
   "Rank": "순위",
-  "LP volume": "계정",
+  "LP volume": "LP 유동량",
   "Pre-mined $veMOI": "사전 채굴된 $veMOI",
 
   "Gas fee": "가스비",
@@ -270,6 +270,7 @@
   "Continue to add liquidity": "유동성 공급 이어서하기",
 
   "campaign-add-liquidity-success-message": "Liquidity voyage 풀에 성공적으로 유동성을 추가했습니다.",
+  "campaign-add-liquidity-failed-message": "유동성 공급에 실패했습니다. 다시 시도해주세요.",
   "Expected APR (10%)": "예상 APR (10%)",
   "Pre-mining $MOAI APY (3%)": "사전 채굴 $MOAI APY (3%)",
   "$ROOT reward (7%)": "$ROOT 리워드 (7%)",
@@ -304,5 +305,17 @@
   "Coming soon": "시작 예정",
 
   "Action required in wallet": "지갑에서 이어서 하기",
-  "xumm-qr-description": "계속하려면 XUMM 앱에서 QR 코드를 스캔하세요."
+  "xumm-qr-description": "계속하려면 XUMM 앱에서 QR 코드를 스캔하세요.",
+
+  "Expected LP token": "예상 LP 토큰",
+  "Expected rewards": "예상 리워드",
+  "gas-price-caption": "네트워크 사용량이 많을 경우 다를 수 있습니다.",
+
+  "Pre-mining $veMOI": "사전 채굴 $MOI",
+  "$ROOT reward (APR 10%)": "$ROOT 리워드 (APR 10%)",
+
+  "calculating...": "계산 중...",
+
+  "Lack of reserve": "준비금이 부족합니다.",
+  "lack-of-reserve-description": "캠페인 준비금을 충전 중입니다. 디스코드 공지를 기다려주세요."
 }

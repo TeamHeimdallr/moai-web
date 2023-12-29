@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BigNumber } from 'ethers';
-import { Address, formatUnits } from 'viem';
+import { Address, formatUnits, parseEther } from 'viem';
 import {
   useContractRead,
   useContractWrite,
@@ -70,7 +70,7 @@ export const useApprove = ({
       ) {
         return setAllowance(true);
       }
-      return setAllowance(BigInt(data || 0) >= (allowanceMin || 0n));
+      return setAllowance(BigInt(data || 0) > (allowanceMin || 0n));
     },
     onError: () => setAllowance(false),
   });
@@ -98,7 +98,7 @@ export const useApprove = ({
   };
 
   const getEstimatedGas = async () => {
-    if (!isEvm || isFpass) return;
+    if (!isEvm || isFpass || !tokenAddress) return;
 
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
@@ -110,7 +110,7 @@ export const useApprove = ({
       abi: ERC20_TOKEN_ABI,
       functionName: 'approve',
       account: walletAddress as Address,
-      args: [spender, amount],
+      args: [spender, parseEther(Number.MAX_SAFE_INTEGER.toString())],
     });
 
     const maxFeePerGas = feeHistory.baseFeePerGas[0];

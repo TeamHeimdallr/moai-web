@@ -10,7 +10,9 @@ export const StepTitle = () => {
 
   const currentStepStatus = stepStatus.find(({ id }) => id === step) || stepStatus[0];
   const titleText =
-    currentStepStatus.status === 'loading' ? 'step-title-waiting' : `step-title-${step}`;
+    currentStepStatus.status === 'loading' && (step === 1 || step === 2)
+      ? 'step-title-waiting'
+      : `step-title-${step}`;
 
   return (
     <Wrapper>

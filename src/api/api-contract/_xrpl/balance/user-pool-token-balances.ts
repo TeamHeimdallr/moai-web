@@ -12,20 +12,26 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { formatAmmAssets } from '~/utils';
 import { IAmmInfo, ITokenComposition } from '~/types';
 
-export const useUserPoolTokenBalances = () => {
+interface Props {
+  network: string;
+  id: string;
+}
+export const useUserPoolTokenBalances = (props?: Props) => {
+  const { network: networkProps, id: idProps } = props || {};
   const { network, id } = useParams();
+
   const { isXrp } = useNetwork();
 
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
   const { address: walletAddress } = xrp;
 
-  const queryEnabled = !!network && !!id;
+  const queryEnabled = !!(network || networkProps) && !!(id || idProps);
   const { data: poolData } = useGetPoolQuery(
     {
       params: {
-        networkAbbr: network as string,
-        poolId: id as string,
+        networkAbbr: (network || networkProps) as string,
+        poolId: (id || idProps) as string,
       },
     },
     {
@@ -36,8 +42,8 @@ export const useUserPoolTokenBalances = () => {
   const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
     {
       params: {
-        networkAbbr: network as string,
-        poolId: id as string,
+        networkAbbr: (network || networkProps) as string,
+        poolId: (id || idProps) as string,
       },
     },
     {
@@ -157,9 +163,16 @@ export const useUserPoolTokenBalances = () => {
   const xrpComposition = compositions?.find(token => token.symbol === 'XRP');
   const userPoolTokens = (
     xrpComposition
-      ? [{ ...xrpComposition, balance: xrpTokenBalance }, ...tokenBalances]
+      ? [
+          {
+            ...xrpComposition,
+            balance: xrpTokenBalance,
+            balanceRaw: parseUnits(xrpTokenBalance.toString(), 6),
+          },
+          ...tokenBalances,
+        ]
       : tokenBalances || []
-  ) as (ITokenComposition & { balance: number })[];
+  ) as (ITokenComposition & { balance: number; balanceRaw: bigint })[];
 
   const userPoolTokenTotalValue = userPoolTokens?.reduce((acc, cur) => {
     const tokenValue = (cur?.balance || 0) * (cur?.price || 0);
