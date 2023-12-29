@@ -48,6 +48,12 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
+  const reset = () => {
+    setError(false);
+    setIsSuccess(false);
+    setIsLoading(false);
+    setTxData(undefined);
+  };
   const estimateFee = async () => {
     if (!isFpass) return;
 
@@ -206,6 +212,8 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
     isSuccess,
     isError,
 
+    error: null,
+    reset,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     txData: txData as any,
     blockTimestamp,

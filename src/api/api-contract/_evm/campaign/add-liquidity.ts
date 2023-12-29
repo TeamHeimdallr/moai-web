@@ -37,7 +37,8 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
 
   const {
     isLoading: prepareLoading,
-    isError: prepareError,
+    isError: prepareIsError,
+    error: prepareError,
     config,
   } = usePrepareContractWrite({
     address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
@@ -49,12 +50,18 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
     enabled: enabled && isConnected && !isFpass && !!walletAddress,
   });
 
-  const { data, isLoading: isWriteLoading, writeAsync: writeAsyncBase } = useContractWrite(config);
+  const {
+    data,
+    isLoading: isWriteLoading,
+    writeAsync: writeAsyncBase,
+    reset,
+  } = useContractWrite(config);
 
   const {
     isLoading,
     isSuccess,
     isError,
+    error,
     data: txData,
   } = useWaitForTransaction({
     hash: data?.hash,
@@ -108,12 +115,15 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
     isPrepareLoading: prepareLoading,
     isLoading: isLoading || isWriteLoading,
     isSuccess,
-    isError: isError || prepareError,
+    isError: isError || prepareIsError,
+
+    error: error || prepareError,
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     txData: txData as any,
     blockTimestamp,
 
+    reset,
     writeAsync,
     estimateFee: async () => {
       // TODO: fee proxy

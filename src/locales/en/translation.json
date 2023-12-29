@@ -257,6 +257,7 @@
   "Continue to add liquidity": "Continue to add liquidity",
 
   "campaign-add-liquidity-success-message": "Successfully added liquidity to liquidity voyage.",
+  "campaign-add-liquidity-failed-message": "Added liquidity has failed. Please try again.",
   "Expected APR (10%)": "Expected APR (10%)",
   "Pre-mining $MOAI APY (3%)": "Pre-mining $MOAI APY (3%)",
   "$ROOT reward (7%)": "$ROOT reward (7%)",
@@ -291,5 +292,17 @@
   "Coming soon": "Coming soon",
 
   "Action required in wallet": "Action requied in wallet",
-  "xumm-qr-description": "Please scan this QR Code in your XUMM App to continue."
+  "xumm-qr-description": "Please scan this QR Code in your XUMM App to continue.",
+
+  "Expected LP token": "Expected LP token",
+  "Expected rewards": "Expected rewards",
+  "gas-price-caption": "May change when network is busy",
+
+  "Pre-mining $veMOI": "Pre-mining $veMOI",
+  "$ROOT reward (APR 10%)": "$ROOT reward (APR 10%)",
+
+  "calculating...": "calculating...",
+
+  "Lack of reserve": "Lack of reserve",
+  "lack-of-reserve-description": "Campaign Reserve is currently refilling. Please wait for Discord announcement."
 }

@@ -1,11 +1,10 @@
-// lack of root 는 미리 검증해서 티켓 쏘기
-// reward 처럼 일정 시간마다 남은 루트 양 보여주도록 처리
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { format } from 'date-fns';
+import { debounce } from 'lodash-es';
 import tw, { css, styled } from 'twin.macro';
 import { formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
@@ -15,11 +14,13 @@ import {
   useAddLiquidity as useAddLiquiditySubstrate,
   useAddLiquidityPrepare,
 } from '~/api/api-contract/_evm/campaign/add-liquidity-substrate';
+import { useCalculateAddLiquidity } from '~/api/api-contract/_evm/campaign/calculate-add-liquidity';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useApprove } from '~/api/api-contract/token/approve';
 
 import { COLOR } from '~/assets/colors';
 import {
+  IconCancel,
   IconCheck,
   IconLink,
   IconTime,
@@ -29,8 +30,9 @@ import {
 } from '~/assets/icons';
 import TokenXrp from '~/assets/icons/icon-token-xrp.svg';
 
-import { CAMPAIGN_ADDRESS, POOL_ID } from '~/constants';
+import { CAMPAIGN_ADDRESS, POOL_ID, SCANNER_URL } from '~/constants';
 
+import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { List } from '~/components/lists';
@@ -40,8 +42,10 @@ import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { DATE_FORMATTER } from '~/utils';
+import { DATE_FORMATTER, formatNumber } from '~/utils';
 import { NETWORK } from '~/types';
+
+import { useCampaignStepStore } from '../states/step';
 interface InputFormState {
   input: number;
 }
@@ -60,18 +64,26 @@ const _AddLiquidity = () => {
   const [estimatedAddLiquidityFee, setEstimatedAddLiquidityFee] = useState<number | undefined>();
   const [estimatedApproveFee, setEstimatedApproveFee] = useState<number | undefined>();
 
+  const { setStepStatus } = useCampaignStepStore();
+
   const { t } = useTranslation();
 
   const { selectedNetwork, isFpass } = useNetwork();
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
 
-  const { userPoolTokens, refetch: refetchBalance } = useUserPoolTokenBalances({
+  const {
+    lpTokenPrice,
+    userPoolTokens,
+    refetch: refetchBalance,
+  } = useUserPoolTokenBalances({
     network: 'trn',
     id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
   });
   const xrp = userPoolTokens?.find(t => t.symbol === 'XRP');
+
   const xrpBalance = xrp?.balance || 0;
   const xrpBalanceRaw = xrp?.balanceRaw || 0n;
+  const xrpValue = (xrp?.price || 0) * (inputValue || 0);
 
   const {
     allow,
@@ -101,7 +113,8 @@ const _AddLiquidity = () => {
   });
   const {
     isPrepareLoading: addLiquiditySubstratePrepareLoading,
-    isPrepareError: addLiquiditySubstratePrepareError,
+    isPrepareError: addLiquiditySubstratePrepareIsError,
+    prepareError: addLiquiditySubstratePrepareError,
   } = useAddLiquidityPrepare({
     xrpAmount: inputValueRaw || 0n,
     enabled: isFpass && isRoot && addLiquidityEnabled,
@@ -112,21 +125,31 @@ const _AddLiquidity = () => {
     isPrepareLoading: addLiquidityPrepareLoading,
     isLoading: addLiquidityLoading,
     isSuccess: addLiquiditySuccess,
-    isError: addLiquidityError,
+    isError: addLiquidityIsError,
+    error: addLiquidityError,
     txData,
     blockTimestamp,
+    reset,
     writeAsync,
     estimateFee: estimateAddLiquidityFee,
   } = addLiquidity;
+  const { bptOut } = useCalculateAddLiquidity({ xrpAmount: inputValue || 0 });
+  const actualBptOut = (bptOut || 0) / 2;
 
   const txDate = new Date(blockTimestamp || 0);
   const isIdle = !txData;
   const isSuccess = addLiquiditySuccess && !!txData;
   const isLoading = addLiquidityLoading || allowLoading;
-  const isError = addLiquidityError || addLiquiditySubstratePrepareError;
+
+  const isErrorRaw = addLiquidityIsError || addLiquiditySubstratePrepareIsError;
+  const error = addLiquidityError || addLiquiditySubstratePrepareError;
+  const approveError = error?.message?.includes('Approved');
+  const reserveError = error?.message?.includes('Not enough supported ROOT liquidity');
+
+  const isError = isErrorRaw && !approveError;
 
   const schema = yup.object().shape({
-    input: yup.number().min(0).max(xrpBalance).required(),
+    input: yup.number().min(0).max(xrpBalance, t('Exceeds wallet balance')).required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
     resolver: yupResolver(schema),
@@ -146,21 +169,33 @@ const _AddLiquidity = () => {
     return t('Confirm add liquidity in wallet');
   }, [allowance, isIdle, addLiquidityLoading, isSuccess, t, xrp?.symbol]);
 
+  const estimatedFee = allowance ? estimatedAddLiquidityFee : estimatedApproveFee;
+  const enoughBalance = xrpBalanceRaw > (inputValue || 0) + (estimatedFee || 0);
+
+  const invalid = isError || !estimatedFee || !enoughBalance || (inputValueRaw || 0n) <= 0n;
+  const invalidWithLoading =
+    invalid ||
+    isLoading ||
+    (!isFpass && addLiquidityPrepareLoading) ||
+    (isFpass && addLiquiditySubstratePrepareLoading);
+
   const handleButtonClick = async () => {
-    if (
-      isLoading ||
-      (!isFpass && addLiquidityPrepareLoading) ||
-      (isFpass && addLiquiditySubstratePrepareLoading)
-    )
-      return;
+    if (invalidWithLoading) return;
 
     if (!allowance) return await allow?.();
     return await writeAsync?.();
   };
 
+  const handleLink = () => {
+    const txHash = isFpass ? txData?.extrinsicId : txData?.transactionHash;
+    const url = `${SCANNER_URL[selectedNetwork]}/${isFpass ? 'extrinsic' : 'tx'}/${txHash}`;
+
+    window.open(url);
+  };
+
   useEffect(() => {
-    if (allowSuccess) refetchAllowance();
-  }, [allowSuccess, refetchAllowance]);
+    if (allowSuccess || inputValueRaw) refetchAllowance();
+  }, [allowSuccess, inputValueRaw, refetchAllowance]);
 
   useEffect(() => {
     if (!isIdle) refetchBalance?.();
@@ -175,7 +210,7 @@ const _AddLiquidity = () => {
 
     estimateFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [xrp?.address]);
+  }, [xrp?.address, selectedNetwork]);
 
   useEffect(() => {
     const estimateFeeAsync = async () => {
@@ -185,9 +220,30 @@ const _AddLiquidity = () => {
 
     estimateFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedNetwork]);
 
-  const estimatedFee = allowance ? estimatedAddLiquidityFee : estimatedApproveFee;
+  useEffect(() => {
+    if (addLiquidityLoading) setStepStatus({ id: 4, status: 'loading' }, 3);
+    else {
+      if (isIdle) setStepStatus({ id: 4, status: 'idle' }, 3);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addLiquidityLoading, isIdle]);
+
+  useEffect(() => {
+    if (isSuccess) setStepStatus({ id: 4, status: 'done' }, 3);
+    else {
+      if (isIdle) setStepStatus({ id: 4, status: 'idle' }, 3);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, isIdle]);
+
+  useEffect(() => {
+    return () => {
+      reset?.();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -196,16 +252,47 @@ const _AddLiquidity = () => {
           <SuccessWrapper>
             <SuccessMessageWrapper>
               <SuccessIconWrapper>
-                <IconCheck width={40} height={40} />
+                <IconCheck width={40} height={40} fill={COLOR.NEUTRAL[0]} />
               </SuccessIconWrapper>
               <SuccessTitle>{t('Add liquidity confirmed!')}</SuccessTitle>
               <SuccessSubTitle>{t('campaign-add-liquidity-success-message')}</SuccessSubTitle>
             </SuccessMessageWrapper>
+            <List title={t('Expected LP token')}>
+              <TokenList
+                type="campaign"
+                title="50ROOT-50XRP"
+                image={
+                  <LpTokenIconWrapper>
+                    <LpTokenLeft>
+                      <IconTokenRoot width={36} height={36} />
+                    </LpTokenLeft>
+                    <LpTokenRight>
+                      <IconTokenXrp width={36} height={36} />
+                    </LpTokenRight>
+                  </LpTokenIconWrapper>
+                }
+                balance={`${formatNumber(actualBptOut, 4)}`}
+                value={`$${formatNumber(actualBptOut * lpTokenPrice, 4)}`}
+              />
+            </List>
+            <List title={t('Expected rewards')}>
+              <TokenList
+                type="campaign"
+                title={t('$ROOT reward (APR 10%)')}
+                image={<IconTokenRoot width={36} height={36} />}
+              />
+              <Divider />
+              <TokenList
+                type="campaign"
+                title={t('Pre-mining $veMOI')}
+                image={<IconTokenMoai width={36} height={36} />}
+              />
+            </List>
             <SuccessBottomWrapper>
               <TimeWrapper>
                 <IconTime />
                 {format(new Date(), DATE_FORMATTER.FULL)}
-                <ClickableIcon>
+                <ClickableIcon onClick={handleLink}>
                   <IconLink />
                 </ClickableIcon>
               </TimeWrapper>
@@ -218,7 +305,32 @@ const _AddLiquidity = () => {
           </SuccessWrapper>
         </>
       )}
-      {!isIdle && !isSuccess && <></>}
+      {!isIdle && !isSuccess && (
+        <>
+          <SuccessWrapper>
+            <SuccessMessageWrapper>
+              <FailedIconWrapper>
+                <IconCancel width={40} height={40} fill={COLOR.NEUTRAL[0]} />
+              </FailedIconWrapper>
+              <SuccessTitle>
+                {t(reserveError ? 'Lack of reserve' : 'Add liquidity failed')}
+              </SuccessTitle>
+              <SuccessSubTitle>
+                {t(
+                  reserveError
+                    ? 'lack-of-reserve-description'
+                    : 'campaign-add-liquidity-failed-message'
+                )}
+              </SuccessSubTitle>
+            </SuccessMessageWrapper>
+            <ButtonPrimaryLarge
+              text={t('Try again')}
+              buttonType="outlined"
+              onClick={() => navigate('/campaign')}
+            />
+          </SuccessWrapper>
+        </>
+      )}
       {isIdle && (
         <Wrapper>
           <InputNumber
@@ -227,31 +339,73 @@ const _AddLiquidity = () => {
             control={control}
             token={<Token token={'XRP'} image imageUrl={TokenXrp} />}
             tokenName={'XRPL'}
-            tokenValue={0}
+            tokenValue={xrpValue}
             balance={xrpBalance}
             balanceRaw={xrpBalanceRaw}
             value={inputValue}
-            handleChange={val => {
+            handleChange={debounce(val => {
               setInputValue(val);
               setInputValueRaw(parseUnits((val || 0).toFixed(6), 6));
-            }}
-            handleChangeRaw={val => {
+            }, 300)}
+            handleChangeRaw={debounce(val => {
               setInputValue(Number(formatUnits(val || 0n, 6)));
               setInputValueRaw(val);
-            }}
+            }, 300)}
             maxButton
             setValue={setValue}
             formState={formState}
           />
+          <List title={t('Expected LP token')}>
+            <TokenList
+              type="campaign"
+              title="50ROOT-50XRP"
+              image={
+                <LpTokenIconWrapper>
+                  <LpTokenLeft>
+                    <IconTokenRoot width={36} height={36} />
+                  </LpTokenLeft>
+                  <LpTokenRight>
+                    <IconTokenXrp width={36} height={36} />
+                  </LpTokenRight>
+                </LpTokenIconWrapper>
+              }
+              balance={`${formatNumber(actualBptOut, 4)}`}
+              value={`$${formatNumber(actualBptOut * lpTokenPrice, 4)}`}
+            />
+          </List>
+          <List title={t('Expected rewards')}>
+            <TokenList
+              type="campaign"
+              title={t('$ROOT reward (APR 10%)')}
+              image={<IconTokenRoot width={36} height={36} />}
+            />
+            <Divider />
+            <TokenList
+              type="campaign"
+              title={t('Pre-mining $veMOI')}
+              image={<IconTokenMoai width={36} height={36} />}
+            />
+          </List>
+          <TotalXrpWrapper>
+            <TextWrapper>
+              <TotalExpectedXrp>{t('Gas fee')}</TotalExpectedXrp>
+              <Amount>
+                {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : t('calculating...')}
+              </Amount>
+            </TextWrapper>
+            <GasCaption>{t('gas-price-caption')}</GasCaption>
+          </TotalXrpWrapper>
+          {reserveError && (
+            <AlertMessage
+              title={t('Lack of reserve')}
+              description={t('lack-of-reserve-description')}
+              type="warning"
+            />
+          )}
           <ButtonPrimaryLarge
             text={buttonText}
             isLoading={addLiquidityLoading}
-            disabled={
-              isError ||
-              isLoading ||
-              (!isFpass && addLiquidityPrepareLoading) ||
-              (isFpass && addLiquiditySubstratePrepareLoading)
-            }
+            disabled={invalid}
             onClick={handleButtonClick}
           />
         </Wrapper>
@@ -294,8 +448,9 @@ const SuccessSubTitle = tw.div`
 `;
 
 const SuccessWrapper = tw.div`
-  flex flex-col bg-neutral-10 pt-40 p-24 gap-40 rounded-12
+  w-full flex flex-col bg-neutral-10 pt-40 p-24 gap-40 rounded-12
 `;
+
 const SuccessMessageWrapper = tw.div`
   flex-center flex-col gap-12 
 `;
@@ -305,6 +460,11 @@ const SuccessBottomWrapper = tw.div`
 const SuccessIconWrapper = tw.div`
   flex-center w-48 h-48 rounded-full bg-green-50
 `;
+
+const FailedIconWrapper = tw.div`
+  flex-center w-48 h-48 rounded-full bg-red-50
+`;
+
 const TimeWrapper = styled.div(() => [
   tw`flex items-center gap-4 text-neutral-60`,
   css`
@@ -324,3 +484,34 @@ const ClickableIcon = styled.div(() => [
     }
   `,
 ]);
+
+const TotalXrpWrapper = tw.div`
+  w-full flex flex-col px-16 py-8 bg-neutral-15 rounded-8
+`;
+
+const TotalExpectedXrp = tw.div`
+  font-r-16 text-neutral-100
+`;
+
+const TextWrapper = tw.div`
+  w-full flex items-center justify-between
+`;
+
+const Amount = tw.div`
+  font-m-16 text-neutral-100
+`;
+
+const GasCaption = tw.div`
+  font-r-12 text-neutral-60
+`;
+
+const LpTokenIconWrapper = tw.div`
+  w-64 h-36 relative
+`;
+
+const LpTokenLeft = tw.div`
+  absolute top-0 left-0 w-36 h-full rounded-full z-1
+`;
+const LpTokenRight = tw.div`
+  absolute top-0 right-0 w-36 h-full rounded-full z-2
+`;
