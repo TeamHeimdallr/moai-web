@@ -291,7 +291,7 @@ const _AddLiquidity = () => {
             <SuccessBottomWrapper>
               <TimeWrapper>
                 <IconTime />
-                {format(new Date(), DATE_FORMATTER.FULL)}
+                {format(txDate, DATE_FORMATTER.FULL)}
                 <ClickableIcon onClick={handleLink}>
                   <IconLink />
                 </ClickableIcon>
