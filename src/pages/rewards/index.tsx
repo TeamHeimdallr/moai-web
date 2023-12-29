@@ -27,7 +27,7 @@ import { useTableRewards } from './hooks/components/use-table-rewards';
 const RewardsPage = () => {
   return (
     <Suspense fallback={<_RewardSkeleton />}>
-      <_RewardSkeleton />
+      <_RewardsPage />
     </Suspense>
   );
 };
