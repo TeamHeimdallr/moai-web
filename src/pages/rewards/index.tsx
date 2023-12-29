@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { css } from '@emotion/react';
@@ -7,6 +8,9 @@ import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info
 
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
+import { SkeletonBase } from '~/components/skeleton/skeleton-base';
+import { TableMobileSkeleton } from '~/components/skeleton/table-mobile-skeleton';
+import { TableSkeleton } from '~/components/skeleton/table-skeleton';
 import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 
@@ -21,6 +25,14 @@ import { RewardsNetworkAlertPopup } from './components/reward-network-alert';
 import { useTableRewards } from './hooks/components/use-table-rewards';
 
 const RewardsPage = () => {
+  return (
+    <Suspense fallback={<_RewardSkeleton />}>
+      <_RewardsPage />
+    </Suspense>
+  );
+};
+
+const _RewardsPage = () => {
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
@@ -97,6 +109,49 @@ const RewardsPage = () => {
   );
 };
 
+const _RewardSkeleton = () => {
+  const { isMD } = useMediaQuery();
+  const { tableColumns, mobileTableColumn } = useTableRewards();
+  return (
+    <Wrapper>
+      <GnbWrapper>
+        <Gnb />
+      </GnbWrapper>
+      <InnerWrapper>
+        <ContentWrapper>
+          <SkeletonBase type="light" width={120} height={26} borderRadius={40} />
+          <RewardSkeletonWrapper>
+            <LeftWrapper>
+              <RewardSkeleton>
+                <SkeletonBase height={108} />
+              </RewardSkeleton>
+              <RewardSkeleton>
+                <SkeletonBase height={108} />
+              </RewardSkeleton>
+            </LeftWrapper>
+            <RightWrapper>
+              <RewardSkeleton>
+                <SkeletonBase height={108} />
+              </RewardSkeleton>
+              <RewardSkeleton>
+                <SkeletonBase height={108} />
+              </RewardSkeleton>
+            </RightWrapper>
+          </RewardSkeletonWrapper>
+          <TableWrapper>
+            {isMD ? (
+              <TableSkeleton columns={tableColumns} ratio={[1, 3, 2, 2]} type="darker" />
+            ) : (
+              <TableMobileSkeleton columns={mobileTableColumn} type="darker" />
+            )}
+          </TableWrapper>
+        </ContentWrapper>
+      </InnerWrapper>
+      <Footer />
+    </Wrapper>
+  );
+};
+
 const Wrapper = tw.div`
   relative flex flex-col justify-between w-full h-full
 `;
@@ -134,5 +189,23 @@ const TableWrapper = styled.div(() => [
     }
   `,
 ]);
+
+const RewardSkeletonWrapper = tw.div`
+  w-full flex items-center gap-16
+`;
+
+const RewardSkeleton = tw.div`
+  w-full
+`;
+
+const LeftWrapper = tw.div`
+  w-full flex flex-col gap-16
+  md:flex-row
+`;
+
+const RightWrapper = tw.div`
+  w-full flex flex-col gap-16
+  md:flex-row
+`;
 
 export default RewardsPage;
