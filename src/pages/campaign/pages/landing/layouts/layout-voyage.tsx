@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Skeleton from 'react-loading-skeleton';
 import tw, { styled } from 'twin.macro';
@@ -14,6 +14,7 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { NETWORK, POPUP_ID } from '~/types';
 
+import { useCampaignStepStore } from '../../participate/states/step';
 import { Pending } from '../components/pending';
 import { TokenList } from '../components/token-list';
 
@@ -24,6 +25,7 @@ export const LayoutVoyage = () => (
 );
 
 const _LayoutVoyage = () => {
+  const [hasPending2, setHasPending2] = useState(false); // for visibility change
   const { xrp, evm } = useConnectedWallet();
 
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
@@ -31,7 +33,11 @@ const _LayoutVoyage = () => {
   const { open } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
   const { t } = useTranslation();
 
-  const { refetch } = useUserCampaignInfo();
+  // TODO: connect api
+  useUserCampaignInfo();
+
+  const { step, stepStatus } = useCampaignStepStore();
+  const hasPending = step >= 1 && stepStatus.some(s => s.status === 'done');
 
   // TODO : connect API
   const myDepositBalance = 123123;
@@ -69,6 +75,30 @@ const _LayoutVoyage = () => {
 
     open();
   };
+
+  useEffect(() => {
+    const listener = () => {
+      const moaiCampaign = JSON.parse(localStorage.getItem('MOAI_CAMPAIGN') || '{}');
+      if (!moaiCampaign) return;
+
+      const { step, stepStatus } = moaiCampaign?.state || {};
+      if (!step || !stepStatus) return;
+
+      const hasPending =
+        step >= 1 &&
+        stepStatus.some(
+          (s: { id: number; status: 'idle' | 'loading' | 'done' }) => s.status === 'done'
+        );
+      if (hasPending) setHasPending2(true);
+      else setHasPending2(false);
+    };
+
+    listener();
+    document.addEventListener('visibilitychange', listener);
+    return () => {
+      document.removeEventListener('visibilitychange', listener);
+    };
+  }, []);
 
   return (
     <Wrapper>
@@ -142,7 +172,7 @@ const _LayoutVoyage = () => {
             </CardWrapper>
           )}
         </MyInfoWrapper>
-        {!isEmpty && <Pending />}
+        {hasPending && hasPending2 && <Pending />}
       </InnerWrapper>
     </Wrapper>
   );

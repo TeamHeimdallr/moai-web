@@ -22,6 +22,7 @@ export const useConnectors = () => {
   const {
     connect: connectMetamask,
     connectByWalletConnect,
+    disconnect: disconnectMetamask,
     metamaskConnected,
     walletConnectionConnected,
     isInstalled: metamaskIsInstalled,
@@ -29,18 +30,21 @@ export const useConnectors = () => {
 
   const {
     connect: connectXrpCrossmark,
+    disconnect: disconnectXrpCrossmark,
     isConnected: crossMarkConnected,
     isInstalled: crossMarkInstalled,
   } = useConnectWithCrossmarkWallet();
 
   const {
     connect: connectXrpGem,
+    disconnect: disconnectXrpGem,
     isConnected: gemConnected,
     isInstalled: gemIsInstalled,
   } = useConnectWithGemWallet();
 
   const {
     connect: connectXrpXumm,
+    disconnect: disconnectXrpXumm,
     isConnected: xummConnected,
     isInstalled: xummIsInstalled,
   } = useConnectWithXummWallet();
@@ -55,6 +59,7 @@ export const useConnectors = () => {
       network: [NETWORK.XRPL],
 
       connect: connectXrpXumm,
+      disconnect: disconnectXrpXumm,
       connected: xummConnected,
       isInstalled: xummIsInstalled,
     },
@@ -65,6 +70,7 @@ export const useConnectors = () => {
       network: [NETWORK.XRPL],
 
       connect: connectXrpCrossmark,
+      disconnect: disconnectXrpCrossmark,
       connected: crossMarkConnected,
       isInstalled: crossMarkInstalled,
     },
@@ -75,6 +81,7 @@ export const useConnectors = () => {
       network: [NETWORK.XRPL],
 
       connect: connectXrpGem,
+      disconnect: disconnectXrpGem,
       connected: gemConnected,
       isInstalled: gemIsInstalled,
     },
@@ -85,6 +92,7 @@ export const useConnectors = () => {
       network: [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN],
 
       connect: connectMetamask,
+      disconnect: disconnectMetamask,
       connected: metamaskConnected,
       isInstalled: metamaskIsInstalled,
     },
@@ -95,6 +103,7 @@ export const useConnectors = () => {
       network: [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN],
 
       connect: connectByWalletConnect,
+      disconnect: disconnectMetamask,
       connected: walletConnectionConnected,
       isInstalled: true,
     },

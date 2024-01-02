@@ -33,12 +33,8 @@ const _LayoutMain = () => {
   const { opened: openedLackOfRootBanner } = usePopup(POPUP_ID.LACK_OF_ROOT);
 
   const { data: campaignData } = useGetCampaignsQuery(
-    {
-      queries: { filter: `active:eq:true:boolean` },
-    },
-    {
-      staleTime: 5 * 60 * 1000,
-    }
+    { queries: { filter: `active:eq:true:boolean` } },
+    { staleTime: 5 * 60 * 1000 }
   );
   const campaigns = campaignData?.campaigns || [];
   const campaignXrplRoot = campaigns.find(item => item.name === 'campaign-xrpl-root');
@@ -79,7 +75,7 @@ const _LayoutMain = () => {
         <ButtonWrapper isKorean={i18n.language === 'ko'}>
           <ButtonPrimaryLarge
             text={t('Activate $XRP')}
-            onClick={() => window.open('/campaign/step', '_blank')}
+            onClick={() => window.open('/campaign/participate', '_blank')}
           />
         </ButtonWrapper>
       </InnerWrapper>
