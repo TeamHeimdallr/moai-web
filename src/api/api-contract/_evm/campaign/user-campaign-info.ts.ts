@@ -38,7 +38,7 @@ export const useUserCampaignInfo = () => {
     args: [walletAddress],
 
     staleTime: 1000 * 3,
-    enabled: selectedNetwork === NETWORK.THE_ROOT_NETWORK && !!chainId && isEvm,
+    enabled: selectedNetwork === NETWORK.THE_ROOT_NETWORK && !!chainId && isEvm && !!walletAddress,
   });
 
   const amountFarmedInBPT = data?.[0]['amountFarmed']; // in BPT

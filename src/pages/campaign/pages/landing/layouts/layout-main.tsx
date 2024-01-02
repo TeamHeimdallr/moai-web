@@ -1,15 +1,20 @@
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import Skeleton from 'react-loading-skeleton';
+import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
+
+import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 
 import Logo1 from '~/assets/logos/logo-campaign-1.svg?react';
 import Logo2 from '~/assets/logos/logo-campaign-2.svg?react';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 
+import { usePopup } from '~/hooks/components';
 import { useMediaQuery } from '~/hooks/utils';
-import { formatNumberWithComma, formatPercent } from '~/utils';
+import { DATE_FORMATTER, formatNumberWithComma, formatPercent } from '~/utils';
+import { POPUP_ID } from '~/types';
 
 export const LayoutMain = () => (
   <Suspense fallback={<_LayoutMainSkeleton />}>
@@ -25,8 +30,21 @@ const _LayoutMain = () => {
   const { isMD } = useMediaQuery();
   const { t, i18n } = useTranslation();
 
+  const { opened: openedLackOfRootBanner } = usePopup(POPUP_ID.LACK_OF_ROOT);
+
+  const { data: campaignData } = useGetCampaignsQuery(
+    {
+      queries: { filter: `active:eq:true:boolean` },
+    },
+    {
+      staleTime: 5 * 60 * 1000,
+    }
+  );
+  const campaigns = campaignData?.campaigns || [];
+  const campaignXrplRoot = campaigns.find(item => item.name === 'campaign-xrpl-root');
+
   return (
-    <Wrapper>
+    <Wrapper banner={!!openedLackOfRootBanner}>
       <InnerWrapper>
         <ContentWrapper>
           <Title>{t('Activate your $XRP')}</Title>
@@ -36,8 +54,15 @@ const _LayoutMain = () => {
           </LogoWrapper>
           <TextMain>
             {t('campaign-landing-main-text')}
-            {/* TODO: change to quest datetime */}
-            <QuestDate>28th Dec, 2023 ~ 28th Jan, 2024 (UTC)</QuestDate>
+            {campaignXrplRoot && (
+              <QuestDate>{`${format(
+                new Date(campaignXrplRoot.startDate),
+                DATE_FORMATTER.MMM_d_yyyy
+              )} ~ ${format(
+                new Date(campaignXrplRoot.endDate),
+                DATE_FORMATTER.MMM_d_yyyy
+              )}, (UTC)`}</QuestDate>
+            )}
           </TextMain>
           <InfoWrapper>
             <Info>
@@ -75,11 +100,7 @@ const _LayoutMainSkeleton = () => {
             <Logo1 className="svg-shadow" width={isMD ? 249 : 149} height={isMD ? 70 : 24} />
             <Logo2 className="svg-shadow" width={isMD ? 489 : 293} height={isMD ? 70 : 24} />
           </LogoWrapper>
-          <TextMain>
-            {t('campaign-landing-main-text')}
-            {/* TODO: change to quest datetime */}
-            <QuestDate>28th Dec, 2023 ~ 28th Jan, 2024 (UTC)</QuestDate>
-          </TextMain>
+          <TextMain>{t('campaign-landing-main-text')}</TextMain>
           <InfoWrapper>
             <Skeleton
               width={isMD ? '400px' : '100%'}
@@ -117,12 +138,22 @@ const _LayoutMainSkeleton = () => {
   );
 };
 
-export const Wrapper = tw.div`
-  w-full flex text-neutral-100 bg-no-repeat bg-campaign justify-center
-  px-20 pt-96 pb-40 gap-40 bg-cover bg-center
-  md:(gap-40 pt-160 pb-60 bg-right bg-top)
-  xxl:(px-80)
-`;
+interface WrapperProps {
+  banner?: boolean;
+}
+export const Wrapper = styled.div<WrapperProps>(({ banner }) => [
+  tw`
+    w-full flex text-neutral-100 bg-no-repeat bg-campaign justify-center
+    px-20 pt-96 pb-40 gap-40 bg-cover bg-center
+    md:(gap-40 pt-160 pb-60 bg-right bg-top)
+    xxl:(px-80)
+  `,
+  banner &&
+    tw`
+      pt-148
+      md:(pt-220)
+    `,
+]);
 
 const InnerWrapper = tw.div`
   flex flex-col justify-center w-full max-w-1280 gap-40
