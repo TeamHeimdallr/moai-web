@@ -17,10 +17,14 @@ interface Base {
 
   xrpConnectorIdx: number;
   evmConnectorIdx: number;
+
+  lastUpdatedAt: Date;
 }
 interface State extends Base {
   setStep: (step: number) => void;
   setStepStatus: (step: Step, i: number) => void;
+  setStepStatuses: (step: Step[]) => void;
+  setLastUpdatedAt: (date: Date) => void;
 
   setEvmWallet: (wallet: 'evm' | 'fpass' | undefined) => void;
 
@@ -37,7 +41,7 @@ export const useCampaignStepStore = create<State>()(
   persist(
     immer(
       logger(set => ({
-        name: 'CAMAPIGN_STEP_STORE',
+        name: 'CAMPAIGN_STEP_STORE',
 
         step: 1,
         stepStatus: initialStepStatus,
@@ -47,6 +51,8 @@ export const useCampaignStepStore = create<State>()(
         xrpConnectorIdx: -1,
         evmConnectorIdx: -1,
 
+        lastUpdatedAt: new Date(),
+
         setStep: (step: number) => set({ step }),
         setStepStatus: (stepStatus: Step, i: number) =>
           set(
@@ -54,14 +60,17 @@ export const useCampaignStepStore = create<State>()(
               state.stepStatus[i] = stepStatus;
             })
           ),
+        setStepStatuses: (stepStatus: Step[]) => set({ stepStatus }),
 
         setEvmWallet: (wallet: 'evm' | 'fpass' | undefined) => set({ evmWallet: wallet }),
         setXrpConnectorIdx: (xrpConnectorIdx: number) => set({ xrpConnectorIdx }),
         setEvmConnectorIdx: (evmConnectorIdx: number) => set({ evmConnectorIdx }),
 
+        setLastUpdatedAt: (date: Date) => set({ lastUpdatedAt: date }),
+
         reset: () => set({ step: 1, stepStatus: initialStepStatus }),
       }))
     ),
-    { name: 'MOAI_CAMAPIGN' }
+    { name: 'MOAI_CAMPAIGN' }
   )
 );

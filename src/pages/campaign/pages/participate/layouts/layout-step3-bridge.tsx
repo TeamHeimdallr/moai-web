@@ -107,6 +107,7 @@ const _Bridge = () => {
   const handleButtonClick = async () => {
     await bridge();
   };
+
   const handleLink = () => {
     const txHash = txData?.hash;
     const url = `${SCANNER_URL[NETWORK.XRPL]}/transactions/${txHash}`;

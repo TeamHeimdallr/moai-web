@@ -16,17 +16,21 @@ export const useStep = () => {
   const MIN_STEP = 1;
   const MAX_STEP = 4;
 
+  const { xrp } = useConnectedWallet();
+
   const {
     step,
     stepStatus,
     evmWallet,
     xrpConnectorIdx,
     evmConnectorIdx,
+    lastUpdatedAt,
     setStep,
     setStepStatus,
     setEvmWallet,
     setXrpConnectorIdx,
     setEvmConnectorIdx,
+    setLastUpdatedAt,
     reset,
   } = useCampaignStepStore();
 
@@ -35,7 +39,7 @@ export const useStep = () => {
   const stepStatus3 = stepStatus[2];
   const stepStatus4 = stepStatus[3];
 
-  const isInitial = step === MIN_STEP && stepStatus1.status !== 'done';
+  const isInitial = step === MIN_STEP && stepStatus1.status !== 'done' && !xrp.address;
 
   const prevEnabled = !isInitial && step !== MIN_STEP;
   const nextEnabled = useMemo(() => {
@@ -68,6 +72,8 @@ export const useStep = () => {
     stepStatus3,
     stepStatus4,
 
+    lastUpdatedAt,
+
     evmWallet,
     xrpConnectorIdx,
     evmConnectorIdx,
@@ -85,58 +91,103 @@ export const useStep = () => {
     setEvmWallet,
     setXrpConnectorIdx,
     setEvmConnectorIdx,
+    setLastUpdatedAt,
 
     reset,
   };
 };
 
 export const useResetStep = () => {
-  const { step, stepStatus, evmWallet, setStep, setStepStatus } = useCampaignStepStore();
+  const { step, evmWallet, stepStatus, setStep, setStepStatuses, setLastUpdatedAt } =
+    useCampaignStepStore();
 
   const { selectNetwork } = useSelecteNetworkStore();
   const { evm, xrp } = useConnectedWallet();
 
+  const stepStatus1 = stepStatus[0];
+  const stepStatus2 = stepStatus[1];
   const stepStatus3 = stepStatus[2];
 
   useEffect(() => {
-    if (xrp.address) {
-      setStepStatus({ id: 1, status: 'done' }, 0);
-      setStep(2);
-    } else {
+    if (!xrp.address) {
       setStep(1);
-      setStepStatus({ id: 1, status: 'idle' }, 0);
+      setStepStatuses([
+        { id: 1, status: 'idle' },
+        { id: 2, status: 'idle' },
+        { id: 3, status: 'idle' },
+        { id: 4, status: 'idle' },
+      ]);
+      setLastUpdatedAt(new Date());
+      return;
     }
 
     if (evm.address) {
       if (xrp.address) {
         if (evmWallet) {
-          setStepStatus({ id: 2, status: 'done' }, 1);
+          setStepStatuses([
+            { id: 1, status: 'done' },
+            { id: 2, status: 'done' },
+            { id: 3, status: 'idle' },
+            { id: 4, status: 'idle' },
+          ]);
           setStep(3);
         } else {
-          setStepStatus({ id: 2, status: 'idle' }, 1);
+          setStepStatuses([
+            { id: 1, status: 'done' },
+            { id: 2, status: 'idle' },
+            { id: 3, status: 'idle' },
+            { id: 4, status: 'idle' },
+          ]);
           setStep(2);
         }
       } else {
-        setStepStatus({ id: 2, status: 'done' }, 1);
         setStep(1);
+        setStepStatuses([
+          { id: 1, status: 'idle' },
+          { id: 2, status: 'idle' },
+          { id: 3, status: 'idle' },
+          { id: 4, status: 'idle' },
+        ]);
       }
     } else {
       if (xrp.address) {
-        setStepStatus({ id: 2, status: 'idle' }, 1);
+        setStepStatuses([
+          { id: 1, status: 'done' },
+          { id: 2, status: 'idle' },
+          { id: 3, status: 'idle' },
+          { id: 4, status: 'idle' },
+        ]);
         setStep(2);
       } else {
-        setStepStatus({ id: 2, status: 'idle' }, 1);
-        setStepStatus({ id: 1, status: 'idle' }, 0);
         setStep(1);
+        setStepStatuses([
+          { id: 1, status: 'idle' },
+          { id: 2, status: 'idle' },
+          { id: 3, status: 'idle' },
+          { id: 4, status: 'idle' },
+        ]);
       }
     }
-
-    if (stepStatus3.status === 'done') {
+    if (xrp.address && evm.address && stepStatus3.status === 'done') {
+      setStepStatuses([
+        { id: 1, status: 'done' },
+        { id: 2, status: 'done' },
+        { id: 3, status: 'done' },
+        { id: 4, status: 'idle' },
+      ]);
       setStep(4);
     }
 
+    setLastUpdatedAt(new Date());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evm.address, xrp.address, evmWallet, stepStatus3.status]);
+  }, [
+    evm.address,
+    xrp.address,
+    evmWallet,
+    stepStatus1.status,
+    stepStatus2.status,
+    stepStatus3.status,
+  ]);
 
   useEffect(() => {
     if (step === 3) {

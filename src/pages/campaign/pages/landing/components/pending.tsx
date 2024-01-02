@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
@@ -8,20 +9,54 @@ import { ButtonPrimaryMediumIconTrailing } from '~/components/buttons';
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
 
 import { useMediaQuery } from '~/hooks/utils';
+import { elapsedTime } from '~/utils';
+
+import { useStep } from '../../participate/hooks/use-step';
 
 export const Pending = () => {
-  // TODO : connect API
-  // TODO : navigate step3
-  const handleClick = () => {};
   const { t } = useTranslation();
   const { isMD } = useMediaQuery();
+
+  const { lastUpdatedAt } = useStep();
+
+  const [time2, setTime2] = useState(lastUpdatedAt);
+
+  const time = elapsedTime(new Date(time2).getTime());
+  const splittedTime = time.split(' ');
+  const translatedTime =
+    time === 'Just now'
+      ? t('Just now')
+      : t(`${splittedTime[1]} ${splittedTime[2]}`, { time: splittedTime[0] });
+
+  const handleClick = () => {
+    window.open('/campaign/participate', '_blank');
+  };
+
+  useEffect(() => {
+    const listener = () => {
+      const moaiCampaign = JSON.parse(localStorage.getItem('MOAI_CAMPAIGN') || '{}');
+      if (!moaiCampaign) return;
+
+      const { lastUpdatedAt } = moaiCampaign?.state || {};
+      if (!lastUpdatedAt) return;
+
+      setTime2(new Date(lastUpdatedAt));
+    };
+
+    listener();
+    document.addEventListener('visibilitychange', listener);
+    return () => {
+      document.removeEventListener('visibilitychange', listener);
+    };
+  }, []);
+
   return (
     <Wrapper>
       <TitleWrapper>
         <Title>Pending</Title>
         <LinkWrapper>
-          {t('Last application at') + ' ' + t('days ago', { time: 3 })}
-          <IconWrapper>
+          {`${t('Last application at')} ${translatedTime}`}
+          <IconWrapper onClick={handleClick}>
             <IconLink width={16} height={16} fill={COLOR.NEUTRAL[60]} />
           </IconWrapper>
         </LinkWrapper>
