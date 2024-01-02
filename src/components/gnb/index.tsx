@@ -52,6 +52,7 @@ export const Gnb = () => {
   return (
     <>
       <Wrapper>
+        {/* SWITCH NETWORK BANNER */}
         {openedBanner && (
           <BannerWrapper>
             <AlertBanner
@@ -65,6 +66,7 @@ export const Gnb = () => {
             />
           </BannerWrapper>
         )}
+
         <NavWrapper>
           <LogoWrapper>
             <LogoText

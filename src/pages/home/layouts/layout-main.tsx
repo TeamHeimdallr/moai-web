@@ -69,8 +69,8 @@ const _MainLayout = () => {
       queries: {
         filter: `active:eq:true:boolean`,
       },
-    }
-    // { staleTime: 5 * 60 * 1000 }
+    },
+    { staleTime: 5 * 60 * 1000 }
   );
   const campaigns = campaignData?.campaigns || [];
 
