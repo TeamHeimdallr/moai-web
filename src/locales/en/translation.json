@@ -50,6 +50,8 @@
   "365d": "365d",
   "All": "All",
   "days volume": "{{ days }} days volume",
+  "days fees": "{{ days }} days fee",
+  "current tvl": "Current TVL",
 
   "Action": "Action",
   "Tokens": "Tokens",

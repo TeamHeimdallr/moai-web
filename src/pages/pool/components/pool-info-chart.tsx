@@ -69,7 +69,14 @@ export const PoolInfoChart = () => {
   } as IChartData;
 
   const chartData = chartDataRaw ? [chartDataPadding, ...chartDataRaw, chartDataPadding2] : [];
-  const totalValue = chartData?.reduce((acc, cur) => acc + cur.value, 0) || 0;
+  const totalValueSum = chartData?.reduce((acc, cur) => acc + cur.value, 0) || 0;
+
+  const totalValue =
+    selectedTab === 'tvl' ? chartData?.[(chartData?.length || 0) - 1].value : totalValueSum;
+  const totalValueCaption =
+    selectedTab === 'tvl'
+      ? t(`current ${selectedTab}`)
+      : t(`days ${selectedTab}`, { days: upperFirst(selectedRange) });
 
   return (
     <Wrapper>
@@ -87,9 +94,7 @@ export const PoolInfoChart = () => {
         </HeaderTitleWrapper>
         <HeaderValueWrapper>
           <HeaderValue>${formatNumber(totalValue, 4)}</HeaderValue>
-          <HeaderValueLabel>
-            {t(`days volume`, { days: upperFirst(selectedRange) })}
-          </HeaderValueLabel>
+          <HeaderValueLabel>{totalValueCaption}</HeaderValueLabel>
         </HeaderValueWrapper>
       </Header>
 
