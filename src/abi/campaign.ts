@@ -490,7 +490,19 @@ export const CAMPAIGN_ABI = [
       {
         indexed: false,
         internalType: 'uint256',
-        name: 'amountBPT',
+        name: 'amountBPTRequested',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amountXrpOut',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amountRootInitialOut',
         type: 'uint256',
       },
       {
