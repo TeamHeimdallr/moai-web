@@ -88,6 +88,25 @@ export const CAMPAIGN_ABI = [
         name: 'amountBPT',
         type: 'uint256',
       },
+    ],
+    name: 'ExitPool',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'recipient',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amountBPT',
+        type: 'uint256',
+      },
       {
         indexed: false,
         internalType: 'uint256',
@@ -95,7 +114,7 @@ export const CAMPAIGN_ABI = [
         type: 'uint256',
       },
     ],
-    name: 'ExitPool',
+    name: 'ExitPoolSingle',
     type: 'event',
   },
   {
@@ -430,6 +449,12 @@ export const CAMPAIGN_ABI = [
         name: 'totalRewardToBePaid',
         type: 'uint256',
       },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'toBeLockedRatio',
+        type: 'uint256',
+      },
     ],
     name: 'UnFarmed',
     type: 'event',
@@ -471,13 +496,7 @@ export const CAMPAIGN_ABI = [
       {
         indexed: false,
         internalType: 'uint256',
-        name: 'amountToBeFreed',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'additionalLockedLiquidity',
+        name: 'freedRootAmount',
         type: 'uint256',
       },
       {
@@ -977,11 +996,6 @@ export const CAMPAIGN_ABI = [
       {
         internalType: 'uint256',
         name: 'rewardPoolSimulated',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'additionalLockedLiquiditySimulated',
         type: 'uint256',
       },
     ],
