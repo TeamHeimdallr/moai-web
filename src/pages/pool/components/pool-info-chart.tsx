@@ -1,7 +1,7 @@
 import { Bar } from 'react-chartjs-2';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { add, format, sub } from 'date-fns';
+import { format } from 'date-fns';
 import { upperFirst } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
@@ -16,7 +16,6 @@ import {
   usePoolInfoChartSelectedRangeStore,
   usePoolInfoChartSelectedTabStore,
 } from '~/states/components/chart/tab';
-import { IChartData } from '~/types';
 
 export const PoolInfoChart = () => {
   const { network, id } = useParams();
@@ -59,20 +58,12 @@ export const PoolInfoChart = () => {
 
   const chartDataRaw =
     selectedTab === 'volume' ? volumeData : selectedTab === 'tvl' ? tvlData : feeData;
-  const chartDataPadding = {
-    date: sub(new Date(chartDataRaw?.[0]?.date || new Date()), { days: 1 }),
-    value: 0,
-  } as IChartData;
-  const chartDataPadding2 = {
-    date: add(new Date(chartDataRaw?.[chartDataRaw?.length - 1]?.date || new Date()), { days: 1 }),
-    value: 0,
-  } as IChartData;
 
-  const chartData = chartDataRaw ? [chartDataPadding, ...chartDataRaw, chartDataPadding2] : [];
+  const chartData = chartDataRaw || [];
   const totalValueSum = chartData?.reduce((acc, cur) => acc + cur.value, 0) || 0;
 
   const totalValue =
-    selectedTab === 'tvl' ? chartData?.[(chartData?.length || 0) - 1].value : totalValueSum;
+    selectedTab === 'tvl' ? chartDataRaw?.[(chartDataRaw?.length || 0) - 1].value : totalValueSum;
   const totalValueCaption =
     selectedTab === 'tvl'
       ? t(`current ${selectedTab}`)
@@ -112,7 +103,7 @@ export const PoolInfoChart = () => {
                     borderRadius: 4,
                     minBarLength: 2,
                     clip: {
-                      left: 0,
+                      left: selectedRange === '90' ? 6 : selectedRange === '180' ? 2 : 1,
                       top: 0,
                       right: selectedRange === '90' ? -6 : selectedRange === '180' ? -2 : -1,
                       bottom: 0,
