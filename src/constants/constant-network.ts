@@ -71,8 +71,8 @@ export const EVM_VAULT_ADDRESS: Record<string, string> = {
 
 export const CAMPAIGN_ADDRESS: Record<string, string> = {
   [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET
-    ? '0x5BBA71fD4aD38a71CDFA0F27eE56719756F1A467'
-    : '0x0d035D7045CfF1a2A481129dEbcdfaEA40edBB73',
+    ? '0x0162D5c73257177177Ebd59aF3d39Bf2ab215644'
+    : '0x0e75ADdaCb57F130657d21DFe78f9F043bAcA901',
 };
 
 export const POOL_ID = {
