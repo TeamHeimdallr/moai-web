@@ -404,7 +404,7 @@ const _AddLiquidity = () => {
           )}
           <ButtonPrimaryLarge
             text={buttonText}
-            isLoading={addLiquidityLoading}
+            isLoading={addLiquidityLoading || allowLoading}
             disabled={invalid}
             onClick={handleButtonClick}
           />
