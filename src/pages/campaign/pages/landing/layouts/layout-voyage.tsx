@@ -237,7 +237,7 @@ const _LayoutVoyage = () => {
           )}
         </MyInfoWrapper>
         {hasPending && hasPending2 && <Pending />}
-        {withdrawPopupOpened && ( //TODO !isPrepareError && (
+        {withdrawPopupOpened && withdrawLiquidityEnabled && (
           <WithdrawLiquidityPopup
             pool={pool}
             lpTokenPrice={lpTokenPrice}
