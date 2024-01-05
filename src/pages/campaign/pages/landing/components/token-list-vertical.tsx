@@ -2,7 +2,7 @@ import { HTMLAttributes, ReactNode } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { css, styled } from 'twin.macro';
 
-import { formatNumber, formatNumberWithComma } from '~/utils';
+import { formatNumber } from '~/utils';
 import { IToken } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -35,12 +35,14 @@ export const TokenListVertical = ({
           {token}
         </Token>
         <Description>
-          <Balance>{formatNumberWithComma(balance)}</Balance>
+          <Balance>{formatNumber(balance, 6)}</Balance>
           {/* compare value whether undefined or not, since value could be 0 */}
           {value !== undefined && (
             <Value>
               ${formatNumber(value, 2)}{' '}
-              {convertedBalance ? `(≈${convertedBalance} ${convertedToken?.symbol})` : ''}
+              {convertedBalance
+                ? `(≈${formatNumber(convertedBalance)} ${convertedToken?.symbol})`
+                : ''}
             </Value>
           )}
         </Description>

@@ -28,13 +28,19 @@ export const useCalculateAddLiquidity = ({ xrpAmount }: Props) => {
       params: { networkAbbr, poolId },
     },
     {
-      enabled: xrpAmount > 0n && isEvm && isRoot && !!poolId,
+      enabled: xrpAmount > 0 && isEvm && isRoot && !!poolId,
       staleTime: 1000,
     }
   );
   const { pool } = poolData ?? {};
   const { address: poolAddress, compositions, tradingFee } = pool || {};
 
+  const poolRootAmount =
+    compositions?.find(c => c.address === '0xcCcCCccC00000001000000000000000000000000')?.balance ||
+    0;
+  const poolXrpAmount =
+    compositions?.find(c => c.address === '0xCCCCcCCc00000002000000000000000000000000')?.balance ||
+    0;
   const { data: lpTokenTotalSupplyData } = useContractRead({
     address: poolAddress as Address,
     abi: BALANCER_LP_ABI as Abi,
@@ -45,6 +51,7 @@ export const useCalculateAddLiquidity = ({ xrpAmount }: Props) => {
     enabled: !!poolAddress && !!chainId && isEvm && isRoot,
   });
   const lpTokenTotalSupply = Number(formatEther((lpTokenTotalSupplyData as bigint) || 0n));
+  const pairedRoot = poolXrpAmount ? xrpAmount * (poolRootAmount / poolXrpAmount) : 0;
 
   if (!isEvm)
     return {
@@ -55,13 +62,13 @@ export const useCalculateAddLiquidity = ({ xrpAmount }: Props) => {
   const { bptOut, priceImpact } = calcBptOutAmountAndPriceImpact({
     balances: compositions?.map(c => c.balance || 0) || [],
     normalizedWeights: compositions?.map(c => c.currentWeight || 0) || [],
-    amountsIn: [xrpAmount, 0],
+    amountsIn: [pairedRoot, xrpAmount],
     bptTotalSupply: lpTokenTotalSupply,
     swapFeePercentage: tradingFee || 0,
   });
 
   return {
-    bptOut,
+    bptOut: bptOut,
     priceImpact,
   };
 };
