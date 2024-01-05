@@ -508,8 +508,8 @@ const _WithdrawLiquidityPopup = ({
             <FailedIconWrapper>
               <IconCancel width={40} height={40} />
             </FailedIconWrapper>
-            <SuccessTitle>{t('Swap failed')}</SuccessTitle>
-            <SuccessSubTitle>{t('swap-fail-message')}</SuccessSubTitle>
+            <SuccessTitle>{t('Withdraw liquidity failed')}</SuccessTitle>
+            <SuccessSubTitle>{t('withdraw-liquidity-fail-message')}</SuccessSubTitle>
           </FailedWrapper>
         )}
         {isIdle && (

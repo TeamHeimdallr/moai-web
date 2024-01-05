@@ -60,6 +60,7 @@ export const useUserCampaignInfo = () => {
 
   const amountFarmedInBPTRaw = (data?.[0]?.['amountFarmed'] || 0n) as bigint;
   const unclaimedRootRewardRaw = (data?.[0]?.['unclaimedRewards'] || 0n) as bigint;
+  const depositedTime = Number(data?.[0]['depositedTime'] ?? 0);
 
   const amountFarmedInBPT = Number(formatUnits(amountFarmedInBPTRaw, 18));
   const totalXrpValue = xrpPrice * amountFarmedInBPT;
@@ -96,5 +97,7 @@ export const useUserCampaignInfo = () => {
 
     xrpPrice,
     rootPrice,
+
+    depositedTime,
   };
 };
