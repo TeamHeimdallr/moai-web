@@ -4,8 +4,10 @@ import Skeleton from 'react-loading-skeleton';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 
+import { useCampaignLpBalance } from '~/api/api-contract/_evm/campaign/lp-balance';
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 
+import { IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 import Logo1 from '~/assets/logos/logo-campaign-1.svg?react';
 import Logo2 from '~/assets/logos/logo-campaign-2.svg?react';
 
@@ -13,7 +15,7 @@ import { ButtonPrimaryLarge } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
 import { useMediaQuery } from '~/hooks/utils';
-import { DATE_FORMATTER, formatNumberWithComma, formatPercent } from '~/utils';
+import { DATE_FORMATTER, formatNumber } from '~/utils';
 import { POPUP_ID } from '~/types';
 
 export const LayoutMain = () => (
@@ -23,9 +25,7 @@ export const LayoutMain = () => (
 );
 
 const _LayoutMain = () => {
-  // TODO: connect api
-  const value = 125928000;
-  const apy = 0.1;
+  const { balance, apr, moiApr } = useCampaignLpBalance();
 
   const { isMD } = useMediaQuery();
   const { t, i18n } = useTranslation();
@@ -63,11 +63,23 @@ const _LayoutMain = () => {
           <InfoWrapper>
             <Info>
               <Label>Total value locked</Label>
-              <Text>${formatNumberWithComma(value)}</Text>
+              <Text>${formatNumber(balance)}</Text>
             </Info>
             <Info>
               <Label>{t('Expected APY')}</Label>
-              <Text>{formatPercent(apy)}</Text>
+              <TextInfoWrapper>
+                <Text>{apr ? formatNumber(apr, 4, 'round', 10000) : '0'}%</Text>
+                <AprInfoWrapper>
+                  <AprInfo>
+                    {moiApr ? `+${formatNumber(moiApr, 2, 'round', 10000)}%` : '0%'}
+                    <IconTokenMoai width={16} height={16} />
+                  </AprInfo>
+                  <AprInfo>
+                    {`+${formatNumber(10, 4, 'round', 10000)}%`}
+                    <IconTokenRoot width={16} height={16} />
+                  </AprInfo>
+                </AprInfoWrapper>
+              </TextInfoWrapper>
             </Info>
           </InfoWrapper>
         </ContentWrapper>
@@ -200,4 +212,15 @@ const Label = tw.div`
 const Text = tw.div`
   font-m-20
   md:font-m-24
+`;
+
+const TextInfoWrapper = tw.div`
+  flex flex-col gap-2
+`;
+const AprInfoWrapper = tw.div`
+  flex gap-12
+`;
+
+const AprInfo = tw.div`
+  flex gap-4 font-r-14 text-neutral-80 items-center
 `;

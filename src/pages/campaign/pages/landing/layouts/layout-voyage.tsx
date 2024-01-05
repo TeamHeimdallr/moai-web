@@ -4,12 +4,16 @@ import Skeleton from 'react-loading-skeleton';
 import tw, { styled } from 'twin.macro';
 
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
+import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
 
 import { IconTokenMoai, IconTokenRoot, IconTokenXrp } from '~/assets/icons';
+
+import { BASE_URL } from '~/constants';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { NETWORK, POPUP_ID } from '~/types';
@@ -26,32 +30,40 @@ export const LayoutVoyage = () => (
 
 const _LayoutVoyage = () => {
   const [hasPending2, setHasPending2] = useState(false); // for visibility change
-  const { xrp, evm } = useConnectedWallet();
+  const { isEvm, isFpass } = useNetwork();
+  const { xrp, evm, fpass } = useConnectedWallet();
 
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
   const { open } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
   const { t } = useTranslation();
 
-  // TODO: connect api
-  useUserCampaignInfo();
+  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
+
+  const { data: rewardInfoData } = useGetRewardsInfoQuery(
+    {
+      params: { networkAbbr: 'trn' },
+      queries: { walletAddress },
+    },
+    { staleTime: 1000 * 3, enabled: !!walletAddress }
+  );
+
+  const campaignReward = rewardInfoData?.myCampaignReward || 0;
+
+  const {
+    amountFarmedInBPT,
+
+    totalXrpValue,
+
+    rootReward,
+    rootPrice,
+  } = useUserCampaignInfo();
 
   const { step, stepStatus } = useCampaignStepStore();
   const hasPending = step >= 1 && stepStatus.some(s => s.status === 'done');
 
-  // TODO : connect API
-  const myDepositBalance = 123123;
-  const myDepositValue = myDepositBalance;
-
-  const myMoaiRewardBalance = 123123;
-  const myMoaiRewardValue = myMoaiRewardBalance;
-
-  const myRootRewardBalance = 123123;
-  const myRootRewardValue = myRootRewardBalance;
-
-  // TODO: handle fpass
   const bothConnected = xrp.isConnected && evm.isConnected;
-  const isEmpty = bothConnected && myDepositBalance <= 0;
+  const isEmpty = !(bothConnected && amountFarmedInBPT > 0);
 
   const emptyText = !bothConnected
     ? 'To check your voyage, connect both your XRP\n wallet and Root Network wallet.'
@@ -60,15 +72,7 @@ const _LayoutVoyage = () => {
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 
   const handleClick = () => {
-    if (isEmpty) {
-      // TODO: activate xrp
-      return;
-    }
-
-    if (bothConnected) {
-      // TODO: navigate to step3
-      return;
-    }
+    if (!isEmpty || bothConnected) return window.open(`${BASE_URL}/campaign/participate`, '_blank');
 
     if (!xrp.isConnected) setWalletConnectorType({ network: NETWORK.XRPL });
     else if (!evm.isConnected) setWalletConnectorType({ network: NETWORK.THE_ROOT_NETWORK });
@@ -125,8 +129,8 @@ const _LayoutVoyage = () => {
                 <TokenCardTitle>{t('My liquidity')}</TokenCardTitle>
                 <TokenList
                   token="XRP"
-                  balance={myDepositBalance}
-                  value={myDepositValue}
+                  balance={amountFarmedInBPT}
+                  value={totalXrpValue}
                   image={<IconTokenXrp width={36} height={36} />}
                   button={
                     <ButtonPrimaryLarge
@@ -142,8 +146,7 @@ const _LayoutVoyage = () => {
                 <TokenListWrapper>
                   <TokenList
                     token="veMOI"
-                    balance={myMoaiRewardBalance}
-                    value={myMoaiRewardValue}
+                    balance={campaignReward}
                     image={<IconTokenMoai width={36} height={36} />}
                     button={
                       <ButtonPrimaryLarge
@@ -156,8 +159,8 @@ const _LayoutVoyage = () => {
                   />
                   <TokenList
                     token="ROOT"
-                    balance={myRootRewardBalance}
-                    value={myRootRewardValue}
+                    balance={rootReward}
+                    value={rootReward * rootPrice}
                     image={<IconTokenRoot width={36} height={36} />}
                     button={
                       <ButtonPrimaryLarge
