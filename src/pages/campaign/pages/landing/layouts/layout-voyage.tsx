@@ -4,6 +4,7 @@ import Skeleton from 'react-loading-skeleton';
 import tw, { styled } from 'twin.macro';
 
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
+import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
 
 import { IconTokenMoai, IconTokenRoot, IconTokenXrp } from '~/assets/icons';
 
@@ -12,6 +13,7 @@ import { BASE_URL } from '~/constants';
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { NETWORK, POPUP_ID } from '~/types';
@@ -28,12 +30,25 @@ export const LayoutVoyage = () => (
 
 const _LayoutVoyage = () => {
   const [hasPending2, setHasPending2] = useState(false); // for visibility change
-  const { xrp, evm } = useConnectedWallet();
+  const { isEvm, isFpass } = useNetwork();
+  const { xrp, evm, fpass } = useConnectedWallet();
 
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
   const { open } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
   const { t } = useTranslation();
+
+  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
+
+  const { data: rewardInfoData } = useGetRewardsInfoQuery(
+    {
+      params: { networkAbbr: 'trn' },
+      queries: { walletAddress },
+    },
+    { staleTime: 1000 * 3, enabled: !!walletAddress }
+  );
+
+  const campaignReward = rewardInfoData?.myCampaignReward || 0;
 
   const {
     amountFarmedInBPT,
@@ -48,7 +63,7 @@ const _LayoutVoyage = () => {
   const hasPending = step >= 1 && stepStatus.some(s => s.status === 'done');
 
   const bothConnected = xrp.isConnected && evm.isConnected;
-  const isEmpty = bothConnected && amountFarmedInBPT <= 0;
+  const isEmpty = !(bothConnected && amountFarmedInBPT > 0);
 
   const emptyText = !bothConnected
     ? 'To check your voyage, connect both your XRP\n wallet and Root Network wallet.'
@@ -57,7 +72,7 @@ const _LayoutVoyage = () => {
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 
   const handleClick = () => {
-    if (isEmpty || bothConnected) return window.open(`${BASE_URL}/campaign/participate`, '_blank');
+    if (!isEmpty || bothConnected) return window.open(`${BASE_URL}/campaign/participate`, '_blank');
 
     if (!xrp.isConnected) setWalletConnectorType({ network: NETWORK.XRPL });
     else if (!evm.isConnected) setWalletConnectorType({ network: NETWORK.THE_ROOT_NETWORK });
@@ -131,8 +146,7 @@ const _LayoutVoyage = () => {
                 <TokenListWrapper>
                   <TokenList
                     token="veMOI"
-                    balance={100}
-                    value={10000}
+                    balance={campaignReward}
                     image={<IconTokenMoai width={36} height={36} />}
                     button={
                       <ButtonPrimaryLarge

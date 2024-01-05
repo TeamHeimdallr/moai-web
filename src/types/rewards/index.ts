@@ -6,6 +6,9 @@ export interface IRewardsInfo {
 
   myVolume: number;
   myReward: number;
+
+  myCampaignVolume: number;
+  myCampaignReward: number;
 }
 
 export interface IRewardParticipant {

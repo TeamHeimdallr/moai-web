@@ -7,7 +7,7 @@ import { formatNumber, formatNumberWithComma } from '~/utils';
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
   balance: number;
-  value: number;
+  value?: number;
   image?: ReactNode;
   transparent?: boolean;
   button?: ReactNode;
@@ -31,7 +31,8 @@ export const TokenList = ({
         </Token>
         <Description>
           <Balance>{formatNumberWithComma(balance)}</Balance>
-          <Value>${formatNumber(value, 2)}</Value>
+          {/* compare value whether undefined or not, since value could be 0 */}
+          {value === undefined && <Value>${formatNumber(value, 2)}</Value>}
         </Description>
       </TokenWrapper>
       {button && <ButtonWrapper>{button}</ButtonWrapper>}
