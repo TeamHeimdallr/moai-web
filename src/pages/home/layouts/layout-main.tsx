@@ -121,7 +121,7 @@ const _MainLayout = () => {
     <MainWrapper banner={!!openedBanner}>
       {isConnected ? (
         <SubTitleWrapper>
-          <Label>{t('My Moai Balance')}</Label>
+          <Label>{t('My Liquidity Value')}</Label>
           <SubTitle>{`$${totalValue}`}</SubTitle>
         </SubTitleWrapper>
       ) : (

@@ -27,7 +27,7 @@
   "wallet-alert-message-switch": "지갑의 네트워크를 {{network}}로 전환해 주세요.",
 
   "My liquidity in Moai pools": "나의 유동성",
-  "My Moai Balance": "나의 MOAI 잔액",
+  "My Liquidity Value": "나의 유동성 가치",
   "My wallet balance": "지갑 잔액",
 
   "24h": "24시간",
