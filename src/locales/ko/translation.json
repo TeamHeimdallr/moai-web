@@ -324,5 +324,6 @@
   "Lack of reserve": "준비금이 부족합니다.",
   "lack-of-reserve-description": "캠페인 준비금을 충전 중입니다. 디스코드 공지를 기다려주세요.",
 
-  "Potential risks": "잠재적 위험요인"
+  "Potential risks": "잠재적 위험요인",
+  "Not enough gas": "가스비가 부족합니다."
 }
