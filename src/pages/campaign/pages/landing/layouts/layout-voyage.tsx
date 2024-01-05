@@ -115,7 +115,7 @@ const _LayoutVoyage = () => {
 
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 
-  const now = new Date().getTime();
+  const now = new Date().getTime() / 1000;
   const withdrawLiquidityEnabled =
     !!myDepositBalance && myDepositBalance > 0n && depositedTime + lockupPeriod < now;
 

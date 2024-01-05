@@ -10,7 +10,11 @@ import { formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
 
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
-import { useWithdrawLiquidity } from '~/api/api-contract/_evm/campaign/withdraw-liquidity';
+import { useWithdrawLiquidity as useWithdrawLiquidityEVM } from '~/api/api-contract/_evm/campaign/withdraw-liquidity';
+import {
+  useWithdrawLiquidity as useWithdrawLiquiditySubstrate,
+  useWithdrawLiquidityPrepare,
+} from '~/api/api-contract/_evm/campaign/withdraw-liquidity-substrate';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
@@ -89,17 +93,36 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
   const validAmount = inputValueRaw && inputValueRaw > 0n;
 
   const withdrawLiquidityEnabled = !!poolId && !!validAmount;
+  const withdrawLiquidityEvm = useWithdrawLiquidityEVM({
+    bptIn: inputValueRaw || 0n,
+    enabled: withdrawLiquidityEnabled && !isFpass,
+  });
+
+  const withdrawLiquiditySubstrate = useWithdrawLiquiditySubstrate({
+    bptIn: inputValueRaw || 0n,
+    enabled: withdrawLiquidityEnabled && isFpass,
+  });
   const {
+    isPrepareLoading: withdrawLiquiditySubstratePrepareLoading,
+    isPrepareError: withdrawLiquiditySubstratePrepareIsError,
+    prepareError: withdrawLiquiditySubstratePrepareError,
+  } = useWithdrawLiquidityPrepare({
+    bptIn: inputValueRaw || 0n,
+    enabled: withdrawLiquidityEnabled && isFpass,
+  });
+
+  const withdrawLiquidity = isFpass ? withdrawLiquiditySubstrate : withdrawLiquidityEvm;
+  const {
+    isPrepareLoading: withdrawLiquidityPrepareLoading,
     isLoading: withdrawLiquidityLoading,
     isSuccess: withdrawLiquiditySuccess,
+    isError: withdrawLiquidityIsError,
+    error: withdrawLiquidityError,
     txData,
-    writeAsync,
     blockTimestamp,
+    writeAsync,
     estimateFee: estimateWithdrawLiquidityFee,
-  } = useWithdrawLiquidity({
-    bptIn: inputValueRaw || 0n,
-    enabled: withdrawLiquidityEnabled,
-  });
+  } = withdrawLiquidity;
 
   const { lpTokenTotalSupply, refetch } = useUserPoolTokenBalances({
     network: 'trn',
@@ -107,6 +130,7 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
   });
 
   const { amountFarmedInBPT, amountFarmedInBPTRaw } = useUserCampaignInfo();
+
   const userLpTokenBalance = amountFarmedInBPT;
   const userLpTokenBalanceRaw = amountFarmedInBPTRaw || 0n;
 
@@ -122,6 +146,26 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
   const isSuccess = withdrawLiquiditySuccess && !!txData;
   const isLoading = withdrawLiquidityLoading;
   const totalValue = userXrpOutBalance * (xrpToken?.price || 0);
+
+  const isErrorRaw = withdrawLiquidityIsError || withdrawLiquiditySubstratePrepareIsError;
+  const error = withdrawLiquidityError || withdrawLiquiditySubstratePrepareError;
+  const zeroAmountError = error?.message?.includes('Campaign: Unfarmed amount should not be zero');
+  const wrongAmountError = error?.message?.includes(
+    'Campaign: Not able to withdraw more than deposited'
+  );
+  const lockupError = error?.message?.includes('Campaign: Lockup period');
+
+  useEffect(() => {
+    if (zeroAmountError) {
+      console.log('zeroAmountError');
+    }
+    if (wrongAmountError) {
+      console.log('wrongAmountError');
+    }
+    if (lockupError) {
+      console.log('lockupError');
+    }
+  }, [zeroAmountError, wrongAmountError, lockupError]);
 
   const schema = yup.object().shape({
     input1: yup.number().min(0).max(userLpTokenBalance, t('Exceeds wallet balance')).required(),
@@ -139,21 +183,6 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
 
     return t('Withdraw');
   }, [isSuccess, isIdle, t]);
-
-  const handleButtonClick = async () => {
-    if (isLoading) return;
-    if (!isIdle) {
-      if (isSuccess) {
-        close();
-        navigate(`/campaign`);
-        return;
-      }
-      close();
-      return;
-    }
-
-    await writeAsync?.();
-  };
 
   const handleLink = () => {
     const txHash = isFpass ? txData?.extrinsicId : isEvm ? txData?.transactionHash : txData?.hash;
@@ -194,6 +223,27 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
   const estimatedFee = estimatedWithdrawLiquidityFee || '';
 
   const gasError = xrpBalance <= Number(estimatedFee || 4.2) || withdrawLiquidityGasError;
+  const invalid = isErrorRaw || gasError || !estimatedFee || (inputValueRaw || 0n) <= 0n;
+  const invalidWithLoading =
+    invalid ||
+    isLoading ||
+    (!isFpass && withdrawLiquidityPrepareLoading) ||
+    (isFpass && withdrawLiquiditySubstratePrepareLoading);
+
+  const handleButtonClick = async () => {
+    if (isLoading || invalidWithLoading) return;
+    if (!isIdle) {
+      if (isSuccess) {
+        close();
+        navigate(`/campaign`);
+        return;
+      }
+      close();
+      return;
+    }
+
+    await writeAsync?.();
+  };
 
   return (
     <Popup
