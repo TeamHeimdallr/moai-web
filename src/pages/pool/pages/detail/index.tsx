@@ -14,6 +14,7 @@ import { PoolInfo } from '../../components/pool-info';
 import { PoolInfoChart } from '../../components/pool-info-chart';
 import { PoolLiquidityProvisions } from '../../components/pool-liquidity-provisions';
 import { PoolSwapHistories } from '../../components/pool-swap-histories';
+import { PotentialRisks } from '../../components/potential-risks';
 import { UserPoolBalances } from '../../components/user-pool-balances';
 
 const PoolDetailMainPage = () => {
@@ -37,6 +38,7 @@ const PoolDetailMainPage = () => {
               <PoolInfoChart />
               <PoolLiquidityProvisions />
               <PoolSwapHistories />
+              <PotentialRisks />
             </LeftContentWrapper>
             <RightContentWrapper>
               <UserPoolBalances />
