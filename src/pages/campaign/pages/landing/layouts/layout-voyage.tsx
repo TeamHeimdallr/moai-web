@@ -4,23 +4,29 @@ import Skeleton from 'react-loading-skeleton';
 import tw, { styled } from 'twin.macro';
 
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
+import { useWithdrawLiquidity } from '~/api/api-contract/_evm/campaign/withdraw-liquidity';
+import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
+import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
 
 import { IconTokenMoai, IconTokenRoot, IconTokenXrp } from '~/assets/icons';
 
 import { BASE_URL } from '~/constants';
+import { POOL_ID } from '~/constants';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkAbbr } from '~/utils';
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { useCampaignStepStore } from '../../participate/states/step';
 import { Pending } from '../components/pending';
 import { TokenList } from '../components/token-list';
+import { WithdrawLiquidityPopup } from '../components/withdraw-liquidity-popup';
 
 export const LayoutVoyage = () => (
   <Suspense fallback={<_LayoutVoyageSkeleton />}>
@@ -30,7 +36,7 @@ export const LayoutVoyage = () => (
 
 const _LayoutVoyage = () => {
   const [hasPending2, setHasPending2] = useState(false); // for visibility change
-  const { isEvm, isFpass } = useNetwork();
+  const { isEvm, selectedNetwork, isFpass } = useNetwork();
   const { xrp, evm, fpass } = useConnectedWallet();
 
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
@@ -58,6 +64,34 @@ const _LayoutVoyage = () => {
     rootReward,
     rootPrice,
   } = useUserCampaignInfo();
+  const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
+  const poolId = POOL_ID?.[NETWORK.THE_ROOT_NETWORK]?.ROOT_XRP;
+
+  const queryEnabled = !!isRoot && !!poolId;
+  const { data: poolData } = useGetPoolQuery(
+    {
+      params: {
+        networkAbbr: getNetworkAbbr(NETWORK.THE_ROOT_NETWORK) as string,
+        poolId: poolId as string,
+      },
+    },
+    {
+      enabled: queryEnabled,
+      staleTime: 1000,
+    }
+  );
+
+  const { pool } = poolData || {};
+
+  const { opened: withdrawPopupOpened, open: withdrawPopupOpen } = usePopup(
+    POPUP_ID.CAMPAIGN_WITHDRAW
+  );
+
+  const { lpTokenPrice, userLpTokenBalance, userLpTokenBalanceRaw, lpTokenTotalSupply, refetch } =
+    useUserPoolTokenBalances({
+      network: 'trn',
+      id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
+    });
 
   const { step, stepStatus } = useCampaignStepStore();
   const hasPending = step >= 1 && stepStatus.some(s => s.status === 'done');
@@ -71,6 +105,24 @@ const _LayoutVoyage = () => {
 
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 
+  const withdrawLiquidityEnabled = !!myDepositBalance && myDepositBalance > 0n;
+  // const withdrawLiquidityEvm = useWithdrawLiquidity({
+  //   bptIn: inputValueRaw || 0n,
+  //   enabled: !isFpass && isRoot && withdrawLiquidityEnabled,
+  // });
+  // const withdrawLiquiditySubstrate = useWithdrawLiquiditySubstrate({
+  //   xrpAmount: inputValueRaw || 0n,
+  //   enabled: isFpass && isRoot && withdrawLiquidityEnabled,
+  // });
+  // const {
+  //   isPrepareLoading: addLiquiditySubstratePrepareLoading,
+  //   isPrepareError: addLiquiditySubstratePrepareIsError,
+  //   prepareError: addLiquiditySubstratePrepareError,
+  // } = useWithdrawLiquidityPrepare({
+  //   xrpAmount: inputValueRaw || 0n,
+  //   enabled: isFpass && isRoot && withdrawLiquidityEnabled,
+  // });
+
   const handleClick = () => {
     if (!isEmpty || bothConnected) return window.open(`${BASE_URL}/campaign/participate`, '_blank');
 
@@ -78,6 +130,10 @@ const _LayoutVoyage = () => {
     else if (!evm.isConnected) setWalletConnectorType({ network: NETWORK.THE_ROOT_NETWORK });
 
     open();
+  };
+
+  const handleWithdraw = () => {
+    console.log('withdraw');
   };
 
   useEffect(() => {
@@ -122,7 +178,6 @@ const _LayoutVoyage = () => {
               </ButtonWrapper>
             </Empty>
           )}
-
           {!isEmpty && (
             <CardWrapper>
               <TokenCard>
@@ -136,7 +191,8 @@ const _LayoutVoyage = () => {
                     <ButtonPrimaryLarge
                       text={t('Withdraw')}
                       buttonType="outlined"
-                      onClick={handleClick}
+                      onClick={withdrawPopupOpen}
+                      // disabled={!isValidToWithdraw || isPrepareLoading || isPrepareError}
                     />
                   }
                 />
@@ -176,6 +232,13 @@ const _LayoutVoyage = () => {
           )}
         </MyInfoWrapper>
         {hasPending && hasPending2 && <Pending />}
+        {withdrawPopupOpened && ( //TODO !isPrepareError && (
+          <WithdrawLiquidityPopup
+            pool={pool}
+            lpTokenPrice={lpTokenPrice}
+            refetchBalance={refetch}
+          />
+        )}
       </InnerWrapper>
     </Wrapper>
   );
