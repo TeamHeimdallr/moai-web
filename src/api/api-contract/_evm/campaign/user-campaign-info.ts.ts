@@ -9,6 +9,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { NETWORK } from '~/types';
 
+import { BALANCER_LP_ABI } from '~/abi';
 import { CAMPAIGN_ABI } from '~/abi/campaign';
 
 export const useUserCampaignInfo = () => {
@@ -28,14 +29,15 @@ export const useUserCampaignInfo = () => {
   );
 
   const { pool } = poolData || {};
-  const { moiApr, compositions, lpToken } = pool || {};
+  const { moiApr, compositions } = pool || {};
 
+  const poolAddress = pool?.address;
   const xrpToken = compositions?.find(c => c.symbol === 'XRP');
   const rootToken = compositions?.find(c => c.symbol === 'ROOT');
+  const rootTokenBalance = rootToken?.balance || 0;
 
   const xrpPrice = xrpToken?.price || 0;
   const rootPrice = rootToken?.price || 0;
-  const lpTokenPrice = lpToken?.price || 0;
 
   const { data, refetch: accureRefetch } = useContractRead({
     address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
@@ -47,14 +49,29 @@ export const useUserCampaignInfo = () => {
     enabled: !!walletAddress && isEvm,
   });
 
+  const { data: lpTokenTotalSupplyData } = useContractRead({
+    address: poolAddress as Address,
+    abi: BALANCER_LP_ABI as Abi,
+    functionName: 'totalSupply',
+
+    staleTime: 1000 * 3,
+    enabled: !!poolAddress && isEvm,
+  });
+
   const amountFarmedInBPTRaw = (data?.[0]?.['amountFarmed'] || 0n) as bigint;
   const unclaimedRootRewardRaw = (data?.[0]?.['unclaimedRewards'] || 0n) as bigint;
 
   const amountFarmedInBPT = Number(formatUnits(amountFarmedInBPTRaw, 18));
-  const totalBptValue = lpTokenPrice * amountFarmedInBPT;
+  const totalXrpValue = xrpPrice * amountFarmedInBPT;
 
-  const amountFarmedInXrp = totalBptValue / xrpPrice;
-  const unclaimedRootReward = Number(formatUnits(unclaimedRootRewardRaw, 6));
+  const amountFarmedInXrp = totalXrpValue / xrpPrice;
+
+  const unclaimedRootReward = Number(formatUnits(unclaimedRootRewardRaw, 18));
+  const lpTokenTotalSupply = Number(formatUnits((lpTokenTotalSupplyData || 0n) as bigint, 18));
+
+  const r = lpTokenTotalSupply ? unclaimedRootReward / lpTokenTotalSupply : 0;
+  const u = 2 * rootTokenBalance * r - rootTokenBalance * r * r;
+  const rootReward = u / 2 + (u / 2) * (1 - 0.0035);
 
   const apr = (moiApr || 0) + 10; // moiApr + 10% (10% is the fixed ROOT APR)
 
@@ -69,7 +86,8 @@ export const useUserCampaignInfo = () => {
     amountFarmedInXrp,
     unclaimedRootReward,
 
-    totalBptValue,
+    totalXrpValue,
+    rootReward,
 
     amountFarmedInBPTRaw,
     unclaimedRootRewardRaw,

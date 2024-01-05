@@ -52,10 +52,10 @@ const _LayoutVoyage = () => {
 
   const {
     amountFarmedInBPT,
-    unclaimedRootReward,
 
-    totalBptValue,
+    totalXrpValue,
 
+    rootReward,
     rootPrice,
   } = useUserCampaignInfo();
 
@@ -130,7 +130,7 @@ const _LayoutVoyage = () => {
                 <TokenList
                   token="XRP"
                   balance={amountFarmedInBPT}
-                  value={totalBptValue}
+                  value={totalXrpValue}
                   image={<IconTokenXrp width={36} height={36} />}
                   button={
                     <ButtonPrimaryLarge
@@ -159,8 +159,8 @@ const _LayoutVoyage = () => {
                   />
                   <TokenList
                     token="ROOT"
-                    balance={unclaimedRootReward}
-                    value={unclaimedRootReward * rootPrice}
+                    balance={rootReward}
+                    value={rootReward * rootPrice}
                     image={<IconTokenRoot width={36} height={36} />}
                     button={
                       <ButtonPrimaryLarge
