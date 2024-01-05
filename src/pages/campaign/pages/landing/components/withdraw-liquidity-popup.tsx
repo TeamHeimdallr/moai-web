@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
-import { formatEther, formatUnits, parseUnits } from 'viem';
+import { formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
 
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
@@ -106,9 +106,9 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
     id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
   });
 
-  const { amountFarmedInLP } = useUserCampaignInfo();
-  const userLpTokenBalance = Number(formatEther(amountFarmedInLP || 0n));
-  const userLpTokenBalanceRaw = amountFarmedInLP || 0n;
+  const { amountFarmedInBPT, amountFarmedInBPTRaw } = useUserCampaignInfo();
+  const userLpTokenBalance = amountFarmedInBPT;
+  const userLpTokenBalanceRaw = amountFarmedInBPTRaw || 0n;
 
   const userXrpOutBalance =
     !!inputValue && inputValue > 0 && xrpBalanceInPool > 0
