@@ -107,7 +107,7 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
   });
 
   const { amountFarmedInLP } = useUserCampaignInfo();
-  const userLpTokenBalance = Number(formatEther(amountFarmedInLP || 0));
+  const userLpTokenBalance = Number(formatEther(amountFarmedInLP || 0n));
   const userLpTokenBalanceRaw = amountFarmedInLP || 0n;
 
   const userXrpOutBalance =

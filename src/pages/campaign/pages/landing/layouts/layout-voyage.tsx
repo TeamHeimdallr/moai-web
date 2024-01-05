@@ -1,15 +1,16 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import Skeleton from 'react-loading-skeleton';
 import tw, { styled } from 'twin.macro';
 
+import { useCampaignInfo } from '~/api/api-contract/_evm/campaign/campaign-info';
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
-import { useWithdrawLiquidity } from '~/api/api-contract/_evm/campaign/withdraw-liquidity';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
 
-import { IconTokenMoai, IconTokenRoot, IconTokenXrp } from '~/assets/icons';
+import { IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 
 import { BASE_URL } from '~/constants';
 import { POOL_ID } from '~/constants';
@@ -25,7 +26,7 @@ import { NETWORK, POPUP_ID } from '~/types';
 
 import { useCampaignStepStore } from '../../participate/states/step';
 import { Pending } from '../components/pending';
-import { TokenList } from '../components/token-list';
+import { TokenListVertical } from '../components/token-list-vertical';
 import { WithdrawLiquidityPopup } from '../components/withdraw-liquidity-popup';
 
 export const LayoutVoyage = () => (
@@ -58,8 +59,7 @@ const _LayoutVoyage = () => {
 
   const {
     amountFarmedInBPT,
-
-    totalXrpValue,
+    depositedTime,
 
     rootReward,
     rootPrice,
@@ -82,20 +82,30 @@ const _LayoutVoyage = () => {
   );
 
   const { pool } = poolData || {};
+  const { compositions } = pool || {};
+  const xrpToken = compositions?.[1];
+  const xrpBalanceInPool = xrpToken?.balance || 0;
 
   const { opened: withdrawPopupOpened, open: withdrawPopupOpen } = usePopup(
     POPUP_ID.CAMPAIGN_WITHDRAW
   );
 
-  const { lpTokenPrice, userLpTokenBalance, userLpTokenBalanceRaw, lpTokenTotalSupply, refetch } =
-    useUserPoolTokenBalances({
-      network: 'trn',
-      id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
-    });
+  const { lpTokenPrice, lpTokenTotalSupply, refetch } = useUserPoolTokenBalances({
+    network: 'trn',
+    id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
+  });
 
   const { step, stepStatus } = useCampaignStepStore();
   const hasPending = step >= 1 && stepStatus.some(s => s.status === 'done');
 
+  const { lockupPeriod } = useCampaignInfo();
+
+  const myDepositBalance = amountFarmedInBPT;
+  const myDepositValue = myDepositBalance * lpTokenPrice;
+
+  const myDepositInXrp = 2 * (myDepositBalance / lpTokenTotalSupply) * xrpBalanceInPool;
+
+  // TODO: handle fpass
   const bothConnected = xrp.isConnected && evm.isConnected;
   const isEmpty = !(bothConnected && amountFarmedInBPT > 0);
 
@@ -105,23 +115,9 @@ const _LayoutVoyage = () => {
 
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 
-  const withdrawLiquidityEnabled = !!myDepositBalance && myDepositBalance > 0n;
-  // const withdrawLiquidityEvm = useWithdrawLiquidity({
-  //   bptIn: inputValueRaw || 0n,
-  //   enabled: !isFpass && isRoot && withdrawLiquidityEnabled,
-  // });
-  // const withdrawLiquiditySubstrate = useWithdrawLiquiditySubstrate({
-  //   xrpAmount: inputValueRaw || 0n,
-  //   enabled: isFpass && isRoot && withdrawLiquidityEnabled,
-  // });
-  // const {
-  //   isPrepareLoading: addLiquiditySubstratePrepareLoading,
-  //   isPrepareError: addLiquiditySubstratePrepareIsError,
-  //   prepareError: addLiquiditySubstratePrepareError,
-  // } = useWithdrawLiquidityPrepare({
-  //   xrpAmount: inputValueRaw || 0n,
-  //   enabled: isFpass && isRoot && withdrawLiquidityEnabled,
-  // });
+  const now = new Date().getTime();
+  const withdrawLiquidityEnabled =
+    !!myDepositBalance && myDepositBalance > 0n && depositedTime + lockupPeriod < now;
 
   const handleClick = () => {
     if (!isEmpty || bothConnected) return window.open(`${BASE_URL}/campaign/participate`, '_blank');
@@ -130,10 +126,6 @@ const _LayoutVoyage = () => {
     else if (!evm.isConnected) setWalletConnectorType({ network: NETWORK.THE_ROOT_NETWORK });
 
     open();
-  };
-
-  const handleWithdraw = () => {
-    console.log('withdraw');
   };
 
   useEffect(() => {
@@ -182,17 +174,30 @@ const _LayoutVoyage = () => {
             <CardWrapper>
               <TokenCard>
                 <TokenCardTitle>{t('My liquidity')}</TokenCardTitle>
-                <TokenList
-                  token="XRP"
-                  balance={amountFarmedInBPT}
-                  value={totalXrpValue}
-                  image={<IconTokenXrp width={36} height={36} />}
+                <TokenListVertical
+                  token="50ROOT-50XRP"
+                  balance={myDepositBalance}
+                  value={myDepositValue}
+                  convertedToken={pool?.compositions?.[1]}
+                  convertedBalance={myDepositInXrp}
+                  image={
+                    <BadgeWrapper style={{ width: 2 * 28 + 12 }}>
+                      {pool?.compositions?.map((token, idx) => {
+                        const { symbol, image } = token;
+                        return (
+                          <Badge key={symbol + idx} style={{ left: idx * 28 }}>
+                            <Image src={image} />
+                          </Badge>
+                        );
+                      })}
+                    </BadgeWrapper>
+                  }
                   button={
                     <ButtonPrimaryLarge
                       text={t('Withdraw')}
                       buttonType="outlined"
                       onClick={withdrawPopupOpen}
-                      // disabled={!isValidToWithdraw || isPrepareLoading || isPrepareError}
+                      disabled={!withdrawLiquidityEnabled}
                     />
                   }
                 />
@@ -200,7 +205,7 @@ const _LayoutVoyage = () => {
               <TokenCard col2>
                 <TokenCardTitle>{t('Rewards')}</TokenCardTitle>
                 <TokenListWrapper>
-                  <TokenList
+                  <TokenListVertical
                     token="veMOI"
                     balance={campaignReward}
                     image={<IconTokenMoai width={36} height={36} />}
@@ -213,7 +218,7 @@ const _LayoutVoyage = () => {
                       />
                     }
                   />
-                  <TokenList
+                  <TokenListVertical
                     token="ROOT"
                     balance={rootReward}
                     value={rootReward * rootPrice}
@@ -316,4 +321,16 @@ const TextWrapper = tw.div`
 
 const ButtonWrapper = tw.div`
   flex-center w-144
+`;
+
+const BadgeWrapper = tw.div`
+  flex inline-flex items-center relative h-40
+`;
+
+const Badge = tw.div`
+  w-40 h-40 absolute flex-center
+`;
+
+const Image = tw(LazyLoadImage)`
+  w-40 h-40 object-cover flex-center
 `;
