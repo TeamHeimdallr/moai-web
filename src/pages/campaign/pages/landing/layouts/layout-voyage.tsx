@@ -1,7 +1,8 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import Skeleton from 'react-loading-skeleton';
+import { intervalToDuration } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 
 import { useCampaignInfo } from '~/api/api-contract/_evm/campaign/campaign-info';
@@ -35,10 +36,21 @@ export const LayoutVoyage = () => (
   </Suspense>
 );
 
+interface RemainLockupTime {
+  hours: string;
+  minutes: string;
+  seconds: string;
+}
 const _LayoutVoyage = () => {
   const [hasPending2, setHasPending2] = useState(false); // for visibility change
   const { isEvm, selectedNetwork, isFpass } = useNetwork();
   const { xrp, evm, fpass } = useConnectedWallet();
+  const [now, setNow] = useState(new Date());
+  const [remainTime, setRemainTime] = useState<RemainLockupTime>({
+    hours: '00',
+    minutes: '00',
+    seconds: '00',
+  });
 
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
@@ -115,9 +127,15 @@ const _LayoutVoyage = () => {
 
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 
-  const now = new Date().getTime() / 1000;
+  const nowTime = now.getTime() / 1000;
   const withdrawLiquidityEnabled =
-    !!myDepositBalance && myDepositBalance > 0n && depositedTime + lockupPeriod < now;
+    !!myDepositBalance && myDepositBalance > 0n && depositedTime + lockupPeriod < nowTime;
+  const isLocked = depositedTime + lockupPeriod >= nowTime;
+
+  const lockupEndDate = useMemo(
+    () => new Date(1000 * (depositedTime + lockupPeriod) || new Date()),
+    [depositedTime, lockupPeriod]
+  );
 
   const handleClick = () => {
     if (!isEmpty || bothConnected) return window.open(`${BASE_URL}/campaign/participate`, '_blank');
@@ -151,6 +169,28 @@ const _LayoutVoyage = () => {
       document.removeEventListener('visibilitychange', listener);
     };
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setNow(now);
+
+      const duration = intervalToDuration({ start: now, end: lockupEndDate });
+      const { hours, minutes, seconds } = duration;
+
+      setRemainTime({
+        hours: (hours || 0).toString().padStart(2, '0'),
+        minutes: (minutes || 0).toString().padStart(2, '0'),
+        seconds: (seconds || 0).toString().padStart(2, '0'),
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [lockupEndDate]);
+
+  const withdrawButtonText = isLocked
+    ? `${t('Can withdraw after')} ${remainTime.hours}:${remainTime.minutes}:${remainTime.seconds}`
+    : t('Withdraw');
 
   return (
     <Wrapper>
@@ -194,7 +234,7 @@ const _LayoutVoyage = () => {
                   }
                   button={
                     <ButtonPrimaryLarge
-                      text={t('Withdraw')}
+                      text={withdrawButtonText}
                       buttonType="outlined"
                       onClick={withdrawPopupOpen}
                       disabled={!withdrawLiquidityEnabled}
