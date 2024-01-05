@@ -37,14 +37,18 @@ export const TokenListVertical = ({
         <Description>
           <Balance>{formatNumber(balance, 6)}</Balance>
           {/* compare value whether undefined or not, since value could be 0 */}
-          {value !== undefined && (
+          {
             <Value>
-              ${formatNumber(value, 2)}{' '}
-              {convertedBalance
-                ? `(≈${formatNumber(convertedBalance)} ${convertedToken?.symbol})`
-                : ''}
+              {value !== undefined && (
+                <>
+                  ${formatNumber(value, 2)}{' '}
+                  {convertedBalance
+                    ? `(≈${formatNumber(convertedBalance)} ${convertedToken?.symbol})`
+                    : ''}
+                </>
+              )}
             </Value>
-          )}
+          }
         </Description>
       </TokenWrapper>
       {button && <ButtonWrapper>{button}</ButtonWrapper>}
@@ -86,7 +90,7 @@ const Balance = tw.div`
   md:(font-m-20)
 `;
 const Value = tw.div`
-  text-neutral-80 font-r-12
+  text-neutral-80 font-r-12 h-22
   md:(font-r-14)
 `;
 const ButtonWrapper = tw.div``;
