@@ -279,6 +279,7 @@
   "Pre-mining $MOAI APY (3%)": "사전 채굴 $MOAI APY (3%)",
   "$ROOT reward (7%)": "$ROOT 리워드 (7%)",
   "Return to voyage page": "Voyage 화면으로 돌아가기",
+  "Can withdraw after": "남은 출금가능 시간",
 
   "Swap failed": "구매에 실패했습니다.",
   "swap-fail-message": "스왑에 실패했습니다. 다시 시도해주세요.",
