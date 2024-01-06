@@ -18,7 +18,7 @@ import { CAMPAIGN_ADDRESS, IS_MAINNET } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useAddLiquidityNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useCampaignClaimNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { NETWORK } from '~/types';
 
 import { CAMPAIGN_ABI } from '~/abi/campaign';
@@ -26,7 +26,7 @@ import { CAMPAIGN_ABI } from '~/abi/campaign';
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 export const useClaim = () => {
-  const { setError } = useAddLiquidityNetworkFeeErrorStore();
+  const { setError } = useCampaignClaimNetworkFeeErrorStore();
 
   const { data: walletClient } = useWalletClient();
 
@@ -110,7 +110,7 @@ export const useClaim = () => {
     }
   };
 
-  const addLiquidity = async () => {
+  const claim = async () => {
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
       rewardPercentiles: [25, 75],
@@ -211,7 +211,7 @@ export const useClaim = () => {
     txData: txData as any,
     blockTimestamp,
 
-    writeAsync: addLiquidity,
+    writeAsync: claim,
     estimateFee,
   };
 };

@@ -18,6 +18,16 @@ export const useAddLiquidityNetworkFeeErrorStore = create<State>()(
   )
 );
 
+export const useCampaignAddLiquidityNetworkFeeErrorStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'CAMPAIGN_ADD_LIQUIDITY_NETWORK_FEE_ERROR_STORE',
+      error: false,
+      setError: error => set({ error }),
+    }))
+  )
+);
+
 export const useWithdrawLiquidityNetworkFeeErrorStore = create<State>()(
   immer(
     logger(set => ({
@@ -42,6 +52,16 @@ export const useApproveNetworkFeeErrorStore = create<State>()(
   immer(
     logger(set => ({
       name: 'APPROVE_NETWORK_FEE_ERROR_STORE',
+      error: false,
+      setError: error => set({ error }),
+    }))
+  )
+);
+
+export const useCampaignClaimNetworkFeeErrorStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'CAMPAIGN_CLAIM_NETWORK_FEE_ERROR_STORE',
       error: false,
       setError: error => set({ error }),
     }))

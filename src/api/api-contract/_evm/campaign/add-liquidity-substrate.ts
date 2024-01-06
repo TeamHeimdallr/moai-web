@@ -18,7 +18,7 @@ import { CAMPAIGN_ADDRESS, IS_MAINNET } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useAddLiquidityNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useCampaignAddLiquidityNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { NETWORK } from '~/types';
 
 import { CAMPAIGN_ABI } from '~/abi/campaign';
@@ -30,7 +30,7 @@ interface Props {
   enabled?: boolean;
 }
 export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
-  const { setError } = useAddLiquidityNetworkFeeErrorStore();
+  const { setError } = useCampaignAddLiquidityNetworkFeeErrorStore();
 
   const { data: walletClient } = useWalletClient();
 
