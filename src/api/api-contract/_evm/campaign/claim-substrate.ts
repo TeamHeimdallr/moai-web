@@ -18,19 +18,15 @@ import { CAMPAIGN_ADDRESS, IS_MAINNET } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useCampaignAddLiquidityNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useCampaignClaimNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { NETWORK } from '~/types';
 
 import { CAMPAIGN_ABI } from '~/abi/campaign';
 
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
-interface Props {
-  xrpAmount: bigint; // formatted 6 decimal
-  enabled?: boolean;
-}
-export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
-  const { setError } = useCampaignAddLiquidityNetworkFeeErrorStore();
+export const useClaim = () => {
+  const { setError } = useCampaignClaimNetworkFeeErrorStore();
 
   const { data: walletClient } = useWalletClient();
 
@@ -71,8 +67,7 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
         isFpass && !!walletAddress && !!signer
           ? encodeFunctionData({
               abi: CAMPAIGN_ABI,
-              functionName: 'participate',
-              args: ['1', '0'],
+              functionName: 'claim',
             })
           : '0x0';
 
@@ -96,8 +91,7 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
       const evmGas = await publicClient.estimateContractGas({
         address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         abi: CAMPAIGN_ABI,
-        functionName: 'participate',
-        args: ['1', '0'],
+        functionName: 'claim',
         account: walletAddress as Address,
       });
 
@@ -116,13 +110,13 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
     }
   };
 
-  const addLiquidity = async () => {
+  const claim = async () => {
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
       rewardPercentiles: [25, 75],
     });
 
-    if (!isFpass || !enabled) return;
+    if (!isFpass) return;
 
     try {
       setIsLoading(true);
@@ -135,8 +129,7 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
         isFpass && !!walletAddress && !!signer
           ? encodeFunctionData({
               abi: CAMPAIGN_ABI,
-              functionName: 'participate',
-              args: [xrpAmount, '0'],
+              functionName: 'claim',
             })
           : '0x0';
 
@@ -218,12 +211,12 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
     txData: txData as any,
     blockTimestamp,
 
-    writeAsync: addLiquidity,
+    writeAsync: claim,
     estimateFee,
   };
 };
 
-export const useAddLiquidityPrepare = ({ xrpAmount, enabled }: Props) => {
+export const useClaimPrepare = () => {
   const { fpass } = useConnectedWallet();
   const { address: walletAddress } = fpass;
 
@@ -238,11 +231,10 @@ export const useAddLiquidityPrepare = ({ xrpAmount, enabled }: Props) => {
   } = usePrepareContractWrite({
     address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
     abi: CAMPAIGN_ABI,
-    functionName: 'participate',
+    functionName: 'claim',
 
     account: walletAddress as Address,
-    args: [xrpAmount, '0'],
-    enabled: enabled && isFpass && !!walletAddress,
+    enabled: isFpass && !!walletAddress,
   });
 
   const approveError = error?.message?.includes('Approved');

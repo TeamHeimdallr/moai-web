@@ -10,7 +10,8 @@ import { Footer } from '~/components/footer';
 import { Gnb } from '~/pages/campaign/components/gnb';
 
 import { usePopup } from '~/hooks/components';
-import { POPUP_ID } from '~/types';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { LayoutDescription } from './layouts/layout-description';
 import { LayoutDisclaimer } from './layouts/layout-disclaimer';
@@ -20,14 +21,21 @@ import { LayoutVoyage } from './layouts/layout-voyage';
 
 const LandingPage = () => {
   const { balance } = useCampaignRootBalance();
-  const { open, close } = usePopup(POPUP_ID.LACK_OF_ROOT);
 
+  const { selectNetwork } = useNetwork();
+  const { open, close } = usePopup(POPUP_ID.LACK_OF_ROOT);
   const criteria = IS_MAINNET ? balance < 1000 : balance < 10;
+
   useEffect(() => {
     if (criteria) open();
     else close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [criteria]);
+
+  useEffect(() => {
+    selectNetwork(NETWORK.THE_ROOT_NETWORK);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Wrapper>

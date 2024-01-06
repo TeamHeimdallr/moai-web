@@ -53,7 +53,7 @@ export const useConnectors = () => {
 
   const connectors = [
     {
-      name: 'Xumm Wallet',
+      name: 'Xaman Wallet',
       connectorName: ['xumm'],
       image: imageWalletXumm,
       network: [NETWORK.XRPL],

@@ -6,7 +6,13 @@ import { intervalToDuration } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 
 import { useCampaignInfo } from '~/api/api-contract/_evm/campaign/campaign-info';
+import { useClaim } from '~/api/api-contract/_evm/campaign/claim';
+import {
+  useClaim as useClaimSubstrate,
+  useClaimPrepare,
+} from '~/api/api-contract/_evm/campaign/claim-substrate';
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
@@ -43,6 +49,8 @@ interface RemainLockupTime {
 }
 const _LayoutVoyage = () => {
   const [hasPending2, setHasPending2] = useState(false); // for visibility change
+  const [estimatedClaimFee, setEstimatedClaimFee] = useState<number | undefined>();
+
   const { isEvm, selectedNetwork, isFpass } = useNetwork();
   const { xrp, evm, fpass } = useConnectedWallet();
   const [now, setNow] = useState(new Date());
@@ -58,6 +66,11 @@ const _LayoutVoyage = () => {
   const { t } = useTranslation();
 
   const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
+
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+
+  const userXrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const userXrpBalance = userXrp?.balance || 0;
 
   const { data: rewardInfoData } = useGetRewardsInfoQuery(
     {
@@ -75,6 +88,7 @@ const _LayoutVoyage = () => {
 
     rootReward,
     rootPrice,
+    refetch: userCampaignInfoRefetch,
   } = useUserCampaignInfo();
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
   const poolId = POOL_ID?.[NETWORK.THE_ROOT_NETWORK]?.ROOT_XRP;
@@ -98,6 +112,30 @@ const _LayoutVoyage = () => {
   const xrpToken = compositions?.[1];
   const xrpBalanceInPool = xrpToken?.balance || 0;
 
+  /* claim */
+  const claimEvm = useClaim();
+  const claimSubstrate = useClaimSubstrate();
+  const { isPrepareError: claimSubstratePrepareIsError, prepareError: claimSubstratePrepareError } =
+    useClaimPrepare();
+
+  const claim = isFpass ? claimSubstrate : claimEvm;
+  const {
+    isLoading: claimLoading,
+    isError: claimIsError,
+    isSuccess: claimIsSuccess,
+    txData: claimTxData,
+    error: claimError,
+    writeAsync,
+    estimateFee: estimateClaimFee,
+  } = claim;
+
+  const isErrorRaw = claimIsError || claimSubstratePrepareIsError;
+  const error = claimError || claimSubstratePrepareError;
+  const approveError = error?.message?.includes('Approved');
+  const isError = isErrorRaw && !approveError;
+  const claimGasError = userXrpBalance < (estimatedClaimFee || 0);
+
+  /* withdraw */
   const { opened: withdrawPopupOpened, open: withdrawPopupOpen } = usePopup(
     POPUP_ID.CAMPAIGN_WITHDRAW
   );
@@ -192,6 +230,21 @@ const _LayoutVoyage = () => {
     ? `${t('Can withdraw after')} ${remainTime.hours}:${remainTime.minutes}:${remainTime.seconds}`
     : t('Withdraw');
 
+  useEffect(() => {
+    const estimateFeeAsync = async () => {
+      const fee = await estimateClaimFee?.();
+      setEstimatedClaimFee(fee);
+    };
+
+    estimateFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNetwork]);
+
+  useEffect(() => {
+    if (claimIsSuccess && claimTxData) userCampaignInfoRefetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claimIsSuccess, claimTxData]);
+
   return (
     <Wrapper>
       <InnerWrapper>
@@ -265,9 +318,11 @@ const _LayoutVoyage = () => {
                     image={<IconTokenRoot width={36} height={36} />}
                     button={
                       <ButtonPrimaryLarge
-                        text={t('Claim')}
+                        text={claimGasError ? t('Not enough gas') : t('Claim')}
                         buttonType="outlined"
-                        onClick={() => console.log('claim')}
+                        isLoading={claimLoading}
+                        disabled={isError || !estimatedClaimFee || claimGasError}
+                        onClick={() => writeAsync()}
                       />
                     }
                   />
