@@ -34,7 +34,7 @@ import { CAMPAIGN_ADDRESS, POOL_ID, SCANNER_URL } from '~/constants';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
-import { InputNumber } from '~/components/inputs';
+import { Checkbox, InputNumber } from '~/components/inputs';
 import { List } from '~/components/lists';
 import { ButtonSkeleton } from '~/components/skeleton/button-skeleton';
 import { ListSkeleton } from '~/components/skeleton/list-skeleton';
@@ -58,8 +58,10 @@ export const LayoutStep4AddLiquidity = () => (
 
 const _AddLiquidity = () => {
   const navigate = useNavigate();
+
   const [inputValue, setInputValue] = useState<number>();
   const [inputValueRaw, setInputValueRaw] = useState<bigint>();
+  const [acceptLockup, setAcceptLockup] = useState<boolean>(false);
 
   const [estimatedAddLiquidityFee, setEstimatedAddLiquidityFee] = useState<number | undefined>();
   const [estimatedApproveFee, setEstimatedApproveFee] = useState<number | undefined>();
@@ -170,9 +172,10 @@ const _AddLiquidity = () => {
   }, [allowance, isIdle, addLiquidityLoading, isSuccess, t, xrp?.symbol]);
 
   const estimatedFee = allowance ? estimatedAddLiquidityFee : estimatedApproveFee;
-  const enoughBalance = xrpBalanceRaw > (inputValue || 0) + (estimatedFee || 0);
+  const enoughBalance = xrpBalance > (inputValue || 0) + (estimatedFee || 0);
 
-  const invalid = isError || !estimatedFee || !enoughBalance || (inputValueRaw || 0n) <= 0n;
+  const invalid =
+    isError || !estimatedFee || !enoughBalance || (inputValueRaw || 0n) <= 0n || !acceptLockup;
   const invalidWithLoading =
     invalid ||
     isLoading ||
@@ -395,6 +398,7 @@ const _AddLiquidity = () => {
             </TextWrapper>
             <GasCaption>{t('gas-price-caption')}</GasCaption>
           </TotalXrpWrapper>
+
           {reserveError && (
             <AlertMessage
               title={t('Lack of reserve')}
@@ -402,6 +406,20 @@ const _AddLiquidity = () => {
               type="warning"
             />
           )}
+          {!enoughBalance && (
+            <AlertMessage
+              title={t('Lack of gas fee')}
+              description={t('lack-of-gas-fee-message')}
+              type="warning"
+            />
+          )}
+          <CheckLockup>
+            <CheckboxWrapper>
+              <Checkbox onClick={() => setAcceptLockup(prev => !prev)} selected={acceptLockup} />
+            </CheckboxWrapper>
+            <CheckboxText>{t('accept-campaign-lockup')}</CheckboxText>
+          </CheckLockup>
+
           <ButtonPrimaryLarge
             text={buttonText}
             isLoading={addLiquidityLoading || allowLoading}
@@ -515,3 +533,9 @@ const LpTokenLeft = tw.div`
 const LpTokenRight = tw.div`
   absolute top-0 right-0 w-36 h-full rounded-full z-2
 `;
+
+const CheckLockup = tw.div`
+  flex gap-16 font-r-14 text-neutral-100
+`;
+const CheckboxWrapper = tw.div``;
+const CheckboxText = tw.div``;

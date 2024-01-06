@@ -312,5 +312,10 @@
   "lack-of-reserve-description": "Campaign Reserve is currently refilling. Please wait for Discord announcement.",
 
   "Potential risks": "Potential risks",
-  "Not enough gas": "Not enough gas"
+  "Not enough gas": "Not enough gas",
+
+  "accept-campaign-lockup": "I accept a 24h lockup period will be applied when adding liquidity through campaigns.",
+
+  "Lack of Gas Fee": "Lack of Gas Fee",
+  "lack-of-gas-fee-message": "Not enough balance for gas fee. Recommend leaving 10+ XRP for the gas fee."
 }
