@@ -75,7 +75,7 @@ export const useApprove = ({
     onError: () => setAllowance(false),
   });
 
-  const { isFetching: isPrepareLoading, config } = usePrepareContractWrite({
+  const { config } = usePrepareContractWrite({
     address: tokenAddress,
     abi: ERC20_TOKEN_ABI,
     functionName: 'approve',
@@ -124,7 +124,7 @@ export const useApprove = ({
   };
 
   return {
-    isLoading: isLoading || isReadLoading || isPrepareLoading || isTxLoading,
+    isLoading: isLoading || isReadLoading || isTxLoading,
     isSuccess,
     allowance:
       (isConnected && allowance) ||
