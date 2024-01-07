@@ -10,4 +10,5 @@ export interface ICampaign {
   endDate: Date;
 
   active: boolean;
+  activeMainpage: boolean;
 }
