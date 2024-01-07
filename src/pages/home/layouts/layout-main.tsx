@@ -1,7 +1,6 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Skeleton from 'react-loading-skeleton';
-import { differenceInSeconds } from 'date-fns';
 import { isEqual } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
@@ -74,12 +73,8 @@ const _MainLayout = () => {
   );
   const campaigns = campaignData?.campaigns || [];
 
-  const now = new Date();
-
   const campaignXrplRoot = campaigns.find(item => item.name === 'campaign-xrpl-root');
-  const showCampaignBanner = campaignXrplRoot
-    ? differenceInSeconds(new Date(campaignXrplRoot?.endDate), now) > 0
-    : false;
+  const showCampaignBanner = campaignXrplRoot?.active && campaignXrplRoot?.activeMainpage;
 
   const { mutateAsync } = useGetMyPoolsQuery({
     queries: {
