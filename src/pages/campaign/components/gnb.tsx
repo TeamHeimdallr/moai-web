@@ -8,7 +8,6 @@ import { Account } from '~/components/account';
 import { AlertBanner } from '~/components/alerts/banner';
 import { ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { LanguageChange } from '~/components/language-change';
-import { Notification } from '~/components/notification';
 
 import { usePopup } from '~/hooks/components/use-popup';
 import { useMediaQuery } from '~/hooks/utils';
@@ -41,7 +40,7 @@ export const Gnb = () => {
         <ButtonWrapper>
           {evm.address || xrp.address ? (
             <ConnectedButton>
-              <Notification />
+              {/* <Notification /> */}
               <Account />
             </ConnectedButton>
           ) : (

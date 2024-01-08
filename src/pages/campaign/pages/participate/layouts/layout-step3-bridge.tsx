@@ -77,6 +77,7 @@ const _Bridge = () => {
   const {
     isLoading,
     isSuccess: bridgeSuccess,
+    isError,
     txData,
     blockTimestamp,
     reset,
@@ -88,7 +89,7 @@ const _Bridge = () => {
   });
 
   const txDate = new Date(blockTimestamp || 0);
-  const isIdle = !txData;
+  const isIdle = !txData && !isError && !bridgeSuccess;
   const isSuccess = bridgeSuccess && !!txData;
 
   const toTokenActualAmount = Number(
@@ -147,7 +148,7 @@ const _Bridge = () => {
           </SuccessBottomWrapper>
         </SuccessWrapper>
       )}
-      {!isIdle && !isSuccess && (
+      {!isIdle && isError && (
         <FailedWrapper>
           <FailedInnerWrapper>
             <FailedIconWrapper>
@@ -303,7 +304,7 @@ const ClickableIcon = styled.div(() => [
   `,
 ]);
 const FailedWrapper = tw.div`
-  flex-center flex-col gap-40 pt-40 pb-24 px-24 bg-neutral-10 rounded-12
+  w-full flex-center flex-col gap-40 pt-40 pb-24 px-24 bg-neutral-10 rounded-12
 `;
 
 const FailedInnerWrapper = tw.div`
