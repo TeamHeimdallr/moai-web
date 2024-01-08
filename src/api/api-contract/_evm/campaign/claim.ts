@@ -19,8 +19,12 @@ import { NETWORK } from '~/types';
 
 import { CAMPAIGN_ABI } from '~/abi/campaign';
 
+import { useUserCampaignInfo } from './user-campaign-info.ts';
+
 export const useClaim = () => {
   const publicClient = usePublicClient();
+
+  const { rootReward } = useUserCampaignInfo();
 
   const { network } = useParams();
   const { evm } = useConnectedWallet();
@@ -42,7 +46,7 @@ export const useClaim = () => {
     functionName: 'claim',
 
     account: walletAddress as Address,
-    enabled: isConnected && isEvm && !isFpass && !!walletAddress,
+    enabled: isConnected && isEvm && !isFpass && !!walletAddress && rootReward > 0,
   });
 
   const {
@@ -75,7 +79,7 @@ export const useClaim = () => {
   };
 
   const getEstimatedGas = async () => {
-    if (!isEvm || isFpass || !walletAddress) return;
+    if (!isEvm || isFpass || !walletAddress || rootReward <= 0) return;
 
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,

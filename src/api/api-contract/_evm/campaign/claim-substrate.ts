@@ -23,12 +23,15 @@ import { NETWORK } from '~/types';
 
 import { CAMPAIGN_ABI } from '~/abi/campaign';
 
+import { useUserCampaignInfo } from './user-campaign-info.ts';
+
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 export const useClaim = () => {
   const { setError } = useCampaignClaimNetworkFeeErrorStore();
 
   const { data: walletClient } = useWalletClient();
+  const { rootReward } = useUserCampaignInfo();
 
   const { fpass } = useConnectedWallet();
   const { address: walletAddress, signer } = fpass;
@@ -51,7 +54,7 @@ export const useClaim = () => {
     setTxData(undefined);
   };
   const estimateFee = async () => {
-    if (!isFpass) return;
+    if (!isFpass || rootReward <= 0) return;
 
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
@@ -222,6 +225,8 @@ export const useClaimPrepare = () => {
 
   const { isFpass } = useNetwork();
 
+  const { rootReward } = useUserCampaignInfo();
+
   /* call prepare hook for check evm tx success */
   const {
     isFetching: isPrepareLoading,
@@ -234,7 +239,7 @@ export const useClaimPrepare = () => {
     functionName: 'claim',
 
     account: walletAddress as Address,
-    enabled: isFpass && !!walletAddress,
+    enabled: isFpass && !!walletAddress && rootReward > 0,
   });
 
   const approveError = error?.message?.includes('Approved');
