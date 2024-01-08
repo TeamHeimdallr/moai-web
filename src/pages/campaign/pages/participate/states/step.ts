@@ -19,12 +19,14 @@ interface Base {
   evmConnectorIdx: number;
 
   lastUpdatedAt: Date;
+  lastSuccessAt: Date;
 }
 interface State extends Base {
   setStep: (step: number) => void;
   setStepStatus: (step: Step, i: number) => void;
   setStepStatuses: (step: Step[]) => void;
   setLastUpdatedAt: (date: Date) => void;
+  setLastSuccessAt: (date: Date) => void;
 
   setEvmWallet: (wallet: 'evm' | 'fpass' | undefined) => void;
 
@@ -37,6 +39,7 @@ interface State extends Base {
 const initialStepStatus = Array.from({ length: 4 }).map(
   (_, i) => ({ id: i + 1, status: 'idle' }) as Step
 );
+const now = new Date();
 export const useCampaignStepStore = create<State>()(
   persist(
     immer(
@@ -51,7 +54,8 @@ export const useCampaignStepStore = create<State>()(
         xrpConnectorIdx: -1,
         evmConnectorIdx: -1,
 
-        lastUpdatedAt: new Date(),
+        lastUpdatedAt: now,
+        lastSuccessAt: now,
 
         setStep: (step: number) => set({ step }),
         setStepStatus: (stepStatus: Step, i: number) =>
@@ -67,6 +71,7 @@ export const useCampaignStepStore = create<State>()(
         setEvmConnectorIdx: (evmConnectorIdx: number) => set({ evmConnectorIdx }),
 
         setLastUpdatedAt: (date: Date) => set({ lastUpdatedAt: date }),
+        setLastSuccessAt: (date: Date) => set({ lastSuccessAt: date }),
 
         reset: () => set({ step: 1, stepStatus: initialStepStatus }),
       }))

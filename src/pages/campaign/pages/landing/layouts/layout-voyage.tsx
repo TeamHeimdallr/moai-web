@@ -2,7 +2,8 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import Skeleton from 'react-loading-skeleton';
-import { intervalToDuration } from 'date-fns';
+import { differenceInSeconds, intervalToDuration } from 'date-fns';
+import { debounce } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
 import { useCampaignInfo } from '~/api/api-contract/_evm/campaign/campaign-info';
@@ -145,8 +146,11 @@ const _LayoutVoyage = () => {
     id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
   });
 
-  const { step, stepStatus } = useCampaignStepStore();
-  const hasPending = step >= 1 && stepStatus.some(s => s.status === 'done');
+  const { step, stepStatus, lastSuccessAt, lastUpdatedAt } = useCampaignStepStore();
+  const hasPending =
+    step >= 1 &&
+    stepStatus.some(s => s.status === 'done') &&
+    differenceInSeconds(new Date(lastSuccessAt), new Date(lastUpdatedAt)) <= 0;
 
   const { lockupPeriod } = useCampaignInfo();
 
@@ -155,7 +159,6 @@ const _LayoutVoyage = () => {
 
   const myDepositInXrp = 2 * (myDepositBalance / lpTokenTotalSupply) * xrpBalanceInPool;
 
-  // TODO: handle fpass
   const bothConnected = xrp.isConnected && evm.isConnected;
   const isEmpty = !(bothConnected && amountFarmedInBPT > 0);
 
@@ -231,14 +234,16 @@ const _LayoutVoyage = () => {
     : t('Withdraw');
 
   useEffect(() => {
-    const estimateFeeAsync = async () => {
+    if (estimatedClaimFee) return;
+
+    const estimateFeeAsync = debounce(async () => {
       const fee = await estimateClaimFee?.();
       setEstimatedClaimFee(fee);
-    };
+    }, 1000);
 
     estimateFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedNetwork]);
+  }, [isEvm, isFpass, walletAddress, rootReward, estimatedClaimFee]);
 
   useEffect(() => {
     if (claimIsSuccess && claimTxData) userCampaignInfoRefetch();
