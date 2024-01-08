@@ -1,15 +1,37 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
+
+import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 
 import { Step } from './components/step';
 import { StepTitle } from './components/step-title';
-import { useStep } from './hooks/use-step';
+import { useResetStep, useStep } from './hooks/use-step';
 import { LayoutStep1WalletconnectXrp } from './layouts/layout-step1-wallet-connect-xrp';
 import { LayoutStep2WalletconnectEvm } from './layouts/layout-step2-wallet-connect-evm';
 import { LayoutStep3Bridge } from './layouts/layout-step3-bridge';
 import { LayoutStep4AddLiquidity } from './layouts/layout-step4-add-liquidity';
 
 const ParticipatePage = () => {
+  useResetStep();
+
   const { step } = useStep();
+  const navigate = useNavigate();
+
+  const { data: campaignData } = useGetCampaignsQuery(
+    { queries: { filter: `active:eq:true:boolean` } },
+    { staleTime: 5 * 60 * 1000 }
+  );
+  const campaigns = campaignData?.campaigns || [];
+  const campaignXrplRoot = campaigns.find(item => item.name === 'campaign-xrpl-root');
+  const active = campaignXrplRoot?.active;
+
+  useEffect(() => {
+    if (active === false) {
+      navigate('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   return (
     <Wrapper>

@@ -181,7 +181,7 @@ export const useConnectedXrplWallet = () => {
                     })
                     .catch(() => {
                       close();
-                      resolve(e.data);
+                      reject(e.data);
                     });
                 }
               )

@@ -34,7 +34,7 @@ export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) =>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitTx = async () => await xrp.submitTransaction(txRequest as any);
 
-  const { data, isLoading, isSuccess, mutateAsync, reset } = useMutation(
+  const { data, isLoading, isSuccess, isError, mutateAsync, reset } = useMutation(
     ['XRPL', 'BRIDGE', 'XRP'],
     submitTx
   );
@@ -70,7 +70,7 @@ export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) =>
   return {
     isLoading,
     isSuccess,
-    isError: !address,
+    isError,
 
     txData,
     blockTimestamp,

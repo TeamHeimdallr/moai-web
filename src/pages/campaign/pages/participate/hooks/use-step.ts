@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { useConnectedWallet } from '~/hooks/wallets';
 import { useSelecteNetworkStore } from '~/states/data';
@@ -100,6 +101,7 @@ export const useStep = () => {
 export const useResetStep = () => {
   const { step, evmWallet, stepStatus, setStep, setStepStatuses, setLastUpdatedAt } =
     useCampaignStepStore();
+  const { pathname } = useLocation();
 
   const { selectNetwork } = useSelecteNetworkStore();
   const { evm, xrp } = useConnectedWallet();
@@ -109,6 +111,8 @@ export const useResetStep = () => {
   const stepStatus3 = stepStatus[2];
 
   useEffect(() => {
+    if (!pathname.includes('/participate')) return;
+
     if (!xrp.address) {
       setStep(1);
       setStepStatuses([
@@ -181,6 +185,7 @@ export const useResetStep = () => {
     setLastUpdatedAt(new Date());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    pathname,
     evm.address,
     xrp.address,
     evmWallet,
@@ -190,6 +195,8 @@ export const useResetStep = () => {
   ]);
 
   useEffect(() => {
+    if (!pathname.includes('/participate')) return;
+
     if (step === 3) {
       selectNetwork(NETWORK.XRPL);
       return;
@@ -200,5 +207,5 @@ export const useResetStep = () => {
       return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+  }, [step, pathname]);
 };
