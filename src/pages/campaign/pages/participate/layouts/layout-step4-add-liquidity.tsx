@@ -42,6 +42,7 @@ import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber } from '~/utils';
 import { NETWORK } from '~/types';
 
@@ -66,12 +67,14 @@ const _AddLiquidity = () => {
   const [estimatedAddLiquidityFee, setEstimatedAddLiquidityFee] = useState<number | undefined>();
   const [estimatedApproveFee, setEstimatedApproveFee] = useState<number | undefined>();
 
-  const { setStepStatus } = useCampaignStepStore();
+  const { setStepStatus, setLastSuccessAt, reset: resetStep } = useCampaignStepStore();
 
   const { t } = useTranslation();
 
-  const { selectedNetwork, isFpass } = useNetwork();
+  const { evm, fpass } = useConnectedWallet();
+  const { isEvm, selectedNetwork, isFpass } = useNetwork();
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
+  const walletAddress = isFpass ? fpass?.address : evm?.address;
 
   const {
     lpTokenPrice,
@@ -196,6 +199,13 @@ const _AddLiquidity = () => {
     window.open(url);
   };
 
+  const handleSuccess = () => {
+    setLastSuccessAt(new Date());
+    resetStep();
+
+    navigate('/campaign');
+  };
+
   useEffect(() => {
     if (allowSuccess || inputValueRaw) refetchAllowance();
   }, [allowSuccess, inputValueRaw, refetchAllowance]);
@@ -216,14 +226,14 @@ const _AddLiquidity = () => {
   }, [xrp?.address, selectedNetwork]);
 
   useEffect(() => {
-    const estimateFeeAsync = async () => {
+    const estimateFeeAsync = debounce(async () => {
       const fee = await estimateAddLiquidityFee?.();
       setEstimatedAddLiquidityFee(fee);
-    };
+    }, 1000);
 
     estimateFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedNetwork]);
+  }, [isEvm, isFpass, walletAddress]);
 
   useEffect(() => {
     if (addLiquidityLoading) setStepStatus({ id: 4, status: 'loading' }, 3);
@@ -302,7 +312,7 @@ const _AddLiquidity = () => {
               <ButtonPrimaryLarge
                 text={t('Return to voyage page')}
                 buttonType="outlined"
-                onClick={() => navigate('/campaign')}
+                onClick={handleSuccess}
               />
             </SuccessBottomWrapper>
           </SuccessWrapper>
@@ -329,7 +339,7 @@ const _AddLiquidity = () => {
             <ButtonPrimaryLarge
               text={t('Try again')}
               buttonType="outlined"
-              onClick={() => navigate('/campaign')}
+              onClick={() => reset()}
             />
           </SuccessWrapper>
         </>

@@ -135,6 +135,7 @@ export const useResetStep = () => {
             { id: 4, status: 'idle' },
           ]);
           setStep(3);
+          setLastUpdatedAt(new Date());
         } else {
           setStepStatuses([
             { id: 1, status: 'done' },
@@ -143,6 +144,7 @@ export const useResetStep = () => {
             { id: 4, status: 'idle' },
           ]);
           setStep(2);
+          setLastUpdatedAt(new Date());
         }
       } else {
         setStep(1);
@@ -152,6 +154,7 @@ export const useResetStep = () => {
           { id: 3, status: 'idle' },
           { id: 4, status: 'idle' },
         ]);
+        setLastUpdatedAt(new Date());
       }
     } else {
       if (xrp.address) {
@@ -162,6 +165,7 @@ export const useResetStep = () => {
           { id: 4, status: 'idle' },
         ]);
         setStep(2);
+        setLastUpdatedAt(new Date());
       } else {
         setStep(1);
         setStepStatuses([
@@ -170,6 +174,7 @@ export const useResetStep = () => {
           { id: 3, status: 'idle' },
           { id: 4, status: 'idle' },
         ]);
+        setLastUpdatedAt(new Date());
       }
     }
     if (xrp.address && evm.address && stepStatus3.status === 'done') {
@@ -180,9 +185,9 @@ export const useResetStep = () => {
         { id: 4, status: 'idle' },
       ]);
       setStep(4);
+      setLastUpdatedAt(new Date());
     }
 
-    setLastUpdatedAt(new Date());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     pathname,

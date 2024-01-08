@@ -69,7 +69,7 @@ export const useWithdrawLiquidity = ({ bptIn, enabled }: Props) => {
   });
 
   const getBlockTimestamp = async () => {
-    if (!txData || !txData.blockNumber || !isFpass) return;
+    if (!txData || !txData.blockNumber || isFpass) return;
 
     const { timestamp } = await publicClient.getBlock({ blockNumber: txData.blockNumber });
     setBlockTimestamp(Number(timestamp) * 1000);
