@@ -326,7 +326,7 @@ const _LayoutVoyage = () => {
                         text={claimGasError ? t('Not enough gas') : t('Claim')}
                         buttonType="outlined"
                         isLoading={claimLoading}
-                        disabled={isError || !estimatedClaimFee || claimGasError}
+                        disabled={isError || !estimatedClaimFee || claimGasError || rootReward <= 0}
                         onClick={() => writeAsync()}
                       />
                     }
