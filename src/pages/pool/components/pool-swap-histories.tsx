@@ -10,9 +10,14 @@ import { TableMobile } from '~/components/tables/table-mobile';
 
 import { useTableSwapHistories } from '~/pages/pool/hooks/components/table/use-table-swap-histories';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useMediaQuery } from '~/hooks/utils';
 
 export const PoolSwapHistories = () => {
+  const { ref } = useGAInView({ name: 'pool-detail-swap-histories' });
+  const { gaAction } = useGAAction();
+
   const [opened, open] = useState(false);
 
   const {
@@ -28,8 +33,16 @@ export const PoolSwapHistories = () => {
   const { t } = useTranslation();
 
   return (
-    <Wrapper opened={opened}>
-      <TitleWrapper onClick={() => open(prev => !prev)}>
+    <Wrapper opened={opened} ref={ref}>
+      <TitleWrapper
+        onClick={() => {
+          gaAction({
+            action: 'pool-detail-swap-histories-open',
+            data: { page: 'pool-detail', component: 'swap-histories', open: !opened },
+          });
+          open(prev => !prev);
+        }}
+      >
         <Title>{t('Swaps')}</Title>
         <Icon opened={opened}>
           <ButtonIconLarge icon={<IconDown />} />
@@ -44,7 +57,7 @@ export const PoolSwapHistories = () => {
               ratio={[2, 3, 2, 2]}
               type="lighter"
               hasMore={hasNextPage}
-              handleMoreClick={() => fetchNextPage()}
+              handleMoreClick={fetchNextPage}
             />
           ) : (
             <TableMobile

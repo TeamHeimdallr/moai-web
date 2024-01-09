@@ -13,6 +13,7 @@ import { ASSET_URL } from '~/constants';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { usePrevious } from '~/hooks/utils';
@@ -30,6 +31,7 @@ export const MainLayout = () => (
 );
 
 const _MainLayout = () => {
+  const { ref } = useGAInView({ name: 'home-layout-main' });
   const { gaAction } = useGAAction();
 
   const [totalValue, setTotalValue] = useState<string>('0');
@@ -116,7 +118,7 @@ const _MainLayout = () => {
     return <LayoutMainCampaign />;
   }
   return (
-    <MainWrapper banner={!!openedBanner}>
+    <MainWrapper banner={!!openedBanner} ref={ref}>
       {isConnected ? (
         <SubTitleWrapper>
           <Label>{t('My Liquidity Value')}</Label>

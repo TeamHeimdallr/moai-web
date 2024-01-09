@@ -14,6 +14,7 @@ import { BASE_URL } from '~/constants';
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useMediaQuery } from '~/hooks/utils';
 import { POPUP_ID } from '~/types';
@@ -25,6 +26,7 @@ interface RemainTime {
   seconds: string;
 }
 export const LayoutMainCampaign = () => {
+  const { ref } = useGAInView({ name: 'home-layout-campaign-main' });
   const { gaAction } = useGAAction();
 
   const [now, setNow] = useState(new Date());
@@ -74,7 +76,7 @@ export const LayoutMainCampaign = () => {
   }, [campaignStartDate]);
 
   return (
-    <MainWrapper banner={!!openedBanner}>
+    <MainWrapper ref={ref} banner={!!openedBanner}>
       <ContentWrapper>
         <ComingSoon>{t('Coming soon')}</ComingSoon>
         <TitleWrapper>

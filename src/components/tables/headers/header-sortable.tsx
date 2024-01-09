@@ -5,6 +5,7 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconArrowUp } from '~/assets/icons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { toggleTableSorting } from '~/utils/util-table';
 import { ITableSort } from '~/types';
 
@@ -14,6 +15,8 @@ interface TableHeaderSortableProps extends HTMLAttributes<HTMLDivElement> {
   sortKey: string;
   sort?: ITableSort;
   setSort?: (sorting: ITableSort) => void;
+
+  tableKey?: string;
 }
 export const TableHeaderSortable = ({
   label,
@@ -22,8 +25,11 @@ export const TableHeaderSortable = ({
   sort,
   setSort,
 
+  tableKey,
   ...rest
 }: TableHeaderSortableProps) => {
+  const { gaAction } = useGAAction();
+
   const icon =
     sort?.order === 'asc' ? (
       <IconArrowUp width={16} height={16} />
@@ -36,7 +42,19 @@ export const TableHeaderSortable = ({
   return (
     <SelectableHeaderText
       selected={sort?.key === sortKey}
-      onClick={() => setSort?.(toggleTableSorting({ order: sort?.order ?? 'asc', key: sortKey }))}
+      onClick={() => {
+        gaAction({
+          action: 'table-header-sort',
+          data: {
+            component: 'header-sortable',
+            table: tableKey,
+            sort: sortKey,
+            order: sort?.order,
+            label,
+          },
+        });
+        setSort?.(toggleTableSorting({ order: sort?.order ?? 'asc', key: sortKey }));
+      }}
       {...rest}
     >
       {t(label)}

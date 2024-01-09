@@ -11,6 +11,8 @@ import { COLOR } from '~/assets/colors';
 
 import { ButtonChipSmall } from '~/components/buttons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { formatFloat, formatNumber, formatNumberWithUnit } from '~/utils';
 import {
   usePoolInfoChartSelectedRangeStore,
@@ -18,6 +20,9 @@ import {
 } from '~/states/components/chart/tab';
 
 export const PoolInfoChart = () => {
+  const { ref } = useGAInView({ name: 'pool-detail-info-chart' });
+  const { gaAction } = useGAAction();
+
   const { network, id } = useParams();
   const { t } = useTranslation();
 
@@ -70,14 +75,20 @@ export const PoolInfoChart = () => {
       : t(`days ${selectedTab}`, { days: upperFirst(selectedRange) });
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <Header>
         <HeaderTitleWrapper>
           {tabs.map(tab => (
             <HeaderTitle
               key={tab.key}
               selected={selectedTab === tab.key}
-              onClick={() => selectTab(tab.key)}
+              onClick={() => {
+                gaAction({
+                  action: 'pool-detail-chart-tab',
+                  data: { page: 'pool-detail', component: 'pool-info-chart', tab: tab.key },
+                });
+                selectTab(tab.key);
+              }}
             >
               {t(tab.name || 'Volume')}
             </HeaderTitle>
@@ -190,7 +201,14 @@ export const PoolInfoChart = () => {
               key={range.key}
               text={range.name}
               selected={selectedRange === range.key}
-              onClick={() => selectRange(range.key)}
+              onClick={() => {
+                gaAction({
+                  action: 'pool-detail-chart-range',
+                  buttonType: 'chip-small',
+                  data: { page: 'pool-detail', component: 'pool-info-chart', range: range.key },
+                });
+                selectRange(range.key);
+              }}
             />
           ))}
         </ChartRangeWrapper>

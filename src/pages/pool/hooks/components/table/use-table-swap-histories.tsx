@@ -116,6 +116,7 @@ export const useTableSwapHistories = () => {
                 <TableColumnLink
                   token={translatedTime}
                   align="flex-end"
+                  tableKey="swap-histories"
                   link={`${SCANNER_URL[currentNetwork]}/${
                     isXrp ? 'transactions' : isRoot ? 'extrinsic' : 'tx'
                   }/${d.txHash}`}
@@ -148,6 +149,7 @@ export const useTableSwapHistories = () => {
             label="Value"
             sort={sort}
             setSort={setSort}
+            tableKey="swap-histories"
           />
         ),
         cell: row => row.renderValue(),
@@ -155,7 +157,13 @@ export const useTableSwapHistories = () => {
       },
       {
         header: () => (
-          <TableHeaderSortable sortKey="time" label="Time" sort={sort} setSort={setSort} />
+          <TableHeaderSortable
+            sortKey="time"
+            label="Time"
+            sort={sort}
+            setSort={setSort}
+            tableKey="swap-histories"
+          />
         ),
         cell: row => row.renderValue(),
         accessorKey: 'time',
@@ -220,6 +228,7 @@ export const useTableSwapHistories = () => {
                 <TableColumnLink
                   token={translatedTime}
                   align="flex-end"
+                  tableKey="swap-histories"
                   link={`${SCANNER_URL[currentNetwork]}/${
                     isXrp ? 'transactions' : isRoot ? 'extrinsic' : 'tx'
                   }/${d.txHash}`}
@@ -233,7 +242,15 @@ export const useTableSwapHistories = () => {
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
-    () => <TableHeaderSortable sortKey="time" label="Time" sort={sort} setSort={setSort} />,
+    () => (
+      <TableHeaderSortable
+        sortKey="time"
+        label="Time"
+        sort={sort}
+        setSort={setSort}
+        tableKey="swap-histories"
+      />
+    ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sort]
   );

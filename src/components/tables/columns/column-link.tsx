@@ -5,15 +5,26 @@ import { IconLink } from '~/assets/icons';
 
 import { ButtonIconSmall } from '~/components/buttons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
+
+  tableKey?: string;
   link?: string;
 
   align?: 'flex-start' | 'center' | 'flex-end';
 }
-export const TableColumnLink = ({ token, link, align, ...rest }: Props) => {
+export const TableColumnLink = ({ token, link, align, tableKey, ...rest }: Props) => {
+  const { gaAction } = useGAAction();
+
   const handleClick = () => {
     if (!link) return;
+
+    gaAction({
+      action: 'table-column-link',
+      data: { component: 'column-link', link, table: tableKey },
+    });
     window.open(link);
   };
 

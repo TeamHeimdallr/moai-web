@@ -9,6 +9,7 @@ import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
@@ -30,6 +31,7 @@ export const MyLiquidityLayout = () => (
 );
 
 const _MyLiquidityLayout = () => {
+  const { ref } = useGAInView({ name: 'home-layout-liquidity-pool-my' });
   const { gaAction } = useGAAction();
 
   const {
@@ -65,7 +67,7 @@ const _MyLiquidityLayout = () => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <TitleWrapper>
         <Title>{t('My liquidity in Moai pools')}</Title>
       </TitleWrapper>

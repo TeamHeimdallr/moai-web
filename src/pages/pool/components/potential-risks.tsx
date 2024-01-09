@@ -1,16 +1,28 @@
 import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
+
 export const PotentialRisks = () => {
+  const { ref } = useGAInView({ name: 'pool-detail-potential-risk' });
+  const { gaAction } = useGAAction();
+
   const { t, i18n } = useTranslation();
   const { language } = i18n;
 
   const handleClick = () => {
-    window.open('https://docs.moai-finance.xyz/protocol-risks/protocol-risks');
+    const link = 'https://docs.moai-finance.xyz/protocol-risks/protocol-risks';
+    gaAction({
+      action: 'pool-detail-potential-risk',
+      data: { page: 'pool-detail', component: 'potential-risk', link },
+    });
+
+    window.open(link);
   };
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <Title>{t('Potential risks')}</Title>
       <Content>
         {language === 'en' ? (

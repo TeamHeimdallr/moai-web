@@ -4,10 +4,14 @@ import tw from 'twin.macro';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
+
 import { PoolCompositionsChart } from './pool-compositions-chart';
 import { TokenCompositionLabel } from './pool-compositions-label';
 
 export const PoolCompositions = () => {
+  const { ref } = useGAInView({ name: 'pool-detail-composition' });
+
   const { network, id } = useParams();
   const { t } = useTranslation();
 
@@ -29,7 +33,7 @@ export const PoolCompositions = () => {
   const { compositions } = pool || {};
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <Title>{t('Pool composition')}</Title>
       {compositions && (
         <ContentsWrapper>

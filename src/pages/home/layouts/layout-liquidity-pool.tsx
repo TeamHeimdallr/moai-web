@@ -12,6 +12,7 @@ import { TableMobile } from '~/components/tables/table-mobile';
 import { Toggle } from '~/components/toggle';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
@@ -34,6 +35,7 @@ export const LiquidityPoolLayout = () => (
   </Suspense>
 );
 const _LiquidityPoolLayout = () => {
+  const { ref } = useGAInView({ name: 'home-layout-liquidity-pool' });
   const { gaAction } = useGAAction();
 
   const isMounted = useRef(false);
@@ -124,7 +126,7 @@ const _LiquidityPoolLayout = () => {
   }, [showAllPools]);
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       {showToastPopup && (
         <ToastPopup>
           <ToastPopupText>{t('show-all-pools-message', { network: network })}</ToastPopupText>
