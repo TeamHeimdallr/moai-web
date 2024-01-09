@@ -43,3 +43,9 @@ const XRPL_BRIDGE_ADDRESS_MAINNET = import.meta.env.VITE_XRPL_BRIDGE_ADDRESS_MAI
 export const XRPL_BRIDGE_ADDRESS = IS_MAINNET
   ? XRPL_BRIDGE_ADDRESS_MAINNET
   : XRPL_BRIDGE_ADDRESS_PORCINI;
+
+export const GA_MAINNET = import.meta.env.VITE_GA_MAINNET;
+export const GA_DEVNET = import.meta.env.VITE_GA_DEVNET;
+
+export const GTM_MAINNET = import.meta.env.VITE_GTM_MAINNET;
+export const GTM_DEVNET = import.meta.env.VITE_GTM_DEVNET;

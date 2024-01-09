@@ -6,6 +6,7 @@ import { IS_LANDING } from '~/constants';
 import { ConnectWallet } from '~/components/connect-wallet';
 import XummQrPopup from '~/components/popup/xumm-qr';
 
+import { useGARouteChange } from '~/hooks/analaystics/ga-route-change';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
 import { useXummWalletClient } from '~/hooks/wallets/use-xumm-wallet-client';
@@ -19,6 +20,7 @@ import Rewards from './rewards';
 import Swap from './swap';
 
 const Page = () => {
+  useGARouteChange();
   useConnectXrpl();
   useXummWalletClient();
 

@@ -14,6 +14,7 @@ import { TableSkeleton } from '~/components/skeleton/table-skeleton';
 import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 
+import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -33,6 +34,8 @@ const RewardsPage = () => {
 };
 
 const _RewardsPage = () => {
+  useGAPage();
+
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();

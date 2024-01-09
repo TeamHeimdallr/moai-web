@@ -9,6 +9,7 @@ import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 import { AlertBanner } from '~/components/alerts/banner';
 import { ButtonPrimarySmallBlack } from '~/components/buttons';
 
+import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useSwitchAndAddNetwork } from '~/hooks/wallets/use-add-network';
 import { NETWORK } from '~/types';
@@ -24,6 +25,7 @@ import { LayoutStep3Bridge } from './layouts/layout-step3-bridge';
 import { LayoutStep4AddLiquidity } from './layouts/layout-step4-add-liquidity';
 
 const ParticipatePage = () => {
+  useGAPage();
   useResetStep();
 
   const { step } = useStep();

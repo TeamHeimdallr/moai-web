@@ -4,12 +4,15 @@ import tw, { css, styled } from 'twin.macro';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { POPUP_ID } from '~/types';
 
 import { SwapInputGroup } from './components/swap-input-group';
 
 const SwapPage = () => {
+  useGAPage();
+
   const { t } = useTranslation();
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
 
