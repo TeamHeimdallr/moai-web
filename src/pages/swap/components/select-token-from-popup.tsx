@@ -12,6 +12,8 @@ import { Popup } from '~/components/popup';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -24,6 +26,9 @@ interface Props {
   tokenPrice: number;
 }
 export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props) => {
+  const { ref } = useGAInView({ name: 'swap-from-token-popup' });
+  const { gaAction } = useGAAction();
+
   const queryClient = useQueryClient();
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
@@ -66,6 +71,11 @@ export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props
     });
     queryClient.invalidateQueries(recentlySelectedTokensQueryKey);
 
+    gaAction({
+      action: 'recent-selected-token',
+      data: { page: 'swap', type: 'from', token: token.symbol },
+    });
+
     setFromToken(token);
     close();
   };
@@ -76,7 +86,7 @@ export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props
       title={t('Select token')}
       style={{ backgroundColor: COLOR.NEUTRAL[10] }}
     >
-      <Wrapper>
+      <Wrapper ref={ref}>
         <ContentContainer>
           <Tokens>
             {recentlySelectedTokens?.map(token => (
@@ -107,7 +117,13 @@ export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props
                       : '0'
                   }`}
                   selected={fromToken?.symbol === token.symbol}
-                  onClick={() => handleSelect(token)}
+                  onClick={() => {
+                    gaAction({
+                      action: 'select-from-token',
+                      data: { page: 'swap', token: token.symbol },
+                    });
+                    handleSelect(token);
+                  }}
                   backgroundColor={COLOR.NEUTRAL[15]}
                 />
               ))}

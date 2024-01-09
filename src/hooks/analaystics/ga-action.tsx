@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 
-import { IS_LOCAL } from '~/constants';
+import { ENABLE_GA_LOG, IS_LOCAL } from '~/constants';
 
 import { analytics } from '~/configs/analystics';
 
@@ -40,7 +40,7 @@ export const useGAAction = () => {
     event = 'click',
     data,
   }: GAActionProps) => {
-    if (IS_LOCAL) {
+    if (IS_LOCAL && ENABLE_GA_LOG) {
       console.log('[GTM] action', {
         walletAddress,
         page,
@@ -70,7 +70,7 @@ export const useGAAction = () => {
     page: string = location.pathname,
     action: string = 'launguage-change'
   ) => {
-    if (IS_LOCAL) {
+    if (IS_LOCAL && ENABLE_GA_LOG) {
       console.log('[GTM] action', {
         page,
         action,

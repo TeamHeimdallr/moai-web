@@ -25,6 +25,8 @@ import { ListSkeleton } from '~/components/skeleton/list-skeleton';
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { TokenList } from '~/components/token-list';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
@@ -82,6 +84,9 @@ const _AddLiquidityPopup = ({
   priceImpact,
   refetchBalance,
 }: Props) => {
+  const { ref } = useGAInView({ name: 'add-liquidity-popup' });
+  const { gaAction } = useGAAction();
+
   const { error: addLiquidityGasError, setError: setAddLiquidityGasError } =
     useAddLiquidityNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
@@ -359,6 +364,11 @@ const _AddLiquidityPopup = ({
     if (isLoading) return;
     if (!isIdle) {
       if (isSuccess) {
+        gaAction({
+          action: 'go-to-pool-page',
+          data: { component: 'add-liquidity-popup', link: `pools/${networkAbbr}/${poolId}` },
+        });
+
         close();
         navigate(`/pools/${networkAbbr}/${poolId}`);
         return;
@@ -369,16 +379,100 @@ const _AddLiquidityPopup = ({
     // single token deposit
     if (tokenLength === 1) {
       if (isXrp) {
-        if (allowance3) return await writeAsync?.();
-        else await allowToken3();
+        if (allowance3) {
+          gaAction({
+            action: 'add-liquidity',
+            data: {
+              isXrp,
+              component: 'add-liquidity-popup',
+              token1Amount,
+              token2Amount,
+              xrpBalance,
+              estimatedAddLiquidityFee,
+              bptOut,
+            },
+          });
+          return await writeAsync?.();
+        } else {
+          gaAction({
+            action: 'approve-token',
+            data: {
+              isXrp,
+              symbol: lpToken?.symbol,
+              component: 'add-liquidity-popup',
+              token1Amount,
+              token2Amount,
+              xrpBalance,
+              estimatedToken3ApproveFee,
+              bptOut,
+            },
+          });
+          await allowToken3();
+        }
       } else {
         if (token1Amount > 0 && token2Amount <= 0) {
-          if (allowance1) return await writeAsync?.();
-          else await allowToken1();
+          if (allowance1) {
+            gaAction({
+              action: 'add-liquidity',
+              data: {
+                isXrp,
+                component: 'add-liquidity-popup',
+                token1Amount,
+                token2Amount,
+                xrpBalance,
+                estimatedAddLiquidityFee,
+                bptOut,
+              },
+            });
+            return await writeAsync?.();
+          } else {
+            gaAction({
+              action: 'approve-token',
+              data: {
+                isXrp,
+                symbol: tokensIn?.[0]?.symbol,
+                component: 'add-liquidity-popup',
+                token1Amount,
+                token2Amount,
+                xrpBalance,
+                estimatedToken1ApproveFee,
+                bptOut,
+              },
+            });
+            await allowToken1();
+          }
         }
         if (token2Amount > 0 && token1Amount <= 0) {
-          if (allowance2) return await writeAsync?.();
-          else await allowToken2();
+          if (allowance2) {
+            gaAction({
+              action: 'add-liquidity',
+              data: {
+                isXrp,
+                component: 'add-liquidity-popup',
+                token1Amount,
+                token2Amount,
+                xrpBalance,
+                estimatedAddLiquidityFee,
+                bptOut,
+              },
+            });
+            return await writeAsync?.();
+          } else {
+            gaAction({
+              action: 'approve-token',
+              data: {
+                isXrp,
+                symbol: tokensIn?.[1]?.symbol,
+                component: 'add-liquidity-popup',
+                token1Amount,
+                token2Amount,
+                xrpBalance,
+                estimatedToken2ApproveFee,
+                bptOut,
+              },
+            });
+            await allowToken2();
+          }
         }
       }
     }
@@ -386,10 +480,52 @@ const _AddLiquidityPopup = ({
     // 2 token deposit
     if (tokenLength === 2) {
       if (!isXrp) {
-        if (!allowance1) return await allowToken1();
-        if (!allowance2) return await allowToken2();
+        if (!allowance1) {
+          gaAction({
+            action: 'approve-token',
+            data: {
+              isXrp,
+              symbol: tokensIn?.[0]?.symbol,
+              component: 'add-liquidity-popup',
+              token1Amount,
+              token2Amount,
+              xrpBalance,
+              estimatedAddLiquidityFee,
+              bptOut,
+            },
+          });
+          return await allowToken1();
+        }
+        if (!allowance2) {
+          gaAction({
+            action: 'approve-token',
+            data: {
+              isXrp,
+              symbol: tokensIn?.[1]?.symbol,
+              component: 'add-liquidity-popup',
+              token1Amount,
+              token2Amount,
+              xrpBalance,
+              estimatedAddLiquidityFee,
+              bptOut,
+            },
+          });
+          return await allowToken2();
+        }
       }
 
+      gaAction({
+        action: 'add-liquidity',
+        data: {
+          isXrp,
+          component: 'add-liquidity-popup',
+          token1Amount,
+          token2Amount,
+          xrpBalance,
+          estimatedAddLiquidityFee,
+          bptOut,
+        },
+      });
       return await writeAsync?.();
     }
   };
@@ -399,6 +535,11 @@ const _AddLiquidityPopup = ({
     const url = `${SCANNER_URL[currentNetwork || NETWORK.THE_ROOT_NETWORK]}/${
       isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
     }/${txHash}`;
+
+    gaAction({
+      action: 'go-to-transaction',
+      data: { component: 'add-liquidity-popup', txHash: txHash, link: url },
+    });
 
     window.open(url);
   };
@@ -551,7 +692,7 @@ const _AddLiquidityPopup = ({
         </ButtonWrapper>
       }
     >
-      <Wrapper style={{ gap: isIdle ? (isMD ? 24 : 20) : 40 }}>
+      <Wrapper style={{ gap: isIdle ? (isMD ? 24 : 20) : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
           <SuccessWrapper>
             <IconWrapper>

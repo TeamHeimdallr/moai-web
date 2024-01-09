@@ -8,6 +8,7 @@ import { ButtonIconLarge } from '~/components/buttons';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useRequirePrarams } from '~/hooks/utils/use-require-params';
@@ -17,6 +18,7 @@ import { WithdrawLiquidityInputGroup } from '../../components/withdraw-liquidity
 
 const PoolDetailWithdrawLiquidityPage = () => {
   useGAPage();
+  const { ref } = useGAInView({ name: 'withdraw-liquidity' });
 
   const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ const PoolDetailWithdrawLiquidityPage = () => {
   useRequirePrarams([!!id], () => navigate(-1));
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <GnbWrapper banner={!!opened}>
         <Gnb />
       </GnbWrapper>

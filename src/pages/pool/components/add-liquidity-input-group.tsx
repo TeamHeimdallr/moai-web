@@ -21,6 +21,7 @@ import { Checkbox, InputNumber } from '~/components/inputs';
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { Token } from '~/components/token';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useOnClickOutside } from '~/hooks/utils';
@@ -45,6 +46,8 @@ export const AddLiquidityInputGroup = () => {
 };
 
 const _AddLiquidityInputGroup = () => {
+  const { gaAction } = useGAAction();
+
   const ref = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
 
@@ -223,7 +226,14 @@ const _AddLiquidityInputGroup = () => {
               <TotalValue>{`$${formatNumber(totalValue, 2)}`}</TotalValue>
               <ButtonPrimarySmall
                 text={totalValueMaxed ? 'Maxed' : 'Max'}
-                onClick={handleTotalMax}
+                onClick={() => {
+                  gaAction({
+                    action: 'total-max',
+                    buttonType: 'primary-small',
+                    data: { page: 'add-liquidity' },
+                  });
+                  handleTotalMax();
+                }}
                 style={{ width: 'auto' }}
                 disabled={totalValueMaxed || !hasBalances}
               />
@@ -235,7 +245,14 @@ const _AddLiquidityInputGroup = () => {
               <ButtonPrimarySmall
                 disabled={isXrp || !hasBalances}
                 text={'Optimize'}
-                onClick={() => handleOptimize()}
+                onClick={() => {
+                  gaAction({
+                    action: 'optimize',
+                    buttonType: 'primary-small',
+                    data: { page: 'add-liquidity' },
+                  });
+                  handleOptimize();
+                }}
               />
             </ButtonWrapper>
           </PriceImpact>
