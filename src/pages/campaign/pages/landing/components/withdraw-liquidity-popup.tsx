@@ -129,7 +129,11 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
     id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
   });
 
-  const { amountFarmedInBPT, amountFarmedInBPTRaw } = useUserCampaignInfo();
+  const {
+    amountFarmedInBPT,
+    amountFarmedInBPTRaw,
+    refetch: refetchUserCampaignInfo,
+  } = useUserCampaignInfo();
 
   const userLpTokenBalance = amountFarmedInBPT;
   const userLpTokenBalanceRaw = amountFarmedInBPTRaw || 0n;
@@ -198,6 +202,7 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
       queryClient.invalidateQueries(['GET', 'POOL']);
       refetchBalance?.();
       refetch?.();
+      refetchUserCampaignInfo?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isIdle, queryClient]);
