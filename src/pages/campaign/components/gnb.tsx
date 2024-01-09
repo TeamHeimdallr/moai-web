@@ -6,9 +6,10 @@ import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { Account } from '~/components/account';
 import { AlertBanner } from '~/components/alerts/banner';
-import { ButtonPrimaryMedium } from '~/components/buttons/primary';
+import { ButtonPrimaryMedium, ButtonPrimarySmallBlack } from '~/components/buttons/primary';
 import { LanguageChange } from '~/components/language-change';
 
+import { useBanner } from '~/hooks/components/use-banner';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -17,6 +18,9 @@ import { POPUP_ID } from '~/types';
 export const Gnb = () => {
   const { open, opened } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
   const { opened: openedLackOfRootBanner } = usePopup(POPUP_ID.LACK_OF_ROOT);
+  const { opened: openedSwitchNetworkBanner } = usePopup(POPUP_ID.WALLET_ALERT);
+
+  const { text, type: bannerType, connectWallet, switchNetwork } = useBanner();
 
   const navigate = useNavigate();
   const { evm, xrp } = useConnectedWallet();
@@ -26,8 +30,23 @@ export const Gnb = () => {
 
   return (
     <Wrapper>
+      {/* SWITCH NETWORK BANNER */}
+      {openedSwitchNetworkBanner && (
+        <BannerWrapper>
+          <AlertBanner
+            text={text}
+            button={
+              <ButtonPrimarySmallBlack
+                text={bannerType === 'select' ? t('Connect wallet') : t('Switch network')}
+                onClick={bannerType === 'select' ? connectWallet : switchNetwork}
+              />
+            }
+          />
+        </BannerWrapper>
+      )}
+
       {/* CAMPAIGN ROOT BANNER */}
-      {openedLackOfRootBanner && (
+      {!openedSwitchNetworkBanner && openedLackOfRootBanner && (
         <BannerWrapper>
           <AlertBanner text={t('lack-of-reserve-description')} />
         </BannerWrapper>

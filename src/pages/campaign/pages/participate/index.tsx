@@ -1,8 +1,19 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
+import { useNetwork as useNetworkWagmi } from 'wagmi';
 
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
+
+import { AlertBanner } from '~/components/alerts/banner';
+import { ButtonPrimarySmallBlack } from '~/components/buttons';
+
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { useSwitchAndAddNetwork } from '~/hooks/wallets/use-add-network';
+import { NETWORK } from '~/types';
+
+import { theRootNetwork } from '~/configs/evm-network';
 
 import { Step } from './components/step';
 import { StepTitle } from './components/step-title';
@@ -17,6 +28,11 @@ const ParticipatePage = () => {
 
   const { step } = useStep();
   const navigate = useNavigate();
+
+  const { selectedNetwork } = useNetwork();
+  const { switchNetwork } = useSwitchAndAddNetwork();
+  const { chain } = useNetworkWagmi();
+  const { t } = useTranslation();
 
   const { data: campaignData } = useGetCampaignsQuery(
     { queries: { filter: `active:eq:true:boolean` } },
@@ -33,8 +49,18 @@ const ParticipatePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
+  const chainId = chain?.id || 0;
+
   return (
     <Wrapper>
+      {selectedNetwork === NETWORK.THE_ROOT_NETWORK && chainId !== theRootNetwork.id && (
+        <BannerWrapper>
+          <AlertBanner
+            text={t('wallet-alert-message-switch', { network: 'The Root Network' })}
+            button={<ButtonPrimarySmallBlack text={t('Switch network')} onClick={switchNetwork} />}
+          />
+        </BannerWrapper>
+      )}
       <StepWrapper>
         <Step />
         <StepTitle />
@@ -54,6 +80,9 @@ const Wrapper = tw.div`
 `;
 const StepWrapper = tw.div`
   w-455 flex-center flex-col gap-24
+`;
+const BannerWrapper = tw.div`
+  w-full absolute top-0 left-0 z-10
 `;
 
 export default ParticipatePage;
