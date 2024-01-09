@@ -11,6 +11,7 @@ import { ButtonPrimarySmallBlack } from '~/components/buttons';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { useSwitchAndAddNetwork } from '~/hooks/wallets/use-add-network';
 import { NETWORK } from '~/types';
 
@@ -33,6 +34,7 @@ const ParticipatePage = () => {
 
   const { selectedNetwork } = useNetwork();
   const { switchNetwork } = useSwitchAndAddNetwork();
+  const { evm, fpass } = useConnectedWallet();
   const { chain } = useNetworkWagmi();
   const { t } = useTranslation();
 
@@ -52,17 +54,22 @@ const ParticipatePage = () => {
   }, [active]);
 
   const chainId = chain?.id || 0;
+  const evmAddress = evm?.address || fpass?.address;
 
   return (
     <Wrapper>
-      {selectedNetwork === NETWORK.THE_ROOT_NETWORK && chainId !== theRootNetwork.id && (
-        <BannerWrapper>
-          <AlertBanner
-            text={t('wallet-alert-message-switch', { network: 'The Root Network' })}
-            button={<ButtonPrimarySmallBlack text={t('Switch network')} onClick={switchNetwork} />}
-          />
-        </BannerWrapper>
-      )}
+      {selectedNetwork === NETWORK.THE_ROOT_NETWORK &&
+        chainId !== theRootNetwork.id &&
+        !!evmAddress && (
+          <BannerWrapper>
+            <AlertBanner
+              text={t('wallet-alert-message-switch', { network: 'The Root Network' })}
+              button={
+                <ButtonPrimarySmallBlack text={t('Switch network')} onClick={switchNetwork} />
+              }
+            />
+          </BannerWrapper>
+        )}
       <StepWrapper>
         <Step />
         <StepTitle />

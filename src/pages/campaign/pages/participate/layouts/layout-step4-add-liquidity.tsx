@@ -41,6 +41,8 @@ import { ListSkeleton } from '~/components/skeleton/list-skeleton';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber } from '~/utils';
@@ -58,6 +60,9 @@ export const LayoutStep4AddLiquidity = () => (
 );
 
 const _AddLiquidity = () => {
+  const { ref } = useGAInView({ name: 'campaign-step-4' });
+  const { gaAction } = useGAAction();
+
   const navigate = useNavigate();
 
   const [inputValue, setInputValue] = useState<number>();
@@ -188,13 +193,42 @@ const _AddLiquidity = () => {
   const handleButtonClick = async () => {
     if (invalidWithLoading) return;
 
-    if (!allowance) return await allow?.();
+    if (!allowance) {
+      gaAction({
+        action: 'approve-token',
+        data: {
+          component: 'campaign-step-4',
+          amount: inputValue,
+          amountRaw: inputValueRaw,
+          xrpBalance,
+          estimatedApproveFee,
+        },
+      });
+      return await allow?.();
+    }
+
+    gaAction({
+      action: 'add-liquidity',
+      data: {
+        component: 'campaign-step-4',
+        amount: inputValue,
+        amountRaw: inputValueRaw,
+        xrpBalance,
+        estimatedAddLiquidityFee,
+        bptOut: actualBptOut,
+      },
+    });
     return await writeAsync?.();
   };
 
   const handleLink = () => {
     const txHash = isFpass ? txData?.extrinsicId : txData?.transactionHash;
     const url = `${SCANNER_URL[selectedNetwork]}/${isFpass ? 'extrinsic' : 'tx'}/${txHash}`;
+
+    gaAction({
+      action: 'go-to-transaction',
+      data: { component: 'campaign-step-4', txHash: txHash, link: url },
+    });
 
     window.open(url);
   };
@@ -345,7 +379,7 @@ const _AddLiquidity = () => {
         </>
       )}
       {isIdle && (
-        <Wrapper>
+        <Wrapper ref={ref}>
           <InputNumber
             name={'input'}
             title={t("You're providing")}

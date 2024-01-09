@@ -3,6 +3,8 @@ import tw, { styled } from 'twin.macro';
 
 import { imageNetworkXRPL, imageStepLoading } from '~/assets/images';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { useConnectors } from '~/hooks/wallets/use-connectors';
 import { NETWORK } from '~/types';
@@ -10,6 +12,9 @@ import { NETWORK } from '~/types';
 import { useStep } from '../hooks/use-step';
 
 export const LayoutStep1WalletconnectXrp = () => {
+  const { ref } = useGAInView({ name: 'campaign-step-1' });
+  const { gaAction } = useGAAction();
+
   const { stepStatus1, xrpConnectorIdx, setStepStatus, setXrpConnectorIdx } = useStep();
 
   const { xrp } = useConnectedWallet();
@@ -20,6 +25,14 @@ export const LayoutStep1WalletconnectXrp = () => {
   const handleConnect = (connectorIndex: number) => {
     if (!xrpConnectors?.[connectorIndex]?.isInstalled) return;
 
+    gaAction({
+      action: 'campaign-participate-step-1',
+      data: {
+        component: 'campaign-participate',
+        wallet: xrpConnectors?.[connectorIndex]?.connectorName[0],
+      },
+    });
+
     setStepStatus({ id: 1, status: 'loading' }, 0);
     setXrpConnectorIdx(connectorIndex);
 
@@ -27,7 +40,7 @@ export const LayoutStep1WalletconnectXrp = () => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <TitleWrapper>
         <NetworkImage src={imageNetworkXRPL} />
         XRPL

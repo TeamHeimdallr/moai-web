@@ -5,6 +5,7 @@ import tw, { styled } from 'twin.macro';
 
 import { Popup } from '~/components/popup';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectors } from '~/hooks/wallets/use-connectors';
@@ -13,6 +14,8 @@ import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector
 import { POPUP_ID } from '~/types/components';
 
 export const ConnectWallet = () => {
+  const { gaAction } = useGAAction();
+
   const { close } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { connectors } = useConnectors();
@@ -36,6 +39,11 @@ export const ConnectWallet = () => {
             key={w.name}
             onClick={() => {
               if (!w.isInstalled) return;
+
+              gaAction({
+                action: 'connect-wallet',
+                data: { component: 'connect-wallet', wallet: w.connectorName[0] },
+              });
 
               w.connect();
               close();

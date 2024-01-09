@@ -3,13 +3,16 @@ import tw from 'twin.macro';
 import { IconFuturepass } from '~/assets/icons';
 import LogoFutureverse from '~/assets/logos/logo-futureverse.svg?react';
 
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useMediaQuery } from '~/hooks/utils';
 
 export const LayoutPartner = () => {
+  const { ref } = useGAInView({ name: 'campaign-layout-partner' });
+
   const { isMD } = useMediaQuery();
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <Text>In collaboration with</Text>
       <LogoWrapper>
         <IconFuturepass width={isMD ? 80 : 48} />

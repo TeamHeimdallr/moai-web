@@ -26,8 +26,10 @@ export const useGAIdenitiy = () => {
       : xrp?.address;
 
   useEffect(() => {
+    const anyAddress = evm?.address || fpass?.address || xrp?.address;
+
     if (IS_LOCAL && ENABLE_GA_LOG) {
-      console.log('[GA] identity', currentAddress, {
+      console.log('[GA] identity', anyAddress, {
         evm: evm.address,
         fpass: fpass.address,
         xrp: xrp.address,

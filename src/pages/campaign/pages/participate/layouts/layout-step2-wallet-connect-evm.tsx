@@ -12,6 +12,8 @@ import { ButtonIconLarge, ButtonIconSmall, ButtonPrimaryLarge } from '~/componen
 
 import { TooltipFuturepass } from '~/pages/campaign/components/tooltip-fpass';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { useConnectors } from '~/hooks/wallets/use-connectors';
 import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
@@ -20,6 +22,11 @@ import { NETWORK, TOOLTIP_ID } from '~/types';
 import { useStep } from '../hooks/use-step';
 
 export const LayoutStep2WalletconnectEvm = () => {
+  const { ref } = useGAInView({ name: 'campaign-step-2' });
+  const { ref: step2SelectRef } = useGAInView({ name: 'campaign-step-2-select' });
+
+  const { gaAction } = useGAAction();
+
   const { isOpen, close } = useWeb3Modal();
 
   const { fpass } = useConnectedWallet();
@@ -87,9 +94,9 @@ export const LayoutStep2WalletconnectEvm = () => {
 
   return (
     <>
-      <Wrapper>
+      <Wrapper ref={ref}>
         {showFpassSelect && (
-          <FpassWrapper>
+          <FpassWrapper ref={step2SelectRef}>
             <FpassContentWrapper>
               <FpassTitleWrapper>
                 <ButtonIconLarge
@@ -110,11 +117,31 @@ export const LayoutStep2WalletconnectEvm = () => {
               <ButtonPrimaryLarge
                 text={t('Skip')}
                 buttonType="outlined"
-                onClick={() => setEvmWallet('evm')}
+                onClick={() => {
+                  gaAction({
+                    action: 'campaign-participate-step-2-select',
+                    data: {
+                      component: 'campaign-participate',
+                      selected: 'skip',
+                      evmWallet: 'evm',
+                    },
+                  });
+                  setEvmWallet('evm');
+                }}
               />
               <ButtonPrimaryLarge
                 text={t('continue-campaign')}
-                onClick={() => setEvmWallet('fpass')}
+                onClick={() => {
+                  gaAction({
+                    action: 'campaign-participate-step-2-select',
+                    data: {
+                      component: 'campaign-participate',
+                      selected: 'continue',
+                      evmWallet: 'fpass',
+                    },
+                  });
+                  setEvmWallet('fpass');
+                }}
               />
             </FpassButtonWrapper>
           </FpassWrapper>
@@ -147,7 +174,13 @@ export const LayoutStep2WalletconnectEvm = () => {
                 return (
                   <Wallet
                     key={c.name}
-                    onClick={() => handleConnect(i)}
+                    onClick={() => {
+                      gaAction({
+                        action: 'campaign-participate-step-2',
+                        data: { component: 'campaign-participate', wallet: c.connectorName[0] },
+                      });
+                      handleConnect(i);
+                    }}
                     isLoading={evmConnectorIdx === i && stepStatus2.status === 'loading'}
                   >
                     <WalletInnerWrapper>

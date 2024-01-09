@@ -4,6 +4,8 @@ import tw, { styled } from 'twin.macro';
 
 import { Popup } from '~/components/popup';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectors } from '~/hooks/wallets/use-connectors';
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
@@ -11,6 +13,9 @@ import { NETWORK } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 export const CampaignConnectWalletPopup = () => {
+  const { ref } = useGAInView({ name: 'campaign-connect-wallet' });
+  const { gaAction } = useGAAction();
+
   const { close } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
   const { network } = useWalletConnectorTypeStore();
   const { connectors } = useConnectors();
@@ -20,15 +25,30 @@ export const CampaignConnectWalletPopup = () => {
 
   return (
     <Popup id={POPUP_ID.CAMPAIGN_CONNECT_WALLET} title="Connect wallet">
-      <Wrapper>
+      <Wrapper ref={ref}>
         {
           <TabWrapper>
-            <Tab selected={selectedTab === NETWORK.XRPL} onClick={() => selectTab(NETWORK.XRPL)}>
+            <Tab
+              selected={selectedTab === NETWORK.XRPL}
+              onClick={() => {
+                gaAction({
+                  action: 'campaign-connect-wallet-tab',
+                  data: { component: 'campaign-connect-wallet', tab: NETWORK.XRPL },
+                });
+                selectTab(NETWORK.XRPL);
+              }}
+            >
               XRPL
             </Tab>
             <Tab
               selected={selectedTab === NETWORK.THE_ROOT_NETWORK}
-              onClick={() => selectTab(NETWORK.THE_ROOT_NETWORK)}
+              onClick={() => {
+                gaAction({
+                  action: 'campaign-connect-wallet-tab',
+                  data: { component: 'campaign-connect-wallet', tab: NETWORK.THE_ROOT_NETWORK },
+                });
+                selectTab(NETWORK.THE_ROOT_NETWORK);
+              }}
             >
               The Root Network
             </Tab>
@@ -39,6 +59,11 @@ export const CampaignConnectWalletPopup = () => {
             key={w.name}
             onClick={() => {
               if (!w.isInstalled) return;
+
+              gaAction({
+                action: 'campaign-connect-wallet',
+                data: { component: 'campaign-connect-wallet', connector: w.connectorName[0] },
+              });
 
               w.connect();
               close();

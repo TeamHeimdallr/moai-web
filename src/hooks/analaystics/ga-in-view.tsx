@@ -8,22 +8,23 @@ import { analytics } from '~/configs/analystics';
 
 interface Props {
   name?: string;
+  threshold?: number;
 }
-export const useGAInView = ({ name }: Props) => {
+export const useGAInView = ({ name, threshold }: Props) => {
   const location = useLocation();
 
   const { ref, inView } = rioUseInView({
-    threshold: 0.5,
+    threshold: threshold || 0.5,
   });
 
   useEffect(() => {
     if (inView) {
       if (IS_LOCAL && ENABLE_GA_LOG) {
-        console.log(`[GTM] component-shown ${name}`);
+        console.log(`[GTM] show ${name}`);
         return;
       }
 
-      analytics.track('component-shown', {
+      analytics.track('show', {
         page: location.pathname,
         name,
       });

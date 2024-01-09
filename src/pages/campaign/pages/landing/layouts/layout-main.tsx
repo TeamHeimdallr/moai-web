@@ -11,8 +11,12 @@ import { IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 import Logo1 from '~/assets/logos/logo-campaign-1.svg?react';
 import Logo2 from '~/assets/logos/logo-campaign-2.svg?react';
 
+import { BASE_URL } from '~/constants';
+
 import { ButtonPrimaryLarge } from '~/components/buttons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useMediaQuery } from '~/hooks/utils';
 import { DATE_FORMATTER, formatNumber } from '~/utils';
@@ -25,6 +29,9 @@ export const LayoutMain = () => (
 );
 
 const _LayoutMain = () => {
+  const { ref } = useGAInView({ name: 'campaign-layout-main' });
+  const { gaAction } = useGAAction();
+
   const { balance, apr, moiApr } = useCampaignLpBalance();
 
   const { isMD } = useMediaQuery();
@@ -40,7 +47,7 @@ const _LayoutMain = () => {
   const campaignXrplRoot = campaigns.find(item => item.name === 'campaign-xrpl-root');
 
   return (
-    <Wrapper banner={!!openedLackOfRootBanner}>
+    <Wrapper banner={!!openedLackOfRootBanner} ref={ref}>
       <InnerWrapper>
         <ContentWrapper>
           <Title>{t('Activate your $XRP')}</Title>
@@ -87,7 +94,14 @@ const _LayoutMain = () => {
         <ButtonWrapper isKorean={i18n.language === 'ko'}>
           <ButtonPrimaryLarge
             text={t('Activate $XRP')}
-            onClick={() => window.open('/campaign/participate', '_blank')}
+            onClick={() => {
+              gaAction({
+                action: 'activate-xrp',
+                buttonType: 'primary-large',
+                data: { page: 'campaign', layout: 'layout-main', link: '/campaign/participate' },
+              });
+              window.open(`${BASE_URL}/campaign/participate`);
+            }}
           />
         </ButtonWrapper>
       </InnerWrapper>
@@ -136,10 +150,7 @@ const _LayoutMainSkeleton = () => {
         </ContentWrapper>
 
         <ButtonWrapper isKorean={i18n.language === 'ko'}>
-          <ButtonPrimaryLarge
-            text={t('Activate $XRP')}
-            onClick={() => window.open('/campaign/step', '_blank')}
-          />
+          <ButtonPrimaryLarge text={t('Activate $XRP')} />
         </ButtonWrapper>
       </InnerWrapper>
     </Wrapper>

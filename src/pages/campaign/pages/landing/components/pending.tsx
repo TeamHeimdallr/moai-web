@@ -5,15 +5,20 @@ import tw, { styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconLink, IconNext } from '~/assets/icons';
 
+import { BASE_URL } from '~/constants';
+
 import { ButtonPrimaryMediumIconTrailing } from '~/components/buttons';
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useMediaQuery } from '~/hooks/utils';
 import { elapsedTime } from '~/utils';
 
 import { useStep } from '../../participate/hooks/use-step';
 
 export const Pending = () => {
+  const { gaAction } = useGAAction();
+
   const { t } = useTranslation();
   const { isMD } = useMediaQuery();
 
@@ -29,7 +34,12 @@ export const Pending = () => {
       : t(`${splittedTime[1]} ${splittedTime[2]}`, { time: splittedTime[0] });
 
   const handleClick = () => {
-    window.open('/campaign/participate', '_blank');
+    gaAction({
+      action: 'continue-campaign',
+      data: { page: 'campaign', layout: 'layout-voyage', component: 'pending' },
+    });
+
+    window.open(`${BASE_URL}/campaign/participate`);
   };
 
   useEffect(() => {
