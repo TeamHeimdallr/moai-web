@@ -25,6 +25,8 @@ import { ListSkeleton } from '~/components/skeleton/list-skeleton';
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { TokenList } from '~/components/token-list';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import {
@@ -89,6 +91,9 @@ const _WithdrawLiquidityPopup = ({
 
   refetchBalance,
 }: Props) => {
+  const { ref } = useGAInView({ name: 'withdraw-liquidity-popup' });
+  const { gaAction } = useGAAction();
+
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { isXrp, isEvm, isFpass } = useNetwork();
@@ -335,6 +340,11 @@ const _WithdrawLiquidityPopup = ({
     if (isLoading) return;
     if (!isIdle) {
       if (isSuccess) {
+        gaAction({
+          action: 'go-to-pool-page',
+          data: { component: 'withdraw-liquidity-popup', link: `pools/${networkAbbr}/${poolId}` },
+        });
+
         close();
         navigate(`/pools/${networkAbbr}/${poolId}`);
         return;
@@ -346,15 +356,78 @@ const _WithdrawLiquidityPopup = ({
     // single token deposit
     if (tokenLength === 1) {
       if (!isXrp) {
+        gaAction({
+          action: 'withdraw-liquidity',
+          data: {
+            isXrp,
+            component: 'withdraw-liquidity-popup',
+            token1Amount,
+            token2Amount,
+            xrpBalance,
+            estimatedWithdrawLiquidityFee,
+          },
+        });
         return await writeAsync?.();
       } else {
         if (token1Amount > 0 && token2Amount <= 0) {
-          if (allowance1) return await writeAsync?.();
-          else await allowToken1();
+          if (allowance1) {
+            gaAction({
+              action: 'withdraw-liquidity',
+              data: {
+                isXrp,
+                component: 'withdraw-liquidity-popup',
+                token1Amount,
+                token2Amount,
+                xrpBalance,
+                estimatedWithdrawLiquidityFee,
+              },
+            });
+            return await writeAsync?.();
+          } else {
+            gaAction({
+              action: 'approve-token',
+              data: {
+                isXrp,
+                symbol: tokensOut?.[0]?.symbol,
+                component: 'withdraw-liquidity-popup',
+                token1Amount,
+                token2Amount,
+                xrpBalance,
+                estimatedToken1ApproveFee,
+              },
+            });
+            await allowToken1();
+          }
         }
         if (token2Amount > 0 && token1Amount <= 0) {
-          if (allowance2) return await writeAsync?.();
-          else await allowToken2();
+          if (allowance2) {
+            gaAction({
+              action: 'withdraw-liquidity',
+              data: {
+                isXrp,
+                component: 'withdraw-liquidity-popup',
+                token1Amount,
+                token2Amount,
+                xrpBalance,
+                estimatedWithdrawLiquidityFee,
+              },
+            });
+            return await writeAsync?.();
+          } else {
+            gaAction({
+              action: 'approve-token',
+              data: {
+                isXrp,
+                symbol: tokensOut?.[1]?.symbol,
+                component: 'withdraw-liquidity-popup',
+                token1Amount,
+                token2Amount,
+                xrpBalance,
+                estimatedToken2ApproveFee,
+              },
+            });
+            await allowToken2();
+          }
         }
       }
     }
@@ -362,10 +435,49 @@ const _WithdrawLiquidityPopup = ({
     // 2 token deposit
     if (tokenLength === 2) {
       if (isXrp) {
-        if (!allowance1) return await allowToken1();
-        if (!allowance2) return await allowToken2();
+        if (!allowance1) {
+          gaAction({
+            action: 'approve-token',
+            data: {
+              isXrp,
+              symbol: tokensOut?.[0]?.symbol,
+              component: 'withdraw-liquidity-popup',
+              token1Amount,
+              token2Amount,
+              xrpBalance,
+              estimatedToken1ApproveFee,
+            },
+          });
+          return await allowToken1();
+        }
+        if (!allowance2) {
+          gaAction({
+            action: 'approve-token',
+            data: {
+              isXrp,
+              symbol: tokensOut?.[1]?.symbol,
+              component: 'withdraw-liquidity-popup',
+              token1Amount,
+              token2Amount,
+              xrpBalance,
+              estimatedToken2ApproveFee,
+            },
+          });
+          return await allowToken2();
+        }
       }
 
+      gaAction({
+        action: 'withdraw-liquidity',
+        data: {
+          isXrp,
+          component: 'withdraw-liquidity-popup',
+          token1Amount,
+          token2Amount,
+          xrpBalance,
+          estimatedWithdrawLiquidityFee,
+        },
+      });
       return await writeAsync?.();
     }
   };
@@ -375,6 +487,11 @@ const _WithdrawLiquidityPopup = ({
     const url = `${SCANNER_URL[currentNetwork || NETWORK.THE_ROOT_NETWORK]}/${
       isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
     }/${txHash}`;
+
+    gaAction({
+      action: 'go-to-transaction',
+      data: { component: 'withdraw-liquidity-popup', txHash: txHash, link: url },
+    });
 
     window.open(url);
   };
@@ -491,7 +608,7 @@ const _WithdrawLiquidityPopup = ({
         </ButtonWrapper>
       }
     >
-      <Wrapper style={{ gap: isIdle ? 24 : 40 }}>
+      <Wrapper style={{ gap: isIdle ? 24 : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
           <SuccessWrapper>
             <IconWrapper>

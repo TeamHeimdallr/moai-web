@@ -7,6 +7,7 @@ import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { GNB_MENU } from '~/constants';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { TOOLTIP_ID } from '~/types';
 
 import { ButtonIconLarge } from '../buttons';
@@ -20,11 +21,23 @@ interface MobileMenuProps {
 }
 
 export const MobileMenu = ({ closeMenu }: MobileMenuProps) => {
+  const { gaAction } = useGAAction();
+
   const navigate = useNavigate();
 
-  const handleMenuClick = (path: string) => {
+  const handleMenuClick = (
+    path: string,
+    text: string,
+    disabled?: boolean,
+    commingSoon?: boolean
+  ) => {
     closeMenu();
     navigate(path);
+    gaAction({
+      action: 'gnb-menu-click',
+      buttonType: 'custom-button',
+      data: { component: 'gnb', linkTo: path, name: text, disabled, commingSoon },
+    });
   };
 
   const handleCloseClick = () => {
@@ -53,7 +66,7 @@ export const MobileMenu = ({ closeMenu }: MobileMenuProps) => {
             {GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
               <Menu
                 key={id}
-                onClick={() => handleMenuClick(path)}
+                onClick={() => handleMenuClick(path, text, disabled, commingSoon)}
                 selected={location.pathname === path}
                 disabled={!!disabled}
                 data-tooltip-id={commingSoon ? TOOLTIP_ID.COMMING_SOON : undefined}

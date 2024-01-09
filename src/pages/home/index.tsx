@@ -3,6 +3,7 @@ import tw, { css, styled } from 'twin.macro';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { POPUP_ID } from '~/types';
@@ -12,6 +13,8 @@ import { MyLiquidityLayout } from './layouts/layout-liquidity-pool-my';
 import { MainLayout } from './layouts/layout-main';
 
 const HomePage = () => {
+  useGAPage();
+
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
 
   const { evm, fpass, xrp } = useConnectedWallet();

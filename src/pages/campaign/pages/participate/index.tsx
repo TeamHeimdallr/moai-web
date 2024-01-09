@@ -9,7 +9,9 @@ import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 import { AlertBanner } from '~/components/alerts/banner';
 import { ButtonPrimarySmallBlack } from '~/components/buttons';
 
+import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { useSwitchAndAddNetwork } from '~/hooks/wallets/use-add-network';
 import { NETWORK } from '~/types';
 
@@ -24,6 +26,7 @@ import { LayoutStep3Bridge } from './layouts/layout-step3-bridge';
 import { LayoutStep4AddLiquidity } from './layouts/layout-step4-add-liquidity';
 
 const ParticipatePage = () => {
+  useGAPage();
   useResetStep();
 
   const { step } = useStep();
@@ -31,6 +34,7 @@ const ParticipatePage = () => {
 
   const { selectedNetwork } = useNetwork();
   const { switchNetwork } = useSwitchAndAddNetwork();
+  const { evm, fpass } = useConnectedWallet();
   const { chain } = useNetworkWagmi();
   const { t } = useTranslation();
 
@@ -50,17 +54,22 @@ const ParticipatePage = () => {
   }, [active]);
 
   const chainId = chain?.id || 0;
+  const evmAddress = evm?.address || fpass?.address;
 
   return (
     <Wrapper>
-      {selectedNetwork === NETWORK.THE_ROOT_NETWORK && chainId !== theRootNetwork.id && (
-        <BannerWrapper>
-          <AlertBanner
-            text={t('wallet-alert-message-switch', { network: 'The Root Network' })}
-            button={<ButtonPrimarySmallBlack text={t('Switch network')} onClick={switchNetwork} />}
-          />
-        </BannerWrapper>
-      )}
+      {selectedNetwork === NETWORK.THE_ROOT_NETWORK &&
+        chainId !== theRootNetwork.id &&
+        !!evmAddress && (
+          <BannerWrapper>
+            <AlertBanner
+              text={t('wallet-alert-message-switch', { network: 'The Root Network' })}
+              button={
+                <ButtonPrimarySmallBlack text={t('Switch network')} onClick={switchNetwork} />
+              }
+            />
+          </BannerWrapper>
+        )}
       <StepWrapper>
         <Step />
         <StepTitle />

@@ -2,7 +2,7 @@ import tw from 'twin.macro';
 
 import { Footer } from '~/components/footer';
 
-import { Contents } from './components/contants';
+import { Contents } from './components/contents';
 import { Gnb } from './components/gnb';
 
 const LandingPage = () => {

@@ -9,10 +9,12 @@ import { imageMoai2 } from '~/assets/images';
 
 import { TooltipApr } from '~/components/tooltips/apr';
 
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { formatNumber } from '~/utils';
 import { TOOLTIP_ID } from '~/types';
 
 export const PoolInfo = () => {
+  const { ref } = useGAInView({ name: 'pool-detail-info' });
   const { network, id } = useParams();
   const { t } = useTranslation();
 
@@ -44,7 +46,7 @@ export const PoolInfo = () => {
   const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100, 2)}%` : '0%';
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <InnerWrapper>
         <PoolInfoCard name={t('Pool Value')} value={formattedValue} />
         <PoolInfoCard name={t('Volume (24h)')} value={formattedVolume} />

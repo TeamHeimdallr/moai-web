@@ -26,6 +26,7 @@ import { InputNumber } from '~/components/inputs';
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { Token } from '~/components/token';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -60,6 +61,8 @@ export const SwapInputGroup = () => {
   );
 };
 const _SwapInputGroup = () => {
+  const { gaAction } = useGAAction();
+
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { t } = useTranslation();
@@ -240,6 +243,11 @@ const _SwapInputGroup = () => {
     toInput > 0;
 
   const arrowClick = () => {
+    gaAction({
+      action: 'switch-from-to',
+      data: { page: 'swap' },
+    });
+
     setFromToken(toToken);
     setToToken(fromToken);
   };

@@ -6,6 +6,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 
 import { COLOR } from '~/assets/colors';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useSlippageStore } from '~/states/data/slippage';
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 
 const SLIPPAGE_PRESET = [0.5, 1, 2];
 export const Slippage = ({ shadow }: Props) => {
+  const { gaAction } = useGAAction();
   const manualSlippageRef = useRef<HTMLDivElement>(null);
 
   const [inputFocus, setInputFocus] = useState(false);
@@ -30,6 +32,10 @@ export const Slippage = ({ shadow }: Props) => {
     if (numValue && numValue < 0) return;
 
     if (!(typeof value === 'string' && value === '')) {
+      gaAction({
+        action: 'set-slippage',
+        data: { component: 'slippage-input', text: `${numValue}%` },
+      });
       setManualSlippage(numValue);
       return;
     }
@@ -52,7 +58,13 @@ export const Slippage = ({ shadow }: Props) => {
             <SlippageOption
               key={`${value}-${idx}`}
               selected={!manual && slippage === value}
-              onClick={() => setSlippage(value)}
+              onClick={() => {
+                gaAction({
+                  action: 'set-slippage',
+                  data: { component: 'slippage', text: `${value}%` },
+                });
+                setSlippage(value);
+              }}
             >
               {`${value.toFixed(1)}%`}
             </SlippageOption>

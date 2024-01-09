@@ -147,6 +147,7 @@ export const useTableLiquidityProvision = () => {
           time: (
             <TableColumnLink
               token={translatedTime}
+              tableKey="liquidity-provision"
               align="flex-end"
               link={`${SCANNER_URL[currentNetwork]}/${
                 isXrp ? 'transactions' : isRoot ? 'extrinsic' : 'tx'
@@ -180,6 +181,7 @@ export const useTableLiquidityProvision = () => {
             label="Value"
             sort={sort}
             setSort={setSort}
+            tableKey="liquidity-provision"
           />
         ),
         cell: row => row.renderValue(),
@@ -187,7 +189,13 @@ export const useTableLiquidityProvision = () => {
       },
       {
         header: () => (
-          <TableHeaderSortable sortKey="time" label="Time" sort={sort} setSort={setSort} />
+          <TableHeaderSortable
+            sortKey="time"
+            label="Time"
+            sort={sort}
+            setSort={setSort}
+            tableKey="liquidity-provision"
+          />
         ),
         cell: row => row.renderValue(),
         accessorKey: 'time',
@@ -258,7 +266,15 @@ export const useTableLiquidityProvision = () => {
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
-    () => <TableHeaderSortable sortKey="time" label="Time" sort={sort} setSort={setSort} />,
+    () => (
+      <TableHeaderSortable
+        sortKey="time"
+        label="Time"
+        sort={sort}
+        setSort={setSort}
+        tableKey="liquidity-provision"
+      />
+    ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sort]
   );

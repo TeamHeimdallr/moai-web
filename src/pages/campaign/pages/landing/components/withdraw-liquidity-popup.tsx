@@ -32,6 +32,8 @@ import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
@@ -61,6 +63,9 @@ export const WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: P
 };
 
 const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) => {
+  const { ref } = useGAInView({ name: 'campaign-withdraw-liquidity-popup' });
+  const { gaAction } = useGAAction();
+
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { isEvm, isFpass } = useNetwork();
@@ -194,6 +199,11 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
       isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
     }/${txHash}`;
 
+    gaAction({
+      action: 'go-to-transaction',
+      data: { component: 'campaign-withdraw-liquidity-popup', txHash: txHash, link: url },
+    });
+
     window.open(url);
   };
 
@@ -239,6 +249,11 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
     if (isLoading || invalidWithLoading) return;
     if (!isIdle) {
       if (isSuccess) {
+        gaAction({
+          action: 'go-to-campaign-page',
+          data: { component: 'campaign-withdraw-liquidity-popup', link: '/campaign' },
+        });
+
         close();
         navigate(`/campaign`);
         return;
@@ -247,6 +262,21 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
       return;
     }
 
+    gaAction({
+      action: 'campaign-withdraw-liquidity',
+      data: {
+        component: 'campaign-withdraw-liquidity-popup',
+        userXrpOutBalance,
+        xrpBalance,
+
+        inputValue,
+        inputValueRaw: inputValueRaw?.toString(),
+        amountFarmedInBPT,
+        amountFarmedInBPTRaw: amountFarmedInBPTRaw?.toString(),
+
+        estimatedWithdrawLiquidityFee,
+      },
+    });
     await writeAsync?.();
   };
 
@@ -265,7 +295,7 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
         </ButtonWrapper>
       }
     >
-      <Wrapper style={{ gap: isIdle ? 24 : 40 }}>
+      <Wrapper style={{ gap: isIdle ? 24 : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
           <SuccessWrapper>
             <IconWrapper>

@@ -11,6 +11,7 @@ import { GNB_MENU } from '~/constants';
 import { ButtonPrimaryMedium, ButtonPrimarySmallBlack } from '~/components/buttons/primary';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useBanner } from '~/hooks/components/use-banner';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -27,6 +28,8 @@ import { MobileMenu } from '../menu-mobile';
 import { NetworkSelection } from '../network-selection';
 
 export const Gnb = () => {
+  const { gaAction } = useGAAction();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -49,6 +52,35 @@ export const Gnb = () => {
 
   const [mobileMenuOpened, mobileMenuOpen] = useState<boolean>(false);
 
+  const handleConnetWallet = () => {
+    connectWallet();
+    gaAction({
+      action: 'connect-wallet',
+      buttonType: 'primary-small-black',
+      text: 'Connect wallet',
+      data: { component: 'gnb' },
+    });
+  };
+
+  const handleSwitchNetwork = () => {
+    switchNetwork();
+    gaAction({
+      action: 'switch-network',
+      buttonType: 'primary-small-black',
+      text: 'Switch network',
+      data: { component: 'gnb' },
+    });
+  };
+
+  const handleLogoClick = () => {
+    navigate('/');
+    gaAction({
+      action: 'logo-click',
+      buttonType: 'custom-button',
+      data: { component: 'gnb', linkTo: '/' },
+    });
+  };
+
   return (
     <>
       <Wrapper>
@@ -60,7 +92,7 @@ export const Gnb = () => {
               button={
                 <ButtonPrimarySmallBlack
                   text={bannerType === 'select' ? t('Connect wallet') : t('Switch network')}
-                  onClick={bannerType === 'select' ? connectWallet : switchNetwork}
+                  onClick={bannerType === 'select' ? handleConnetWallet : handleSwitchNetwork}
                 />
               }
             />
@@ -69,11 +101,7 @@ export const Gnb = () => {
 
         <NavWrapper>
           <LogoWrapper>
-            <LogoText
-              width={isMLG ? 88 : 70}
-              height={isMLG ? 20 : 16}
-              onClick={() => navigate('/')}
-            />
+            <LogoText width={isMLG ? 88 : 70} height={isMLG ? 20 : 16} onClick={handleLogoClick} />
           </LogoWrapper>
           <ContentWrapper>
             {isMLG &&
@@ -83,6 +111,11 @@ export const Gnb = () => {
                   onClick={() => {
                     if (disabled || commingSoon) return;
                     navigate(path);
+                    gaAction({
+                      action: 'gnb-menu-click',
+                      buttonType: 'custom-button',
+                      data: { component: 'gnb', linkTo: path, name: text, disabled, commingSoon },
+                    });
                   }}
                   selected={location.pathname === path}
                   disabled={!!disabled}
@@ -104,6 +137,11 @@ export const Gnb = () => {
                   onClick={() => {
                     setWalletConnectorType({ network: currentNetwork });
                     open();
+                    gaAction({
+                      action: 'connect-wallet',
+                      buttonType: 'primary-medium',
+                      data: { component: 'gnb', network: currentNetwork },
+                    });
                   }}
                 />
               )}

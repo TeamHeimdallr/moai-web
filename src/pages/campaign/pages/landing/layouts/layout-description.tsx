@@ -8,9 +8,12 @@ import tw, { css, styled } from 'twin.macro';
 import { imageQuote } from '~/assets/images';
 import { imageCampaignLighthouse, imageCampaignReward, imageCampaignToken } from '~/assets/images';
 
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useMediaQuery } from '~/hooks/utils';
 
 export const LayoutDescription = () => {
+  const { ref } = useGAInView({ name: 'campaign-layout-description', threshold: 0.1 });
+
   const [highlightedTextNumber, setHighlightedTextNumber] = useState(0);
 
   const { isMD } = useMediaQuery();
@@ -32,7 +35,7 @@ export const LayoutDescription = () => {
   }, []);
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <InnerWrapper>
         <Section1Wrapper id="voyage">
           <Section1InnerWrapper>

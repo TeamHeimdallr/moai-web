@@ -11,9 +11,11 @@ import LogoLanding from '~/assets/logos/logo-landing.svg?react';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useMediaQuery } from '~/hooks/utils';
 
 export const Contents = () => {
+  const { gaAction } = useGAAction();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { t } = useTranslation();
@@ -22,14 +24,43 @@ export const Contents = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   useOnClickOutside(dropdownRef, () => setDropdownOpen(false));
 
+  const openDropdown = () => {
+    setDropdownOpen(true);
+
+    gaAction({
+      action: 'get-started',
+      text: 'Get started',
+      type: 'dropdown',
+      buttonType: 'primary-large',
+      data: {
+        page: 'landing',
+        component: 'contents',
+      },
+    });
+  };
+
   const handleMainnetClick = () => {
     window.open('https://app.moai-finance.xyz/');
     setDropdownOpen(false);
+
+    gaAction({
+      action: 'get-started--mainnet',
+      text: 'mainnet',
+      buttonType: 'custom-dropdown',
+      data: { page: 'landing', lintTo: 'https://app.moai-finance.xyz/' },
+    });
   };
 
   const handleDevnetClick = () => {
     window.open('https://app-devnet.moai-finance.xyz/');
     setDropdownOpen(false);
+
+    gaAction({
+      action: 'get-started--devnet',
+      text: 'devnet',
+      buttonType: 'custom-dropdown',
+      data: { page: 'landing', lintTo: 'https://app-devnet.moai-finance.xyz/' },
+    });
   };
 
   const logoSize = isMLG
@@ -69,13 +100,13 @@ export const Contents = () => {
             <ButtonPrimaryLarge
               text={t('Get started')}
               buttonType="outlined"
-              onClick={() => setDropdownOpen(true)}
+              onClick={openDropdown}
             />
           ) : (
             <ButtonPrimaryMedium
               text={t('Get started')}
               buttonType="outlined"
-              onClick={() => setDropdownOpen(true)}
+              onClick={openDropdown}
             />
           )}
 

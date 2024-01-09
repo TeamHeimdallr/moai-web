@@ -11,10 +11,14 @@ import { SCANNER_URL } from '~/constants';
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { getNetworkFull } from '~/utils';
 
 export const PoolHeader = () => {
+  const { ref } = useGAInView({ name: 'pool-detail-header' });
+  const { gaAction } = useGAAction();
   const { network, id } = useParams();
 
   const { selectedNetwork, isFpass } = useNetwork();
@@ -43,11 +47,16 @@ export const PoolHeader = () => {
       isFpass ? 'tab=erc20_transfers' : ''
     }`;
 
+    gaAction({
+      action: 'pool-detail-header-click',
+      data: { page: 'pool-detail', component: 'pool-header', linkTo: url },
+    });
+
     window.open(url);
   };
 
   return (
-    <HeaderWrapper>
+    <HeaderWrapper ref={ref}>
       <TitleWrapper>
         <BadgeWrapper style={{ width: (compositions?.length || 0) * 28 + 12 }}>
           {compositions?.map((token, idx) => {

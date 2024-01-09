@@ -26,6 +26,8 @@ import { ListSkeleton } from '~/components/skeleton/list-skeleton';
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { TokenList } from '~/components/token-list';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -61,6 +63,9 @@ export const SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 };
 
 const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
+  const { ref } = useGAInView({ name: 'swap-popup' });
+  const { gaAction } = useGAAction();
+
   const { error: swapGasError, setError: setSwapGasError } = useSwapNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
@@ -324,16 +329,80 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const handleButtonClick = async () => {
     if (isLoading) return;
     if (!isIdle) {
+      gaAction({
+        action: 'close-swap-popup',
+        data: { component: 'swap-popup' },
+      });
       close();
       return;
     }
 
     if (isXrp) {
-      if (allowanceToToken) return await swap?.();
-      else await allowToToken();
+      if (allowanceToToken) {
+        gaAction({
+          action: 'swap',
+          data: {
+            isXrp,
+            component: 'swap-popup',
+            fromToken: fromToken?.symbol,
+            fromTokenValue,
+            toToken: toToken?.symbol,
+            toTokenValue,
+            xrpBalance,
+            estimatedSwapFee,
+          },
+        });
+        return await swap?.();
+      } else {
+        gaAction({
+          action: 'approve-token',
+          data: {
+            isXrp,
+            symbol: toToken?.symbol,
+            component: 'swap-popup',
+            fromToken: fromToken?.symbol,
+            fromTokenValue,
+            toToken: toToken?.symbol,
+            toTokenValue,
+            xrpBalance,
+            estimatedToTokenApproveFee,
+          },
+        });
+        await allowToToken();
+      }
     } else {
-      if (allowanceFromToken) return await swap?.();
-      else await allowFromToken();
+      if (allowanceFromToken) {
+        gaAction({
+          action: 'swap',
+          data: {
+            isXrp,
+            component: 'swap-popup',
+            fromToken: fromToken?.symbol,
+            fromTokenValue,
+            toToken: toToken?.symbol,
+            toTokenValue,
+            xrpBalance,
+            estimatedSwapFee,
+          },
+        });
+        return await swap?.();
+      } else {
+        gaAction({
+          action: 'approve-token',
+          data: {
+            isXrp,
+            symbol: fromToken?.symbol,
+            component: 'swap-popup',
+            fromToken: fromToken?.symbol,
+            fromTokenValue,
+            toToken: toToken?.symbol,
+            toTokenValue,
+            xrpBalance,
+            estimatedFromTokenApproveFee,
+          },
+        });
+        await allowFromToken();
+      }
     }
   };
 
@@ -342,6 +411,11 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     const url = `${SCANNER_URL[currentNetwork || NETWORK.THE_ROOT_NETWORK]}/${
       isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
     }/${txHash}`;
+
+    gaAction({
+      action: 'go-to-transaction',
+      data: { component: 'swap-popup', txHash: txHash, link: url },
+    });
 
     window.open(url);
   };
@@ -433,7 +507,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
         </ButtonWrapper>
       }
     >
-      <Wrapper style={{ gap: isIdle ? 24 : 40 }}>
+      <Wrapper style={{ gap: isIdle ? 24 : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
           <>
             <SuccessWrapper>

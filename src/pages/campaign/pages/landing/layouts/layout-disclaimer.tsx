@@ -1,10 +1,14 @@
 import { Trans, useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
+
 export const LayoutDisclaimer = () => {
+  const { ref } = useGAInView({ name: 'campaign-layout-disclaimer' });
+
   const { t } = useTranslation();
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <Text>
         <Trans i18nKey="disclaimer-text-1">
           This is link

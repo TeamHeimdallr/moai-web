@@ -6,6 +6,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 
 import { NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { NETWORK, POPUP_ID } from '~/types';
@@ -15,6 +16,8 @@ import { DropdownList } from '../dropdown/dropdown-list';
 import NetworkAlertPopup from '../popup/network-alert';
 
 export const NetworkSelection = () => {
+  const { gaAction } = useGAAction();
+
   const ref = useRef<HTMLDivElement>(null);
   const [opened, open] = useState(false);
 
@@ -34,6 +37,11 @@ export const NetworkSelection = () => {
   const exception = ['/', '/swap', '/rewards'];
   const handleSelect = (network: NETWORK) => {
     open(false);
+
+    gaAction({
+      action: 'network-selection',
+      data: { component: 'gnb', network },
+    });
 
     if (exception.includes(pathname)) {
       selectNetwork(network);

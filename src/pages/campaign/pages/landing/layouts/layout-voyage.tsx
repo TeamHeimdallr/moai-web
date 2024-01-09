@@ -25,6 +25,8 @@ import { POOL_ID } from '~/constants';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -49,6 +51,9 @@ interface RemainLockupTime {
   seconds: string;
 }
 const _LayoutVoyage = () => {
+  const { ref } = useGAInView({ name: 'campaign-layout-voyage' });
+  const { gaAction } = useGAAction();
+
   const [hasPending2, setHasPending2] = useState(false); // for visibility change
   const [estimatedClaimFee, setEstimatedClaimFee] = useState<number | undefined>();
 
@@ -179,8 +184,19 @@ const _LayoutVoyage = () => {
   );
 
   const handleClick = () => {
-    if (!isEmpty || bothConnected) return window.open(`${BASE_URL}/campaign/participate`, '_blank');
+    if (!isEmpty || bothConnected) {
+      gaAction({
+        action: 'activate-xrp',
+        data: { page: 'campaign', layout: 'layout-voyage', link: '/campaign/participate' },
+      });
+      window.open(`${BASE_URL}/campaign/participate`);
+      return;
+    }
 
+    gaAction({
+      action: 'connect-wallet',
+      data: { page: 'campaign', layout: 'layout-voyage' },
+    });
     if (!xrp.isConnected) setWalletConnectorType({ network: NETWORK.XRPL });
     else if (!evm.isConnected) setWalletConnectorType({ network: NETWORK.THE_ROOT_NETWORK });
 
@@ -251,7 +267,7 @@ const _LayoutVoyage = () => {
   }, [claimIsSuccess, claimTxData]);
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <InnerWrapper>
         <MyInfoWrapper>
           <Title>{t('My Voyage')}</Title>
@@ -294,7 +310,13 @@ const _LayoutVoyage = () => {
                     <ButtonPrimaryLarge
                       text={withdrawButtonText}
                       buttonType="outlined"
-                      onClick={withdrawPopupOpen}
+                      onClick={() => {
+                        gaAction({
+                          action: 'open-withdraw',
+                          data: { page: 'campaign', layout: 'layout-voyage' },
+                        });
+                        withdrawPopupOpen();
+                      }}
                       disabled={!withdrawLiquidityEnabled}
                     />
                   }
@@ -308,12 +330,7 @@ const _LayoutVoyage = () => {
                     balance={campaignReward}
                     image={<IconTokenMoai width={36} height={36} />}
                     button={
-                      <ButtonPrimaryLarge
-                        text={t('Coming soon')}
-                        buttonType="filled"
-                        disabled
-                        onClick={() => console.log('claim')}
-                      />
+                      <ButtonPrimaryLarge text={t('Coming soon')} buttonType="filled" disabled />
                     }
                   />
                   <TokenListVertical
@@ -327,7 +344,19 @@ const _LayoutVoyage = () => {
                         buttonType="outlined"
                         isLoading={claimLoading}
                         disabled={isError || !estimatedClaimFee || claimGasError || rootReward <= 0}
-                        onClick={() => writeAsync()}
+                        onClick={() => {
+                          gaAction({
+                            action: 'claim-root',
+                            data: {
+                              page: 'campaign',
+                              layout: 'layout-voyage',
+                              rootReward,
+                              userXrpBalance,
+                              estimatedClaimFee,
+                            },
+                          });
+                          writeAsync();
+                        }}
                       />
                     }
                   />

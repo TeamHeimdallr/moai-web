@@ -5,10 +5,14 @@ import LogoText from '~/assets/logos/logo-text.svg?react';
 
 import { ButtonIconLarge } from '~/components/buttons/icon';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+
 interface Props {
   inMenu?: boolean;
 }
 export const Footer = ({ inMenu = false }: Props) => {
+  const { gaAction } = useGAAction();
+
   const sns = [
     { name: 'twitter', url: 'https://twitter.com/MoaiFinance', icon: <IconTwitterX /> },
     { name: 'medium', url: 'https://medium.com/@moai-finance', icon: <IconMedium /> },
@@ -22,7 +26,20 @@ export const Footer = ({ inMenu = false }: Props) => {
       <Text>{`© ${new Date().getFullYear()} Moai Finance, Inc. All Rights Reserved`}</Text>
       <SnsWrapper>
         {sns.map(({ name, url, icon }) => (
-          <ButtonIconLarge key={name} title={name} icon={icon} onClick={() => window.open(url)} />
+          <ButtonIconLarge
+            key={name}
+            title={name}
+            icon={icon}
+            onClick={() => {
+              window.open(url);
+
+              gaAction({
+                action: 'footer-external-link',
+                buttonType: 'icon-large',
+                data: { component: 'footer', name, url },
+              });
+            }}
+          />
         ))}
       </SnsWrapper>
     </Wrapper>

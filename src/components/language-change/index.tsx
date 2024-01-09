@@ -1,13 +1,24 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
 import { IconEnglish, IconKorean } from '~/assets/icons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+
 export const LanguageChange = () => {
+  const { gaLanguageChange } = useGAAction();
   const { i18n } = useTranslation();
+
   const handleClick = () => {
     i18n.language === 'en' ? i18n.changeLanguage('ko') : i18n.changeLanguage('en');
   };
+
+  useEffect(() => {
+    gaLanguageChange();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
+
   return (
     <Wrapper onClick={handleClick}>
       {i18n.language === 'en' ? <IconEnglish /> : <IconKorean />}

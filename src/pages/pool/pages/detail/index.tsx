@@ -4,6 +4,7 @@ import tw, { styled } from 'twin.macro';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useRequirePrarams } from '~/hooks/utils';
 import { POPUP_ID } from '~/types';
@@ -18,6 +19,8 @@ import { PotentialRisks } from '../../components/potential-risks';
 import { UserPoolBalances } from '../../components/user-pool-balances';
 
 const PoolDetailMainPage = () => {
+  useGAPage();
+
   const navigate = useNavigate();
   const { network, id } = useParams();
   useRequirePrarams([!!id, !!network], () => navigate(-1));

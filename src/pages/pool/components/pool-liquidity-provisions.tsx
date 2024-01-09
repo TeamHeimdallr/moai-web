@@ -12,6 +12,8 @@ import { TableMobile } from '~/components/tables/table-mobile';
 
 import { useTableLiquidityProvision } from '~/pages/pool/hooks/components/table/use-table-liquidity-provisions';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -19,6 +21,9 @@ import { getNetworkFull } from '~/utils';
 import { useTablePoolLiquidityProvisionSelectTabStore } from '~/states/components/table/tab';
 
 export const PoolLiquidityProvisions = () => {
+  const { ref } = useGAInView({ name: 'pool-detail-liquidity-provision' });
+  const { gaAction } = useGAAction();
+
   const { network } = useParams();
 
   const { isMD } = useMediaQuery();
@@ -50,8 +55,17 @@ export const PoolLiquidityProvisions = () => {
   const hasMyLiquidity = !!currentAddress && hasMyLiquidityProvision;
 
   return (
-    <Wrapper opened={opened}>
-      <TitleWrapper onClick={() => open(prev => !prev)}>
+    <Wrapper opened={opened} ref={ref}>
+      <TitleWrapper
+        onClick={() => {
+          gaAction({
+            action: 'pool-detail-liquidity-provision-open',
+            data: { page: 'pool-detail', component: 'liquidity-provision', open: !opened },
+          });
+
+          open(prev => !prev);
+        }}
+      >
         <Title>{t('Liquidity provision')}</Title>
         <Icon opened={opened}>
           <ButtonIconLarge icon={<IconDown />} />
@@ -59,7 +73,19 @@ export const PoolLiquidityProvisions = () => {
       </TitleWrapper>
       {opened && (
         <>
-          {hasMyLiquidity && <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />}
+          {hasMyLiquidity && (
+            <Tab
+              tabs={tabs}
+              selectedTab={selectedTab}
+              onClick={key => {
+                gaAction({
+                  action: 'pool-detail-liquidity-provision-tab',
+                  data: { page: 'pool-detail', component: 'liquidity-provision', tab: key },
+                });
+                selectTab(key);
+              }}
+            />
+          )}
           <TableWrapper>
             {isMD ? (
               <Table
@@ -68,7 +94,7 @@ export const PoolLiquidityProvisions = () => {
                 ratio={[2, 3, 2, 2]}
                 type="lighter"
                 hasMore={hasNextPage}
-                handleMoreClick={() => fetchNextPage()}
+                handleMoreClick={fetchNextPage}
               />
             ) : (
               <TableMobile

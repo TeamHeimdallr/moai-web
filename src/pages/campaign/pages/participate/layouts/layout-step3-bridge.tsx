@@ -33,6 +33,8 @@ import { TokenList } from '~/components/token-list';
 
 import { TooltipAddress } from '~/pages/campaign/components/tooltip-address';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber, getTokenDecimal } from '~/utils';
 import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
@@ -51,6 +53,9 @@ export const LayoutStep3Bridge = () => (
 );
 
 const _Bridge = () => {
+  const { ref } = useGAInView({ name: 'campaign-step-3' });
+  const { gaAction } = useGAAction();
+
   const [inputValue, setInputValue] = useState<number>();
 
   const { selectedWallet } = useTheRootNetworkSwitchWalletStore();
@@ -88,12 +93,12 @@ const _Bridge = () => {
     bridge,
   } = useBridgeXrplToRoot({
     fromInput: Number(inputValue || 0),
-    toAddress: evm.address,
-    enabled: !!validToBridge && !!evm.address,
+    toAddress: address,
+    enabled: !!validToBridge && !!address,
   });
 
   const txDate = new Date(blockTimestamp || 0);
-  const isIdle = !txData && !isError && !bridgeSuccess;
+  const isIdle = !txData || !(isError || bridgeSuccess);
   const isSuccess = bridgeSuccess && !!txData;
 
   const toTokenActualAmount = Number(
@@ -110,12 +115,26 @@ const _Bridge = () => {
   });
 
   const handleButtonClick = async () => {
+    gaAction({
+      action: 'campaign-participate-step-3',
+      data: {
+        component: 'campaign-participate',
+        inputValue,
+        toAddress: address,
+        xrpBalance,
+      },
+    });
     await bridge();
   };
 
   const handleLink = () => {
     const txHash = txData?.hash;
     const url = `${SCANNER_URL[NETWORK.XRPL]}/transactions/${txHash}`;
+
+    gaAction({
+      action: 'go-to-transaction',
+      data: { component: 'campaign-step-3', txHash: txHash, link: url },
+    });
 
     window.open(url);
   };
@@ -169,7 +188,7 @@ const _Bridge = () => {
       )}
       {isIdle && (
         <>
-          <Wrapper>
+          <Wrapper ref={ref}>
             <InputNumber
               name={'input'}
               title="From"

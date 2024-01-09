@@ -9,6 +9,7 @@ import { Footer } from '~/components/footer';
 
 import { Gnb } from '~/pages/campaign/components/gnb';
 
+import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { NETWORK, POPUP_ID } from '~/types';
@@ -20,6 +21,8 @@ import { LayoutPartner } from './layouts/layout-partner';
 import { LayoutVoyage } from './layouts/layout-voyage';
 
 const LandingPage = () => {
+  useGAPage();
+
   const { balance } = useCampaignRootBalance();
 
   const { selectNetwork } = useNetwork();

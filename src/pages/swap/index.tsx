@@ -4,17 +4,22 @@ import tw, { css, styled } from 'twin.macro';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
+import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { POPUP_ID } from '~/types';
 
 import { SwapInputGroup } from './components/swap-input-group';
 
 const SwapPage = () => {
+  useGAPage();
+  const { ref } = useGAInView({ name: 'swap' });
+
   const { t } = useTranslation();
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <GnbWrapper banner={!!bannerOpened}>
         <Gnb />
       </GnbWrapper>

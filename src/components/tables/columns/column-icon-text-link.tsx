@@ -5,18 +5,37 @@ import { IconLink } from '~/assets/icons';
 
 import { ButtonIconSmall } from '~/components/buttons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+
 interface Props extends HTMLAttributes<HTMLDivElement> {
   text: string;
   icon?: ReactNode;
 
+  tableKey?: string;
   link?: string;
 
   align?: 'flex-start' | 'center' | 'flex-end';
   address?: boolean;
 }
-export const TableColumnIconTextLink = ({ text, icon, link, align, address, ...rest }: Props) => {
+export const TableColumnIconTextLink = ({
+  text,
+  icon,
+  link,
+  align,
+  address,
+  tableKey,
+  ...rest
+}: Props) => {
+  const { gaAction } = useGAAction();
+
   const handleClick = () => {
     if (!link) return;
+
+    gaAction({
+      action: 'table-column-icon-text-link',
+      text,
+      data: { component: 'column-icon-text-link', link, table: tableKey },
+    });
     window.open(link);
   };
 

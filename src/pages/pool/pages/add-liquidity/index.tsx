@@ -8,6 +8,8 @@ import { ButtonIconLarge } from '~/components/buttons';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
+import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useRequirePrarams } from '~/hooks/utils/use-require-params';
 import { POPUP_ID } from '~/types';
@@ -15,6 +17,9 @@ import { POPUP_ID } from '~/types';
 import { AddLiquidityInputGroup } from '../../components/add-liquidity-input-group';
 
 const PoolDetailAddLiquidityPage = () => {
+  useGAPage();
+  const { ref } = useGAInView({ name: 'add-liquidity' });
+
   const navigate = useNavigate();
 
   const { t } = useTranslation();
@@ -24,7 +29,7 @@ const PoolDetailAddLiquidityPage = () => {
   useRequirePrarams([!!id], () => navigate(-1));
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <GnbWrapper banner={!!opened}>
         <Gnb />
       </GnbWrapper>
