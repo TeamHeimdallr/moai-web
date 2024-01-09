@@ -228,7 +228,7 @@
   "Activate your $XRP": "Activate your $XRP",
   "Activate $XRP": "Activate $XRP",
   "campaign-landing-main-text": "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders\nwithin XRPL to embark on our 'Voyage to the Future.' By joining this journey, you will \nhave the unique opportunity to provide early liquidity to The Root Network. In return,\n you will gain exclusive access to $MOAI pre-mining and special $ROOT rewards.",
-  "Expected APY": "Expected APY",
+  "Expected APR": "Expected APR",
   "My Voyage": "My Voyage",
   "Rewards": "Rewards",
   "Pending": "Pending",
@@ -263,7 +263,7 @@
   "campaign-add-liquidity-success-message": "Successfully added liquidity to liquidity voyage.",
   "campaign-add-liquidity-failed-message": "Added liquidity has failed. Please try again.",
   "Expected APR (10%)": "Expected APR (10%)",
-  "Pre-mining $MOAI APY (3%)": "Pre-mining $MOAI APY (3%)",
+  "Pre-mining $MOAI APR (3%)": "Pre-mining $MOAI APR (3%)",
   "$ROOT reward (7%)": "$ROOT reward (7%)",
   "Return to voyage page": "Return to voyage page",
 
