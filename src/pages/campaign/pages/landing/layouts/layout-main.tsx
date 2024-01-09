@@ -66,7 +66,7 @@ const _LayoutMain = () => {
               <Text>${formatNumber(balance)}</Text>
             </Info>
             <Info>
-              <Label>{t('Expected APY')}</Label>
+              <Label>{t('Expected APR')}</Label>
               <TextInfoWrapper>
                 <Text>{apr ? formatNumber(apr, 4, 'round', 10000) : '0'}%</Text>
                 <AprInfoWrapper>
