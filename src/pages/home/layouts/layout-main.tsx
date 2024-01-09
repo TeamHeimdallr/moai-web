@@ -12,6 +12,7 @@ import { ASSET_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { usePrevious } from '~/hooks/utils';
@@ -29,6 +30,8 @@ export const MainLayout = () => (
 );
 
 const _MainLayout = () => {
+  const { gaAction } = useGAAction();
+
   const [totalValue, setTotalValue] = useState<string>('0');
 
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
@@ -128,6 +131,11 @@ const _MainLayout = () => {
               buttonType="outlined"
               isLoading={!!opened}
               onClick={() => {
+                gaAction({
+                  action: 'connect-wallet',
+                  buttonType: 'primary-large',
+                  data: { page: 'home', layout: 'main' },
+                });
                 setWalletConnectorType({ network: selectedNetwork });
                 open();
               }}
@@ -140,11 +148,9 @@ const _MainLayout = () => {
 };
 
 const _MainLayoutSkeleton = () => {
-  const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { opened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
 
-  const { setWalletConnectorType } = useWalletConnectorTypeStore();
-  const { selectedNetwork } = useNetwork();
   const { evm, xrp } = useConnectedWallet();
 
   const isConnected = !!evm.address || !!xrp.address;
@@ -175,10 +181,6 @@ const _MainLayoutSkeleton = () => {
               text={t('Connect wallet')}
               buttonType="outlined"
               isLoading={!!opened}
-              onClick={() => {
-                setWalletConnectorType({ network: selectedNetwork });
-                open();
-              }}
             />
           </ButtonWrapper>
         </>

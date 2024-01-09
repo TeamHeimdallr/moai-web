@@ -11,6 +11,7 @@ import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 import { Toggle } from '~/components/toggle';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
@@ -33,6 +34,8 @@ export const LiquidityPoolLayout = () => (
   </Suspense>
 );
 const _LiquidityPoolLayout = () => {
+  const { gaAction } = useGAAction();
+
   const isMounted = useRef(false);
 
   const { isMD } = useMediaQuery();
@@ -66,6 +69,11 @@ const _LiquidityPoolLayout = () => {
 
   const handleRowClick = (meta?: Meta) => {
     if (!meta) return;
+
+    gaAction({
+      action: 'liquidity-pool-click',
+      data: { page: 'home', layout: 'liquidity-pool', ...meta },
+    });
     if (selectedNetwork !== meta.network) {
       popupOpen();
       setTargetNetwork(meta.network as NETWORK);
@@ -75,6 +83,11 @@ const _LiquidityPoolLayout = () => {
   };
 
   const handleTokenClick = (token: string) => {
+    gaAction({
+      action: 'token-filter',
+      data: { page: 'home', layout: 'liquidity-pool', token: token },
+    });
+
     if (selectedTokens.includes(token)) {
       setSelectedTokens(selectedTokens.filter(t => t !== token));
     } else {
@@ -121,7 +134,16 @@ const _LiquidityPoolLayout = () => {
         <Title>{t(`Liquidity pools`)}</Title>
         <AllChainToggle>
           {t(`All supported chains`)}
-          <Toggle selected={showAllPools} onClick={() => setShowAllPools(!showAllPools)} />
+          <Toggle
+            selected={showAllPools}
+            onClick={() => {
+              gaAction({
+                action: 'toggel-all-support-chains',
+                data: { page: 'home', layout: 'liquidity-pool', showAllPools: !showAllPools },
+              });
+              setShowAllPools(!showAllPools);
+            }}
+          />
         </AllChainToggle>
       </TitleWrapper>
       <BadgeWrapper>

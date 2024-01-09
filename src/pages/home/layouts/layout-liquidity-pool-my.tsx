@@ -8,6 +8,7 @@ import { TableSkeleton } from '~/components/skeleton/table-skeleton';
 import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
@@ -29,6 +30,8 @@ export const MyLiquidityLayout = () => (
 );
 
 const _MyLiquidityLayout = () => {
+  const { gaAction } = useGAAction();
+
   const {
     tableColumns,
     tableData,
@@ -48,6 +51,11 @@ const _MyLiquidityLayout = () => {
 
   const handleRowClick = (meta?: Meta) => {
     if (!meta) return;
+
+    gaAction({
+      action: 'liquidity-pool-click',
+      data: { page: 'home', layout: 'liquidity-pool-my', ...meta },
+    });
     if (selectedNetwork !== meta.network) {
       popupOpen();
       setTargetNetwork(meta.network as NETWORK);

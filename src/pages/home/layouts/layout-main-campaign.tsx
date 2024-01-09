@@ -13,6 +13,7 @@ import { BASE_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons/primary';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useMediaQuery } from '~/hooks/utils';
 import { POPUP_ID } from '~/types';
@@ -24,6 +25,8 @@ interface RemainTime {
   seconds: string;
 }
 export const LayoutMainCampaign = () => {
+  const { gaAction } = useGAAction();
+
   const [now, setNow] = useState(new Date());
   const [remainTime, setRemainTime] = useState<RemainTime>({
     days: '00',
@@ -108,7 +111,15 @@ export const LayoutMainCampaign = () => {
             text={t('Activate your $XRP')}
             buttonType="outlined"
             style={{ width: 'auto' }}
-            onClick={() => window.open(`${BASE_URL}/campaign/participate`)}
+            onClick={() => {
+              gaAction({
+                action: 'activate-campaign',
+                buttonType: 'primary-large',
+                data: { page: 'home', layout: 'campaign-main', linkTo: '/campaign/participate' },
+              });
+
+              window.open(`${BASE_URL}/campaign/participate`);
+            }}
           />
         )}
       </ContentWrapper>

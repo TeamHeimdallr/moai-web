@@ -4,6 +4,8 @@ import { IS_LOCAL } from '~/constants';
 
 import { analytics } from '~/configs/analystics';
 
+import { useConnectedWallet } from '../wallets';
+
 interface GAActionProps {
   page?: string;
 
@@ -15,10 +17,18 @@ interface GAActionProps {
 
   event?: string; // click | hover | ...
 
-  data?: Record<string, string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: Record<string, any>;
 }
 
 export const useGAAction = () => {
+  const { evm, xrp, fpass } = useConnectedWallet();
+  const walletAddress = {
+    evm: evm.address,
+    xrp: xrp.address,
+    fpass: fpass.address,
+  };
+
   const location = useLocation();
 
   const gaAction = ({
@@ -32,6 +42,7 @@ export const useGAAction = () => {
   }: GAActionProps) => {
     if (IS_LOCAL) {
       console.log('[GTM] action', {
+        walletAddress,
         page,
         action,
         text,
@@ -44,6 +55,7 @@ export const useGAAction = () => {
       return;
     }
     analytics.track(action, {
+      walletAddress,
       page,
       action,
       text,

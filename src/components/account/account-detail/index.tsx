@@ -23,6 +23,7 @@ import { IS_MAINNET } from '~/constants';
 import { ButtonIconSmall } from '~/components/buttons/icon';
 import { ButtonPrimarySmallIconLeading } from '~/components/buttons/primary/small-icon-leading';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -35,6 +36,8 @@ import { FuturepassCreatePopup } from '../futurepass-create-popup';
 import { Slippage } from '../slippage';
 
 export const AccountDetail = () => {
+  const { gaAction } = useGAAction();
+
   const { network } = useParams();
 
   const { evm, xrp, fpass } = useConnectedWallet();
@@ -59,10 +62,39 @@ export const AccountDetail = () => {
   const { t } = useTranslation();
 
   const handleCopy = (address: string, callback: (truncatedAddress: string) => void) => {
+    gaAction({
+      action: 'copy-address',
+      buttonType: 'icon-small',
+      data: { component: 'gnb', address },
+    });
+
     copy(address);
 
     callback(t('Copied!'));
     setTimeout(() => callback(truncateAddress(address)), 2000);
+  };
+
+  const handleGoToFpass = () => {
+    gaAction({
+      action: 'goto-fpass',
+      buttonType: 'icon-small',
+      data: { component: 'gnb' },
+    });
+    window.open('https://futurepass.futureverse.app/account');
+  };
+
+  const handleToggleWalletTrn = () => {
+    gaAction({
+      action: 'toggle-fpass-evm-wallet',
+      buttonType: 'primary-small-icon-leading',
+      data: {
+        component: 'gnb',
+        from: selectedWalletTRN,
+        to: selectedWalletTRN === 'fpass' ? 'evm' : 'fpass',
+      },
+    });
+
+    toggleWalletTRN();
   };
 
   const fpassComponent = (
@@ -91,14 +123,17 @@ export const AccountDetail = () => {
                     }}
                   />
                   {selectedWalletTRN === 'fpass' && (
-                    <ButtonIconSmall
-                      icon={<IconLink />}
-                      onClick={() => window.open('https://futurepass.futureverse.app/account/')}
-                    />
+                    <ButtonIconSmall icon={<IconLink />} onClick={handleGoToFpass} />
                   )}
                   <ButtonIconSmall
                     icon={<IconLogout />}
                     onClick={() => {
+                      gaAction({
+                        action: 'disconnect-fpass-evm',
+                        buttonType: 'icon-small',
+                        data: { component: 'gnb' },
+                      });
+
                       if (selectedWalletTRN === 'fpass') return fpass.disconnect();
                       return evm.disconnect();
                     }}
@@ -141,7 +176,7 @@ export const AccountDetail = () => {
                 selectedWalletTRN === 'fpass' ? 'Switch to MetaMask' : 'Switch to FuturePass'
               )}
               icon={<IconChange width={20} height={20} fill={COLOR.PRIMARY[60]} />}
-              onClick={toggleWalletTRN}
+              onClick={handleToggleWalletTrn}
             />
           </TRNAccountSwitchButtonWrapper>
         </TRNAccountWrapper>
@@ -149,10 +184,14 @@ export const AccountDetail = () => {
         <AccountNotConnected
           onClick={() => {
             if (evm.address) {
+              gaAction({ action: 'create-futurepass', data: { component: 'gnb' } });
+
               // in mainnet, open futurepass create page
               if (IS_MAINNET) window.open('https://futurepass.futureverse.app/stuff/');
               else openFuturepassCreate();
             } else {
+              gaAction({ action: 'connect-fpass-evm', data: { component: 'gnb' } });
+
               setWalletConnectorType({ network: NETWORK.THE_ROOT_NETWORK });
               openConnectWallet();
             }
@@ -188,7 +227,17 @@ export const AccountDetail = () => {
                   icon={<IconCopy />}
                   onClick={() => handleCopy(evm.address, setEvmAddress)}
                 />
-                <ButtonIconSmall icon={<IconLogout />} onClick={evm.disconnect} />
+                <ButtonIconSmall
+                  icon={<IconLogout />}
+                  onClick={() => {
+                    gaAction({
+                      action: 'disconnect-evm',
+                      buttonType: 'icon-small',
+                      data: { component: 'gnb' },
+                    });
+                    evm.disconnect();
+                  }}
+                />
               </InnerWrapper>
             </AddressTextWrapper>
 
@@ -198,6 +247,8 @@ export const AccountDetail = () => {
       ) : (
         <AccountNotConnected
           onClick={() => {
+            gaAction({ action: 'connect-evm', data: { component: 'gnb' } });
+
             setWalletConnectorType({ network: NETWORK.EVM_SIDECHAIN });
             openConnectWallet();
           }}
@@ -244,6 +295,8 @@ export const AccountDetail = () => {
       ) : (
         <AccountNotConnected
           onClick={() => {
+            gaAction({ action: 'connect-xrpl', data: { component: 'gnb' } });
+
             setWalletConnectorType({ network: NETWORK.XRPL });
             openConnectWallet();
           }}
