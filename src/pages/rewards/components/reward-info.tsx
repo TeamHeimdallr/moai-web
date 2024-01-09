@@ -5,12 +5,16 @@ import tw from 'twin.macro';
 
 import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
 
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
 
 export const RewardInfo = () => {
+  const { ref } = useGAInView({ name: 'reward-info' });
+  const { ref: refMy } = useGAInView({ name: 'reward-my-info' });
+
   const { t } = useTranslation();
 
   const { network } = useParams();
@@ -45,13 +49,13 @@ export const RewardInfo = () => {
   const formattedMyReward = myReward ? `${formatNumber(myReward, 4, 'floor', 10 ** 8)}` : '0';
 
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <InnerWrapper>
         <InfoCard name={t('Ends at')} value={formattedEndsAt} subValue={formattedEndsAtTime} />
         <InfoCard name={t('Total Reward')} value={formattedTotalReward} subValue="veMOI" />
       </InnerWrapper>
       {currentAddress && (
-        <InnerWrapper>
+        <InnerWrapper ref={refMy}>
           <InfoCard name={t('My Volume')} value={formattedMyVolume} />
           <InfoCard name={t('My Reward')} value={formattedMyReward} subValue="veMOI" />
         </InnerWrapper>

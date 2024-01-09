@@ -88,6 +88,7 @@ export const useTableRewards = () => {
                 />
               }
               address
+              tableKey="rewards"
               link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'accounts' : 'address'}/${
                 d?.address || ''
               }`}
@@ -168,6 +169,7 @@ export const useTableRewards = () => {
                   />
                 }
                 address
+                tableKey="rewards"
                 link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'accounts' : 'address'}/${
                   d?.address || ''
                 }`}
