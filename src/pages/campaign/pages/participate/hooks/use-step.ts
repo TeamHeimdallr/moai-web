@@ -48,6 +48,7 @@ export const useStep = () => {
 
     // in bridge step, always enable next button
     if (step === 3) return true;
+    if (step === MAX_STEP) return false;
 
     return stepStatus[step - 1].status === 'done';
   }, [isInitial, step, stepStatus]);
