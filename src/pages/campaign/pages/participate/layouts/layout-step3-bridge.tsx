@@ -38,6 +38,8 @@ import { DATE_FORMATTER, formatNumber, getTokenDecimal } from '~/utils';
 import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { NETWORK, TOOLTIP_ID } from '~/types';
 
+import { useStep } from '../hooks/use-step';
+
 interface InputFormState {
   input: number;
 }
@@ -54,6 +56,8 @@ const _Bridge = () => {
   const { selectedWallet } = useTheRootNetworkSwitchWalletStore();
   const { evm, fpass } = useConnectedWallet();
   const { userAllTokenBalances } = useUserAllTokenBalances();
+
+  const { goNext, setStepStatus } = useStep();
 
   const { t } = useTranslation();
 
@@ -144,7 +148,10 @@ const _Bridge = () => {
                 <IconLink />
               </ClickableIcon>
             </TimeWrapper>
-            <ButtonPrimaryLarge text={t('Continue to add liquidity')} />
+            <ButtonPrimaryLarge
+              text={t('Continue to add liquidity')}
+              onClick={() => goNext(() => setStepStatus({ id: 3, status: 'done' }, 2))}
+            />
           </SuccessBottomWrapper>
         </SuccessWrapper>
       )}
