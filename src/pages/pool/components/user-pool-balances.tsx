@@ -12,6 +12,8 @@ import { FuturepassCreatePopup } from '~/components/account/futurepass-create-po
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { TokenList } from '~/components/token-list';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
@@ -22,6 +24,9 @@ import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector
 import { POPUP_ID } from '~/types';
 
 export const UserPoolBalances = () => {
+  const { ref } = useGAInView({ name: 'pool-detail-user-pool-balance' });
+  const { gaAction } = useGAAction();
+
   const navigate = useNavigate();
 
   const { isMD } = useMediaQuery();
@@ -50,17 +55,29 @@ export const UserPoolBalances = () => {
 
   const handleAddLiquidity = () => {
     if (!address) return;
-    navigate(`/pools/${network}/${id}/deposit`);
+
+    const link = `/pools/${network}/${id}/deposit`;
+    gaAction({
+      action: 'go-to-add-liquidity',
+      data: { page: 'pool-detail', component: 'user-pool-balance', link },
+    });
+    navigate(link);
   };
 
   const handleWithdrawLiquidity = () => {
     if (!address) return;
-    navigate(`/pools/${network}/${id}/withdraw`);
+
+    const link = `/pools/${network}/${id}/withdraw`;
+    gaAction({
+      action: 'go-to-withdraw-liquidity',
+      data: { page: 'pool-detail', component: 'user-pool-balance', link },
+    });
+    navigate(link);
   };
 
   const ButtonPrimary = isMD ? ButtonPrimaryLarge : ButtonPrimaryMedium;
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <Header>
         {t('My liquidity')}
         <Balance>${formatNumber(userLpTokenValue || 0, 4)}</Balance>
@@ -111,6 +128,10 @@ export const UserPoolBalances = () => {
               onClick={() => {
                 setWalletConnectorType({ network: currentNetwork });
                 open();
+                gaAction({
+                  action: 'connect-wallet',
+                  data: { page: 'pool-detail', component: 'user-pool-balance' },
+                });
               }}
             />
           )}
