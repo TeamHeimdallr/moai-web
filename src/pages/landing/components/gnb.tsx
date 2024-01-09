@@ -10,9 +10,11 @@ import LogoText from '~/assets/logos/logo-text.svg?react';
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
 import { LanguageChange } from '~/components/language-change';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useMediaQuery } from '~/hooks/utils';
 
 export const Gnb = () => {
+  const { gaAction } = useGAAction();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { isSMD } = useMediaQuery();
@@ -21,14 +23,43 @@ export const Gnb = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   useOnClickOutside(dropdownRef, () => setDropdownOpen(false));
 
+  const openDropdown = () => {
+    setDropdownOpen(true);
+
+    gaAction({
+      action: 'get-started',
+      text: 'Get started',
+      type: 'dropdown',
+      buttonType: 'primary-large',
+      data: {
+        page: 'landing',
+        component: 'gnb',
+      },
+    });
+  };
+
   const handleMainnetClick = () => {
     window.open('https://app.moai-finance.xyz/');
     setDropdownOpen(false);
+
+    gaAction({
+      action: 'get-started--mainnet',
+      text: 'mainnet',
+      buttonType: 'custom-dropdown',
+      data: { page: 'landing', lintTo: 'https://app.moai-finance.xyz/' },
+    });
   };
 
   const handleDevnetClick = () => {
     window.open('https://app-devnet.moai-finance.xyz/');
     setDropdownOpen(false);
+
+    gaAction({
+      action: 'get-started--devnet',
+      text: 'devnet',
+      buttonType: 'custom-dropdown',
+      data: { page: 'landing', lintTo: 'https://app-devnet.moai-finance.xyz/' },
+    });
   };
 
   return (
@@ -42,13 +73,13 @@ export const Gnb = () => {
             <ButtonPrimaryLarge
               text={t('Get started')}
               buttonType="filled"
-              onClick={() => setDropdownOpen(true)}
+              onClick={openDropdown}
             />
           ) : (
             <ButtonPrimaryMedium
               text={t('Get started')}
               buttonType="filled"
-              onClick={() => setDropdownOpen(true)}
+              onClick={openDropdown}
             />
           )}
         </ButtonWrapper>

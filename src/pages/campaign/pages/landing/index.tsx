@@ -10,7 +10,6 @@ import { Footer } from '~/components/footer';
 import { Gnb } from '~/pages/campaign/components/gnb';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
-import { useGAScroll } from '~/hooks/analaystics/ga-scroll';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { NETWORK, POPUP_ID } from '~/types';
@@ -23,7 +22,6 @@ import { LayoutVoyage } from './layouts/layout-voyage';
 
 const LandingPage = () => {
   useGAPage();
-  useGAScroll();
 
   const { balance } = useCampaignRootBalance();
 

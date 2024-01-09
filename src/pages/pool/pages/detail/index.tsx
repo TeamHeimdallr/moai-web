@@ -5,7 +5,6 @@ import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
-import { useGAScroll } from '~/hooks/analaystics/ga-scroll';
 import { usePopup } from '~/hooks/components';
 import { useRequirePrarams } from '~/hooks/utils';
 import { POPUP_ID } from '~/types';
@@ -21,7 +20,6 @@ import { UserPoolBalances } from '../../components/user-pool-balances';
 
 const PoolDetailMainPage = () => {
   useGAPage();
-  useGAScroll();
 
   const navigate = useNavigate();
   const { network, id } = useParams();
