@@ -9,7 +9,10 @@ export const useGAPage = () => {
   const location = useLocation();
 
   useEffect(() => {
-    if (IS_LOCAL) console.log(`[GA] page entered ${location.pathname}`);
+    if (IS_LOCAL) {
+      console.log(`[GA] page entered ${location.pathname}`);
+      return;
+    }
     analytics.page();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -8,7 +8,10 @@ import { analytics } from '~/configs/analystics';
 export const useGARouteChange = () => {
   useEffect(() => {
     const remove = onRouteChange(newRoutePath => {
-      if (IS_LOCAL) console.log('[GA] new route path', newRoutePath);
+      if (IS_LOCAL) {
+        console.log('[GA] new route path', newRoutePath);
+        return;
+      }
       analytics.page();
     });
 
