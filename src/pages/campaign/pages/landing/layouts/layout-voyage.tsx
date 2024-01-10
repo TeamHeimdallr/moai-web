@@ -373,6 +373,7 @@ const _LayoutVoyage = () => {
             pool={pool}
             lpTokenPrice={lpTokenPrice}
             refetchBalance={refetch}
+            disableSuccessNavigate
           />
         )}
       </InnerWrapper>

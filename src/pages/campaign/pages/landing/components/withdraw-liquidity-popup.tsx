@@ -46,23 +46,35 @@ interface InputFormState {
 interface Props {
   pool?: IPool;
   lpTokenPrice: number;
+  disableSuccessNavigate?: boolean;
 
   refetchBalance?: () => void;
 }
 
-export const WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) => {
+export const WithdrawLiquidityPopup = ({
+  pool,
+  lpTokenPrice,
+  disableSuccessNavigate,
+  refetchBalance,
+}: Props) => {
   return (
     <Suspense fallback={<_WithdrawLiquidityPopupSkeleton />}>
       <_WithdrawLiquidityPopup
         pool={pool}
         lpTokenPrice={lpTokenPrice}
         refetchBalance={refetchBalance}
+        disableSuccessNavigate={disableSuccessNavigate}
       />
     </Suspense>
   );
 };
 
-const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) => {
+const _WithdrawLiquidityPopup = ({
+  pool,
+  lpTokenPrice,
+  disableSuccessNavigate,
+  refetchBalance,
+}: Props) => {
   const { ref } = useGAInView({ name: 'campaign-withdraw-liquidity-popup' });
   const { gaAction } = useGAAction();
 
@@ -255,6 +267,8 @@ const _WithdrawLiquidityPopup = ({ pool, lpTokenPrice, refetchBalance }: Props) 
         });
 
         close();
+
+        if (disableSuccessNavigate) return;
         navigate(`/campaign`);
         return;
       }

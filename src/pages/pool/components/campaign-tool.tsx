@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useParams } from 'react-router';
 import { css } from '@emotion/react';
 import { differenceInSeconds, intervalToDuration } from 'date-fns';
 import { debounce } from 'lodash-es';
@@ -21,7 +22,7 @@ import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info
 
 import { IconNext, IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 
-import { POOL_ID } from '~/constants';
+import { BASE_URL, POOL_ID } from '~/constants';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMediumIconTrailing } from '~/components/buttons';
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
@@ -44,6 +45,8 @@ interface RemainLockupTime {
 }
 export const CampaignTool = () => {
   const { gaAction } = useGAAction();
+
+  const { id } = useParams();
 
   const { isMD } = useMediaQuery();
   const { t } = useTranslation();
@@ -172,6 +175,15 @@ export const CampaignTool = () => {
     [depositedTime, lockupPeriod]
   );
 
+  const handleGoToCampaign = () => {
+    gaAction({
+      action: 'go-to-campaign-add-liquidity',
+      data: { page: 'pool-detail', component: 'campaign-tool', link: '/campaign/participate' },
+    });
+
+    window.open(`${BASE_URL}/campaign/participate`);
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -213,17 +225,26 @@ export const CampaignTool = () => {
 
   const isEmpty =
     !bothConnected || (amountFarmedInBPT <= 0 && campaignReward <= 0 && rootReward <= 0);
+  const isRootXrpPool = id === POOL_ID?.[NETWORK.THE_ROOT_NETWORK]?.ROOT_XRP;
 
-  if (!started || isEmpty) return <></>;
+  if (!started || isEmpty || !isRootXrpPool) return <></>;
   return (
     <Wrapper>
       <TitleWrapper>
         <Title>{t('My Voyage')}</Title>
         <ButtonWrapper>
           {isMD ? (
-            <ButtonPrimaryLargeIconTrailing text={t('Add liquidity')} icon={<IconNext />} />
+            <ButtonPrimaryLargeIconTrailing
+              text={t('Add liquidity')}
+              icon={<IconNext />}
+              onClick={handleGoToCampaign}
+            />
           ) : (
-            <ButtonPrimaryMediumIconTrailing text={t('Add liquidity')} icon={<IconNext />} />
+            <ButtonPrimaryMediumIconTrailing
+              text={t('Add liquidity')}
+              icon={<IconNext />}
+              onClick={handleGoToCampaign}
+            />
           )}
         </ButtonWrapper>
       </TitleWrapper>
@@ -320,7 +341,12 @@ export const CampaignTool = () => {
       </ContentWrapper>
 
       {withdrawPopupOpened && withdrawLiquidityEnabled && (
-        <WithdrawLiquidityPopup pool={pool} lpTokenPrice={lpTokenPrice} refetchBalance={refetch} />
+        <WithdrawLiquidityPopup
+          pool={pool}
+          lpTokenPrice={lpTokenPrice}
+          refetchBalance={refetch}
+          disableSuccessNavigate
+        />
       )}
     </Wrapper>
   );
