@@ -32,7 +32,7 @@ const _LayoutMain = () => {
   const { ref } = useGAInView({ name: 'campaign-layout-main' });
   const { gaAction } = useGAAction();
 
-  const { balance, apr, moiApr } = useCampaignLpBalance();
+  const { value, apr, moiApr } = useCampaignLpBalance();
 
   const { isMD } = useMediaQuery();
   const { t, i18n } = useTranslation();
@@ -69,8 +69,8 @@ const _LayoutMain = () => {
           </TextMain>
           <InfoWrapper>
             <Info>
-              <Label>Total value locked</Label>
-              <Text>${formatNumber(balance)}</Text>
+              <Label>{t('Total value locked')}</Label>
+              <Text>${formatNumber(value)}</Text>
             </Info>
             <Info>
               <Label>{t('Expected APR')}</Label>
