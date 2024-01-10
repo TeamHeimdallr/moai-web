@@ -163,8 +163,6 @@ export const CampaignTool = () => {
 
   const myDepositInXrp = 2 * (myDepositBalance / lpTokenTotalSupply) * xrpBalanceInPool;
 
-  const bothConnected = xrp.isConnected && evm.isConnected;
-
   const nowTime = now.getTime() / 1000;
   const withdrawLiquidityEnabled =
     !!myDepositBalance && myDepositBalance > 0n && depositedTime + lockupPeriod < nowTime;
@@ -224,7 +222,8 @@ export const CampaignTool = () => {
   }, [claimIsSuccess, claimTxData]);
 
   const isEmpty =
-    !bothConnected || (amountFarmedInBPT <= 0 && campaignReward <= 0 && rootReward <= 0);
+    !evm.isConnected || (amountFarmedInBPT <= 0 && campaignReward <= 0 && rootReward <= 0);
+
   const isRootXrpPool = id === POOL_ID?.[NETWORK.THE_ROOT_NETWORK]?.ROOT_XRP;
 
   if (!started || isEmpty || !isRootXrpPool) return <></>;

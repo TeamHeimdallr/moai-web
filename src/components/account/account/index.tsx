@@ -46,8 +46,10 @@ export const Account = () => {
                   <Image src={imageWalletCrossmark} alt="crossmark wallet" />
                 ) : xrp.connectedConnector === 'xumm' ? (
                   <Image src={imageWalletXumm} alt="xumm wallet" />
-                ) : (
+                ) : xrp.connectedConnector === 'gem' ? (
                   <Image src={imageWalletGem} alt="gem wallet" />
+                ) : (
+                  <></>
                 )}
               </ConnectedXrp>
             )}
@@ -71,8 +73,10 @@ export const Account = () => {
                   <Image src={imageWalletCrossmark} alt="crossmark wallet" />
                 ) : xrp.connectedConnector === 'xumm' ? (
                   <Image src={imageWalletXumm} alt="xumm wallet" />
-                ) : (
+                ) : xrp.connectedConnector === 'gem' ? (
                   <Image src={imageWalletGem} alt="gem wallet" />
+                ) : (
+                  <></>
                 )}
               </ConnectedBase>
             </InnerWrapper>

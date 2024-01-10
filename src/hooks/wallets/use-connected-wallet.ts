@@ -202,7 +202,8 @@ export const useConnectedXrplWallet = () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         submitTransaction: async (tx: any) => await crossmarkSdk.signAndSubmitAndWait(tx),
       }
-    : {
+    : isXrpGemConnected
+    ? {
         isConnected: isXrpGemConnected,
         connect: connectXrpGem,
         disconnect: disconnectXrpGem,
@@ -211,7 +212,15 @@ export const useConnectedXrplWallet = () => {
         connectedConnector: 'gem',
         submitTransaction: async (tx: Transaction) =>
           (await gemSubmitTransaction({ transaction: tx })) as SubmitTransactionResponse,
+      }
+    : {
+        isConnected: false,
+        connect: () => {},
+        disconnect: () => {},
+        address: '',
+        truncatedAddress: '',
+        connectedConnector: '',
+        submitTransaction: async (_tx: Transaction) => {},
       };
-
   return xrp;
 };

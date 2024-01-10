@@ -182,6 +182,9 @@ const _LayoutVoyage = () => {
     [depositedTime, lockupPeriod]
   );
 
+  const isEmpty =
+    !evm.isConnected || (amountFarmedInBPT <= 0 && campaignReward <= 0 && rootReward <= 0);
+
   const handleClick = () => {
     if (!isEmpty || bothConnected) {
       gaAction({
@@ -264,9 +267,6 @@ const _LayoutVoyage = () => {
     if (claimIsSuccess && claimTxData) userCampaignInfoRefetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claimIsSuccess, claimTxData]);
-
-  const isEmpty =
-    !bothConnected || (amountFarmedInBPT <= 0 && campaignReward <= 0 && rootReward <= 0);
 
   return (
     <Wrapper ref={ref}>
