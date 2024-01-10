@@ -165,7 +165,6 @@ const _LayoutVoyage = () => {
   const myDepositInXrp = 2 * (myDepositBalance / lpTokenTotalSupply) * xrpBalanceInPool;
 
   const bothConnected = xrp.isConnected && evm.isConnected;
-  const isEmpty = !(bothConnected && amountFarmedInBPT > 0);
 
   const emptyText = !bothConnected
     ? 'To check your voyage, connect both your XRP\n wallet and Root Network wallet.'
@@ -265,6 +264,9 @@ const _LayoutVoyage = () => {
     if (claimIsSuccess && claimTxData) userCampaignInfoRefetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claimIsSuccess, claimTxData]);
+
+  const isEmpty =
+    !bothConnected || (amountFarmedInBPT <= 0 && campaignReward <= 0 && rootReward <= 0);
 
   return (
     <Wrapper ref={ref}>
@@ -371,6 +373,7 @@ const _LayoutVoyage = () => {
             pool={pool}
             lpTokenPrice={lpTokenPrice}
             refetchBalance={refetch}
+            disableSuccessNavigate
           />
         )}
       </InnerWrapper>
