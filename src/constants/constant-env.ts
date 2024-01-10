@@ -49,4 +49,8 @@ export const GA_DEVNET = import.meta.env.VITE_GA_DEVNET;
 
 export const GTM_MAINNET = import.meta.env.VITE_GTM_MAINNET;
 export const GTM_DEVNET = import.meta.env.VITE_GTM_DEVNET;
+
+export const AMPLITUDE_MAINNET = import.meta.env.VITE_AMPLITUDE_MAINNET;
+export const AMPLITUDE_DEVNET = import.meta.env.VITE_AMPLITUDE_DEVNET;
+
 export const ENABLE_GA_LOG = import.meta.env.VITE_GA_LOG_ENABLE === 'true';
