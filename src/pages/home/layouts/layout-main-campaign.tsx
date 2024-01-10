@@ -78,7 +78,7 @@ export const LayoutMainCampaign = () => {
   return (
     <MainWrapper ref={ref} banner={!!openedBanner}>
       <ContentWrapper>
-        <ComingSoon>{t('Coming soon')}</ComingSoon>
+        {!started && <ComingSoon>{t('Coming soon')}</ComingSoon>}
         <TitleWrapper>
           <LogoWrapper>
             <Logo1 className="svg-shadow" width={isMD ? 223 : 149} height={isMD ? 36 : 24} />
@@ -117,10 +117,10 @@ export const LayoutMainCampaign = () => {
               gaAction({
                 action: 'activate-campaign',
                 buttonType: 'primary-large',
-                data: { page: 'home', layout: 'campaign-main', linkTo: '/campaign/participate' },
+                data: { page: 'home', layout: 'campaign-main', linkTo: '/campaign' },
               });
 
-              window.open(`${BASE_URL}/campaign/participate`);
+              window.open(`${BASE_URL}/campaign`);
             }}
           />
         )}
