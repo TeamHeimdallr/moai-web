@@ -8,7 +8,10 @@ import { IToken } from '~/types';
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
   balance: number;
+
   value?: number;
+  showValue?: boolean;
+
   convertedToken?: IToken;
   convertedBalance?: number;
   image?: ReactNode;
@@ -20,6 +23,7 @@ export const TokenListVertical = ({
   token,
   balance,
   value,
+  showValue = true,
   convertedToken,
   convertedBalance,
   image,
@@ -37,7 +41,7 @@ export const TokenListVertical = ({
         <Description>
           <Balance>{formatNumber(balance, 6)}</Balance>
           {/* compare value whether undefined or not, since value could be 0 */}
-          {
+          {showValue && (
             <Value>
               {value !== undefined && (
                 <>
@@ -48,7 +52,7 @@ export const TokenListVertical = ({
                 </>
               )}
             </Value>
-          }
+          )}
         </Description>
       </TokenWrapper>
       {button && <ButtonWrapper>{button}</ButtonWrapper>}
