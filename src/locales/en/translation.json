@@ -318,5 +318,7 @@
   "accept-campaign-lockup": "I accept a 24h lockup period will be applied when adding liquidity through campaigns.",
 
   "Lack of Gas Fee": "Lack of Gas Fee",
-  "lack-of-gas-fee-message": "Not enough balance for gas fee. Recommend leaving 10+ XRP for the gas fee."
+  "lack-of-gas-fee-message": "Not enough balance for gas fee. Recommend leaving 10+ XRP for the gas fee.",
+
+  "Total value locked": "Total value locked"
 }

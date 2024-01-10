@@ -331,5 +331,7 @@
   "accept-campaign-lockup": "캠페인을 통해 유동성을 공급하는 경우 24시간 동안 락업이 걸리는 것에 동의합니다.",
 
   "Lack of gas fee": "가스비 부족",
-  "lack-of-gas-fee-message": "가스비로 지불할 잔액이 부족합니다. 가스비 지불을 위해 10+ XRP을 남겨두는 것을 권장합니다."
+  "lack-of-gas-fee-message": "가스비로 지불할 잔액이 부족합니다. 가스비 지불을 위해 10+ XRP을 남겨두는 것을 권장합니다.",
+
+  "Total value locked": "예치 총량"
 }

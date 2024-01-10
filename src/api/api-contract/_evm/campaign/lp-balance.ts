@@ -1,5 +1,5 @@
 import { differenceInSeconds } from 'date-fns';
-import { Address, formatUnits } from 'viem';
+import { Abi, Address, formatEther, formatUnits } from 'viem';
 import { useContractRead } from 'wagmi';
 
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
@@ -7,11 +7,15 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { CAMPAIGN_ADDRESS, POOL_ID } from '~/constants';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { NETWORK } from '~/types';
 
-import { ERC20_TOKEN_ABI } from '~/abi';
+import { BALANCER_LP_ABI, ERC20_TOKEN_ABI } from '~/abi';
 
 export const useCampaignLpBalance = () => {
+  const { selectedNetwork } = useNetwork();
+
+  const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
   const { data: campaignData } = useGetCampaignsQuery(
     {
       queries: {
@@ -40,6 +44,7 @@ export const useCampaignLpBalance = () => {
   const { pool } = poolData || {};
   const { moiApr, lpToken } = pool || {};
 
+  const poolAddress = pool?.address;
   const lpTokenAddress = lpToken?.address;
   const apr = (moiApr || 0) + 10; // moiApr + 10% (10% is the fixed ROOT APR)
 
@@ -49,13 +54,29 @@ export const useCampaignLpBalance = () => {
     functionName: 'balanceOf',
     args: [CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK]],
     staleTime: 1000 * 3,
-    enabled: !!enabled && !!lpTokenAddress,
+    enabled: !!enabled && !!lpTokenAddress && isRoot,
   });
 
+  const { data: lpTokenTotalSupplyData } = useContractRead({
+    address: poolAddress as Address,
+    abi: BALANCER_LP_ABI as Abi,
+    functionName: 'totalSupply',
+
+    staleTime: 1000 * 3,
+    enabled: !!poolAddress && isRoot,
+  });
+
+  const lpTokenTotalSupply = Number(formatEther((lpTokenTotalSupplyData || 0n) as bigint));
+  const lpTokenPrice = Number(lpTokenTotalSupply ? (pool?.value || 0) / lpTokenTotalSupply : 0);
+
   const balance = Number(formatUnits((data || 0n) as bigint, 18));
+  const value = balance * lpTokenPrice;
+
   return {
     balance,
     balanceRaw: data || 0n,
+
+    value,
 
     apr,
     moiApr,
