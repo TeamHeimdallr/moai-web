@@ -43,6 +43,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@analytics/amplitude@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "@analytics/amplitude@npm:0.1.3"
+  checksum: 5f749e3847c7c2854028ac611c99e0a32c53d02e7652315c9ec0eddb08ad800f2893fe61b36a2c7a45d3377ad89046e8bc01c216a95c68f760f9b213e183b8ca
+  languageName: node
+  linkType: hard
+
 "@analytics/cookie-utils@npm:^0.2.12":
   version: 0.2.12
   resolution: "@analytics/cookie-utils@npm:0.2.12"
@@ -3142,6 +3149,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@moai-finance/web@workspace:."
   dependencies:
+    "@analytics/amplitude": ^0.1.3
     "@analytics/google-analytics": ^1.0.7
     "@analytics/google-tag-manager": ^0.5.5
     "@analytics/router-utils": ^0.1.1
