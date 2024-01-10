@@ -1,8 +1,26 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { css } from '@emotion/react';
+import { differenceInSeconds, intervalToDuration } from 'date-fns';
+import { debounce } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
+import { useCampaignInfo } from '~/api/api-contract/_evm/campaign/campaign-info';
+import { useClaim } from '~/api/api-contract/_evm/campaign/claim';
+import {
+  useClaim as useClaimSubstrate,
+  useClaimPrepare,
+} from '~/api/api-contract/_evm/campaign/claim-substrate';
+import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
+import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
+import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
+import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
+
 import { IconNext, IconTokenMoai, IconTokenRoot, IconTokenXrp } from '~/assets/icons';
+
+import { BASE_URL, POOL_ID } from '~/constants';
 
 import {
   ButtonPrimaryLarge,
@@ -12,12 +30,229 @@ import {
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
 
 import { TokenList } from '~/pages/campaign/pages/landing/components/token-list';
+import { useCampaignStepStore } from '~/pages/campaign/pages/participate/states/step';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { usePopup } from '~/hooks/components';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
+import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkAbbr } from '~/utils';
+import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
+import { NETWORK, POPUP_ID } from '~/types';
 
+interface RemainLockupTime {
+  hours: string;
+  minutes: string;
+  seconds: string;
+}
 export const CampaignTool = () => {
+  const { gaAction } = useGAAction();
+
   const { isMD } = useMediaQuery();
   const { t } = useTranslation();
+
+  const [estimatedClaimFee, setEstimatedClaimFee] = useState<number | undefined>();
+
+  const { isEvm, selectedNetwork, isFpass } = useNetwork();
+  const { xrp, evm, fpass } = useConnectedWallet();
+  const [now, setNow] = useState(new Date());
+  const [remainTime, setRemainTime] = useState<RemainLockupTime>({
+    hours: '00',
+    minutes: '00',
+    seconds: '00',
+  });
+
+  const { setWalletConnectorType } = useWalletConnectorTypeStore();
+
+  const { open } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
+
+  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
+
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+
+  const userXrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const userXrpBalance = userXrp?.balance || 0;
+
+  const { data: campaignData } = useGetCampaignsQuery(
+    { queries: { filter: `active:eq:true:boolean` } },
+    { staleTime: 5 * 60 * 1000 }
+  );
+  const campaigns = campaignData?.campaigns || [];
+
+  const campaignXrplRoot = campaigns.find(c => c.name === 'campaign-xrpl-root');
+  const campaignStartDate = useMemo(
+    () => new Date(campaignXrplRoot?.startDate || new Date()),
+    [campaignXrplRoot?.startDate]
+  );
+
+  const started = differenceInSeconds(campaignStartDate, now) <= 0;
+
+  const { data: rewardInfoData } = useGetRewardsInfoQuery(
+    {
+      params: { networkAbbr: 'trn' },
+      queries: { walletAddress },
+    },
+    { staleTime: 1000 * 3, enabled: !!walletAddress }
+  );
+
+  const campaignReward = rewardInfoData?.myCampaignReward || 0;
+
+  const {
+    amountFarmedInBPT,
+    depositedTime,
+
+    rootReward,
+    rootPrice,
+    refetch: userCampaignInfoRefetch,
+  } = useUserCampaignInfo();
+  const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
+  const poolId = POOL_ID?.[NETWORK.THE_ROOT_NETWORK]?.ROOT_XRP;
+
+  const queryEnabled = !!isRoot && !!poolId;
+  const { data: poolData } = useGetPoolQuery(
+    {
+      params: {
+        networkAbbr: getNetworkAbbr(NETWORK.THE_ROOT_NETWORK) as string,
+        poolId: poolId as string,
+      },
+    },
+    {
+      enabled: queryEnabled,
+      staleTime: 1000,
+    }
+  );
+
+  const { pool } = poolData || {};
+  const { compositions } = pool || {};
+  const xrpToken = compositions?.[1];
+  const xrpBalanceInPool = xrpToken?.balance || 0;
+
+  /* claim */
+  const claimEvm = useClaim();
+  const claimSubstrate = useClaimSubstrate();
+  const { isPrepareError: claimSubstratePrepareIsError, prepareError: claimSubstratePrepareError } =
+    useClaimPrepare();
+
+  const claim = isFpass ? claimSubstrate : claimEvm;
+  const {
+    isLoading: claimLoading,
+    isError: claimIsError,
+    isSuccess: claimIsSuccess,
+    txData: claimTxData,
+    error: claimError,
+    writeAsync,
+    estimateFee: estimateClaimFee,
+  } = claim;
+
+  const isErrorRaw = claimIsError || claimSubstratePrepareIsError;
+  const error = claimError || claimSubstratePrepareError;
+  const approveError = error?.message?.includes('Approved');
+  const isError = isErrorRaw && !approveError;
+  const claimGasError = userXrpBalance < (estimatedClaimFee || 0);
+
+  /* withdraw */
+  const { opened: withdrawPopupOpened, open: withdrawPopupOpen } = usePopup(
+    POPUP_ID.CAMPAIGN_WITHDRAW
+  );
+
+  const { lpTokenPrice, lpTokenTotalSupply, refetch } = useUserPoolTokenBalances({
+    network: 'trn',
+    id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
+  });
+
+  const { step, stepStatus, lastSuccessAt, lastUpdatedAt } = useCampaignStepStore();
+  const hasPending =
+    step >= 1 &&
+    stepStatus.some(s => s.status === 'done') &&
+    differenceInSeconds(new Date(lastSuccessAt), new Date(lastUpdatedAt)) <= 0;
+
+  const { lockupPeriod } = useCampaignInfo();
+
+  const myDepositBalance = amountFarmedInBPT;
+  const myDepositValue = myDepositBalance * lpTokenPrice;
+
+  const myDepositInXrp = 2 * (myDepositBalance / lpTokenTotalSupply) * xrpBalanceInPool;
+
+  const bothConnected = xrp.isConnected && evm.isConnected;
+  const isEmpty = !(bothConnected && amountFarmedInBPT > 0);
+
+  const emptyText = !bothConnected
+    ? 'To check your voyage, connect both your XRP\n wallet and Root Network wallet.'
+    : "You haven't activated your $XRP yet.";
+
+  const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
+
+  const nowTime = now.getTime() / 1000;
+  const withdrawLiquidityEnabled =
+    !!myDepositBalance && myDepositBalance > 0n && depositedTime + lockupPeriod < nowTime;
+  const isLocked = depositedTime + lockupPeriod >= nowTime;
+
+  const lockupEndDate = useMemo(
+    () => new Date(1000 * (depositedTime + lockupPeriod) || new Date()),
+    [depositedTime, lockupPeriod]
+  );
+
+  const handleClick = () => {
+    if (!isEmpty || bothConnected) {
+      gaAction({
+        action: 'activate-xrp',
+        data: { page: 'campaign', layout: 'layout-voyage', link: '/campaign/participate' },
+      });
+      window.open(`${BASE_URL}/campaign/participate`);
+      return;
+    }
+
+    gaAction({
+      action: 'connect-wallet',
+      data: { page: 'campaign', layout: 'layout-voyage' },
+    });
+    if (!xrp.isConnected) setWalletConnectorType({ network: NETWORK.XRPL });
+    else if (!evm.isConnected) setWalletConnectorType({ network: NETWORK.THE_ROOT_NETWORK });
+
+    open();
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setNow(now);
+
+      const duration = intervalToDuration({ start: now, end: lockupEndDate });
+      const { hours, minutes, seconds } = duration;
+
+      setRemainTime({
+        hours: (hours || 0).toString().padStart(2, '0'),
+        minutes: (minutes || 0).toString().padStart(2, '0'),
+        seconds: (seconds || 0).toString().padStart(2, '0'),
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [lockupEndDate]);
+
+  const withdrawButtonText = isLocked
+    ? `${t('Can withdraw after')} ${remainTime.hours}:${remainTime.minutes}:${remainTime.seconds}`
+    : t('Withdraw');
+
+  useEffect(() => {
+    if (estimatedClaimFee) return;
+
+    const estimateFeeAsync = debounce(async () => {
+      const fee = await estimateClaimFee?.();
+      setEstimatedClaimFee(fee);
+    }, 1000);
+
+    estimateFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEvm, isFpass, walletAddress, rootReward, estimatedClaimFee]);
+
+  useEffect(() => {
+    if (claimIsSuccess && claimTxData) userCampaignInfoRefetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claimIsSuccess, claimTxData]);
+
+  // if (!started) return <></>;
   return (
     <Wrapper>
       <TitleWrapper>
