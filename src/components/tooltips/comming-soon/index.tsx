@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ITooltip } from 'react-tooltip';
 
 import { TOOLTIP_ID } from '~/types';
@@ -9,9 +10,11 @@ interface Props extends Omit<ITooltip, 'id'> {
 }
 
 export const TooltipCommingSoon = ({ id, ...rest }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <Tooltip {...rest} id={id ?? TOOLTIP_ID.COMMING_SOON}>
-      Coming soon
+      {t('Coming soon2')}
     </Tooltip>
   );
 };
