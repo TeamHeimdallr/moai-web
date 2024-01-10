@@ -99,7 +99,7 @@ const Wallet = styled.div<WalletProps>(({ disabled }) => [
     `,
 ]);
 
-const TabWrapper = tw.div`flex gap-24 pb-8`;
+const TabWrapper = tw.div`flex gap-24 px-8 pb-8`;
 
 interface Props {
   selected?: boolean;
