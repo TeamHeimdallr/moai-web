@@ -16,8 +16,9 @@ import { POPUP_ID } from '~/types';
 import Campaign from './campaign';
 import Home from './home';
 import Landing from './landing';
+import MaintenancePage from './maintenance';
 import Pool from './pool';
-import Rewards from './rewards';
+// import Rewards from './rewards';
 import Swap from './swap';
 
 const Page = () => {
@@ -45,7 +46,8 @@ const Page = () => {
             <Route path="/" element={<Home />} />
             <Route path="/swap" element={<Swap />} />
             <Route path="/pools/*" element={<Pool />} />
-            <Route path="/rewards/*" element={<Rewards />} />
+            {/* <Route path="/rewards/*" element={<Rewards />} /> */}
+            <Route path="/rewards/*" element={<MaintenancePage />} />
             <Route path="/campaign/*" element={<Campaign />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />

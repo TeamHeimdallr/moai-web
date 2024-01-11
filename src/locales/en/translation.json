@@ -323,5 +323,8 @@
   "Total value locked": "Total value locked",
 
   "voyage-empty-text-wallet": "To check your voyage, connect both your XRP wallet and The Root Network wallet.",
-  "voyage-empty-text": "You haven't activated your $XRP yet."
+  "voyage-empty-text": "You haven't activated your $XRP yet.",
+
+  "maintenance-title": "Page under maintenance",
+  "maintenance-message": "We apologize for the inconvenience. Please wait for further instructions."
 }
