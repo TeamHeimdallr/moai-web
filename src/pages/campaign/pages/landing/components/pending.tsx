@@ -63,7 +63,7 @@ export const Pending = () => {
   return (
     <Wrapper>
       <TitleWrapper>
-        <Title>Pending</Title>
+        <Title>{t('Pending')}</Title>
         <LinkWrapper>
           {`${t('Last application at')} ${translatedTime}`}
           <IconWrapper onClick={handleClick}>

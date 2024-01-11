@@ -166,9 +166,7 @@ const _LayoutVoyage = () => {
 
   const bothConnected = xrp.isConnected && evm.isConnected;
 
-  const emptyText = !bothConnected
-    ? 'To check your voyage, connect both your XRP\n wallet and Root Network wallet.'
-    : "You haven't activated your $XRP yet.";
+  const emptyText = !bothConnected ? t('voyage-empty-text-wallet') : t('voyage-empty-text');
 
   const buttonText = !bothConnected ? 'Connect wallet' : 'Activate $XRP';
 

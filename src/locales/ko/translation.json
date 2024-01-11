@@ -268,7 +268,7 @@
   "Bridge": "브릿지하기",
   "tooltip-text-enough-xrp": "이미 The Root Network 지갑에 $XRP가 충분히 있다면, 다음 단계로 넘어가세요!",
   "Bridge confirmed!": "브릿지를 요청했습니다.",
-  "bridge-success-message": "브릿지 요청에 성공했습니다. 일반적인 XRP 브릿지는 15분 정도 소요됩니다. 루트 네트워크의 메타마스크나 Futurepass에서 자산을 확인 후 다음단계를 진행해 주세요.",
+  "bridge-success-message": "브릿지 요청에 성공했습니다. 일반적인 XRP 브릿지는 15분 정도 소요됩니다. The Root Network의 Metamask나 Futurepass에서 자산을 확인 후 다음단계를 진행해 주세요.",
   "Bridge failed!": "브릿지에 실패했습니다.",
   "bridge-fail-message": "$XRP를 The Root Network로 브릿지하는데 실패했습니다. 다시 시도해주세요.",
   "Continue to add liquidity": "유동성 공급 이어서하기",
@@ -333,5 +333,8 @@
   "Lack of gas fee": "가스비 부족",
   "lack-of-gas-fee-message": "가스비로 지불할 잔액이 부족합니다. 가스비 지불을 위해 10+ XRP을 남겨두는 것을 권장합니다.",
 
-  "Total value locked": "예치 총량"
+  "Total value locked": "예치 총량",
+
+  "voyage-empty-text-wallet": "Voyage를 확인하려면, XRPL 지갑과 The Root Network 지갑을 모두 연결해야 합니다.",
+  "voyage-empty-text": "아직 $XRP로 리워드 받은 내역이 없습니다."
 }
