@@ -245,7 +245,7 @@
   "description-text-3": "Be among the first to benefit from our initial liquidity pools.",
 
   "step-title-1": "Connect to XRPL wallet",
-  "step-title-2": "Connect to the Root Network wallet",
+  "step-title-2": "Connect to The Root Network wallet",
   "step-title-3": "Bridge your $XRP",
   "step-title-4": "Add liquidity",
   "step-title-waiting": "Waiting to connect...",
@@ -253,7 +253,7 @@
   "Fee": "Fee",
   "total-bridge": "Total",
   "Bridge": "Bridge",
-  "tooltip-text-enough-xrp": "If you already have enough $XRP in your Root Network wallet, go to the next step!",
+  "tooltip-text-enough-xrp": "If you already have enough $XRP in your The Root Network wallet, go to the next step!",
   "Bridge confirmed!": "Bridge request success!",
   "bridge-success-message": "Successfully requested the bridge. Usual bridge transaction takes 15 minutes. Please wail until you receive your XRP to the Metamask or Futurepass.",
   "Bridge failed!": "Bridge failed",
