@@ -301,7 +301,8 @@ export const CampaignTool = () => {
               }}
               showValue={false}
               token="veMOI"
-              balance={campaignReward}
+              // balance={campaignReward}
+              balance={'-'}
               image={<IconTokenMoai width={36} height={36} />}
             />
             <TokenListVertical

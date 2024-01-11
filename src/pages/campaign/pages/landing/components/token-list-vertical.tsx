@@ -7,7 +7,7 @@ import { IToken } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
-  balance: number;
+  balance: number | string;
 
   value?: number;
   showValue?: boolean;
@@ -39,7 +39,7 @@ export const TokenListVertical = ({
           {token}
         </Token>
         <Description>
-          <Balance>{formatNumber(balance, 6)}</Balance>
+          <Balance>{typeof balance === 'string' ? '-' : formatNumber(balance, 6)}</Balance>
           {/* compare value whether undefined or not, since value could be 0 */}
           {showValue && (
             <Value>
