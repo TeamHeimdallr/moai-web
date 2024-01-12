@@ -69,7 +69,7 @@ const _LayoutVoyage = () => {
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
   const { open } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
 
@@ -275,7 +275,7 @@ const _LayoutVoyage = () => {
           {isEmpty && (
             <Empty>
               <TextWrapper>{emptyText}</TextWrapper>
-              <ButtonWrapper>
+              <ButtonWrapper isKorean={i18n.language === 'ko'}>
                 <ButtonPrimaryMedium
                   text={t(buttonText)}
                   buttonType="outlined"
@@ -450,9 +450,10 @@ const TextWrapper = tw.div`
   md:(font-r-16 whitespace-nowrap)
 `;
 
-const ButtonWrapper = tw.div`
-  flex-center w-144
-`;
+interface ButtonProps {
+  isKorean?: boolean;
+}
+const ButtonWrapper = styled.div<ButtonProps>(({ isKorean }) => [isKorean ? tw`w-150` : tw`w-144`]);
 
 const BadgeWrapper = tw.div`
   flex inline-flex items-center relative h-40
