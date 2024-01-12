@@ -267,7 +267,7 @@ const _AddLiquidity = () => {
 
     estimateFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEvm, isFpass, walletAddress]);
+  }, [isEvm, isFpass, walletAddress, allowSuccess]);
 
   useEffect(() => {
     if (addLiquidityLoading) setStepStatus({ id: 4, status: 'loading' }, 3);
@@ -514,7 +514,7 @@ const SuccessWrapper = tw.div`
 `;
 
 const SuccessMessageWrapper = tw.div`
-  flex-center flex-col gap-12 
+  flex-center flex-col gap-12
 `;
 const SuccessBottomWrapper = tw.div`
   flex flex-col gap-16
