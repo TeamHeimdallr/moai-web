@@ -16,7 +16,7 @@ export const Footer = ({ inMenu = false }: Props) => {
   const sns = [
     { name: 'twitter', url: 'https://twitter.com/MoaiFinance', icon: <IconTwitterX /> },
     { name: 'medium', url: 'https://medium.com/@moai-finance', icon: <IconMedium /> },
-    { name: 'discord', url: 'https://discord.com/invite/PSrF5z34dV', icon: <IconDiscord /> },
+    { name: 'discord', url: 'https://discord.gg/UwWVmX4x', icon: <IconDiscord /> },
     { name: 'paper', url: 'https://docs.moai-finance.xyz', icon: <IconPaper /> },
   ];
 
