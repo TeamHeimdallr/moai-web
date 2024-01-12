@@ -88,7 +88,7 @@ const Wrapper = tw.div`
   md:(py-80)
 `;
 const StepWrapper = tw.div`
-  w-455 flex-center flex-col gap-24
+  w-455 flex-center flex-col gap-24 pb-80
 `;
 const BannerWrapper = tw.div`
   w-full absolute top-0 left-0 z-10

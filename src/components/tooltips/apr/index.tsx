@@ -15,7 +15,7 @@ interface Props extends Omit<ITooltip, 'id'> {
 export const TooltipApr = ({ id, swapApr, moaiApr, ...rest }: Props) => {
   return (
     <Tooltip {...rest} id={id ?? TOOLTIP_ID.APR}>
-      <Content>{`${swapApr} Swap APR\n${moaiApr} $MOAI Pre-mining APR`}</Content>
+      <Content>{`${swapApr} Swap APR\n${moaiApr} $MOI Pre-mining APR`}</Content>
     </Tooltip>
   );
 };
