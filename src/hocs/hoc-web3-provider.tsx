@@ -1,6 +1,7 @@
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
 import { Web3Modal } from '@web3modal/react';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
 
 import { WALLETCONNECT_PROJECT_ID } from '~/constants';
 
@@ -15,7 +16,10 @@ const projectId = WALLETCONNECT_PROJECT_ID as string;
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: w3mConnectors({ projectId, chains }),
+  connectors: [
+    ...w3mConnectors({ projectId, chains }),
+    new CoinbaseWalletConnector({ options: { appName: 'MOAI_FINANCE' } }),
+  ],
   publicClient,
 });
 const ethereumClient = new EthereumClient(wagmiConfig, chains);
