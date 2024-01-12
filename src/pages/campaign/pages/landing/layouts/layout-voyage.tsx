@@ -451,7 +451,7 @@ const TextWrapper = tw.div`
 `;
 
 const ButtonWrapper = tw.div`
-  flex-center w-144
+  flex-center
 `;
 
 const BadgeWrapper = tw.div`
