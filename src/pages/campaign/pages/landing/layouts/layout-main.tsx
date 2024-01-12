@@ -6,6 +6,7 @@ import tw, { styled } from 'twin.macro';
 
 import { useCampaignLpBalance } from '~/api/api-contract/_evm/campaign/lp-balance';
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
+import { useGetPoolsQuery } from '~/api/api-server/pools/get-pools';
 
 import { IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 import Logo1 from '~/assets/logos/logo-campaign-1.svg?react';
@@ -32,7 +33,13 @@ const _LayoutMain = () => {
   const { ref } = useGAInView({ name: 'campaign-layout-main' });
   const { gaAction } = useGAAction();
 
-  const { value, apr, moiApr } = useCampaignLpBalance();
+  const { apr, moiApr } = useCampaignLpBalance();
+
+  const { data: poolData } = useGetPoolsQuery(
+    { queries: { filter: 'network:eq:trn' } },
+    { staleTime: 10 * 1000 }
+  );
+  const totalTvl = poolData?.pools?.reduce((acc, item) => acc + (item?.value || 0), 0) || 0;
 
   const { isMD } = useMediaQuery();
   const { t, i18n } = useTranslation();
@@ -70,7 +77,7 @@ const _LayoutMain = () => {
           <InfoWrapper>
             <Info>
               <Label>{t('Total value locked')}</Label>
-              <Text>${formatNumber(value)}</Text>
+              <Text>${formatNumber(totalTvl)}</Text>
             </Info>
             <Info>
               <Label>{t('Expected APR')}</Label>
