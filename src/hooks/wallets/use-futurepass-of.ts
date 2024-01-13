@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { zeroAddress } from 'viem';
 import { Address, useAccount, useContractRead } from 'wagmi';
 
 import { IS_MAINNET } from '~/constants';
@@ -25,8 +26,10 @@ export const useFuturepassOf = ({ enabled }: Props) => {
 
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
 
+  const internalEnabled = enabled && !!walletAddress && isRoot;
   const {
     data: _data,
+    isFetchedAfterMount: isFetched,
     refetch,
     ...rest
   } = useContractRead({
@@ -34,18 +37,19 @@ export const useFuturepassOf = ({ enabled }: Props) => {
     abi: FUTUREPASS_REGISTER_ABI,
     functionName: 'futurepassOf',
     args: [walletAddress],
-
-    enabled: enabled && !!walletAddress && isRoot,
+    enabled: internalEnabled,
   });
 
   const data = _data as `0x${string}` | undefined;
 
   useEffect(() => {
-    if (!data && selectedWalletTRN === 'fpass') {
+    if (!internalEnabled || !isFetched) return;
+
+    if ((!data || data === zeroAddress) && selectedWalletTRN === 'fpass') {
       selectWallet('evm');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, selectedWalletTRN]);
+  }, [data, internalEnabled, isFetched, selectedWalletTRN]);
 
   return { data, refetch, ...rest };
 };
