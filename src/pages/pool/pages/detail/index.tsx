@@ -6,8 +6,10 @@ import { Gnb } from '~/components/gnb';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useRequirePrarams } from '~/hooks/utils';
-import { POPUP_ID } from '~/types';
+import { getNetworkFull } from '~/utils';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { CampaignTool } from '../../components/campaign-tool';
 import { PoolCompositions } from '../../components/pool-compositions';
@@ -24,7 +26,11 @@ const PoolDetailMainPage = () => {
 
   const navigate = useNavigate();
   const { network, id } = useParams();
+  const { selectedNetwork } = useNetwork();
   useRequirePrarams([!!id, !!network], () => navigate(-1));
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   return (
@@ -46,7 +52,7 @@ const PoolDetailMainPage = () => {
             </LeftContentWrapper>
             <RightContentWrapper>
               <UserPoolBalances />
-              <CampaignTool />
+              {isRoot && <CampaignTool />}
             </RightContentWrapper>
           </ContentWrapper>
         </ContentOuterWrapper>

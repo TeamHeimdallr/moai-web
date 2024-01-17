@@ -1,7 +1,7 @@
 import { Bar } from 'react-chartjs-2';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { format } from 'date-fns';
+import { add, format } from 'date-fns';
 import { upperFirst } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
@@ -55,7 +55,7 @@ export const PoolInfoChart = () => {
     },
     {
       enabled: queryEnabled,
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 60 * 1000, // 5 minutes
     }
   );
 
@@ -64,11 +64,12 @@ export const PoolInfoChart = () => {
   const chartDataRaw =
     selectedTab === 'volume' ? volumeData : selectedTab === 'tvl' ? tvlData : feeData;
 
-  const chartData = chartDataRaw || [];
+  const chartDataWithoutPadding = chartDataRaw || [];
+  const chartData = [...chartDataWithoutPadding, { date: add(new Date(), { days: 1 }), value: 0 }];
   const totalValueSum = chartData?.reduce((acc, cur) => acc + cur.value, 0) || 0;
 
   const totalValue =
-    selectedTab === 'tvl' ? chartDataRaw?.[(chartDataRaw?.length || 0) - 1].value : totalValueSum;
+    selectedTab === 'tvl' ? chartDataRaw?.[(chartDataRaw?.length || 0) - 2].value : totalValueSum;
   const totalValueCaption =
     selectedTab === 'tvl'
       ? t(`current ${selectedTab}`)

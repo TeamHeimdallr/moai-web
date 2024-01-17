@@ -660,8 +660,8 @@ const _AddLiquidityPopup = ({
       ? estimatedToken2ApproveFee || ''
       : estimatedAddLiquidityFee || ''
     : step === 1
-    ? estimatedToken3ApproveFee || ''
-    : estimatedAddLiquidityFee || '';
+    ? 0.0001
+    : 0.0001;
 
   // TODO change after fee proxy
   const validMaxXrpAmount =

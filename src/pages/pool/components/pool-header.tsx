@@ -21,7 +21,7 @@ export const PoolHeader = () => {
   const { gaAction } = useGAAction();
   const { network, id } = useParams();
 
-  const { selectedNetwork, isFpass } = useNetwork();
+  const { selectedNetwork, isFpass, isXrp } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const queryEnabled = !!network && !!id;
@@ -43,9 +43,9 @@ export const PoolHeader = () => {
   const { address: lpTokenAddress } = lpToken || {};
 
   const handleLink = () => {
-    const url = `${SCANNER_URL[currentNetwork]}/address/${lpTokenAddress}?${
-      isFpass ? 'tab=erc20_transfers' : ''
-    }`;
+    const url = `${SCANNER_URL[currentNetwork]}/${
+      isXrp ? 'accounts' : 'address'
+    }/${lpTokenAddress}?${isFpass ? 'tab=erc20_transfers' : ''}`;
 
     gaAction({
       action: 'pool-detail-header-click',
