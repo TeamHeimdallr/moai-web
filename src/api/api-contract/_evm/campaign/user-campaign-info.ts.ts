@@ -29,7 +29,7 @@ export const useUserCampaignInfo = () => {
   );
 
   const { pool } = poolData || {};
-  const { moiApr, apr: swapApr, compositions } = pool || {};
+  const { moiApr, apr: swapAndMoiApr, compositions } = pool || {};
 
   const poolAddress = pool?.address;
   const xrpToken = compositions?.find(c => c.symbol === 'XRP');
@@ -74,7 +74,7 @@ export const useUserCampaignInfo = () => {
   const u = 2 * rootTokenBalance * r - rootTokenBalance * r * r;
   const rootReward = u / 2 + (u / 2) * (1 - 0.0035);
 
-  const apr = (moiApr || 0) + (swapApr || 0) + 10; // moiApr + swapApr + 10% (10% is the fixed ROOT APR)
+  const apr = (swapAndMoiApr || 0) + 10; // moiApr + swapApr + 10% (10% is the fixed ROOT APR)
 
   const refetch = () => {
     accureRefetch();

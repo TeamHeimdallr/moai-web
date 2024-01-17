@@ -42,11 +42,11 @@ export const useCampaignLpBalance = () => {
   );
 
   const { pool } = poolData || {};
-  const { moiApr, apr: swapApr, lpToken } = pool || {};
+  const { moiApr, apr: swapAndMoiApr, lpToken } = pool || {};
 
   const poolAddress = pool?.address;
   const lpTokenAddress = lpToken?.address;
-  const apr = (moiApr || 0) + (swapApr || 0) + 10; // moiApr + swapApr + 10% (10% is the fixed ROOT APR)
+  const apr = (swapAndMoiApr || 0) + 10; // moiApr + swapApr + 10% (10% is the fixed ROOT APR)
 
   const { data } = useContractRead({
     address: lpTokenAddress as Address,
