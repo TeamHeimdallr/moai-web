@@ -41,7 +41,23 @@ export const useGetChartQuery = (request: Request, options?: QueryOption) => {
   const { params, queries } = request;
 
   const queryKey = ['GET', 'CHART', params, queries];
-  const data = useQuery<Response>(queryKey, () => axios(params, queries), options);
+  const dataDoubleVol = useQuery<Response>(queryKey, () => axios(params, queries), options);
+
+  // TODO: remove /2 when server updated
+  const data = {
+    ...dataDoubleVol,
+    data: {
+      ...dataDoubleVol.data,
+      [POOL_CHART_TYPE.VOLUME]: dataDoubleVol.data?.[POOL_CHART_TYPE.VOLUME].map(chart => ({
+        ...chart,
+        value: chart.value / 2,
+      })),
+      [POOL_CHART_TYPE.FEE]: dataDoubleVol.data?.[POOL_CHART_TYPE.FEE].map(chart => ({
+        ...chart,
+        value: chart.value / 2,
+      })),
+    },
+  };
 
   return {
     queryKey,

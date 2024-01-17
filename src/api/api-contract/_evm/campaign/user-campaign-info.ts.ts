@@ -29,7 +29,7 @@ export const useUserCampaignInfo = () => {
   );
 
   const { pool } = poolData || {};
-  const { moiApr, apr: swapAndMoiApr, compositions } = pool || {};
+  const { apr: swapAndMoiApr, compositions } = pool || {};
 
   const poolAddress = pool?.address;
   const xrpToken = compositions?.find(c => c.symbol === 'XRP');

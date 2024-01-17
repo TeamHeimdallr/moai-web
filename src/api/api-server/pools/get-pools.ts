@@ -51,7 +51,20 @@ export const useGetPoolsQuery = (request: Request, options?: QueryOption) => {
   const { queries } = request;
 
   const queryKey = ['GET', 'POOLS', queries];
-  const data = useQuery<Response>(queryKey, () => axios(queries), options);
+  const dataDoubleVol = useQuery<Response>(queryKey, () => axios(queries), options);
+
+  // TODO: remove /2 when server updated
+  const data = {
+    ...dataDoubleVol,
+    data: {
+      ...dataDoubleVol.data,
+      pools: dataDoubleVol.data?.pools.map(pool => ({
+        ...pool,
+        volume: pool.volume / 2,
+        apr: pool.apr ? (pool.apr - pool.moiApr) / 2 + pool.moiApr : undefined,
+      })),
+    },
+  };
 
   return {
     queryKey,
@@ -63,7 +76,7 @@ export const useGetPoolsInfinityQuery = (request: Request, options?: InfinityQue
   const { queries } = request;
 
   const queryKey = ['GET', 'POOLS', 'INFINITY', queries];
-  const data = useInfiniteQuery<Response>({
+  const dataDoubleVol = useInfiniteQuery<Response>({
     queryKey,
     queryFn: ({ pageParam: cursor }) => axios({ ...queries, cursor }),
     getNextPageParam: lastPage => {
@@ -77,6 +90,22 @@ export const useGetPoolsInfinityQuery = (request: Request, options?: InfinityQue
     },
     ...options,
   });
+
+  // TODO: remove /2 when server updated
+  const data = {
+    ...dataDoubleVol,
+    data: {
+      ...dataDoubleVol.data,
+      pages: dataDoubleVol.data?.pages.map(page => ({
+        ...page,
+        pools: page.pools.map(pool => ({
+          ...pool,
+          volume: pool.volume / 2,
+          apr: pool.apr ? (pool.apr - pool.moiApr) / 2 + pool.moiApr : undefined,
+        })),
+      })),
+    },
+  };
 
   return {
     queryKey,
