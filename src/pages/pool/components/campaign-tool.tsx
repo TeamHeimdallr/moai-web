@@ -63,6 +63,7 @@ export const CampaignTool = () => {
   });
 
   const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
+  const evmWalletAddress = fpass?.address || evm?.address;
 
   const { userAllTokenBalances } = useUserAllTokenBalances();
 
@@ -86,9 +87,9 @@ export const CampaignTool = () => {
   const { data: rewardInfoData } = useGetRewardsInfoQuery(
     {
       params: { networkAbbr: 'trn' },
-      queries: { walletAddress },
+      queries: { walletAddress: evmWalletAddress },
     },
-    { staleTime: 1000 * 3, enabled: !!walletAddress }
+    { staleTime: 1000 * 3, enabled: !!evmWalletAddress }
   );
 
   const campaignReward = rewardInfoData?.myCampaignReward || 0;

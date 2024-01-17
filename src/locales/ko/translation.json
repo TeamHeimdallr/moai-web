@@ -52,6 +52,7 @@
   "days volume": "{{ days }}일간 거래량",
   "days fees": "{{ days }}일간 수수료",
   "current TVL": "현재 TVL",
+  "current tvl": "현재 TVL",
 
   "Action": "거래 내용",
   "Tokens": "토큰",

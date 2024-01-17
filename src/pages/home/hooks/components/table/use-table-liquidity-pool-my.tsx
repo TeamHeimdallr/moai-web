@@ -31,7 +31,7 @@ export const useTableMyLiquidityPool = () => {
 
   const { isMD } = useMediaQuery();
 
-  const netwokrAbbr = getNetworkAbbr(selectedNetwork);
+  const networkAbbr = getNetworkAbbr(selectedNetwork);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
 
   const { userAllTokenBalances } = useUserAllTokenBalances();
@@ -42,7 +42,7 @@ export const useTableMyLiquidityPool = () => {
   const { mutateAsync } = useGetMyPoolsQuery({
     queries: {
       take: 100,
-      filter: `network:eq:${netwokrAbbr}`,
+      filter: `network:eq:${networkAbbr}`,
       sort: sort ? `${sort.key}:${sort.order}` : undefined,
     },
   });
@@ -63,7 +63,10 @@ export const useTableMyLiquidityPool = () => {
   const isRequestEqual = isEqual(previous, userLpTokenRequest);
 
   useEffect(() => {
-    if (!currentAddress) return;
+    if (!currentAddress) {
+      setPools([]);
+      return;
+    }
 
     const fetch = async () => {
       const res = await mutateAsync?.({
@@ -81,7 +84,7 @@ export const useTableMyLiquidityPool = () => {
 
     fetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAddress, isRequestEqual, sort?.key, sort?.order]);
+  }, [networkAbbr, currentAddress, isRequestEqual, sort?.key, sort?.order]);
 
   const pools = useMemo(() => poolsRaw?.slice(0, currentTake) || [], [currentTake, poolsRaw]);
   const hasNextPage = (poolsRaw?.length || 0) > currentTake;

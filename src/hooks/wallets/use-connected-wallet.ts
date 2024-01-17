@@ -64,7 +64,9 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
         : evm?.address
       : network === NETWORK.EVM_SIDECHAIN
       ? evm?.address
-      : xrp?.address;
+      : network === NETWORK.XRPL
+      ? xrp?.address
+      : undefined;
 
   return {
     evm,
