@@ -24,7 +24,23 @@ export const useGetPoolQuery = (request: Request, options?: QueryOption) => {
   const { params } = request;
 
   const queryKey = ['GET', 'POOL', params];
-  const data = useQuery<Response>(queryKey, () => axios(params), options);
+  const dataDoubleVol = useQuery<Response>(queryKey, () => axios(params), options);
+
+  // TODO: remove /2 when server updated
+  const data = {
+    ...dataDoubleVol,
+    data: {
+      ...dataDoubleVol.data,
+      pool: {
+        ...dataDoubleVol.data?.pool,
+        apr: dataDoubleVol.data?.pool.apr
+          ? (dataDoubleVol.data?.pool.apr - dataDoubleVol.data?.pool.moiApr) / 2 +
+            dataDoubleVol.data?.pool.moiApr
+          : undefined,
+        volume: dataDoubleVol.data?.pool.volume ? dataDoubleVol.data?.pool.volume / 2 : undefined,
+      },
+    },
+  };
 
   return {
     queryKey,

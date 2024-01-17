@@ -47,11 +47,23 @@ export const useGetMyPoolsQuery = (request: Request, options?: MutateOptions) =>
   const { queries } = request;
 
   const queryKey = ['POST', 'POOLS', 'MY', queries];
-  const data = useMutation<Response, AxiosError<Response, IMyPoolListRequest>, IMyPoolListRequest>(
-    queryKey,
-    data => axios(data, queries),
-    options
-  );
+  const dataDoubleVol = useMutation<
+    Response,
+    AxiosError<Response, IMyPoolListRequest>,
+    IMyPoolListRequest
+  >(queryKey, data => axios(data, queries), options);
+
+  // TODO: remove /2 when server updated
+  const data = {
+    ...dataDoubleVol,
+    data: {
+      ...dataDoubleVol.data,
+      pools: dataDoubleVol.data?.pools.map(pool => ({
+        ...pool,
+        apr: pool.apr ? (pool.apr - pool.moiApr) / 2 + pool.moiApr : undefined,
+      })),
+    },
+  };
 
   return {
     queryKey,
