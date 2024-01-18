@@ -276,7 +276,8 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const toTokenFinalValue = toTokenActualAmount * toTokenPrice;
 
   const currentUnit = selectedDetailInfo === 'TOKEN' ? toToken?.symbol || '' : 'USD';
-  const totalAfterFee = numToInput; // (1 - (swapOptimizedPathPool?.tradingFee || 0.003)) * (currentValue || 0);
+  const totalAfterFee = (1 - (swapOptimizedPathPool?.tradingFee || 0.003)) * (numToInput || 0);
+  const totalAfterFeeUsd = totalAfterFee * toTokenPrice;
 
   const slippageText = `${Number(slippage.toFixed(2))}%`;
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
@@ -480,7 +481,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     ? step === 1
       ? estimatedFromTokenApproveFee || ''
       : estimatedSwapFee || ''
-    : (step === 1 ? estimatedToTokenApproveFee : estimatedSwapFee) || '3.9262';
+    : (step === 1 ? 0.0001 : 0.0001) || '3.9262';
 
   // TODO change after fee proxy
   const validMaxXrpAmount =
@@ -595,7 +596,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   <DetailInfoTextWrapper>
                     <DetailInfoText>{t('Total expected after fees')}</DetailInfoText>
                     <DetailInfoText>{`${formatNumber(
-                      totalAfterFee,
+                      selectedDetailInfo === 'TOKEN' ? totalAfterFee : totalAfterFeeUsd,
                       6
                     )} ${currentUnit}`}</DetailInfoText>
                   </DetailInfoTextWrapper>
