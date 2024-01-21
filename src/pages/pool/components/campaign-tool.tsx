@@ -63,7 +63,7 @@ export const CampaignTool = () => {
   });
 
   const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
-  const evmWalletAddress = fpass?.address || evm?.address;
+  const evmWalletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : undefined;
 
   const { userAllTokenBalances } = useUserAllTokenBalances();
 
@@ -302,8 +302,7 @@ export const CampaignTool = () => {
               }}
               showValue={false}
               token="veMOI"
-              // balance={campaignReward}
-              balance={'-'}
+              balance={campaignReward}
               image={<IconTokenMoai width={36} height={36} />}
             />
             <TokenListVertical
