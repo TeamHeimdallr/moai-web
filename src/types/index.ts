@@ -5,6 +5,8 @@ export * from './campaign';
 export * from './charts';
 export * from './components';
 export * from './helpers';
+export * from './maintanence';
 export * from './networks';
 export * from './pools';
+export * from './rewards';
 export * from './tokens';
