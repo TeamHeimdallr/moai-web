@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
 import { usePopup } from '~/hooks/components';
+import { useMaintanence } from '~/hooks/utils/use-maintanence';
 import { POPUP_ID } from '~/types';
 
 import { CampaignConnectWalletPopup } from './components/connect-wallet-popup';
@@ -12,13 +13,18 @@ import ParticipatePage from './pages/participate';
 gsap.registerPlugin(ScrollTrigger);
 
 const CampaignPage = () => {
+  const { getMaintanence } = useMaintanence();
+
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CAMPAIGN_CONNECT_WALLET);
 
   return (
     <>
       <Routes>
-        <Route path="/participate" element={<ParticipatePage />} />
-        <Route path="/*" element={<LandingPage />} />
+        <Route
+          path="/participate"
+          element={getMaintanence('/campaign/participate', <ParticipatePage />)}
+        />
+        <Route path="*" element={getMaintanence('/campaign', <LandingPage />)} />
       </Routes>
       {connectWalletOpened && <CampaignConnectWalletPopup />}
     </>

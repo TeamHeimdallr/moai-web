@@ -10,15 +10,15 @@ import { useGARouteChange } from '~/hooks/analaystics/ga-route-change';
 import { useGAIdenitiy } from '~/hooks/analaystics/ga-wallet-identity';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
+import { useMaintanence } from '~/hooks/utils/use-maintanence';
 import { useXummWalletClient } from '~/hooks/wallets/use-xumm-wallet-client';
 import { POPUP_ID } from '~/types';
 
 import Campaign from './campaign';
 import Home from './home';
 import Landing from './landing';
-import MaintenancePage from './maintenance';
 import Pool from './pool';
-// import Rewards from './rewards';
+import Rewards from './rewards';
 import Swap from './swap';
 
 const Page = () => {
@@ -28,6 +28,8 @@ const Page = () => {
 
   useXummWalletClient();
 
+  const { getMaintanence } = useMaintanence();
+
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: xummQrOpened } = usePopup(POPUP_ID.XUMM_QR);
 
@@ -36,19 +38,18 @@ const Page = () => {
       <ReactRoutes>
         {IS_LANDING && (
           <>
-            <Route path="/" element={<Landing />} />
+            <Route path="/" element={getMaintanence('/', <Landing />)} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         )}
 
         {!IS_LANDING && (
           <>
-            <Route path="/" element={<Home />} />
-            <Route path="/swap" element={<Swap />} />
-            <Route path="/pools/*" element={<Pool />} />
-            {/* <Route path="/rewards/*" element={<Rewards />} /> */}
-            <Route path="/rewards/*" element={<MaintenancePage />} />
-            <Route path="/campaign/*" element={<Campaign />} />
+            <Route path="/" element={getMaintanence('/', <Home />)} />
+            <Route path="/swap" element={getMaintanence('/swap', <Swap />)} />
+            <Route path="/pools/*" element={getMaintanence('/pools/*', <Pool />)} />
+            <Route path="/rewards" element={getMaintanence('/rewards', <Rewards />)} />
+            <Route path="/campaign/*" element={getMaintanence('/campaign/*', <Campaign />)} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
