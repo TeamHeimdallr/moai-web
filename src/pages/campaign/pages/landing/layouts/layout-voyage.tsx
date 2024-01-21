@@ -327,8 +327,7 @@ const _LayoutVoyage = () => {
                 <TokenListWrapper>
                   <TokenListVertical
                     token="veMOI"
-                    // balance={campaignReward}
-                    balance={'-'}
+                    balance={campaignReward}
                     image={<IconTokenMoai width={36} height={36} />}
                     button={
                       <ButtonPrimaryLarge text={t('Coming soon')} buttonType="filled" disabled />
