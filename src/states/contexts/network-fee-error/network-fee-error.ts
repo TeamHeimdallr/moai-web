@@ -67,3 +67,13 @@ export const useCampaignClaimNetworkFeeErrorStore = create<State>()(
     }))
   )
 );
+
+export const useBridgeToXrplNetworkFeeErrorStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'BRIDGE_TO_XRPL_NETWORK_FEE_ERROR_STORE',
+      error: false,
+      setError: error => set({ error }),
+    }))
+  )
+);

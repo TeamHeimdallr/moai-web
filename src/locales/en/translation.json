@@ -257,8 +257,10 @@
   "tooltip-text-enough-xrp": "If you already have enough $XRP in your The Root Network wallet, go to the next step!",
   "Bridge confirmed!": "Bridge request success!",
   "bridge-success-message": "Successfully requested the bridge. Usual bridge transaction takes 15 minutes. Please wail until you receive your XRP to the Metamask or Futurepass.",
+  "bridge-to-xrpl-success-message": "Successfully requested the bridge",
   "Bridge failed!": "Bridge failed",
   "bridge-fail-message": "Bridge your $XRP has failed. Please try again.",
+  "bridge-to-xrpl-fail-message": "Bridge your $XRP has failed. Please try again.",
   "Continue to add liquidity": "Continue to add liquidity",
 
   "campaign-add-liquidity-success-message": "Successfully added liquidity to liquidity voyage.",

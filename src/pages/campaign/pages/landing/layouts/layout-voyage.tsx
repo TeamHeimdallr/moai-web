@@ -39,6 +39,7 @@ import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { useCampaignStepStore } from '../../participate/states/step';
+import { BridgeToXrplPopup } from '../components/bridge-to-xrpl-popup';
 import { Pending } from '../components/pending';
 import { TokenListVertical } from '../components/token-list-vertical';
 import { WithdrawLiquidityPopup } from '../components/withdraw-liquidity-popup';
@@ -148,6 +149,11 @@ const _LayoutVoyage = () => {
   /* withdraw */
   const { opened: withdrawPopupOpened, open: withdrawPopupOpen } = usePopup(
     POPUP_ID.CAMPAIGN_WITHDRAW
+  );
+
+  /* bridge */
+  const { opened: bridgePopupOpened, open: bridgePopupOpen } = usePopup(
+    POPUP_ID.CAMPAIGN_BRIDGE_TO_XRPL
   );
 
   const { lpTokenPrice, lpTokenTotalSupply, refetch } = useUserPoolTokenBalances({
@@ -282,7 +288,13 @@ const _LayoutVoyage = () => {
                   text={t('Bridge to XRPL')}
                   icon={<IconNext width={20} height={20} />}
                   buttonType="outlined"
-                  onClick={() => {}}
+                  onClick={() => {
+                    gaAction({
+                      action: 'open-bridge',
+                      data: { page: 'campaign', layout: 'layout-voyage' },
+                    });
+                    bridgePopupOpen();
+                  }}
                 />
               </TitleButtonWrapper>
             )}
@@ -390,6 +402,7 @@ const _LayoutVoyage = () => {
             disableSuccessNavigate
           />
         )}
+        {bridgePopupOpened && <BridgeToXrplPopup />}
       </InnerWrapper>
     </Wrapper>
   );
