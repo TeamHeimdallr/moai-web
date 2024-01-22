@@ -18,12 +18,16 @@ import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-t
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
 
-import { IconTokenMoai, IconTokenRoot } from '~/assets/icons';
+import { IconNext, IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 
 import { BASE_URL } from '~/constants';
 import { POOL_ID } from '~/constants';
 
-import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons';
+import {
+  ButtonPrimaryLarge,
+  ButtonPrimaryMedium,
+  ButtonPrimaryMediumIconTrailing,
+} from '~/components/buttons';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
@@ -270,7 +274,17 @@ const _LayoutVoyage = () => {
     <Wrapper ref={ref}>
       <InnerWrapper>
         <MyInfoWrapper>
-          <Title>{t('My Voyage')}</Title>
+          <TitleWrapper>
+            <Title>{t('My Voyage')}</Title>
+            <TitleButtonWrapper>
+              <ButtonPrimaryMediumIconTrailing
+                text={t('Bridge to XRPL')}
+                icon={<IconNext width={20} height={20} />}
+                buttonType="outlined"
+                onClick={() => {}}
+              />
+            </TitleButtonWrapper>
+          </TitleWrapper>
 
           {isEmpty && (
             <Empty>
@@ -436,6 +450,12 @@ const TokenListWrapper = tw.div`
   md:(flex-row)
 `;
 
+const TitleWrapper = tw.div`
+  flex justify-between w-full
+`;
+const TitleButtonWrapper = tw.div`
+  flex
+`;
 const Title = tw.div`
   px-20 font-b-20 text-neutral-100
   md:(font-b-24)
