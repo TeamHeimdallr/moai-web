@@ -276,14 +276,16 @@ const _LayoutVoyage = () => {
         <MyInfoWrapper>
           <TitleWrapper>
             <Title>{t('My Voyage')}</Title>
-            <TitleButtonWrapper>
-              <ButtonPrimaryMediumIconTrailing
-                text={t('Bridge to XRPL')}
-                icon={<IconNext width={20} height={20} />}
-                buttonType="outlined"
-                onClick={() => {}}
-              />
-            </TitleButtonWrapper>
+            {!isEmpty && (
+              <TitleButtonWrapper>
+                <ButtonPrimaryMediumIconTrailing
+                  text={t('Bridge to XRPL')}
+                  icon={<IconNext width={20} height={20} />}
+                  buttonType="outlined"
+                  onClick={() => {}}
+                />
+              </TitleButtonWrapper>
+            )}
           </TitleWrapper>
 
           {isEmpty && (
