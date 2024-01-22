@@ -127,7 +127,7 @@ export const useTableRewards = () => {
       },
 
       {
-        header: () => <TableHeader label="LP volume" align="flex-end" />,
+        header: () => <TableHeader label="Current LP volume" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'volume',
       },
@@ -178,7 +178,7 @@ export const useTableRewards = () => {
           ],
           dataRows: [
             {
-              label: 'LP volume',
+              label: 'Current LP volume',
               value: (
                 <TableColumn
                   value={`$${formatNumber(d?.volume, 4, 'floor', 10 ** 6)}`}
