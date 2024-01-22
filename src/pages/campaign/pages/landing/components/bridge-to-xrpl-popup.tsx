@@ -8,7 +8,8 @@ import tw, { css, styled } from 'twin.macro';
 import { formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
 
-import { useBridgeToXrpl } from '~/api/api-contract/_evm/campaign/bridge/bridge-root-to-xrpl';
+import { useBridgeToXrpl as useBridgeToXrplEvmSubstrate } from '~/api/api-contract/_evm/campaign/bridge/bridge-root-to-xrpl';
+import { useBridgeToXrpl as useBridgeToXrplFpassSubstrate } from '~/api/api-contract/_evm/campaign/bridge/bridge-root-to-xrpl-substrate';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 
 import { COLOR } from '~/assets/colors';
@@ -103,60 +104,13 @@ const _BridgeToXrplPopup = () => {
   const xrpPrice = xrp?.price || 0;
   const bridgeTokenValue = inputValue ? inputValue * xrpPrice : 0;
 
-  // const bridgeToXrplEvm = useWithdrawLiquidityEVM({
-  //   bptIn: inputValueRaw || 0n,
-  //   enabled: withdrawLiquidityEnabled && !isFpass,
-  // });
-
-  // const withdrawLiquiditySubstrate = useWithdrawLiquiditySubstrate({
-  //   bptIn: inputValueRaw || 0n,
-  //   enabled: withdrawLiquidityEnabled && isFpass,
-  // });
-  // const {
-  //   isPrepareLoading: withdrawLiquiditySubstratePrepareLoading,
-  //   isPrepareError: withdrawLiquiditySubstratePrepareIsError,
-  //   prepareError: withdrawLiquiditySubstratePrepareError,
-  // } = useWithdrawLiquidityPrepare({
-  //   bptIn: inputValueRaw || 0n,
-  //   enabled: withdrawLiquidityEnabled && isFpass,
-  // });
-
-  // const withdrawLiquidity = isFpass ? withdrawLiquiditySubstrate : withdrawLiquidityEvm;
-  // const {
-  //   isPrepareLoading: withdrawLiquidityPrepareLoading,
-  //   isLoading: withdrawLiquidityLoading,
-  //   isSuccess: withdrawLiquiditySuccess,
-  //   isError: withdrawLiquidityIsError,
-  //   error: withdrawLiquidityError,
-  //   txData,
-  //   blockTimestamp,
-  //   writeAsync,
-  //   estimateFee: estimateWithdrawLiquidityFee,
-  // } = withdrawLiquidity;
-
-  // const { lpTokenTotalSupply, refetch } = useUserPoolTokenBalances({
-  //   network: 'trn',
-  //   id: POOL_ID?.[selectedNetwork]?.ROOT_XRP,
-  // });
-
-  // isPrepareLoading: withdrawLiquidityPrepareLoading,
-  // isLoading: withdrawLiquidityLoading,
-  // isSuccess: withdrawLiquiditySuccess,
-  // isError: withdrawLiquidityIsError,
-  // error: withdrawLiquidityError,
-  // txData,
-  // blockTimestamp,
-  // writeAsync,
-  // estimateFee: estimateWithdrawLiquidityFee,
-
-  const bridgeEvmSubstrate = useBridgeToXrpl({
+  const bridgeEvmSubstrate = useBridgeToXrplEvmSubstrate({
     amount: parseUnits(inputValue?.toString() ?? '0', 6) || 0n,
     destination: xrpWallet.address,
     enabled: !!validAmount,
   });
 
-  // TODO
-  const bridgeFpassSubstrate = useBridgeToXrpl({
+  const bridgeFpassSubstrate = useBridgeToXrplFpassSubstrate({
     amount: parseUnits(inputValue?.toString() ?? '0', 6) || 0n,
     destination: xrpWallet.address,
     enabled: !!validAmount,
@@ -176,8 +130,7 @@ const _BridgeToXrplPopup = () => {
 
   const isSuccess = bridgeSuccess && !!txData;
   const txDate = new Date(blockTimestamp || 0);
-  const isIdle = !txData; // TODO
-  // const isIdle = false; // TODO
+  const isIdle = !txData;
   const estimatedFee = estimatedBridgeFee || '';
   const gasFeeBuffer = 0.05;
   const gasError =
