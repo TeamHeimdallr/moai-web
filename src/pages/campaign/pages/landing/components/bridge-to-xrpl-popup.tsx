@@ -28,8 +28,8 @@ import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
+import { ButtonSkeleton } from '~/components/skeleton/button-skeleton';
 import { ListSkeleton } from '~/components/skeleton/list-skeleton';
-import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
@@ -391,12 +391,18 @@ const _BridgeToXrplPopupSkeleton = () => {
   const { t } = useTranslation();
   return (
     <Popup id={POPUP_ID.CAMPAIGN_BRIDGE_TO_XRPL} title={t('Bridge to XRPL')}>
-      {/* // TODO */}
       <Wrapper>
-        <ListSkeleton height={114} title={t("You're providing")} />
-        <ListSkeleton height={183} title={t("You're expected to receive")} />
-        <ListSkeleton height={122} title={t('Summary')} />
-        <SkeletonBase height={48} borderRadius={12} />
+        <SkeletonListWrapper>
+          <ListSkeleton title="From" network={NETWORK.THE_ROOT_NETWORK} height={214} />
+          <ArrowIconSkeletonWrapper>
+            <ArrowDownWrapper>
+              <IconArrowDown width={20} height={20} fill={COLOR.PRIMARY[50]} />
+            </ArrowDownWrapper>
+          </ArrowIconSkeletonWrapper>
+          <ListSkeleton title="To" network={NETWORK.XRPL} height={106} />
+          <ListSkeleton height={144} />
+        </SkeletonListWrapper>
+        <ButtonSkeleton />
       </Wrapper>
     </Popup>
   );
@@ -415,6 +421,9 @@ const InnerWrapper = tw.div`
 `;
 const ArrowIconWrapper = tw.div`
   absolute absolute-center-x bottom-92 z-1
+`;
+const ArrowIconSkeletonWrapper = tw.div`
+  absolute absolute-center-x bottom-351 z-2
 `;
 const ButtonWrapper = tw.div`
   mt-16 w-full
@@ -510,3 +519,6 @@ const ClickableIcon = styled.div(() => [
     }
   `,
 ]);
+const SkeletonListWrapper = tw.div`
+  w-full flex flex-col gap-16
+`;
