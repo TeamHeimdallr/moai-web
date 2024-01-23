@@ -15,8 +15,6 @@ export const GNB_MENU: IGnbMenu[] = [
     id: 'lending',
     text: 'Lending',
     path: '/',
-    disabled: true,
-    commingSoon: true,
   },
   {
     id: 'launchpad',
