@@ -91,7 +91,7 @@ const _BridgeToXrplPopup = () => {
   const { close } = usePopup(POPUP_ID.CAMPAIGN_BRIDGE_TO_XRPL);
 
   const validAmount = inputValue && inputValue > 0;
-  const bridgeEnabled = !!validAmount;
+  const bridgeEnabled = !!validAmount && !!xrpWallet && !!xrpWallet.address;
 
   const schema = yup.object().shape({
     input1: yup.number().min(0).max(xrpBalance, t('Exceeds wallet balance')).required(),
@@ -107,13 +107,13 @@ const _BridgeToXrplPopup = () => {
   const bridgeEvmSubstrate = useBridgeToXrplEvmSubstrate({
     amount: parseUnits(inputValue?.toString() ?? '0', 6) || 0n,
     destination: xrpWallet.address,
-    enabled: !!validAmount,
+    enabled: bridgeEnabled,
   });
 
   const bridgeFpassSubstrate = useBridgeToXrplFpassSubstrate({
     amount: parseUnits(inputValue?.toString() ?? '0', 6) || 0n,
     destination: xrpWallet.address,
-    enabled: !!validAmount,
+    enabled: bridgeEnabled,
   });
 
   const bridgeToXrpl = isFpass ? bridgeFpassSubstrate : bridgeEvmSubstrate;
