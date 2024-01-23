@@ -244,6 +244,7 @@
   "campaign-landing-main-text": "The Root Network의 메인넷 DEX 런칭을 기념하기 위해 Moai Finance에서 $XRP 홀더를 위한\n캠페인 “Voyage to the Future”에 초대합니다. 캠페인을 통해 Futureverse의 The Root\nNetwork에 초기 유동성을 제공하고 $MOI 프리마이닝과 특별한 $ROOT 리워드를 받아가세요!",
   "Expected APR": "예상 APR",
   "My Voyage": "나의 Voyage",
+  "Bridge to XRPL": "XRPL로 브릿지하기",
   "Rewards": "리워드",
   "Pending": "Pending",
   "continue-campaign": "이어서 하기",
@@ -270,8 +271,10 @@
   "tooltip-text-enough-xrp": "이미 The Root Network 지갑에 $XRP가 충분히 있다면, 다음 단계로 넘어가세요!",
   "Bridge confirmed!": "브릿지를 요청했습니다.",
   "bridge-success-message": "브릿지 요청에 성공했습니다. 일반적인 XRP 브릿지는 15분 정도 소요됩니다. The Root Network의 Metamask나 Futurepass에서 자산을 확인 후 다음단계를 진행해 주세요.",
+  "bridge-to-xrpl-success-message": "브릿지 요청에 성공했습니다.",
   "Bridge failed!": "브릿지에 실패했습니다.",
   "bridge-fail-message": "$XRP를 The Root Network로 브릿지하는데 실패했습니다. 다시 시도해주세요.",
+  "bridge-to-xrpl-fail-message": "$XRP를 XRPL로 브릿지하는데 실패했습니다. 다시 시도해주세요.",
   "Continue to add liquidity": "유동성 공급 이어서하기",
 
   "campaign-add-liquidity-success-message": "Liquidity voyage 풀에 성공적으로 유동성을 추가했습니다.",
