@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes as ReactRoutes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
-import { IS_LANDING } from '~/constants';
+import { IS_LANDING, IS_LOCAL } from '~/constants';
 
 import { ConnectWallet } from '~/components/connect-wallet';
 import XummQrPopup from '~/components/popup/xumm-qr';
@@ -51,7 +51,9 @@ const Page = () => {
             <Route path="/pools/*" element={getMaintanence('/pools/*', <Pool />)} />
             <Route path="/rewards" element={getMaintanence('/rewards', <Rewards />)} />
             <Route path="/campaign/*" element={getMaintanence('/campaign/*', <Campaign />)} />
-            <Route path="/lending/*" element={getMaintanence('/lending/*', <LendingPage />)} />
+            {!IS_LOCAL && (
+              <Route path="/lending/*" element={getMaintanence('/lending/*', <LendingPage />)} />
+            )}
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
