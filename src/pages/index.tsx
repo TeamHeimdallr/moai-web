@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes as ReactRoutes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
-import { IS_LANDING } from '~/constants';
+import { IS_LANDING, IS_LOCAL } from '~/constants';
 
 import { ConnectWallet } from '~/components/connect-wallet';
 import XummQrPopup from '~/components/popup/xumm-qr';
@@ -17,6 +17,7 @@ import { POPUP_ID } from '~/types';
 import Campaign from './campaign';
 import Home from './home';
 import Landing from './landing';
+import LendingPage from './lending';
 import Pool from './pool';
 import Rewards from './rewards';
 import Swap from './swap';
@@ -50,6 +51,9 @@ const Page = () => {
             <Route path="/pools/*" element={getMaintanence('/pools/*', <Pool />)} />
             <Route path="/rewards" element={getMaintanence('/rewards', <Rewards />)} />
             <Route path="/campaign/*" element={getMaintanence('/campaign/*', <Campaign />)} />
+            {!IS_LOCAL && (
+              <Route path="/lending/*" element={getMaintanence('/lending/*', <LendingPage />)} />
+            )}
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </>

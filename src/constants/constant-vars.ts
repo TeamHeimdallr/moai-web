@@ -1,5 +1,7 @@
 import { IGnbMenu } from '~/types';
 
+import { IS_LOCAL } from '.';
+
 export const GNB_MENU: IGnbMenu[] = [
   {
     id: 'pool',
@@ -14,14 +16,14 @@ export const GNB_MENU: IGnbMenu[] = [
   {
     id: 'lending',
     text: 'Lending',
-    path: '/',
-    disabled: true,
-    commingSoon: true,
+    path: '/lending',
+    disabled: !IS_LOCAL,
+    commingSoon: !IS_LOCAL,
   },
   {
     id: 'launchpad',
     text: 'Launchpad',
-    path: '/',
+    path: '/launchpad',
     disabled: true,
     commingSoon: true,
   },

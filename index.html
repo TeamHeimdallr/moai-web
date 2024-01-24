@@ -47,7 +47,11 @@
 
     <!-- MS CLARITY FOR HITMAP -->
     <script type="text/javascript">
+      const env = '%VITE_BLOCKCHAIN_ENV%';
+
       (function (c, l, a, r, i, t, y) {
+        if (env !== 'MAINNET') return;
+
         c[a] =
           c[a] ||
           function () {
