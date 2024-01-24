@@ -33,8 +33,8 @@ export const useGetPoolQuery = (request: Request, options?: QueryOption) => {
       pool: {
         ...dataDoubleVol.data?.pool,
         apr: dataDoubleVol.data?.pool.apr
-          ? (dataDoubleVol.data?.pool.apr - dataDoubleVol.data?.pool.moiApr) / 2 +
-            dataDoubleVol.data?.pool.moiApr
+          ? (dataDoubleVol.data?.pool.apr - dataDoubleVol.data?.pool.moaiApr) / 2 +
+            dataDoubleVol.data?.pool.moaiApr
           : 0,
         volume: dataDoubleVol.data?.pool.volume ? dataDoubleVol.data?.pool.volume / 2 : 0,
       } as IPool,

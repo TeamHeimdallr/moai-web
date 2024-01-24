@@ -52,12 +52,12 @@ export const RewardInfo = () => {
     <Wrapper ref={ref}>
       <InnerWrapper>
         <InfoCard name={t('Ends at')} value={formattedEndsAt} subValue={formattedEndsAtTime} />
-        <InfoCard name={t('Total Reward')} value={formattedTotalReward} subValue="veMOI" />
+        <InfoCard name={t('Total Reward')} value={formattedTotalReward} subValue="veMOAI" />
       </InnerWrapper>
       {currentAddress && (
         <InnerWrapper ref={refMy}>
           <InfoCard name={t('My Volume')} value={formattedMyVolume} />
-          <InfoCard name={t('My Reward')} value={formattedMyReward} subValue="veMOI" />
+          <InfoCard name={t('My Reward')} value={formattedMyReward} subValue="veMOAI" />
         </InnerWrapper>
       )}
     </Wrapper>

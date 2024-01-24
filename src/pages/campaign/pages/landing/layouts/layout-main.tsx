@@ -33,7 +33,7 @@ const _LayoutMain = () => {
   const { ref } = useGAInView({ name: 'campaign-layout-main' });
   const { gaAction } = useGAAction();
 
-  const { apr, moiApr } = useCampaignLpBalance();
+  const { apr, moaiApr } = useCampaignLpBalance();
 
   const { data: poolData } = useGetPoolsQuery(
     { queries: { filter: 'network:eq:trn' } },
@@ -85,7 +85,7 @@ const _LayoutMain = () => {
                 <Text>{apr ? formatNumber(apr, 4, 'round', 10000) : '0'}%</Text>
                 <AprInfoWrapper>
                   <AprInfo>
-                    {moiApr ? `+${formatNumber(moiApr, 2, 'round', 10000)}%` : '0%'}
+                    {moaiApr ? `+${formatNumber(moaiApr, 2, 'round', 10000)}%` : '0%'}
                     <IconTokenMoai width={16} height={16} />
                   </AprInfo>
                   <AprInfo>

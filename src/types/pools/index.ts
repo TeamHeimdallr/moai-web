@@ -12,7 +12,7 @@ export interface IPoolList {
   value: number;
   volume: number;
   apr: number;
-  moiApr: number;
+  moaiApr: number;
 }
 
 export interface IMyPoolList {
@@ -25,7 +25,7 @@ export interface IMyPoolList {
   balance: number;
   value: number;
   apr: number;
-  moiApr: number;
+  moaiApr: number;
 }
 
 export interface IMyPoolListRequest {
@@ -62,7 +62,7 @@ export interface IPool {
   value: number;
   volume: number;
   apr: number;
-  moiApr: number;
+  moaiApr: number;
   tradingFee: number;
 
   createdAt: Date;
