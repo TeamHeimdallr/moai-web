@@ -33,15 +33,15 @@ export const PoolInfo = () => {
   );
 
   const { pool } = data || {};
-  const { value, volume, apr, moiApr } = pool || {};
+  const { value, volume, apr, moaiApr } = pool || {};
   const tradingFee = 0.0035; // TODO: hard-coded
 
   const formattedValue = value ? `$${formatNumber(value, 2)}` : '$0';
   const formattedVolume = volume ? `$${formatNumber(volume, 2)}` : '$0';
 
   const formattedApr = apr ? `${formatNumber(apr, 4, 'round', 10000)}%` : '0%'; // swap apr
-  const formattedMoaiApr = moiApr ? `${formatNumber(moiApr, 4, 'round', 10000)}%` : '0%'; // moai pre-mining apr
-  const formattedSwapApr = `${formatNumber((apr || 0) - (moiApr || 0), 4, 'round', 10000)}%`;
+  const formattedMoaiApr = moaiApr ? `${formatNumber(moaiApr, 4, 'round', 10000)}%` : '0%'; // moai pre-mining apr
+  const formattedSwapApr = `${formatNumber((apr || 0) - (moaiApr || 0), 4, 'round', 10000)}%`;
 
   const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100, 2)}%` : '0%';
 

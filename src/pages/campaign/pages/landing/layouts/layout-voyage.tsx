@@ -354,7 +354,7 @@ const _LayoutVoyage = () => {
                 <TokenCardTitle>{t('Rewards')}</TokenCardTitle>
                 <TokenListWrapper>
                   <TokenListVertical
-                    token="veMOI"
+                    token="veMOAI"
                     balance={campaignReward}
                     image={<IconTokenMoai width={36} height={36} />}
                     button={

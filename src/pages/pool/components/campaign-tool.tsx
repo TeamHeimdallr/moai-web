@@ -301,7 +301,7 @@ export const CampaignTool = () => {
                 backdropFilter: 'blur(2px)',
               }}
               showValue={false}
-              token="veMOI"
+              token="veMOAI"
               balance={campaignReward}
               image={<IconTokenMoai width={36} height={36} />}
             />

@@ -60,7 +60,7 @@ export const useGetMyPoolsQuery = (request: Request, options?: MutateOptions) =>
       ...dataDoubleVol.data,
       pools: dataDoubleVol.data?.pools.map(pool => ({
         ...pool,
-        apr: pool.apr ? (pool.apr - pool.moiApr) / 2 + pool.moiApr : undefined,
+        apr: pool.apr ? (pool.apr - pool.moaiApr) / 2 + pool.moaiApr : undefined,
       })),
     },
   };

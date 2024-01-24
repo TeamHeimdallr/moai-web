@@ -61,7 +61,7 @@ export const useGetPoolsQuery = (request: Request, options?: QueryOption) => {
       pools: dataDoubleVol.data?.pools.map(pool => ({
         ...pool,
         volume: pool.volume / 2,
-        apr: pool.apr ? (pool.apr - pool.moiApr) / 2 + pool.moiApr : undefined,
+        apr: pool.apr ? (pool.apr - pool.moaiApr) / 2 + pool.moaiApr : undefined,
       })),
     },
   };
@@ -101,7 +101,7 @@ export const useGetPoolsInfinityQuery = (request: Request, options?: InfinityQue
         pools: page.pools.map(pool => ({
           ...pool,
           volume: pool.volume / 2,
-          apr: pool.apr ? (pool.apr - pool.moiApr) / 2 + pool.moiApr : undefined,
+          apr: pool.apr ? (pool.apr - pool.moaiApr) / 2 + pool.moaiApr : undefined,
         })),
       })),
     },

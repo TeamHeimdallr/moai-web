@@ -132,7 +132,7 @@ export const useTableRewards = () => {
         accessorKey: 'volume',
       },
       {
-        header: () => <TableHeader label="Pre-mined $veMOI" align="flex-end" />,
+        header: () => <TableHeader label="Pre-mined $veMOAI" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'preminedToken',
       },
@@ -187,7 +187,7 @@ export const useTableRewards = () => {
               ),
             },
             {
-              label: 'Pre-mined $veMOI',
+              label: 'Pre-mined $veMOAI',
               value: (
                 <TableColumn
                   value={`${formatNumber(d?.premined, 4, 'floor', 10 ** 6)}`}
