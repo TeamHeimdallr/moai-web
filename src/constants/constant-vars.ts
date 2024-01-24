@@ -16,14 +16,14 @@ export const GNB_MENU: IGnbMenu[] = [
   {
     id: 'lending',
     text: 'Lending',
-    path: '/',
+    path: '/lending',
     disabled: !IS_LOCAL,
     commingSoon: !IS_LOCAL,
   },
   {
     id: 'launchpad',
     text: 'Launchpad',
-    path: '/',
+    path: '/launchpad',
     disabled: true,
     commingSoon: true,
   },
