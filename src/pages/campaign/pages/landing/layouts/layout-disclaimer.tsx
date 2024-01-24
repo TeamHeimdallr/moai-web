@@ -41,7 +41,7 @@ export const LayoutDisclaimer = () => {
         <Trans i18nKey="disclaimer-text-5">
           This is link
           <HyperLink
-            onClick={() => window.open('https://discord.com/invite/PSrF5z34dV', '_blank')}
+            onClick={() => window.open('https://discord.gg/PSrF5z34dV', '_blank')}
           ></HyperLink>
           <HyperLink
             onClick={() => window.open('mailto:support@moai-finance.xyz', '_blank')}
