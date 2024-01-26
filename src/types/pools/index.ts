@@ -215,3 +215,13 @@ export interface IAmmInfo extends BaseResponse {
   status: string;
   type: string;
 }
+
+/*
+ * Faucet tokens for XRPL Devnet
+ */
+export interface IFaucetXrplRequest {
+  currency: string;
+  issuer: string;
+  recipient: string;
+  amount?: number;
+}

@@ -329,5 +329,9 @@
   "voyage-empty-text": "You haven't activated your $XRP yet.",
 
   "maintenance-title": "Page under maintenance",
-  "maintenance-message": "We apologize for the inconvenience. Please wait for further instructions."
+  "maintenance-message": "We apologize for the inconvenience. Please wait for further instructions.",
+
+  "Set trustline": "Set trustline",
+  "No trustline": "No trustline",
+  "Get Token": "Get {{symbol}}"
 }
