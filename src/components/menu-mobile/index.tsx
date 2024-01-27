@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
@@ -8,6 +8,8 @@ import LogoText from '~/assets/logos/logo-text.svg?react';
 import { GNB_MENU } from '~/constants';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkFull } from '~/utils';
 import { TOOLTIP_ID } from '~/types';
 
 import { ButtonIconLarge } from '../buttons';
@@ -21,6 +23,10 @@ interface MobileMenuProps {
 }
 
 export const MobileMenu = ({ closeMenu }: MobileMenuProps) => {
+  const { network } = useParams();
+  const { selectedNetwork } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
   const { gaAction } = useGAAction();
 
   const navigate = useNavigate();
@@ -44,6 +50,10 @@ export const MobileMenu = ({ closeMenu }: MobileMenuProps) => {
     closeMenu();
   };
 
+  const currentGnbMenu = GNB_MENU.filter(menu => menu.network.includes(currentNetwork)).filter(
+    menu => menu.show
+  );
+
   return (
     <>
       <Dim onClick={handleCloseClick} />
@@ -63,7 +73,7 @@ export const MobileMenu = ({ closeMenu }: MobileMenuProps) => {
             </ButtonWrapper>
           </HeaderWrapper>
           <MenuWrapper>
-            {GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
+            {currentGnbMenu.map(({ id, text, path, disabled, commingSoon }) => (
               <Menu
                 key={id}
                 onClick={() => handleMenuClick(path, text, disabled, commingSoon)}
