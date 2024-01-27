@@ -4,12 +4,10 @@ import { formatUnits, parseUnits } from 'viem';
 import { AccountInfoResponse, GatewayBalancesResponse } from 'xrpl';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
-import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatAmmAssets } from '~/utils';
 import { IAmmInfo, ITokenComposition } from '~/types';
 
 interface Props {
@@ -20,18 +18,19 @@ export const useUserPoolTokenBalances = (props?: Props) => {
   const { network: networkProps, id: idProps } = props || {};
   const { network, id } = useParams();
 
+  const poolId = id || idProps;
   const { isXrp } = useNetwork();
 
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
   const { address: walletAddress } = xrp;
 
-  const queryEnabled = !!(network || networkProps) && !!(id || idProps);
+  const queryEnabled = !!(network || networkProps) && !!poolId;
   const { data: poolData } = useGetPoolQuery(
     {
       params: {
         networkAbbr: (network || networkProps) as string,
-        poolId: (id || idProps) as string,
+        poolId: poolId as string,
       },
     },
     {
@@ -39,38 +38,20 @@ export const useUserPoolTokenBalances = (props?: Props) => {
       staleTime: 1000,
     }
   );
-  const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
-    {
-      params: {
-        networkAbbr: (network || networkProps) as string,
-        poolId: (id || idProps) as string,
-      },
-    },
-    {
-      enabled: queryEnabled,
-      cacheTime: Infinity,
-      staleTime: Infinity,
-    }
-  );
 
   const { pool } = poolData || {};
   const { compositions, lpToken } = pool || {};
 
-  const { poolVaultAmm } = poolVaultAmmData || {};
-  const { ammAssets: ammAssetsRaw } = poolVaultAmm || {};
-  const ammAssets = formatAmmAssets(ammAssetsRaw || []);
-
   /* get amm info, lp token info */
   const ammInfoRequest = {
     command: 'amm_info',
-    asset: ammAssets[0],
-    asset2: ammAssets[1],
+    amm_account: (id || idProps) as string,
   };
   const { data: ammInfoRaw, refetch: ammInfoRefetch } = useQuery<IAmmInfo>(
-    ['GET', 'XRPL', 'AMM_INFO', ammAssets],
+    ['GET', 'XRPL', 'AMM_INFO', poolId],
     () => client.request(ammInfoRequest),
     {
-      enabled: !!client && isConnected && !!ammAssets[0] && !!ammAssets[1] && isXrp,
+      enabled: !!client && isConnected && !!poolId && isXrp,
       cacheTime: Infinity,
       staleTime: Infinity,
     }
