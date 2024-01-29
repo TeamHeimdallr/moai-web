@@ -347,5 +347,6 @@
 
   "Set trustline": "트러스트라인 활성화",
   "No trustline": "트러스트라인이 없습니다.",
-  "Get Token": "{{symbol}} 받기"
+  "Get Token": "{{symbol}} 받기",
+  "faucet-limit-message": "퍼셋 한도에 도달했습니다."
 }

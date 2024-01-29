@@ -1,11 +1,15 @@
-import { useEffect } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { styled } from 'twin.macro';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/_xrpl/balance/user-all-token-balances';
 import { useApprove } from '~/api/api-contract/_xrpl/token/approve';
 import { usePostFaucetXrpl } from '~/api/api-server/faucet/post-faucet-xrpl';
+
+import { COLOR } from '~/assets/colors';
+import { IconAlert } from '~/assets/icons';
 
 import { ButtonPrimaryMedium } from '~/components/buttons';
 
@@ -20,10 +24,8 @@ import i18n from '~/locales/i18n';
 
 interface FaucetTokenCardProps {
   token: IToken;
-  balance: number;
-  refetchBalance: () => void;
 }
-export const FaucetTokenCard = ({ token, balance, refetchBalance }: FaucetTokenCardProps) => {
+export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
   const amount = 100; // TODO
   const { isConnected: isClientConnected } = useXrpl();
   const { isXrp } = useNetwork();
@@ -32,6 +34,16 @@ export const FaucetTokenCard = ({ token, balance, refetchBalance }: FaucetTokenC
   const isConnected = isClientConnected && !!address;
   const { open: openConnectWallet } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { t } = useTranslation();
+
+  const { userAllTokenBalances, refetch: refetchBalance } = useUserAllTokenBalances();
+  const balance = useMemo(
+    () => userAllTokenBalances?.find(b => b.currency === token.currency)?.balance ?? 0,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [userAllTokenBalances]
+  );
+  const [description, setDescription] = useState<ReactNode>(
+    <TokenBalance>{formatNumber(balance, 4)}</TokenBalance>
+  );
 
   const {
     mutateAsync: faucet,
@@ -45,12 +57,26 @@ export const FaucetTokenCard = ({ token, balance, refetchBalance }: FaucetTokenC
     } else if (!allowance) {
       await allow?.();
     } else {
-      await faucet({
+      const data = await faucet({
         currency: token.currency,
         issuer: token.address,
         recipient: address,
         amount,
       });
+
+      if (data && (data?.code === '501' || data?.code === '510')) {
+        // lack of faucet fund
+        setDescription(
+          <IconWithErrorMsg>
+            <IconAlert width={20} height={20} fill={COLOR.RED[50]} />
+            <ErrorMsg>{t('faucet-limit-message')}</ErrorMsg>
+          </IconWithErrorMsg>
+        );
+        setTimeout(
+          () => setDescription(<TokenBalance>{formatNumber(balance, 4)}</TokenBalance>),
+          3000
+        );
+      }
     }
   };
 
@@ -84,6 +110,13 @@ export const FaucetTokenCard = ({ token, balance, refetchBalance }: FaucetTokenC
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFaucetSuccess, isApproveSuccess]);
 
+  useEffect(() => {
+    if (isConnected && allowance) {
+      setDescription(<TokenBalance>{formatNumber(balance, 4)}</TokenBalance>);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balance]);
+
   return (
     <Wrapper>
       <TokenInfo>
@@ -95,11 +128,7 @@ export const FaucetTokenCard = ({ token, balance, refetchBalance }: FaucetTokenC
         <TokenNameBalance>
           <TokenName>{token.symbol}</TokenName>
           {isConnected &&
-            (allowance ? (
-              <TokenBalance>{formatNumber(balance, 4)}</TokenBalance>
-            ) : (
-              <TokenBalance>{t('No trustline')}</TokenBalance>
-            ))}
+            (allowance ? description : <TokenBalance>{t('No trustline')}</TokenBalance>)}
         </TokenNameBalance>
       </TokenInfo>
       <ButtonWrapper isConnectWallet={isConnected}>
@@ -132,3 +161,9 @@ const ButtonWrapper = styled.div<{ isConnectWallet: boolean }>(({ isConnectWalle
   tw`flex-center`,
   i18n.language === 'en' ? (!isConnectWallet ? tw`w-130` : tw`w-115`) : tw`w-148`,
 ]);
+const IconWithErrorMsg = tw.div`
+  flex gap-4
+`;
+const ErrorMsg = tw.div`
+  font-r-12 text-red-50
+`;

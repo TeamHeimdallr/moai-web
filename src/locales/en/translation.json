@@ -333,5 +333,6 @@
 
   "Set trustline": "Set trustline",
   "No trustline": "No trustline",
-  "Get Token": "Get {{symbol}}"
+  "Get Token": "Get {{symbol}}",
+  "faucet-limit-message": "You've reached the faucet limit"
 }

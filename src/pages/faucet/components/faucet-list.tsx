@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import tw from 'twin.macro';
 
-import { useUserAllTokenBalances } from '~/api/api-contract/_xrpl/balance/user-all-token-balances';
 import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
@@ -34,18 +33,9 @@ const _FaucetList = () => {
     { staleTime: 60 * 1000 }
   );
   const { tokens: tokensAll } = tokensRawData || {};
-  const tokensData = tokensAll?.filter(
+  const tokens = tokensAll?.filter(
     token => !token.isLpToken && token.network === NETWORK.XRPL && token.currency !== 'XRP'
   );
-
-  const { userAllTokenBalances, refetch: refetchBalance } = useUserAllTokenBalances();
-  const tokens = tokensData?.map(token => {
-    const balance = userAllTokenBalances?.find(b => b.currency === token.currency);
-    return {
-      ...token,
-      balance: balance?.balance,
-    };
-  });
 
   return (
     <>
@@ -53,11 +43,7 @@ const _FaucetList = () => {
         {tokens?.map(token => {
           return (
             <TokenCard key={token.id}>
-              <FaucetTokenCard
-                token={token}
-                balance={token.balance ?? 0}
-                refetchBalance={refetchBalance}
-              />
+              <FaucetTokenCard token={token} />
             </TokenCard>
           );
         })}
@@ -90,12 +76,4 @@ const TokenCard = tw.div`
 
 const InputInnerWrapper = tw.div`
   flex flex-col gap-16 relative
-`;
-
-const IconWrapper = tw.div`
-  absolute absolute-center-x bottom-100 z-2 clickable select-none
-`;
-
-const ArrowDownWrapper = tw.div`
-  p-6 flex-center rounded-full bg-neutral-20
 `;
