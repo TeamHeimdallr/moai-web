@@ -3198,6 +3198,7 @@ __metadata:
     copy-to-clipboard: ^3.3.3
     d3-format: ^3.1.0
     date-fns: ^2.30.0
+    dcent-web-connector: ^0.15.0
     dotenv: ^16.3.1
     dotenv-cli: ^7.3.0
     eslint: ^8.52.0
@@ -8369,7 +8370,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:^9.0.0":
+"bignumber.js@npm:^9.0.0, bignumber.js@npm:^9.1.1":
   version: 9.1.2
   resolution: "bignumber.js@npm:9.1.2"
   checksum: 582c03af77ec9cb0ebd682a373ee6c66475db94a4325f92299621d544aa4bd45cb45fd60001610e94aef8ae98a0905fa538241d9638d4422d57abbeeac6fadaf
@@ -9496,6 +9497,16 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.21.0
   checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
+  languageName: node
+  linkType: hard
+
+"dcent-web-connector@npm:^0.15.0":
+  version: 0.15.0
+  resolution: "dcent-web-connector@npm:0.15.0"
+  dependencies:
+    bignumber.js: ^9.1.1
+    events: ^3.0.0
+  checksum: 01b66f9f9e73ecbd99dbbd146fca7910935191019ed4b9185aa2162046b7ea99330c8552cd7f6dac5dcf82b4f4c78679eb452c45f10dddd4c24063c14dff6f4f
   languageName: node
   linkType: hard
 

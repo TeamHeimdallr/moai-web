@@ -3,6 +3,7 @@ import {
   submitTransaction as gemSubmitTransaction,
   SubmitTransactionResponse,
 } from '@gemwallet/api';
+import dcent from 'dcent-web-connector';
 import { zeroAddress } from 'viem';
 import { Transaction } from 'xrpl';
 
@@ -20,6 +21,7 @@ import { useXrpl } from '../contexts';
 import { useFuturepassOf } from './use-futurepass-of';
 import {
   useConnectWithCrossmarkWallet,
+  useConnectWithDcentWallet,
   useConnectWithEvmWallet,
   useConnectWithGemWallet,
   useConnectWithXummWallet,
@@ -147,6 +149,15 @@ export const useConnectedXrplWallet = () => {
     truncatedAddress: truncatedXrpXummAddress,
   } = useConnectWithXummWallet();
 
+  const {
+    isConnected: isXrpDcentConnected,
+    connect: connectXrpDcent,
+    disconnect: disconnectXrpDcent,
+    address: xrpDcentAddress,
+    truncatedAddress: truncatedXrpDcentAddress,
+    keyPath: xrpDcentKeyPath,
+  } = useConnectWithDcentWallet();
+
   const xrp = isXrpXummConnected
     ? {
         isConnected: isXrpXummConnected,
@@ -214,6 +225,20 @@ export const useConnectedXrplWallet = () => {
         connectedConnector: 'gem',
         submitTransaction: async (tx: Transaction) =>
           (await gemSubmitTransaction({ transaction: tx })) as SubmitTransactionResponse,
+      }
+    : isXrpDcentConnected
+    ? {
+        isConnected: isXrpDcentConnected,
+        connect: connectXrpDcent,
+        disconnect: disconnectXrpDcent,
+        address: xrpDcentAddress,
+        truncatedAddress: truncatedXrpDcentAddress,
+        connectedConnector: 'dcent',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        submitTransaction: async (tx: any) => {
+          if (!xrpDcentKeyPath) return;
+          return await dcent.getXrpSignedTransaction(tx, xrpDcentKeyPath);
+        },
       }
     : {
         isConnected: false,
