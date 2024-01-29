@@ -1,6 +1,5 @@
 import {
   imageWalletCrossmark,
-  imageWalletDcent,
   imageWalletGem,
   imageWalletMetamask,
   imageWalletWalletConnect,
@@ -12,7 +11,6 @@ import { NETWORK } from '~/types';
 
 import {
   useConnectWithCrossmarkWallet,
-  useConnectWithDcentWallet,
   useConnectWithEvmWallet,
   useConnectWithGemWallet,
   useConnectWithXummWallet,
@@ -51,12 +49,12 @@ export const useConnectors = () => {
     isInstalled: xummIsInstalled,
   } = useConnectWithXummWallet();
 
-  const {
-    connect: connectXrpDcent,
-    disconnect: disconnectXrpDcent,
-    isConnected: dcentConnected,
-    isInstalled: dcentIsInstalled,
-  } = useConnectWithDcentWallet();
+  // const {
+  //   connect: connectXrpDcent,
+  //   disconnect: disconnectXrpDcent,
+  //   isConnected: dcentConnected,
+  //   isInstalled: dcentIsInstalled,
+  // } = useConnectWithDcentWallet();
 
   // TODO: add dcent wallet
 
@@ -72,17 +70,18 @@ export const useConnectors = () => {
       connected: xummConnected,
       isInstalled: xummIsInstalled,
     },
-    {
-      name: "D'Cent Wallet",
-      connectorName: ['dcent'],
-      image: imageWalletDcent,
-      network: [NETWORK.XRPL],
+    // TODO: not yet supported AMM
+    // {
+    //   name: "D'Cent Wallet",
+    //   connectorName: ['dcent'],
+    //   image: imageWalletDcent,
+    //   network: [NETWORK.XRPL],
 
-      connect: connectXrpDcent,
-      disconnect: disconnectXrpDcent,
-      connected: dcentConnected,
-      isInstalled: dcentIsInstalled,
-    },
+    //   connect: connectXrpDcent,
+    //   disconnect: disconnectXrpDcent,
+    //   connected: dcentConnected,
+    //   isInstalled: dcentIsInstalled,
+    // },
     {
       name: 'Crossmark',
       connectorName: ['crossmark'],
