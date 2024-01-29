@@ -6,6 +6,8 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { getTokenDecimal } from '~/utils';
 import { ITokenComposition, NETWORK } from '~/types';
 
+import { useAccountInfo } from '../account/account-info';
+
 interface Props {
   token1: ITokenComposition & { balance: number; amount: number };
   token2: ITokenComposition & { balance: number; amount: number };
@@ -61,12 +63,16 @@ export const useAddLiquidity = ({ token1, token2, enabled }: Props) => {
     };
   };
 
+  const { accountInfo } = useAccountInfo({ account: address, enabled: isXrp && !!address });
+  const sequence = accountInfo?.account_data.Sequence;
+
   const txAssets = getTxRequestAssets();
   const txRequest = {
     TransactionType: 'AMMDeposit',
     Account: address,
     ...txAssets,
     Flags: 1048576, // tfTwoAsset
+    Sequence: sequence,
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

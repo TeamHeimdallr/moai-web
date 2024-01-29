@@ -7,6 +7,8 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { useSlippageStore } from '~/states/data';
 import { IToken } from '~/types';
 
+import { useAccountInfo } from '../account/account-info';
+
 interface Props {
   fromToken: IToken;
   fromInput: number;
@@ -57,6 +59,9 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
           },
         };
 
+  const { accountInfo } = useAccountInfo({ account: address, enabled: isXrp && !!address });
+  const sequence = accountInfo?.account_data.Sequence;
+
   const txRequest = {
     TransactionType: 'Payment',
     Account: address,
@@ -65,6 +70,7 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
     ...deliverMin,
     Destination: address,
     Flags: PaymentFlags.tfPartialPayment,
+    Sequence: sequence,
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
