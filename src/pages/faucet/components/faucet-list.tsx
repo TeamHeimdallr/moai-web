@@ -5,8 +5,6 @@ import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 
-import { useGAAction } from '~/hooks/analaystics/ga-action';
-import { useConnectedWallet } from '~/hooks/wallets';
 import { NETWORK } from '~/types';
 
 import { FaucetTokenCard } from './faucet-token-card';
@@ -19,9 +17,6 @@ export const FaucetList = () => {
   );
 };
 const _FaucetList = () => {
-  const { gaAction: _gaAction } = useGAAction(); // TODO
-
-  const { xrp: _xrp } = useConnectedWallet(); // TODO
   const xrplNetwork = 'xrpl';
 
   const { data: tokensRawData } = useGetTokensQuery(

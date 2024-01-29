@@ -15,6 +15,7 @@ import { FAUCET_AMOUNT } from '~/constants';
 
 import { ButtonPrimaryMedium } from '~/components/buttons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -28,6 +29,8 @@ interface FaucetTokenCardProps {
   token: IToken;
 }
 export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
+  const { gaAction: gaAction } = useGAAction();
+
   const amount = FAUCET_AMOUNT.XRPL[token.symbol] ?? 100;
   const { isConnected: isClientConnected } = useXrpl();
   const { isXrp } = useNetwork();
@@ -54,9 +57,37 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
   } = usePostFaucetXrpl({});
 
   const handleClickToken = async () => {
+    gaAction({
+      action: 'faucet-token-click',
+      buttonType: 'primary-medium',
+      data: {
+        page: 'faucet',
+        component: 'faucet-token-card',
+        symbol: token.symbol,
+        currency: token.currency,
+        balance: balance,
+        isXrp: isXrp,
+        address: address,
+      },
+    });
+
     if (!address) {
       openConnectWallet();
     } else if (!allowance) {
+      gaAction({
+        action: 'faucet-token-click-approve',
+        buttonType: 'primary-medium',
+        data: {
+          page: 'faucet',
+          component: 'faucet-token-card',
+          allowance: allowance,
+          symbol: token.symbol,
+          currency: token.currency,
+          balance: balance,
+          isXrp: isXrp,
+          address: address,
+        },
+      });
       await allow?.();
     } else {
       const data = await faucet({
@@ -64,6 +95,22 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
         issuer: token.address,
         recipient: address,
         amount,
+      });
+      gaAction({
+        action: 'faucet-token-click-response',
+        buttonType: 'primary-medium',
+        data: {
+          page: 'faucet',
+          component: 'faucet-token-card',
+          code: data.code,
+          message: data.message,
+          success: data.success,
+          symbol: token.symbol,
+          currency: token.currency,
+          balance: balance,
+          isXrp: isXrp,
+          address: address,
+        },
       });
 
       if (data && (data?.code === '501' || data?.code === '510')) {
