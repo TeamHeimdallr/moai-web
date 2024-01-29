@@ -1,4 +1,5 @@
 import { useQueries, useQuery } from '@tanstack/react-query';
+import { uniqBy } from 'lodash-es';
 import { formatUnits } from 'viem';
 import { AccountInfoResponse, GatewayBalancesResponse } from 'xrpl';
 
@@ -109,23 +110,27 @@ export const useUserAllTokenBalances = () => {
       ] as IToken & TokenBalance[])
     : ([] as (IToken & TokenBalance)[]);
 
-  const userTokenBalances = tokenBalancesData?.flatMap(d => {
-    const res: TokenBalance[] = [];
+  const userTokenBalancesNotUniq = tokenBalancesData
+    ?.flatMap(d => {
+      const res: TokenBalance[] = [];
 
-    const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
-    for (const key in assets) {
-      const composition = tokens?.find(token => token.address === key);
-      const [asset] = assets[key];
+      const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
+      for (const key in assets) {
+        const composition = tokens?.find(token => token.address === key);
+        const [asset] = assets[key];
 
-      const totalSupply =
-        lpTokenTotalSupplyRaw?.find(supply => supply.currency === asset?.currency)?.supply || 0;
+        const totalSupply =
+          lpTokenTotalSupplyRaw?.find(supply => supply.currency === asset?.currency)?.supply || 0;
 
-      if (asset && composition)
-        res.push({ ...composition, balance: Number(asset?.value || 0), totalSupply });
-    }
+        if (asset && composition)
+          res.push({ ...composition, balance: Number(asset?.value || 0), totalSupply });
+      }
 
-    return res;
-  });
+      return res;
+    })
+    .flat();
+
+  const userTokenBalances = uniqBy(userTokenBalancesNotUniq, 'address');
   const tokenBalances =
     tokens?.map(t => {
       if (t.symbol === 'XRP') return;
