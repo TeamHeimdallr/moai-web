@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { parseUnits } from 'viem';
+import { parseUnits, toHex } from 'viem';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -72,8 +72,8 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
     Account: address,
     ...txAssets,
     Fee: '100',
-    Flags: 1048576, // tfTwoAsset
-    Sequence: sequence,
+    Flags: connectedConnector === 'dcent' ? toHex(1048576 + 2147483648) : 1048576,
+    Sequence: connectedConnector === 'dcent' ? sequence : undefined,
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,10 +84,8 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
     submitTx
   );
 
-  const txData = connectedConnector === 'gem' ? data?.result : data?.response?.data?.resp?.result;
-
-  const blockTimestamp = txData?.date
-    ? (txData?.date || 0) * 1000 + new Date('2000-01-01').getTime()
+  const blockTimestamp = data?.date
+    ? (data?.date || 0) * 1000 + new Date('2000-01-01').getTime()
     : new Date().getTime();
 
   const writeAsync = async () => {
@@ -99,7 +97,7 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
     isLoading,
     isSuccess,
 
-    txData,
+    txData: data,
     blockTimestamp,
 
     writeAsync,

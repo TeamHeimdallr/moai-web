@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { toHex } from 'viem';
 import { AccountLinesRequest, TrustSet } from 'xrpl';
 
 import { useXrpl } from '~/hooks/contexts';
@@ -18,7 +19,7 @@ export const useApprove = ({ currency, issuer, amount, enabled }: Props) => {
   const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
-  const { address } = xrp;
+  const { address, connectedConnector } = xrp;
 
   const isNativeXrp = currency?.toLowerCase() === 'xrp';
 
@@ -50,9 +51,9 @@ export const useApprove = ({ currency, issuer, amount, enabled }: Props) => {
   const txRequest = {
     TransactionType: 'TrustSet',
     Account: address,
-    Fee: '500',
-    Flags: 262144,
-    Sequence: sequence,
+    Fee: '100',
+    Flags: connectedConnector === 'dcent' ? toHex(262144 + 2147483648) : 262144,
+    Sequence: connectedConnector === 'dcent' ? sequence : undefined,
     LimitAmount: {
       currency,
       issuer,

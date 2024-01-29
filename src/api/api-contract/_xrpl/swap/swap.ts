@@ -1,6 +1,6 @@
-import { parseUnits } from 'viem';
+import { parseUnits, toHex } from 'viem';
 import { useMutation } from 'wagmi';
-import { PaymentFlags, xrpToDrops } from 'xrpl';
+import { xrpToDrops } from 'xrpl';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -69,8 +69,9 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
     ...sendMax,
     ...deliverMin,
     Destination: address,
-    Flags: PaymentFlags.tfPartialPayment,
-    Sequence: sequence,
+    Fee: '100',
+    Flags: connectedConnector === 'dcent' ? toHex(131072 + 2147483648) : 131072,
+    Sequence: connectedConnector === 'dcent' ? sequence : undefined,
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,22 +79,21 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
 
   const { data, isLoading, isSuccess, mutateAsync } = useMutation(['XRPL', 'SWAP'], submitTx);
 
-  const txData = connectedConnector === 'gem' ? data?.result : data?.response?.data?.resp?.result;
-  if (txData) {
-    if (typeof txData.Amount === 'object') {
-      txData.swapAmountTo = parseUnits(txData.Amount.value, 6);
+  if (data) {
+    if (typeof data.Amount === 'object') {
+      data.swapAmountTo = parseUnits(data.Amount.value, 6);
     } else {
-      txData.swapAmountTo = txData.Amount;
+      data.swapAmountTo = data.Amount;
     }
-    if (typeof txData.SendMax === 'object') {
-      txData.swapAmountFrom = parseUnits(txData.SendMax.value, 6);
+    if (typeof data.SendMax === 'object') {
+      data.swapAmountFrom = parseUnits(data.SendMax.value, 6);
     } else {
-      txData.swapAmountFrom = txData.SendMax;
+      data.swapAmountFrom = data.SendMax;
     }
   }
 
-  const blockTimestamp = txData?.date
-    ? (txData?.date || 0) * 1000 + new Date('2000-01-01').getTime()
+  const blockTimestamp = data?.date
+    ? (data?.date || 0) * 1000 + new Date('2000-01-01').getTime()
     : new Date().getTime();
 
   const writeAsync = async () => {
@@ -106,7 +106,7 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
     isSuccess,
     isError: !address || !isXrp,
 
-    txData,
+    txData: data,
     blockTimestamp,
 
     swap: writeAsync,
