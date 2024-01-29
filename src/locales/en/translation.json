@@ -138,7 +138,7 @@
 
   "Slippage tolerance": "Slippage tolerance",
   "or enter manually": "or enter manually",
-  "Copied!": "Copied!!",
+  "Copied!": "Copied!",
 
   "Enter liquidity amount": "Enter liquidity amount",
   "Insufficient balance": "Insufficient balance",
@@ -329,5 +329,10 @@
   "voyage-empty-text": "You haven't activated your $XRP yet.",
 
   "maintenance-title": "Page under maintenance",
-  "maintenance-message": "We apologize for the inconvenience. Please wait for further instructions."
+  "maintenance-message": "We apologize for the inconvenience. Please wait for further instructions.",
+
+  "Set trustline": "Set trustline",
+  "No trustline": "No trustline",
+  "Get Token": "Get {{symbol}}",
+  "faucet-limit-message": "You've reached the faucet limit"
 }

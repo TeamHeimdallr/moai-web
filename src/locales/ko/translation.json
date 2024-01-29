@@ -343,5 +343,10 @@
   "voyage-empty-text": "아직 $XRP로 리워드 받은 내역이 없습니다.",
 
   "maintenance-title": "페이지 점검 중입니다.",
-  "maintenance-message": "서비스 이용에 불편을 드려 죄송합니다. 잠시만 기다려 주세요."
+  "maintenance-message": "서비스 이용에 불편을 드려 죄송합니다. 잠시만 기다려 주세요.",
+
+  "Set trustline": "트러스트라인 활성화",
+  "No trustline": "트러스트라인이 없습니다.",
+  "Get Token": "{{symbol}} 받기",
+  "faucet-limit-message": "퍼셋 한도에 도달했습니다."
 }

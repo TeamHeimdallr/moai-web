@@ -82,3 +82,13 @@ export const POOL_ID = {
       : '0xad77a729f590aa35e7631a5d11b422d3198b6cb0000200000000000000000000',
   },
 };
+
+export const FAUCET_AMOUNT = {
+  [NETWORK.XRPL]: {
+    MOAI: 100,
+    USDT: 5000,
+    USDC: 5000,
+    BTC: 2,
+    ETH: 4,
+  },
+};

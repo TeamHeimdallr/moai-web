@@ -15,6 +15,7 @@ import { useXummWalletClient } from '~/hooks/wallets/use-xumm-wallet-client';
 import { POPUP_ID } from '~/types';
 
 import Campaign from './campaign';
+import FaucetPage from './faucet';
 import Home from './home';
 import Landing from './landing';
 import LendingPage from './lending';
@@ -51,6 +52,7 @@ const Page = () => {
             <Route path="/pools/*" element={getMaintanence('/pools/*', <Pool />)} />
             <Route path="/rewards" element={getMaintanence('/rewards', <Rewards />)} />
             <Route path="/campaign/*" element={getMaintanence('/campaign/*', <Campaign />)} />
+            <Route path="/faucet" element={getMaintanence('/faucet', <FaucetPage />)} />
             {!IS_LOCAL && (
               <Route path="/lending/*" element={getMaintanence('/lending/*', <LendingPage />)} />
             )}
