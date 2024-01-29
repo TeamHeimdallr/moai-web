@@ -12,6 +12,7 @@ import {
   imageNetworkEvmSidechain,
   imageNetworkXRPL,
   imageWalletCrossmark,
+  imageWalletDcent,
   imageWalletFuturepass,
   imageWalletGem,
   imageWalletMetamask,
@@ -269,7 +270,11 @@ export const AccountDetail = () => {
       ? imageWalletCrossmark
       : xrp.connectedConnector === 'xumm'
       ? imageWalletXumm
-      : imageWalletGem;
+      : xrp.connectedConnector === 'dcent'
+      ? imageWalletDcent
+      : xrp.connectedConnector === 'gem'
+      ? imageWalletGem
+      : '';
   const xrpComponent = (
     <AccountWrapper key="xrp" isConnected={isXrp}>
       {xrp.address ? (

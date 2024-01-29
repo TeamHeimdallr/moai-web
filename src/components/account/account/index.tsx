@@ -5,6 +5,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 
 import {
   imageWalletCrossmark,
+  imageWalletDcent,
   imageWalletFuturepass,
   imageWalletGem,
   imageWalletMetamask,
@@ -48,6 +49,8 @@ export const Account = () => {
                   <Image src={imageWalletXumm} alt="xumm wallet" />
                 ) : xrp.connectedConnector === 'gem' ? (
                   <Image src={imageWalletGem} alt="gem wallet" />
+                ) : xrp.connectedConnector === 'dcent' ? (
+                  <Image src={imageWalletDcent} alt="dcent wallet" />
                 ) : (
                   <></>
                 )}
@@ -75,6 +78,8 @@ export const Account = () => {
                   <Image src={imageWalletXumm} alt="xumm wallet" />
                 ) : xrp.connectedConnector === 'gem' ? (
                   <Image src={imageWalletGem} alt="gem wallet" />
+                ) : xrp.connectedConnector === 'dcent' ? (
+                  <Image src={imageWalletDcent} alt="dcent wallet" />
                 ) : (
                   <></>
                 )}
