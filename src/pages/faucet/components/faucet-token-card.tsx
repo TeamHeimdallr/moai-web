@@ -11,6 +11,8 @@ import { usePostFaucetXrpl } from '~/api/api-server/faucet/post-faucet-xrpl';
 import { COLOR } from '~/assets/colors';
 import { IconAlert } from '~/assets/icons';
 
+import { FAUCET_AMOUNT } from '~/constants';
+
 import { ButtonPrimaryMedium } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
@@ -26,7 +28,7 @@ interface FaucetTokenCardProps {
   token: IToken;
 }
 export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
-  const amount = 100; // TODO
+  const amount = FAUCET_AMOUNT.XRPL[token.symbol] ?? 100;
   const { isConnected: isClientConnected } = useXrpl();
   const { isXrp } = useNetwork();
   const { xrp } = useConnectedWallet();
