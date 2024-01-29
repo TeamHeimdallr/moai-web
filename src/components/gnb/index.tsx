@@ -52,6 +52,10 @@ export const Gnb = () => {
 
   const [mobileMenuOpened, mobileMenuOpen] = useState<boolean>(false);
 
+  const currentGnbMenu = GNB_MENU.filter(menu => menu.network.includes(currentNetwork)).filter(
+    menu => menu.show
+  );
+
   const handleConnetWallet = () => {
     connectWallet();
     gaAction({
@@ -105,7 +109,7 @@ export const Gnb = () => {
           </LogoWrapper>
           <ContentWrapper>
             {isMLG &&
-              GNB_MENU.map(({ id, text, path, disabled, commingSoon }) => (
+              currentGnbMenu.map(({ id, text, path, disabled, commingSoon }) => (
                 <MenuWrapper
                   key={id}
                   onClick={() => {

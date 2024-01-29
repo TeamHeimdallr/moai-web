@@ -55,6 +55,9 @@ export interface IGnbMenu {
 
   disabled?: boolean;
   commingSoon?: boolean; // if true, show comming soon tooltip
+
+  show?: boolean;
+  network: NETWORK[];
 }
 
 export interface IGnbChainList {

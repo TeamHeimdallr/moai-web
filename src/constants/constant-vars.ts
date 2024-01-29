@@ -1,36 +1,62 @@
-import { IGnbMenu } from '~/types';
+import { IS_LOCAL } from '~/constants';
 
-import { IS_LOCAL } from '.';
+import { IGnbMenu, NETWORK } from '~/types';
 
 export const GNB_MENU: IGnbMenu[] = [
   {
     id: 'pool',
     text: 'Pool',
     path: '/',
+    show: true,
+    network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK, NETWORK.XRPL],
   },
   {
     id: 'swap',
     text: 'Swap',
     path: '/swap',
+    show: true,
+    network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK, NETWORK.XRPL],
   },
   {
     id: 'lending',
     text: 'Lending',
     path: '/lending',
+    show: true,
     disabled: !IS_LOCAL,
     commingSoon: !IS_LOCAL,
+    network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK],
+  },
+  {
+    id: 'veMOAI',
+    text: 'veMOAI',
+    path: '/veMOAI',
+    show: false,
+    disabled: true,
+    commingSoon: true,
+    network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK],
   },
   {
     id: 'launchpad',
     text: 'Launchpad',
     path: '/launchpad',
+    show: false,
     disabled: true,
     commingSoon: true,
+    network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK],
   },
   {
     id: 'rewards',
     text: 'Rewards',
     path: '/rewards',
+    show: true,
+    network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK],
+  },
+  {
+    id: 'faucet',
+    text: 'Faucet',
+    path: '/faucet',
+    show: true,
+    network: [NETWORK.XRPL],
   },
 ];
 

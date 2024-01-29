@@ -1,6 +1,6 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
@@ -18,7 +18,7 @@ import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkAbbr, getNetworkFull } from '~/utils';
+import { getNetworkAbbr } from '~/utils';
 import { NETWORK } from '~/types';
 
 import { RewardInfo } from './components/reward-info';
@@ -36,16 +36,15 @@ const RewardsPage = () => {
 const _RewardsPage = () => {
   useGAPage();
 
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
 
-  const { network } = useParams();
   const { selectedNetwork } = useNetwork();
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
+  const currentNetworkAbbr = getNetworkAbbr(selectedNetwork);
 
-  const { currentAddress } = useConnectedWallet(currentNetwork);
+  const { currentAddress } = useConnectedWallet(selectedNetwork);
   const { data: waveInfo } = useGetRewardsInfoQuery(
     {
       params: {
@@ -56,7 +55,7 @@ const _RewardsPage = () => {
       },
     },
     {
-      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK,
+      enabled: selectedNetwork === NETWORK.THE_ROOT_NETWORK,
       staleTime: 20 * 1000,
     }
   );
@@ -71,6 +70,11 @@ const _RewardsPage = () => {
     fetchNextPage,
   } = useTableRewards();
 
+  useEffect(() => {
+    if (selectedNetwork === NETWORK.XRPL) navigate('/');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNetwork]);
+
   return (
     <>
       <Wrapper>
@@ -78,7 +82,7 @@ const _RewardsPage = () => {
           <Gnb />
         </GnbWrapper>
         <InnerWrapper>
-          {currentNetwork === NETWORK.THE_ROOT_NETWORK && (
+          {selectedNetwork === NETWORK.THE_ROOT_NETWORK && (
             <ContentWrapper>
               <Title>{t('Wave', { phase: wave || 0 })}</Title>
               <RewardInfo />
@@ -107,7 +111,7 @@ const _RewardsPage = () => {
         </InnerWrapper>
         <Footer />
       </Wrapper>
-      {currentNetwork !== NETWORK.THE_ROOT_NETWORK && <RewardsNetworkAlertPopup />}
+      {selectedNetwork !== NETWORK.THE_ROOT_NETWORK && <RewardsNetworkAlertPopup />}
     </>
   );
 };
