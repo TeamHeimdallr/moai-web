@@ -49,6 +49,13 @@ export const useConnectors = () => {
     isInstalled: xummIsInstalled,
   } = useConnectWithXummWallet();
 
+  // const {
+  //   connect: connectXrpDcent,
+  //   disconnect: disconnectXrpDcent,
+  //   isConnected: dcentConnected,
+  //   isInstalled: dcentIsInstalled,
+  // } = useConnectWithDcentWallet();
+
   // TODO: add dcent wallet
 
   const connectors = [
@@ -63,6 +70,18 @@ export const useConnectors = () => {
       connected: xummConnected,
       isInstalled: xummIsInstalled,
     },
+    // TODO: not yet supported AMM
+    // {
+    //   name: "D'Cent Wallet",
+    //   connectorName: ['dcent'],
+    //   image: imageWalletDcent,
+    //   network: [NETWORK.XRPL],
+
+    //   connect: connectXrpDcent,
+    //   disconnect: disconnectXrpDcent,
+    //   connected: dcentConnected,
+    //   isInstalled: dcentIsInstalled,
+    // },
     {
       name: 'Crossmark',
       connectorName: ['crossmark'],

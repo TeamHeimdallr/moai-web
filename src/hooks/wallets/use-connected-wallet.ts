@@ -3,6 +3,8 @@ import {
   submitTransaction as gemSubmitTransaction,
   SubmitTransactionResponse,
 } from '@gemwallet/api';
+import dcent from 'dcent-web-connector';
+import { encode } from 'ripple-binary-codec';
 import { zeroAddress } from 'viem';
 import { Transaction } from 'xrpl';
 
@@ -20,6 +22,7 @@ import { useXrpl } from '../contexts';
 import { useFuturepassOf } from './use-futurepass-of';
 import {
   useConnectWithCrossmarkWallet,
+  useConnectWithDcentWallet,
   useConnectWithEvmWallet,
   useConnectWithGemWallet,
   useConnectWithXummWallet,
@@ -147,6 +150,15 @@ export const useConnectedXrplWallet = () => {
     truncatedAddress: truncatedXrpXummAddress,
   } = useConnectWithXummWallet();
 
+  const {
+    isConnected: isXrpDcentConnected,
+    connect: connectXrpDcent,
+    disconnect: disconnectXrpDcent,
+    address: xrpDcentAddress,
+    truncatedAddress: truncatedXrpDcentAddress,
+    keyPath: xrpDcentKeyPath,
+  } = useConnectWithDcentWallet();
+
   const xrp = isXrpXummConnected
     ? {
         isConnected: isXrpXummConnected,
@@ -202,7 +214,10 @@ export const useConnectedXrplWallet = () => {
         truncatedAddress: truncatedXrpCrossmarkAddress,
         connectedConnector: 'crossmark',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        submitTransaction: async (tx: any) => await crossmarkSdk.signAndSubmitAndWait(tx),
+        submitTransaction: async (tx: any) => {
+          const res = await crossmarkSdk.signAndSubmitAndWait(tx);
+          return res?.response?.data?.resp?.result;
+        },
       }
     : isXrpGemConnected
     ? {
@@ -212,8 +227,42 @@ export const useConnectedXrplWallet = () => {
         address: xrpGemAddress,
         truncatedAddress: truncatedXrpGemAddress,
         connectedConnector: 'gem',
-        submitTransaction: async (tx: Transaction) =>
-          (await gemSubmitTransaction({ transaction: tx })) as SubmitTransactionResponse,
+        submitTransaction: async (tx: Transaction) => {
+          const res = (await gemSubmitTransaction({
+            transaction: tx,
+          })) as SubmitTransactionResponse;
+          return res?.result;
+        },
+      }
+    : isXrpDcentConnected
+    ? {
+        isConnected: isXrpDcentConnected,
+        connect: connectXrpDcent,
+        disconnect: disconnectXrpDcent,
+        address: xrpDcentAddress,
+        truncatedAddress: truncatedXrpDcentAddress,
+        connectedConnector: 'dcent',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        submitTransaction: async (tx: any) => {
+          if (!xrpDcentKeyPath) return;
+          const res = await dcent.getXrpSignedTransaction(tx, xrpDcentKeyPath);
+          const { pubkey, sign } = res?.body?.parameter || {};
+
+          const signer = {
+            ...tx,
+            SigningPubKey: pubkey,
+            TxnSignature: sign,
+          };
+          const encoded = encode(signer);
+
+          const submitted = await xrplClient.request({
+            command: 'submit',
+            tx_blob: encoded,
+          });
+
+          const final = submitted?.result?.tx_json;
+          return final;
+        },
       }
     : {
         isConnected: false,

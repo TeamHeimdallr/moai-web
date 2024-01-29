@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import crossmarkSdk from '@crossmarkio/sdk';
 import { getPublicKey, isInstalled as gemIsInstalled } from '@gemwallet/api';
+import dcent from 'dcent-web-connector';
 
 import { truncateAddress } from '~/utils/util-string';
 import { useXummStore } from '~/states/contexts/sdk/xumm';
 import { useCrossmarkWalletStore } from '~/states/contexts/wallets/crossmark-wallet';
+import { useDcentWalletStore } from '~/states/contexts/wallets/dcent-wallet';
 import { useXrplWalletStore } from '~/states/contexts/wallets/gem-wallet';
 import { useXummWalletStore } from '~/states/contexts/wallets/xumm-wallet';
 
@@ -125,5 +127,50 @@ export const useConnectWithXummWallet = () => {
     isConnected,
     address,
     truncatedAddress: truncateAddress(address),
+  };
+};
+
+export const useConnectWithDcentWallet = () => {
+  const { isConnected, address, keyPath, setInfo } = useDcentWalletStore();
+
+  const isInstalled = true; // always true
+
+  const connect = async () => {
+    await dcent.info();
+  };
+  const disconnect = () => {
+    setInfo({ isConnected: false, address: '' });
+  };
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const connectionListener = async (state: any) => {
+      if (state === dcent.state.CONNECTED) {
+        const accountInfo = await dcent.getAccountInfo();
+        const keyPath = accountInfo?.body?.parameter?.account?.find(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (a: any) => a.coin_group === 'RIPPLE'
+        )?.address_path;
+
+        const addressInfo = await dcent.getAddress('ripple', keyPath);
+        const address = addressInfo?.body?.parameter?.address || '';
+        setInfo({ isConnected: true, address, keyPath });
+      }
+      if (state === dcent.state.DISCONNECTED)
+        setInfo({ isConnected: false, address: '', keyPath: '' });
+    };
+
+    dcent.setConnectionListener(connectionListener);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return {
+    connect,
+    disconnect,
+    isInstalled,
+    isConnected,
+    address,
+    truncatedAddress: truncateAddress(address),
+    keyPath,
   };
 };

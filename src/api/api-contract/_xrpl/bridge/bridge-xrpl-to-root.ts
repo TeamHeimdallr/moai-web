@@ -6,6 +6,8 @@ import { XRPL_BRIDGE_ADDRESS } from '~/constants';
 
 import { useConnectedWallet } from '~/hooks/wallets';
 
+import { useAccountInfo } from '../account/account-info';
+
 interface Props {
   fromInput: number;
 
@@ -16,11 +18,16 @@ export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) =>
   const { xrp } = useConnectedWallet();
   const { address, connectedConnector } = xrp;
 
+  const { accountInfo } = useAccountInfo({ account: address, enabled: !!address });
+  const sequence = accountInfo?.account_data.Sequence;
+
   const txRequest = {
     TransactionType: 'Payment',
     Account: address,
     Destination: XRPL_BRIDGE_ADDRESS,
     Amount: xrpToDrops(fromInput),
+    Fee: '100',
+    Sequence: connectedConnector === 'dcent' ? sequence : undefined,
     Memos: [
       {
         Memo: {
@@ -39,27 +46,21 @@ export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) =>
     submitTx
   );
 
-  const txData =
-    connectedConnector === 'gem'
-      ? data?.result
-      : connectedConnector === 'crossmark'
-      ? data?.response?.data?.resp?.result
-      : data;
-  if (txData) {
-    if (typeof txData.Amount === 'object') {
-      txData.bridgeAmountTo = parseUnits(txData.Amount.value || 0, 6);
+  if (data) {
+    if (typeof data.Amount === 'object') {
+      data.bridgeAmountTo = parseUnits(data.Amount.value || 0, 6);
     } else {
-      txData.bridgeAmountTo = txData.Amount || 0;
+      data.bridgeAmountTo = data.Amount || 0;
     }
-    if (typeof txData.SendMax === 'object') {
-      txData.bridgeAmountFrom = parseUnits(txData.SendMax.value || 0, 6);
+    if (typeof data.SendMax === 'object') {
+      data.bridgeAmountFrom = parseUnits(data.SendMax.value || 0, 6);
     } else {
-      txData.bridgeAmountFrom = txData.SendMax || 0;
+      data.bridgeAmountFrom = data.SendMax || 0;
     }
   }
 
-  const blockTimestamp = txData?.date
-    ? (txData?.date || 0) * 1000 + new Date('2000-01-01').getTime()
+  const blockTimestamp = data?.date
+    ? (data?.date || 0) * 1000 + new Date('2000-01-01').getTime()
     : new Date().getTime();
 
   const writeAsync = async () => {
@@ -72,7 +73,7 @@ export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) =>
     isSuccess,
     isError,
 
-    txData,
+    txData: data,
     blockTimestamp,
 
     bridge: writeAsync,

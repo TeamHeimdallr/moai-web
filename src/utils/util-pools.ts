@@ -183,7 +183,7 @@ export const formatAmmAssets = (assets: IToken[]) =>
         currency: 'XRP',
       };
     return {
-      currency: asset.symbol,
+      currency: asset.currency,
       issuer: asset.address,
     };
   });
