@@ -28,9 +28,11 @@ const _FaucetList = () => {
     { staleTime: 60 * 1000 }
   );
   const { tokens: tokensAll } = tokensRawData || {};
-  const tokens = tokensAll?.filter(
-    token => !token.isLpToken && token.network === NETWORK.XRPL && token.currency !== 'XRP'
-  );
+  const tokens = tokensAll
+    ?.filter(
+      token => !token.isLpToken && token.network === NETWORK.XRPL && token.currency !== 'XRP'
+    )
+    .sort((a, b) => a.symbol.localeCompare(b.symbol));
 
   return (
     <>
