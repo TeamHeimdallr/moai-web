@@ -4,9 +4,6 @@ import tw from 'twin.macro';
 import { useUserAllTokenBalances } from '~/api/api-contract/_xrpl/balance/user-all-token-balances';
 import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
-import { COLOR } from '~/assets/colors';
-import { IconArrowDown } from '~/assets/icons';
-
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
@@ -73,15 +70,11 @@ const _FaucetListSkeleton = () => {
   return (
     <Wrapper>
       <InputInnerWrapper>
-        <SkeletonBase height={108} />
-        <IconWrapper>
-          <ArrowDownWrapper>
-            <IconArrowDown width={20} height={20} fill={COLOR.PRIMARY[50]} />
-          </ArrowDownWrapper>
-        </IconWrapper>
-        <SkeletonBase height={108} />
+        <SkeletonBase height={72} />
+        <SkeletonBase height={72} />
+        <SkeletonBase height={72} />
+        <SkeletonBase height={72} />
       </InputInnerWrapper>
-      <SkeletonBase height={40} borderRadius={12} style={{ marginTop: 36 }} />
     </Wrapper>
   );
 };
