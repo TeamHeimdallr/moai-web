@@ -10,12 +10,14 @@ import { imageMoai2 } from '~/assets/images';
 import { TooltipApr } from '~/components/tooltips/apr';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
-import { formatNumber } from '~/utils';
-import { TOOLTIP_ID } from '~/types';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { formatNumber, getNetworkFull } from '~/utils';
+import { NETWORK, TOOLTIP_ID } from '~/types';
 
 export const PoolInfo = () => {
   const { ref } = useGAInView({ name: 'pool-detail-info' });
   const { network, id } = useParams();
+  const { selectedNetwork } = useNetwork();
   const { t } = useTranslation();
 
   const queryEnabled = !!network && !!id;
@@ -32,9 +34,12 @@ export const PoolInfo = () => {
     }
   );
 
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { pool } = data || {};
-  const { value, volume, apr, moaiApr } = pool || {};
-  const tradingFee = 0.0035; // TODO: hard-coded
+  const { value, volume, apr, moaiApr, tradingFee: tradingFeeRaw } = pool || {};
+  const protocolFee = 0.0005;
+  const tradingFee =
+    currentNetwork === NETWORK.THE_ROOT_NETWORK ? tradingFeeRaw + protocolFee : tradingFeeRaw;
 
   const formattedValue = value ? `$${formatNumber(value, 2)}` : '$0';
   const formattedVolume = volume ? `$${formatNumber(volume, 2)}` : '$0';
@@ -52,7 +57,12 @@ export const PoolInfo = () => {
         <PoolInfoCard name={t('Volume (24h)')} value={formattedVolume} />
       </InnerWrapper>
       <InnerWrapper>
-        <PoolInfoCard name={t('APR')} value={formattedApr} subValue={formattedMoaiApr} hoverable />
+        <PoolInfoCard
+          name={t('APR')}
+          value={formattedApr}
+          subValue={currentNetwork === NETWORK.XRPL ? undefined : formattedMoaiApr}
+          hoverable
+        />
         <PoolInfoCard name={t('Trading Fee')} value={formattedFees} />
       </InnerWrapper>
       <ToolTipWrapper>
