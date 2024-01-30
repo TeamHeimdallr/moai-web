@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -41,22 +41,19 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
   const { t } = useTranslation();
 
   const { userAllTokenBalances, refetch: refetchBalance } = useUserAllTokenBalances();
-  const balance = useMemo(
-    () => userAllTokenBalances?.find(b => b.currency === token.currency)?.balance ?? 0,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [userAllTokenBalances]
-  );
-  const [description, setDescription] = useState<ReactNode>(
-    <TokenBalance>{formatNumber(balance, 4)}</TokenBalance>
-  );
+  const balance = userAllTokenBalances?.find(b => b.currency === token.currency)?.balance ?? 0;
+
+  const [error, setError] = useState(false);
 
   const {
     mutateAsync: faucet,
     isLoading: isFaucetLoading,
     isSuccess: isFaucetSuccess,
-  } = usePostFaucetXrpl({});
+  } = usePostFaucetXrpl();
 
   const handleClickToken = async () => {
+    if (!isXrp) return;
+
     gaAction({
       action: 'faucet-token-click',
       buttonType: 'primary-medium',
@@ -73,7 +70,10 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
 
     if (!address) {
       openConnectWallet();
-    } else if (!allowance) {
+      return;
+    }
+
+    if (!allowance) {
       gaAction({
         action: 'faucet-token-click-approve',
         buttonType: 'primary-medium',
@@ -89,43 +89,36 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
         },
       });
       await allow?.();
-    } else {
-      const data = await faucet({
-        currency: token.currency,
-        issuer: token.address,
-        recipient: address,
-        amount,
-      });
-      gaAction({
-        action: 'faucet-token-click-response',
-        buttonType: 'primary-medium',
-        data: {
-          page: 'faucet',
-          component: 'faucet-token-card',
-          code: data.code,
-          message: data.message,
-          success: data.success,
-          symbol: token.symbol,
-          currency: token.currency,
-          balance: balance,
-          isXrp: isXrp,
-          address: address,
-        },
-      });
+      return;
+    }
 
-      if (data && (data?.code === '501' || data?.code === '510')) {
-        // lack of faucet fund
-        setDescription(
-          <IconWithErrorMsg>
-            <IconAlert width={20} height={20} fill={COLOR.RED[50]} />
-            <ErrorMsg>{t('faucet-limit-message')}</ErrorMsg>
-          </IconWithErrorMsg>
-        );
-        setTimeout(
-          () => setDescription(<TokenBalance>{formatNumber(balance, 4)}</TokenBalance>),
-          3000
-        );
-      }
+    const data = await faucet({
+      currency: token.currency,
+      issuer: token.address,
+      recipient: address,
+      amount,
+    });
+    gaAction({
+      action: 'faucet-token-click-response',
+      buttonType: 'primary-medium',
+      data: {
+        page: 'faucet',
+        component: 'faucet-token-card',
+        code: data.code,
+        message: data.message,
+        success: data.success,
+        symbol: token.symbol,
+        currency: token.currency,
+        balance: balance,
+        isXrp: isXrp,
+        address: address,
+      },
+    });
+
+    // lack of faucet fund
+    if (data && (data?.code === '501' || data?.code === '510')) {
+      setError(true);
+      setTimeout(() => setError(false), 3000);
     }
   };
 
@@ -154,17 +147,12 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
   };
 
   useEffect(() => {
+    if (!address || !isXrp) return;
+
     refetchBalance();
     refetchApprove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFaucetSuccess, isApproveSuccess]);
-
-  useEffect(() => {
-    if (isConnected && allowance) {
-      setDescription(<TokenBalance>{formatNumber(balance, 4)}</TokenBalance>);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balance]);
 
   return (
     <Wrapper>
@@ -176,8 +164,16 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
         )}
         <TokenNameBalance>
           <TokenName>{token.symbol}</TokenName>
-          {isConnected &&
-            (allowance ? description : <TokenBalance>{t('No trustline')}</TokenBalance>)}
+          {error ? (
+            <IconWithErrorMsg>
+              <IconAlert width={20} height={20} fill={COLOR.RED[50]} />
+              <ErrorMsg>{t('faucet-limit-message')}</ErrorMsg>
+            </IconWithErrorMsg>
+          ) : (
+            <TokenBalance>
+              {isConnected && allowance ? formatNumber(balance, 4) : t('No trustline')}
+            </TokenBalance>
+          )}
         </TokenNameBalance>
       </TokenInfo>
       <ButtonWrapper isConnectWallet={isConnected}>
@@ -211,7 +207,7 @@ const ButtonWrapper = styled.div<{ isConnectWallet: boolean }>(({ isConnectWalle
   i18n.language === 'en' ? (!isConnectWallet ? tw`w-130` : tw`w-115`) : tw`w-148`,
 ]);
 const IconWithErrorMsg = tw.div`
-  flex gap-4
+  flex gap-4 h-22 items-center
 `;
 const ErrorMsg = tw.div`
   font-r-12 text-red-50
