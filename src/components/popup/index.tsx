@@ -16,14 +16,21 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
   button?: ReactNode;
   icon?: ReactNode;
+
+  disableClose?: boolean;
 }
 
-export const Popup = ({ id, title, children, button, icon, ...rest }: Props) => {
+export const Popup = ({ id, title, children, button, icon, disableClose, ...rest }: Props) => {
   const { isMD } = useMediaQuery();
   const popupRef = useRef<HTMLDivElement>(null);
   const { close } = usePopup(id);
 
-  useOnClickOutside(popupRef, close);
+  const handleClose = () => {
+    if (disableClose) return;
+    close();
+  };
+  useOnClickOutside(popupRef, handleClose);
+
   return (
     <>
       <ContentContainer ref={popupRef} {...rest}>
@@ -34,7 +41,7 @@ export const Popup = ({ id, title, children, button, icon, ...rest }: Props) => 
               {title}
             </TitleWrapper>
 
-            <ButtonIconLarge onClick={close} icon={<IconCancel fill={COLOR.NEUTRAL[60]} />} />
+            <ButtonIconLarge onClick={handleClose} icon={<IconCancel fill={COLOR.NEUTRAL[60]} />} />
           </Header>
 
           <ContentWrapper>{children}</ContentWrapper>
