@@ -167,6 +167,8 @@ export const useUserPoolTokenBalances = (props?: Props) => {
 
   const refetch = () => {
     ammInfoRefetch();
+
+    if (!walletAddress) return;
     lpTokenBalanceRefetch();
     xrpTokenBalanceRefetch();
     tokenBalancesRefetch();
