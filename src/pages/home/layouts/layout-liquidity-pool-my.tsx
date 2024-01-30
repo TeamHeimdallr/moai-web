@@ -48,8 +48,8 @@ const _MyLiquidityLayout = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
-  const { selectedNetwork, setTargetNetwork } = useNetwork();
+  const { open: openNetworkAlert, reset } = usePopup(POPUP_ID.NETWORK_ALERT);
+  const { selectedNetwork, selectNetwork } = useNetwork();
 
   const handleRowClick = (meta?: Meta) => {
     if (!meta) return;
@@ -58,9 +58,15 @@ const _MyLiquidityLayout = () => {
       action: 'liquidity-pool-click',
       data: { page: 'home', layout: 'liquidity-pool-my', ...meta },
     });
+
     if (selectedNetwork !== meta.network) {
-      popupOpen();
-      setTargetNetwork(meta.network as NETWORK);
+      const callback = () => {
+        selectNetwork(meta.network as NETWORK);
+        reset();
+        navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.poolId}`);
+      };
+
+      openNetworkAlert({ callback });
       return;
     }
     navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.poolId}`);

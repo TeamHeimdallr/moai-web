@@ -1,6 +1,5 @@
-import { Suspense, useEffect } from 'react';
+import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
@@ -15,11 +14,12 @@ import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { usePopup } from '~/hooks/components';
+import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
-import { NETWORK } from '~/types';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { RewardInfo } from './components/reward-info';
 import { RewardsNetworkAlertPopup } from './components/reward-network-alert';
@@ -35,8 +35,13 @@ const RewardsPage = () => {
 
 const _RewardsPage = () => {
   useGAPage();
+  useForceNetwork({
+    popupId: POPUP_ID.REWARD_NETWORK_ALERT,
+    targetNetwork: [NETWORK.THE_ROOT_NETWORK],
+    changeTargetNetwork: NETWORK.THE_ROOT_NETWORK,
+    callCallbackUnmounted: true,
+  });
 
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
@@ -44,6 +49,7 @@ const _RewardsPage = () => {
   const { selectedNetwork } = useNetwork();
   const currentNetworkAbbr = getNetworkAbbr(selectedNetwork);
 
+  const { opened } = usePopup(POPUP_ID.REWARD_NETWORK_ALERT);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
   const { data: waveInfo } = useGetRewardsInfoQuery(
     {
@@ -69,11 +75,6 @@ const _RewardsPage = () => {
     hasNextPage,
     fetchNextPage,
   } = useTableRewards();
-
-  useEffect(() => {
-    if (selectedNetwork === NETWORK.XRPL) navigate('/');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedNetwork]);
 
   return (
     <>
@@ -111,7 +112,7 @@ const _RewardsPage = () => {
         </InnerWrapper>
         <Footer />
       </Wrapper>
-      {selectedNetwork !== NETWORK.THE_ROOT_NETWORK && <RewardsNetworkAlertPopup />}
+      {opened && <RewardsNetworkAlertPopup />}
     </>
   );
 };

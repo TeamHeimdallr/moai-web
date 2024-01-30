@@ -11,22 +11,31 @@ import { Gnb } from '~/components/gnb';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
+import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { useRequirePrarams } from '~/hooks/utils/use-require-params';
+import { getNetworkFull } from '~/utils';
 import { POPUP_ID } from '~/types';
 
 import { AddLiquidityInputGroup } from '../../components/add-liquidity-input-group';
 
 const PoolDetailAddLiquidityPage = () => {
   useGAPage();
-  const { ref } = useGAInView({ name: 'add-liquidity' });
+  useForceNetwork({
+    enableParamsNetwork: true,
+    enableChangeAndRedirect: true,
+    callCallbackUnmounted: true,
+  });
 
   const navigate = useNavigate();
-
+  const { ref } = useGAInView({ name: 'add-liquidity' });
   const { t } = useTranslation();
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
-  const { id } = useParams();
 
+  const { network, id } = useParams();
+  const { selectedNetwork } = useNetwork();
   useRequirePrarams([!!id], () => navigate(-1));
+
+  const networkFull = getNetworkFull(network);
 
   return (
     <Wrapper ref={ref}>
@@ -34,16 +43,18 @@ const PoolDetailAddLiquidityPage = () => {
         <Gnb />
       </GnbWrapper>
       <InnerWrapper>
-        <ContentWrapper>
-          <Header>
-            <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
-            <Title>{t('Add liquidity')}</Title>
-          </Header>
+        {networkFull === selectedNetwork && (
+          <ContentWrapper>
+            <Header>
+              <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
+              <Title>{t('Add liquidity')}</Title>
+            </Header>
 
-          <LiquidityWrapper>
-            <AddLiquidityInputGroup />
-          </LiquidityWrapper>
-        </ContentWrapper>
+            <LiquidityWrapper>
+              <AddLiquidityInputGroup />
+            </LiquidityWrapper>
+          </ContentWrapper>
+        )}
       </InnerWrapper>
       <Footer />
     </Wrapper>

@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -7,34 +8,40 @@ import { IconAlert } from '~/assets/icons';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 
+import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
-import { useNetwork } from '~/hooks/contexts/use-network';
 import { POPUP_ID } from '~/types';
 
 import { Popup } from '..';
 
 export const NetworkAlertPopup = () => {
-  const navigate = useNavigate();
+  const { gaAction } = useGAAction();
 
   const { pathname } = useLocation();
-  const { close } = usePopup(POPUP_ID.NETWORK_ALERT);
-  const { selectNetwork, targetNetwork, resetTarget } = useNetwork();
+  const { close, callback, unmountCallback } = usePopup(POPUP_ID.NETWORK_ALERT);
 
   const { t } = useTranslation();
 
   const text = pathname !== '/' ? t('network-alert-pool-message') : t('network-alert-home-message');
 
   const handleClickSwitchButton = () => {
-    if (!targetNetwork) return;
+    gaAction({
+      action: 'switch-network',
+      buttonType: 'primary-large',
+      data: { component: 'network-alert' },
+    });
 
-    selectNetwork(targetNetwork);
-    resetTarget();
-    close();
-
-    if (pathname !== '/') {
-      navigate('/');
+    if (callback) {
+      callback();
+      return;
     }
+
+    close();
   };
+
+  useEffect(() => {
+    return () => unmountCallback?.();
+  }, [unmountCallback]);
 
   return (
     <Popup

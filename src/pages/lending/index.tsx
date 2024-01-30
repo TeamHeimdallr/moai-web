@@ -1,7 +1,10 @@
 import { Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
+import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
+import { usePrevious } from '~/hooks/utils';
 import { useMaintanence } from '~/hooks/utils/use-maintanence';
+import { NETWORK } from '~/types';
 
 import { LendingBorrow } from './pages/borrow';
 import { LendingDetail } from './pages/detail';
@@ -12,43 +15,44 @@ import { LendingWithdraw } from './pages/withdraw';
 
 const LendingPage = () => {
   const { getMaintanence } = useMaintanence();
+  const { selectedNetwork } = useNetwork();
+  const previousNetwork = usePrevious<NETWORK>(selectedNetwork);
+
+  useForceNetwork({
+    targetNetwork: [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN],
+    changeTargetNetwork: previousNetwork || selectedNetwork,
+    callCallbackUnmounted: true,
+  });
 
   return (
     <Routes>
       <Route
-        path="/:network"
+        path="/"
         element={getMaintanence(
-          '/lending/:network',
+          '/lending',
           <Suspense fallback={<></>}>
             <LendingMain />
           </Suspense>
         )}
       />
       <Route
-        path="/:network/:id"
+        path="/:id"
         element={getMaintanence(
-          '/lending/:network/:id',
+          '/lending/:id',
           <Suspense fallback={<></>}>
             <LendingDetail />
           </Suspense>
         )}
       />
+      <Route path="/:id/supply" element={getMaintanence('/pools/:id/supply', <LendingSupply />)} />
       <Route
-        path="/:network/:id/supply"
-        element={getMaintanence('/pools/:network/:id/supply', <LendingSupply />)}
+        path="/:id/withdraw"
+        element={getMaintanence('/pools/:id/withdraw', <LendingWithdraw />)}
       />
-      <Route
-        path="/:network/:id/withdraw"
-        element={getMaintanence('/pools/:network/:id/withdraw', <LendingWithdraw />)}
-      />
-      <Route
-        path="/:network/:id/borrow"
-        element={getMaintanence('/pools/:network/:id/borrow', <LendingBorrow />)}
-      />
-      <Route
-        path="/:network/:id/replay"
-        element={getMaintanence('/pools/:network/:id/replay', <LendingRepay />)}
-      />
+      <Route path="/:id/borrow" element={getMaintanence('/pools/:id/borrow', <LendingBorrow />)} />
+      <Route path="/:id/replay" element={getMaintanence('/pools/:id/replay', <LendingRepay />)} />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
@@ -9,7 +8,6 @@ import { NETWORK_IMAGE_MAPPER, NETWORK_SELECT } from '~/constants';
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { getNetworkFull } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { ButtonDropdown } from '../buttons/dropdown';
@@ -22,12 +20,8 @@ export const NetworkSelection = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [opened, open] = useState(false);
 
-  const { network } = useParams();
-
-  const { selectedNetwork, selectNetwork, setTargetNetwork } = useNetwork();
-  const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
-
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const { selectedNetwork, selectNetwork } = useNetwork();
+  const { opened: openedNetworkAlert } = usePopup(POPUP_ID.NETWORK_ALERT);
 
   const { t } = useTranslation();
 
@@ -36,10 +30,8 @@ export const NetworkSelection = () => {
   useOnClickOutside(ref, () => open(false));
 
   const selectedNetworkDetail =
-    NETWORK_SELECT.find(({ network }) => network === currentNetwork) || NETWORK_SELECT[0];
-  const { pathname } = useLocation();
+    NETWORK_SELECT.find(({ network }) => network === selectedNetwork) || NETWORK_SELECT[0];
 
-  const exception = ['/', '/swap', '/rewards'];
   const handleSelect = (network: NETWORK) => {
     open(false);
 
@@ -47,22 +39,14 @@ export const NetworkSelection = () => {
       action: 'network-selection',
       data: { component: 'gnb', network },
     });
-
-    if (exception.includes(pathname)) {
-      selectNetwork(network);
-      return;
-    }
-    if (network !== currentNetwork) {
-      setTargetNetwork(network);
-      popupOpen();
-    }
+    selectNetwork(network);
   };
 
   return (
     <>
       <Wrapper ref={ref}>
         <ButtonDropdown
-          image={NETWORK_IMAGE_MAPPER[currentNetwork]}
+          image={NETWORK_IMAGE_MAPPER[selectedNetwork]}
           imageAlt={selectedNetworkDetail.text}
           imageTitle={selectedNetworkDetail.text}
           text={selectedNetworkDetail.text}
@@ -83,7 +67,7 @@ export const NetworkSelection = () => {
                   image={NETWORK_IMAGE_MAPPER[network]}
                   imageAlt={text}
                   imageTitle={text}
-                  selected={network === currentNetwork}
+                  selected={network === selectedNetwork}
                   handleSelect={() => handleSelect(network)}
                 />
               ))}
@@ -91,7 +75,7 @@ export const NetworkSelection = () => {
           </ListOuterWrapper>
         )}
       </Wrapper>
-      {popupOpened && <NetworkAlertPopup />}
+      {openedNetworkAlert && <NetworkAlertPopup />}
     </>
   );
 };
