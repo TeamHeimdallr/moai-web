@@ -88,7 +88,6 @@ export const useBanner = () => {
     ) {
       setType('switch');
       switchNetwork();
-      // web3modalOpen({ route: 'SelectNetwork' });
       open();
 
       return;
@@ -119,7 +118,6 @@ export const useBanner = () => {
     text,
     type,
     connectWallet,
-    // switchNetwork: () => web3modalOpen({ route: 'SelectNetwork' }),
     switchNetwork,
   };
 };

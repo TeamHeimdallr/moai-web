@@ -14,7 +14,7 @@ import { Token } from '~/components/token';
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { getNetworkFull } from '~/utils';
+import { formatNumber, getNetworkFull } from '~/utils';
 
 export const PoolHeader = () => {
   const { ref } = useGAInView({ name: 'pool-detail-header' });
@@ -78,7 +78,7 @@ export const PoolHeader = () => {
           <Token
             key={`${composition.symbol}-${i}`}
             token={composition.symbol}
-            percentage={composition.weight}
+            percentage={Number(formatNumber(composition.weight, 4))}
             image
             imageUrl={composition.image}
             type="small"

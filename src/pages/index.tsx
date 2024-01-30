@@ -53,7 +53,7 @@ const Page = () => {
             <Route path="/rewards" element={getMaintanence('/rewards', <Rewards />)} />
             <Route path="/campaign/*" element={getMaintanence('/campaign/*', <Campaign />)} />
             <Route path="/faucet" element={getMaintanence('/faucet', <FaucetPage />)} />
-            {!IS_LOCAL && (
+            {IS_LOCAL && (
               <Route path="/lending/*" element={getMaintanence('/lending/*', <LendingPage />)} />
             )}
 
