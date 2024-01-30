@@ -172,33 +172,37 @@ export const useConnectedXrplWallet = () => {
           new Promise((resolve, reject) => {
             if (!xummWalletClient) return;
 
+            const options: Record<string, string> = {
+              force_network: BLOCKCHAIN_ENV,
+            };
+
+            if (tx.TransactionType === 'Payment' && !!tx.Memos?.[0]?.Memo) {
+              options.force_network = IS_DEVNET ? 'testnet' : BLOCKCHAIN_ENV;
+            }
             xummWalletClient.payload
-              .createAndSubscribe(
-                { txjson: tx, options: { force_network: IS_DEVNET ? 'testnet' : BLOCKCHAIN_ENV } },
-                e => {
-                  if (typeof e.data.signed === 'undefined') return;
+              .createAndSubscribe({ txjson: tx, options }, e => {
+                if (typeof e.data.signed === 'undefined') return;
 
-                  if (e.data.signed === false) {
-                    close();
-                    reject();
-                  }
-
-                  xrplClient
-                    .request({
-                      command: 'tx',
-                      transaction: e.data.txid,
-                      binary: false,
-                    })
-                    .then(res => {
-                      close();
-                      resolve(res?.result || e.data);
-                    })
-                    .catch(() => {
-                      close();
-                      reject(e.data);
-                    });
+                if (e.data.signed === false) {
+                  close();
+                  reject();
                 }
-              )
+
+                xrplClient
+                  .request({
+                    command: 'tx',
+                    transaction: e.data.txid,
+                    binary: false,
+                  })
+                  .then(res => {
+                    close();
+                    resolve(res?.result || e.data);
+                  })
+                  .catch(() => {
+                    close();
+                    reject(e.data);
+                  });
+              })
               .then(res => {
                 setQr(res.created.refs.qr_png);
                 open();
