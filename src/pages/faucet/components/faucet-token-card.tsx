@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import tw, { styled } from 'twin.macro';
+import tw, { css, styled } from 'twin.macro';
 
 import { useUserAllTokenBalances } from '~/api/api-contract/_xrpl/balance/user-all-token-balances';
 import { useApprove } from '~/api/api-contract/_xrpl/token/approve';
@@ -154,6 +154,8 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFaucetSuccess, isApproveSuccess]);
 
+  const isLoading = (isFaucetLoading && allowance) || isApproveLoading;
+
   return (
     <Wrapper>
       <TokenInfo>
@@ -176,10 +178,11 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
           )}
         </TokenNameBalance>
       </TokenInfo>
-      <ButtonWrapper isConnectWallet={isConnected}>
+      <ButtonWrapper isConnectWallet={isConnected} isLoading={isLoading}>
         <ButtonPrimaryMedium
-          isLoading={(isFaucetLoading && allowance) || isApproveLoading}
+          isLoading={isLoading}
           buttonType="outlined"
+          hideLottie
           text={buttonText(token.symbol)}
           onClick={handleClickToken}
         />
@@ -202,9 +205,24 @@ const TokenBalance = tw.div`
   font-r-14 text-neutral-60
 `;
 const Image = tw(LazyLoadImage)`w-36 h-36 rounded-18 shrink-0`;
-const ButtonWrapper = styled.div<{ isConnectWallet: boolean }>(({ isConnectWallet }) => [
+
+interface ButtonWrapperProps {
+  isConnectWallet: boolean;
+  isLoading?: boolean;
+}
+const ButtonWrapper = styled.div<ButtonWrapperProps>(({ isConnectWallet, isLoading }) => [
   tw`flex-center`,
   i18n.language === 'en' ? (!isConnectWallet ? tw`w-130` : tw`w-115`) : tw`w-148`,
+
+  isLoading &&
+    css`
+      & button {
+        &:hover {
+          background: ${COLOR.NEUTRAL[5]} !important;
+          color: ${COLOR.NEUTRAL[40]} !important;
+        }
+      }
+    `,
 ]);
 const IconWithErrorMsg = tw.div`
   flex gap-4 h-22 items-center

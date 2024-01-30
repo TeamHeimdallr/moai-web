@@ -10,6 +10,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
 
   buttonType?: 'filled' | 'outlined';
+  hideLottie?: boolean;
   isLoading?: boolean;
 }
 
@@ -18,13 +19,14 @@ export const ButtonPrimaryMedium = ({
   icon,
   isLoading,
   buttonType = 'filled',
+  hideLottie,
   disabled,
   ...rest
 }: Props) => {
   const warpperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!warpperRef.current || !isLoading || disabled) return;
+    if (!warpperRef.current || !isLoading || disabled || hideLottie) return;
     lottie.loadAnimation({
       container: warpperRef.current,
       renderer: 'svg',
@@ -36,7 +38,7 @@ export const ButtonPrimaryMedium = ({
     return () => {
       lottie.destroy();
     };
-  }, [warpperRef, isLoading, disabled]);
+  }, [warpperRef, isLoading, disabled, hideLottie]);
 
   return (
     <Wrapper
@@ -48,7 +50,7 @@ export const ButtonPrimaryMedium = ({
     >
       {text}
       {!isLoading && icon}
-      {isLoading && <LottieWrapper ref={warpperRef} />}
+      {isLoading && <LottieWrapper className="lottie" ref={warpperRef} />}
     </Wrapper>
   );
 };
