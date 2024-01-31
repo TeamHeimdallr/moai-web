@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 import { useNetwork as useNetworkWagmi } from 'wagmi';
 
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
@@ -55,21 +55,19 @@ const ParticipatePage = () => {
 
   const chainId = chain?.id || 0;
   const evmAddress = evm?.address || fpass?.address;
+  const showAlertBanner =
+    selectedNetwork === NETWORK.THE_ROOT_NETWORK && chainId !== theRootNetwork.id && !!evmAddress;
 
   return (
-    <Wrapper>
-      {selectedNetwork === NETWORK.THE_ROOT_NETWORK &&
-        chainId !== theRootNetwork.id &&
-        !!evmAddress && (
-          <BannerWrapper>
-            <AlertBanner
-              text={t('wallet-alert-message-switch', { network: 'The Root Network' })}
-              button={
-                <ButtonPrimarySmallBlack text={t('Switch network')} onClick={switchNetwork} />
-              }
-            />
-          </BannerWrapper>
-        )}
+    <Wrapper banner={showAlertBanner}>
+      {showAlertBanner && (
+        <BannerWrapper>
+          <AlertBanner
+            text={t('wallet-alert-message-switch', { network: 'The Root Network' })}
+            button={<ButtonPrimarySmallBlack text={t('Switch network')} onClick={switchNetwork} />}
+          />
+        </BannerWrapper>
+      )}
       <StepWrapper>
         <Step />
         <StepTitle />
@@ -83,10 +81,16 @@ const ParticipatePage = () => {
   );
 };
 
-const Wrapper = tw.div`
-  w-full h-full flex items-start justify-center py-40
-  md:(py-80)
-`;
+interface WrapperProps {
+  banner?: boolean;
+}
+const Wrapper = styled.div<WrapperProps>(({ banner }) => [
+  tw`
+    w-full h-full flex items-start justify-center py-40
+    md:(py-80)
+  `,
+  banner && tw`pt-80 md:(pt-100)`,
+]);
 const StepWrapper = tw.div`
   w-455 flex-center flex-col gap-24 pb-80
 `;

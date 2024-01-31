@@ -49,7 +49,8 @@ interface DivProps {
 }
 const InnerWrapper = styled.div<DivProps>(({ banner }) => [
   tw`  
-    flex flex-col pt-120 pb-120 px-20 pt-112
+    flex flex-col pt-120 pb-120 px-0 pt-112
+    md:(px-20)
     mlg:(pt-120)
     xl:(px-80 items-center)
   `,

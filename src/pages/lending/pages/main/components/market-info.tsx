@@ -90,7 +90,7 @@ export const MarketInfo = () => {
               iconButton={
                 <ButtonIconMedium icon={<IconNext />} onClick={handleHealthFactorClick} />
               }
-              value={`${formatNumber(healthFactor, 1)}`}
+              value={`${formatNumber(healthFactor, 2)}`}
               valueColor={`${healthFactorColor}`}
             />
             <MarketInfoCard
@@ -135,7 +135,8 @@ const LogoWrapper = tw.div`
 `;
 
 const Title = tw.div`
-  font-b-24 text-neutral-100
+  font-b-20 text-neutral-100
+  md:(font-b-24)
 `;
 
 const InfoWrapper = tw.div`
