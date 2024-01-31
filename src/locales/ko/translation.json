@@ -360,15 +360,15 @@
   "liquidation-health-factor-description": "건전성 지수는 담보의 안정성을 결정합니다. 청산을 피하려면 더 많은 담보를 공급하거나 대출을 상환할 수 있습니다.",
   "liquidation-health-factor-description2": "담보로 공급한 자산의 안정성은 대출 받은 자산과 해당 자산의 기본 가치로 결정됩니다. 건전성 지수가 1 미만으로 떨어지면 담보가 청산됩니다.",
 
-  "health-factor-assets": "대출",
-  "health-factor-debt": "자산",
+  "health-factor-assets": "자산",
+  "health-factor-debt": "대출",
   "health-factor-you": "현재 지수",
   "health-factor-liquidation-value": "청산 가치",
 
   "current-ltv-description": "LTV(담보 인정 비율)은 담보의 안정성을 결정합니다. 청산을 피하려면 더 많은 담보를 공급하거나 대출을 상환할 수 있습니다.",
   "current-ltv-description2": "현재 LTV는 공급된 담보에 기반합니다. LTV가 청산 임계값을 초과하면 공급된 담보가 청산될 수 있습니다.",
-  "current-ltv-assets": "대출",
-  "current-ltv-debt": "자산",
+  "current-ltv-assets": "자산",
+  "current-ltv-debt": "대출",
   "current-ltv-you": "현재 지수",
   "current-ltv-liquidation-threshold": "청산 임계값"
 }
