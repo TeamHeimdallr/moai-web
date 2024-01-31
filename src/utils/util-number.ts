@@ -23,8 +23,9 @@ export const formatPercent = (num: number, decimal?: number) =>
 /**
  * parseNumberWithUnit(42e6) === 42M
  */
-const formatter = Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 5 });
-export const formatNumberWithUnit = (num: number) => formatter.format(num);
+const formatter = (digit = 5) =>
+  Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: digit });
+export const formatNumberWithUnit = (num: number, digit?: number) => formatter(digit).format(num);
 
 /**
  * parseNumberWithComma(10000) === 10,000
@@ -40,7 +41,8 @@ export const formatNumber = (
   data?: number | string,
   decimal = 4,
   type: 'round' | 'floor' = 'round',
-  threshold: number = FORMAT_NUMBER_THRESHOLD
+  threshold: number = FORMAT_NUMBER_THRESHOLD,
+  fixedDecimal: number = 0
 ) => {
   const formattedNumber =
     type === 'round'
@@ -49,8 +51,14 @@ export const formatNumber = (
 
   const formattedWithUnit =
     formattedNumber > threshold
-      ? formatNumberWithUnit(formattedNumber)
+      ? formatNumberWithUnit(formattedNumber, decimal || 1)
       : formatNumberWithComma(formattedNumber);
 
+  if (fixedDecimal && fixedDecimal >= decimal) {
+    const [num, decimal] = formattedWithUnit.split('.');
+    const paddedDecimal = (decimal || '').padEnd(fixedDecimal, '0');
+
+    return `${num}.${paddedDecimal}`;
+  }
   return formattedWithUnit;
 };

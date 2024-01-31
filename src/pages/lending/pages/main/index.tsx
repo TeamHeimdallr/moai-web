@@ -5,12 +5,16 @@ import { Gnb } from '~/components/gnb';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
-import { POPUP_ID } from '~/types';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { MarketInfo } from './components/market-info';
 
 export const LendingMain = () => {
   useGAPage();
+
+  const targetNetork = [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN];
+  const { selectedNetwork } = useNetwork();
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   return (
@@ -19,16 +23,18 @@ export const LendingMain = () => {
         <Gnb />
       </GnbWrapper>
       <InnerWrapper banner={!!opened}>
-        <ContentOuterWrapper>
-          <ContentWrapper>
-            {/* market header, info */}
-            <ContentInnerWrapper>
-              <MarketInfo />
-            </ContentInnerWrapper>
+        {targetNetork.includes(selectedNetwork) && (
+          <ContentOuterWrapper>
+            <ContentWrapper>
+              {/* market header, info */}
+              <ContentInnerWrapper>
+                <MarketInfo />
+              </ContentInnerWrapper>
 
-            {/* my lists, market lists */}
-          </ContentWrapper>
-        </ContentOuterWrapper>
+              {/* my lists, market lists */}
+            </ContentWrapper>
+          </ContentOuterWrapper>
+        )}
       </InnerWrapper>
       <Footer />
     </Wrapper>

@@ -61,7 +61,7 @@ export const PoolCompositionsChart = ({ data }: Props) => {
         />
       </ChartWrapper>
       <TotalValue>
-        <Amount>${formatNumber(totalValue, 4)}</Amount>
+        <Amount>${formatNumber(totalValue, 4, 'round', 1000000)}</Amount>
         <ValueTitle>{t('Pool Value')}</ValueTitle>
       </TotalValue>
     </Wrapper>

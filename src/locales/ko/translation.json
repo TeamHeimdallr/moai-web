@@ -348,5 +348,27 @@
   "Set trustline": "트러스트라인 활성화",
   "No trustline": "트러스트라인이 없습니다.",
   "Get Token": "{{symbol}} 받기",
-  "faucet-limit-message": "퍼셋 한도에 도달했습니다."
+  "faucet-limit-message": "퍼셋 한도에 도달했습니다.",
+
+  "Net Worth": "순자산",
+  "Net APY": "종합 APY",
+  "Health Factor": "건전성 지수",
+  "Current LTV": "현재 LTV",
+
+  "net-apy": "공급 APY는 순 자산 가치에 대한 모든 공급 및 차입 포지션의 통합 효과로, 인센티브를 포함합니다. 부채 APY가 공급 APY보다 높은 경우 Net APY가 음수가 될 수 있습니다.",
+  "Liquidation Health Factor": "청산 건전성 지수",
+  "liquidation-health-factor-description": "건전성 지수는 담보의 안정성을 결정합니다. 청산을 피하려면 더 많은 담보를 공급하거나 대출을 상환할 수 있습니다.",
+  "liquidation-health-factor-description2": "담보로 공급한 자산의 안정성은 대출 받은 자산과 해당 자산의 기본 가치로 결정됩니다. 건전성 지수가 1 미만으로 떨어지면 담보가 청산됩니다.",
+
+  "health-factor-assets": "대출",
+  "health-factor-debt": "자산",
+  "health-factor-you": "현재 지수",
+  "health-factor-liquidation-value": "청산 가치",
+
+  "current-ltv-description": "LTV(담보 인정 비율)은 담보의 안정성을 결정합니다. 청산을 피하려면 더 많은 담보를 공급하거나 대출을 상환할 수 있습니다.",
+  "current-ltv-description2": "현재 LTV는 공급된 담보에 기반합니다. LTV가 청산 임계값을 초과하면 공급된 담보가 청산될 수 있습니다.",
+  "current-ltv-assets": "대출",
+  "current-ltv-debt": "자산",
+  "current-ltv-you": "현재 지수",
+  "current-ltv-liquidation-threshold": "청산 임계값"
 }

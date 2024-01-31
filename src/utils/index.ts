@@ -1,3 +1,4 @@
+export * from './util-color';
 export * from './util-network';
 export * from './util-number';
 export * from './util-params';
