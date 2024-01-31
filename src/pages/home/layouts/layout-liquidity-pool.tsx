@@ -57,8 +57,8 @@ const _LiquidityPoolLayout = () => {
     fetchNextPage,
   } = useTableLiquidityPool();
 
-  const { open: popupOpen } = usePopup(POPUP_ID.NETWORK_ALERT);
-  const { selectedNetwork, setTargetNetwork } = useNetwork();
+  const { open: openNetworkAlert, reset } = usePopup(POPUP_ID.NETWORK_ALERT);
+  const { selectedNetwork, selectNetwork } = useNetwork();
 
   const [showToastPopup, setShowToastPopup] = useState<boolean>(false);
 
@@ -77,8 +77,13 @@ const _LiquidityPoolLayout = () => {
       data: { page: 'home', layout: 'liquidity-pool', ...meta },
     });
     if (selectedNetwork !== meta.network) {
-      popupOpen();
-      setTargetNetwork(meta.network as NETWORK);
+      const callback = () => {
+        selectNetwork(meta.network as NETWORK);
+        reset();
+        navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.poolId}`);
+      };
+
+      openNetworkAlert({ callback });
       return;
     }
     navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.poolId}`);

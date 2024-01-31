@@ -21,7 +21,7 @@ export const Normal = () => {
 
   return (
     <Wrapper>
-      <ButtonPrimarySmall text="open preview popup !" onClick={open} />
+      <ButtonPrimarySmall text="open preview popup !" onClick={() => open()} />
       {opened && <ConnectWallet />}
     </Wrapper>
   );

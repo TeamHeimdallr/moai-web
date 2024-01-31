@@ -1,6 +1,5 @@
-import { Suspense, useEffect } from 'react';
+import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
@@ -15,11 +14,12 @@ import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { usePopup } from '~/hooks/components';
+import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
-import { NETWORK } from '~/types';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { RewardInfo } from './components/reward-info';
 import { RewardsNetworkAlertPopup } from './components/reward-network-alert';
@@ -35,8 +35,13 @@ const RewardsPage = () => {
 
 const _RewardsPage = () => {
   useGAPage();
+  useForceNetwork({
+    popupId: POPUP_ID.REWARD_NETWORK_ALERT,
+    targetNetwork: [NETWORK.THE_ROOT_NETWORK],
+    changeTargetNetwork: NETWORK.THE_ROOT_NETWORK,
+    callCallbackUnmounted: true,
+  });
 
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
@@ -44,6 +49,8 @@ const _RewardsPage = () => {
   const { selectedNetwork } = useNetwork();
   const currentNetworkAbbr = getNetworkAbbr(selectedNetwork);
 
+  const { opened } = usePopup(POPUP_ID.REWARD_NETWORK_ALERT);
+  const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
   const { data: waveInfo } = useGetRewardsInfoQuery(
     {
@@ -70,18 +77,13 @@ const _RewardsPage = () => {
     fetchNextPage,
   } = useTableRewards();
 
-  useEffect(() => {
-    if (selectedNetwork === NETWORK.XRPL) navigate('/');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedNetwork]);
-
   return (
     <>
       <Wrapper>
-        <GnbWrapper>
+        <GnbWrapper banner={!!bannerOpened}>
           <Gnb />
         </GnbWrapper>
-        <InnerWrapper>
+        <InnerWrapper banner={!!bannerOpened}>
           {selectedNetwork === NETWORK.THE_ROOT_NETWORK && (
             <ContentWrapper>
               <Title>{t('Wave', { phase: wave || 0 })}</Title>
@@ -111,7 +113,7 @@ const _RewardsPage = () => {
         </InnerWrapper>
         <Footer />
       </Wrapper>
-      {selectedNetwork !== NETWORK.THE_ROOT_NETWORK && <RewardsNetworkAlertPopup />}
+      {opened && <RewardsNetworkAlertPopup />}
     </>
   );
 };
@@ -163,15 +165,22 @@ const Wrapper = tw.div`
   relative flex flex-col justify-between w-full h-full
 `;
 
-const GnbWrapper = tw.div`
-  w-full absolute top-0 left-0 flex-center flex-col z-10
-  h-72 mlg:(h-80)
-`;
+interface DivProps {
+  banner?: boolean;
+}
+const GnbWrapper = styled.div<DivProps>(({ banner }) => [
+  tw`
+    w-full absolute top-0 left-0 flex-center flex-col z-10
+  `,
+  banner ? tw`h-124 mlg:(h-140)` : tw`h-72 mlg:(h-80)`,
+]);
 
-const InnerWrapper = tw.div`  
-  flex flex-col items-center gap-24 pb-120 pt-112 px-20
-  mlg:(pt-120)
-`;
+const InnerWrapper = styled.div<DivProps>(({ banner }) => [
+  tw`
+    flex flex-col items-center gap-24 pb-120 px-20
+  `,
+  banner ? tw`pt-164 mlg:(pt-180)` : tw`pt-112 mlg:(pt-120)`,
+]);
 
 const ContentWrapper = tw.div`
   flex flex-col w-full max-w-840 gap-24

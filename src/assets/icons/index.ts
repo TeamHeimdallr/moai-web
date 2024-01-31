@@ -12,12 +12,14 @@ import IconCopy from './icon-copy.svg?react';
 import IconDashboard from './icon-dashboard.svg?react';
 import IconDepth from './icon-depth.svg?react';
 import IconDiscord from './icon-discord.svg?react';
+import IconDivision from './icon-division.svg?react';
 import IconDollarWithCircle from './icon-dollar-with-circle.svg?react';
 import IconDollars from './icon-dollars.svg?react';
 import IconDown from './icon-down.svg?react';
 import IconDownFill from './icon-down-fill.svg?react';
 import IconDownload from './icon-download.svg?react';
 import IconEnglish from './icon-english.svg?react';
+import IconEquals from './icon-equals.svg?react';
 import IconFavorites from './icon-favorites.svg?react';
 import IconFilter from './icon-filter.svg?react';
 import IconFuturepass from './icon-futurepass.svg?react';
@@ -54,6 +56,7 @@ import IconTokenMoai from './icon-token-moai.svg?react';
 import IconTokenRoot from './icon-token-root.svg?react';
 import IconTokenXrp from './icon-token-xrp.svg?react';
 import IconTokens from './icon-tokens.svg?react';
+import IconTriangle from './icon-triangle.svg?react';
 import IconTwitter from './icon-twitter.svg?react';
 import IconTwitterX from './icon-twitter-x.svg?react';
 import IconUnlocked from './icon-unlocked.svg?react';
@@ -77,12 +80,14 @@ export {
   IconDashboard,
   IconDepth,
   IconDiscord,
+  IconDivision,
   IconDollars,
   IconDollarWithCircle,
   IconDown,
   IconDownFill,
   IconDownload,
   IconEnglish,
+  IconEquals,
   IconFavorites,
   IconFilter,
   IconFuturepass,
@@ -119,6 +124,7 @@ export {
   IconTokenRoot,
   IconTokens,
   IconTokenXrp,
+  IconTriangle,
   IconTwitter,
   IconTwitterX,
   IconUnlocked,

@@ -6,7 +6,7 @@ import { Gnb } from '~/components/gnb';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { useRequirePrarams } from '~/hooks/utils';
 import { getNetworkFull } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
@@ -23,13 +23,19 @@ import { UserPoolBalances } from '../../components/user-pool-balances';
 
 const PoolDetailMainPage = () => {
   useGAPage();
+  useForceNetwork({
+    enableParamsNetwork: true,
+    enableChangeAndRedirect: true,
+    callCallbackUnmounted: true,
+  });
 
   const navigate = useNavigate();
   const { network, id } = useParams();
   const { selectedNetwork } = useNetwork();
   useRequirePrarams([!!id, !!network], () => navigate(-1));
 
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const networkFull = getNetworkFull(network);
+  const currentNetwork = networkFull ?? selectedNetwork;
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
@@ -39,23 +45,25 @@ const PoolDetailMainPage = () => {
         <Gnb />
       </GnbWrapper>
       <InnerWrapper banner={!!opened}>
-        <ContentOuterWrapper>
-          <PoolHeader />
-          <ContentWrapper>
-            <LeftContentWrapper>
-              <PoolInfo />
-              <PoolCompositions />
-              <PoolInfoChart />
-              <PoolLiquidityProvisions />
-              <PoolSwapHistories />
-              <PotentialRisks />
-            </LeftContentWrapper>
-            <RightContentWrapper>
-              <UserPoolBalances />
-              {isRoot && <CampaignTool />}
-            </RightContentWrapper>
-          </ContentWrapper>
-        </ContentOuterWrapper>
+        {networkFull === selectedNetwork && (
+          <ContentOuterWrapper>
+            <PoolHeader />
+            <ContentWrapper>
+              <LeftContentWrapper>
+                <PoolInfo />
+                <PoolCompositions />
+                <PoolInfoChart />
+                <PoolLiquidityProvisions />
+                <PoolSwapHistories />
+                <PotentialRisks />
+              </LeftContentWrapper>
+              <RightContentWrapper>
+                <UserPoolBalances />
+                {isRoot && <CampaignTool />}
+              </RightContentWrapper>
+            </ContentWrapper>
+          </ContentOuterWrapper>
+        )}
       </InnerWrapper>
       <Footer />
     </Wrapper>

@@ -52,7 +52,7 @@ export const Gnb = () => {
 
   const [mobileMenuOpened, mobileMenuOpen] = useState<boolean>(false);
 
-  const currentGnbMenu = GNB_MENU.filter(menu => menu.network.includes(currentNetwork)).filter(
+  const currentGnbMenu = GNB_MENU.filter(menu => menu.network.includes(selectedNetwork)).filter(
     menu => menu.show
   );
 
@@ -121,7 +121,11 @@ export const Gnb = () => {
                       data: { component: 'gnb', linkTo: path, name: text, disabled, commingSoon },
                     });
                   }}
-                  selected={location.pathname === path}
+                  selected={
+                    location.pathname === '/'
+                      ? id === 'pool'
+                      : location.pathname.replace('/', '').includes(id)
+                  }
                   disabled={!!disabled}
                   data-tooltip-id={commingSoon ? TOOLTIP_ID.COMMING_SOON : undefined}
                 >

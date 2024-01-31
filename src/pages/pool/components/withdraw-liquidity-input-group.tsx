@@ -194,7 +194,7 @@ const _WithdrawLiquidityInputGroup = () => {
 
       <ButtonPrimaryLarge
         text={t('Preview')}
-        onClick={popupOpen}
+        onClick={() => popupOpen()}
         disabled={!isValidToWithdraw || isPrepareLoading || isPrepareError}
       />
 

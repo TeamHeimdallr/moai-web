@@ -24,9 +24,9 @@ export const TokenCompositionLabel = ({ composition, idx }: Props) => {
       </TokenSymbolWrapper>
       <TokenValueWrapper>
         <TokenBalance>
-          {formatNumber(balance)} {symbol}
+          {formatNumber(balance, 4, 'round', 1000000)} {symbol}
         </TokenBalance>
-        <TokenValue>${formatNumber(value)}</TokenValue>
+        <TokenValue>${formatNumber(value, 4, 'round', 1000000)}</TokenValue>
       </TokenValueWrapper>
     </Wrapper>
   );

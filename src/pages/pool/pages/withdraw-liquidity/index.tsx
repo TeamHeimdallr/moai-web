@@ -11,22 +11,31 @@ import { Gnb } from '~/components/gnb';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
+import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { useRequirePrarams } from '~/hooks/utils/use-require-params';
+import { getNetworkFull } from '~/utils';
 import { POPUP_ID } from '~/types';
 
 import { WithdrawLiquidityInputGroup } from '../../components/withdraw-liquidity-input-group';
 
 const PoolDetailWithdrawLiquidityPage = () => {
   useGAPage();
-  const { ref } = useGAInView({ name: 'withdraw-liquidity' });
+  useForceNetwork({
+    enableParamsNetwork: true,
+    enableChangeAndRedirect: true,
+    callCallbackUnmounted: true,
+  });
 
   const navigate = useNavigate();
-
+  const { ref } = useGAInView({ name: 'withdraw-liquidity' });
   const { t } = useTranslation();
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
-  const { id } = useParams();
 
+  const { network, id } = useParams();
+  const { selectedNetwork } = useNetwork();
   useRequirePrarams([!!id], () => navigate(-1));
+
+  const networkFull = getNetworkFull(network);
 
   return (
     <Wrapper ref={ref}>
@@ -34,16 +43,18 @@ const PoolDetailWithdrawLiquidityPage = () => {
         <Gnb />
       </GnbWrapper>
       <InnerWrapper>
-        <ContentWrapper>
-          <Header>
-            <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
-            <Title>{t('Withdraw from pool')}</Title>
-          </Header>
+        {networkFull === selectedNetwork && (
+          <ContentWrapper>
+            <Header>
+              <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
+              <Title>{t('Withdraw from pool')}</Title>
+            </Header>
 
-          <WithdrawWrapper>
-            <WithdrawLiquidityInputGroup />
-          </WithdrawWrapper>
-        </ContentWrapper>
+            <WithdrawWrapper>
+              <WithdrawLiquidityInputGroup />
+            </WithdrawWrapper>
+          </ContentWrapper>
+        )}
       </InnerWrapper>
       <Footer />
     </Wrapper>

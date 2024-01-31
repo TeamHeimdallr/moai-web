@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
 import { Footer } from '~/components/footer';
@@ -9,24 +7,24 @@ import { Gnb } from '~/components/gnb';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { FaucetList } from './components/faucet-list';
 
 const FaucetPage = () => {
   useGAPage();
+  useForceNetwork({
+    targetNetwork: [NETWORK.XRPL],
+    changeTargetNetwork: NETWORK.XRPL,
+    callCallbackUnmounted: true,
+  });
+
   const { ref } = useGAInView({ name: 'faucet' });
 
-  const navigate = useNavigate();
-  const { selectedNetwork } = useNetwork();
   const { t } = useTranslation();
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
-
-  useEffect(() => {
-    if (selectedNetwork !== NETWORK.XRPL) navigate('/');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedNetwork]);
+  const { selectedNetwork } = useNetwork();
 
   return (
     <Wrapper ref={ref}>
@@ -34,13 +32,15 @@ const FaucetPage = () => {
         <Gnb />
       </GnbWrapper>
       <InnerWrapper banner={!!bannerOpened}>
-        <ContentWrapper>
-          <Title>{t('Faucet')}</Title>
+        {selectedNetwork === NETWORK.XRPL && (
+          <ContentWrapper>
+            <Title>{t('Faucet')}</Title>
 
-          <FaucetWrapper>
-            <FaucetList />
-          </FaucetWrapper>
-        </ContentWrapper>
+            <FaucetWrapper>
+              <FaucetList />
+            </FaucetWrapper>
+          </ContentWrapper>
+        )}
       </InnerWrapper>
       <Footer />
     </Wrapper>

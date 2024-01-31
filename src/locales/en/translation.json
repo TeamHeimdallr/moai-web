@@ -334,5 +334,27 @@
   "Set trustline": "Set trustline",
   "No trustline": "No trustline",
   "Get Token": "Get {{symbol}}",
-  "faucet-limit-message": "You've reached the faucet limit"
+  "faucet-limit-message": "You've reached the faucet limit",
+
+  "Net Worth": "Net Worth",
+  "Net APY": "Net APY",
+  "Health Factor": "Health Factor",
+  "Current LTV": "Current LTV",
+
+  "net-apy": "Net APY is the combined effect of all supply and borrow positions on net worth, including incentives. It is possible to have a negative net APY if debt APY is higher than supply APY.",
+  "Liquidation Health Factor": "Liquidation Health Factor",
+  "liquidation-health-factor-description": "Your health factor determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions.",
+  "liquidation-health-factor-description2": "Safety of your deposited collateral against the borrowed assets and its underlying value. If the health factor goes below 1, the liquidation of your collateral might be triggered.",
+
+  "health-factor-assets": "Assets",
+  "health-factor-debt": "Debt",
+  "health-factor-you": "You",
+  "health-factor-liquidation-value": "Liquidation value",
+
+  "current-ltv-description": "Your LTV(Loan to Value) determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions.",
+  "current-ltv-description2": "Your current loan to value based on your collateral supplied. If your loan to value goes above the liquidation threshold your collateral supplied may be liquidated.",
+  "current-ltv-assets": "Assets",
+  "current-ltv-debt": "Debt",
+  "current-ltv-you": "You",
+  "current-ltv-liquidation-threshold": "Liquidtation threshold"
 }

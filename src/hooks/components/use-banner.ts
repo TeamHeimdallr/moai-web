@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
 import { useWeb3Modal } from '@web3modal/react';
 import { useAccount, useNetwork as useNetworkWagmi } from 'wagmi';
 
@@ -17,8 +16,6 @@ import { useSwitchAndAddNetwork } from '../wallets/use-add-network';
 export const useBanner = () => {
   const [type, setType] = useState<'select' | 'switch'>('select');
 
-  const location = useLocation();
-
   const { switchNetwork } = useSwitchAndAddNetwork();
   const { close: web3modalClose } = useWeb3Modal();
   const { isDisconnected, isConnecting, isReconnecting } = useAccount();
@@ -32,8 +29,6 @@ export const useBanner = () => {
   const { fpass, evm, xrp, anyAddress } = useConnectedWallet();
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
-  const isSwap = location.pathname.includes('swap');
-  const isRewards = location.pathname.includes('rewards');
   const network =
     selectedNetwork === NETWORK.EVM_SIDECHAIN
       ? 'EVM sidechain'
@@ -47,7 +42,7 @@ export const useBanner = () => {
 
   useEffect(() => {
     // if wallet not connected or on the swap page, can proceed regardless of the selected network.
-    if (!anyAddress || isSwap || isRewards) {
+    if (!anyAddress) {
       close();
       return;
     }
@@ -64,18 +59,10 @@ export const useBanner = () => {
     }
     close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    evm.isConnected,
-    fpass.isConnected,
-    selectedNetwork,
-    xrp.isConnected,
-    isSwap,
-    isRewards,
-    anyAddress,
-  ]);
+  }, [evm.isConnected, fpass.isConnected, selectedNetwork, xrp.isConnected, anyAddress]);
 
   useEffect(() => {
-    if (isDisconnected || isConnecting || isReconnecting || !anyAddress || isSwap || isRewards) {
+    if (isDisconnected || isConnecting || isReconnecting || !anyAddress) {
       web3modalClose();
       close();
       return;
@@ -88,7 +75,6 @@ export const useBanner = () => {
     ) {
       setType('switch');
       switchNetwork();
-      // web3modalOpen({ route: 'SelectNetwork' });
       open();
 
       return;
@@ -105,8 +91,6 @@ export const useBanner = () => {
     network,
     selectedNetwork,
     t,
-    isSwap,
-    isRewards,
     anyAddress,
   ]);
 
@@ -119,7 +103,6 @@ export const useBanner = () => {
     text,
     type,
     connectWallet,
-    // switchNetwork: () => web3modalOpen({ route: 'SelectNetwork' }),
     switchNetwork,
   };
 };

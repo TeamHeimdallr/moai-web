@@ -23,7 +23,7 @@ export const NoButton = () => {
 
   return (
     <Wrapper>
-      <ButtonPrimaryLarge text="open popup !" onClick={open} />
+      <ButtonPrimaryLarge text="open popup !" onClick={() => open()} />
       {opened && <NetworkAlertPopup />}
     </Wrapper>
   );

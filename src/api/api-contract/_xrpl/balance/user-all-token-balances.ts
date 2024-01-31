@@ -145,6 +145,8 @@ export const useUserAllTokenBalances = () => {
     }) || ([] as (IToken & TokenBalance)[]);
 
   const refetch = () => {
+    if (!walletAddress) return;
+
     xrpTokenBalanceRefetch();
     tokenBalancesRefetch();
   };

@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
+import { uniqBy } from 'lodash-es';
 
 import { useGetPoolsInfinityQuery } from '~/api/api-server/pools/get-pools';
 
@@ -48,7 +49,7 @@ export const useTableLiquidityPool = () => {
   });
   const pools = useMemo(() => data?.pages?.flatMap(page => page.pools) || [], [data?.pages]);
   const poolTokens = useMemo(
-    () => data?.pages?.flatMap(page => page.poolTokens) || [],
+    () => uniqBy(data?.pages?.flatMap(page => page.poolTokens) || [], 'symbol'),
     [data?.pages]
   );
 

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
@@ -5,21 +6,16 @@ import { COLOR } from '~/assets/colors';
 import { IconAlert } from '~/assets/icons';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
+import { Popup } from '~/components/popup';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
-import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
-import { useNetwork } from '~/hooks/contexts/use-network';
-import { NETWORK, POPUP_ID } from '~/types';
-
-import { Popup } from '../../../components/popup';
+import { POPUP_ID } from '~/types';
 
 export const RewardsNetworkAlertPopup = () => {
-  const { ref } = useGAInView({ name: 'reward-network-alery' });
   const { gaAction } = useGAAction();
 
-  const { close } = usePopup(POPUP_ID.REWARD_NETWORK_ALERT);
-  const { selectNetwork } = useNetwork();
+  const { close, callback, unmountCallback } = usePopup(POPUP_ID.REWARD_NETWORK_ALERT);
 
   const { t } = useTranslation();
 
@@ -27,11 +23,23 @@ export const RewardsNetworkAlertPopup = () => {
     gaAction({
       action: 'switch-network',
       buttonType: 'primary-large',
-      data: { page: 'rewards', component: 'reward-network-alert' },
+      data: {
+        page: 'rewards',
+        component: 'reward-network-alert',
+      },
     });
-    selectNetwork(NETWORK.THE_ROOT_NETWORK);
+
+    if (callback) {
+      callback();
+      return;
+    }
+
     close();
   };
+
+  useEffect(() => {
+    return () => unmountCallback?.();
+  }, [unmountCallback]);
 
   return (
     <Popup
@@ -44,7 +52,7 @@ export const RewardsNetworkAlertPopup = () => {
         />
       }
     >
-      <Wrapper ref={ref}>
+      <Wrapper>
         <IconAlert width={60} height={60} fill={COLOR.RED[50]} />
         <Title>{t(`The network does not match`)}</Title>
         <Text>{t(`rewards-network-alert-message`)}</Text>
