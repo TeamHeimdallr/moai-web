@@ -50,6 +50,7 @@ const _RewardsPage = () => {
   const currentNetworkAbbr = getNetworkAbbr(selectedNetwork);
 
   const { opened } = usePopup(POPUP_ID.REWARD_NETWORK_ALERT);
+  const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
   const { currentAddress } = useConnectedWallet(selectedNetwork);
   const { data: waveInfo } = useGetRewardsInfoQuery(
     {
@@ -79,10 +80,10 @@ const _RewardsPage = () => {
   return (
     <>
       <Wrapper>
-        <GnbWrapper>
+        <GnbWrapper banner={!!bannerOpened}>
           <Gnb />
         </GnbWrapper>
-        <InnerWrapper>
+        <InnerWrapper banner={!!bannerOpened}>
           {selectedNetwork === NETWORK.THE_ROOT_NETWORK && (
             <ContentWrapper>
               <Title>{t('Wave', { phase: wave || 0 })}</Title>
@@ -164,15 +165,22 @@ const Wrapper = tw.div`
   relative flex flex-col justify-between w-full h-full
 `;
 
-const GnbWrapper = tw.div`
-  w-full absolute top-0 left-0 flex-center flex-col z-10
-  h-72 mlg:(h-80)
-`;
+interface DivProps {
+  banner?: boolean;
+}
+const GnbWrapper = styled.div<DivProps>(({ banner }) => [
+  tw`
+    w-full absolute top-0 left-0 flex-center flex-col z-10
+  `,
+  banner ? tw`h-124 mlg:(h-140)` : tw`h-72 mlg:(h-80)`,
+]);
 
-const InnerWrapper = tw.div`  
-  flex flex-col items-center gap-24 pb-120 pt-112 px-20
-  mlg:(pt-120)
-`;
+const InnerWrapper = styled.div<DivProps>(({ banner }) => [
+  tw`
+    flex flex-col items-center gap-24 pb-120 px-20
+  `,
+  banner ? tw`pt-164 mlg:(pt-180)` : tw`pt-112 mlg:(pt-120)`,
+]);
 
 const ContentWrapper = tw.div`
   flex flex-col w-full max-w-840 gap-24

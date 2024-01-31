@@ -279,7 +279,7 @@ const _AddLiquidityInputGroup = () => {
 
       <ButtonPrimaryLarge
         text={t('Preview')}
-        onClick={popupOpen}
+        onClick={() => popupOpen()}
         disabled={
           !isValid ||
           !hasBalances ||

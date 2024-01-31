@@ -17,14 +17,14 @@ export const AlertBanner = ({ text, button, ...rest }: Props) => {
         </IconWrapper>
         {text}
       </TextWrapper>
-      {button}
+      <ButtonWrapper>{button}</ButtonWrapper>
     </Wrapper>
   );
 };
 
 const Wrapper = tw.div`
   w-full flex items-center bg-red-50 px-12
-  h-52 justify-between
+  h-52 justify-between gap-8
   md:(h-60 gap-16 justify-center)
 `;
 
@@ -33,4 +33,8 @@ const TextWrapper = tw.div`
   font-m-12
   md:(font-m-14)
 `;
+
 const IconWrapper = tw.div`flex-center`;
+const ButtonWrapper = tw.div`
+  flex-center flex-shrink-0
+`;

@@ -29,7 +29,7 @@ export const NoButton = () => {
 
   return (
     <Wrapper>
-      <ButtonPrimarySmall text="open popup !" onClick={open} />
+      <ButtonPrimarySmall text="open popup !" onClick={() => open()} />
       {opened && (
         <Popup id={POPUP_ID.STORYBOOK_SAMPLE} title="Select token">
           <TokenList

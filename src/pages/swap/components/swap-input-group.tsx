@@ -377,7 +377,7 @@ const _SwapInputGroup = () => {
             isSorFallbackLoading ||
             isSorFallbackError
           }
-          onClick={openSwapPopup}
+          onClick={() => openSwapPopup()}
         />
       </Wrapper>
 
