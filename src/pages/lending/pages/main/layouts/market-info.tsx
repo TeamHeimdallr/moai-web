@@ -20,9 +20,9 @@ import {
 } from '~/utils';
 import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
 
-import { MarketInfoCard } from './market-info-card';
-import { MarketInfoCurrentLTVPopup } from './market-info-current-ltv-popup';
-import { MarketInfoHealthFactorPopup } from './market-info-health-factor-popup';
+import { MarketInfoCard } from '../components/market-info-card';
+import { MarketInfoCurrentLTVPopup } from '../components/market-info-current-ltv-popup';
+import { MarketInfoHealthFactorPopup } from '../components/market-info-health-factor-popup';
 
 export const MarketInfo = () => {
   const { ref } = useGAInView({ name: 'lending-main-info' });

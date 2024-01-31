@@ -370,5 +370,8 @@
   "current-ltv-assets": "자산",
   "current-ltv-debt": "대출",
   "current-ltv-you": "현재 지수",
-  "current-ltv-liquidation-threshold": "청산 임계값"
+  "current-ltv-liquidation-threshold": "청산 임계값",
+
+  "Supplies": "공급",
+  "Borrows": "대출"
 }

@@ -356,5 +356,8 @@
   "current-ltv-assets": "Assets",
   "current-ltv-debt": "Debt",
   "current-ltv-you": "You",
-  "current-ltv-liquidation-threshold": "Liquidtation threshold"
+  "current-ltv-liquidation-threshold": "Liquidtation threshold",
+
+  "Supplies": "Supplies",
+  "Borrows": "Borrows"
 }
