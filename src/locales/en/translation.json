@@ -45,6 +45,8 @@
   "Liquidity provision": "Liquidity provision",
   "Swaps": "Swaps",
 
+  "No result": "No result",
+
   "90d": "90d",
   "180d": "180d",
   "365d": "365d",
@@ -359,5 +361,29 @@
   "current-ltv-liquidation-threshold": "Liquidtation threshold",
 
   "Supplies": "Supplies",
-  "Borrows": "Borrows"
+  "Borrows": "Borrows",
+
+  "My Supplies": "My Supplies",
+
+  "lending-balance": "Balance",
+  "lending-apy": "APY",
+  "lending-collateral": "Collateral",
+
+  "lending-supply-apy-tooltip": "The weighted average of APY for all supplied assets, including incentives.",
+  "lending-supply-collateral-tooltip": "The total amount of your assets denominated in USD that can be used as collateral for borrowing assets.",
+
+  "lending-my-supply-collateral-tooltip": "Allows you to decide whether to use a supplied asset as collateral. An asset used as collateral will affect your borrowing power and health factor.",
+  "lending-assets-supply-collateral-tooltip": "Allows you to decide whether to use a supplied asset as collateral. An asset used as collateral will affect your borrowing power and health factor.",
+
+  "lending-asset": "Asset",
+  "lending-my-balance": "My balance",
+
+  "lending-supply": "Supply",
+  "lending-withdraw": "Withdraw",
+
+  "Assets to supply": "Assets to supply",
+  "lending-show-zero-balance": "show assets with 0 balance",
+
+  "lending-wallet-balance": "Wallet balance",
+  "lending-assets-to-supply-empty": "Empty assets to supply"
 }
