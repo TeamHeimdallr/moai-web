@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
@@ -7,18 +8,21 @@ interface MarketInfoCardProps {
 
   iconButton?: React.ReactNode;
 
-  value: string;
+  value: ReactNode;
   valueColor?: string;
+
+  light?: boolean;
 }
-export const MarketInfoCard = ({
+export const Card = ({
   title,
   titleIcon,
   iconButton,
   value,
   valueColor,
+  light,
 }: MarketInfoCardProps) => {
   return (
-    <Wrapper>
+    <Wrapper light={light}>
       <TitleOuterWrapper>
         <TitleWrapper>
           {title}
@@ -30,11 +34,18 @@ export const MarketInfoCard = ({
     </Wrapper>
   );
 };
-const Wrapper = tw.div`
-  flex flex-1 flex-col items-start bg-neutral-10 rounded-12
-  py-16 px-20 gap-12
-  md:(py-20 pl-24 pr-12 gap-16)
-`;
+
+interface WrapperProps {
+  light?: boolean;
+}
+const Wrapper = styled.div<WrapperProps>(({ light }) => [
+  tw`
+    flex flex-1 flex-col items-start bg-neutral-10 rounded-12
+    py-16 px-20 gap-12
+    md:(py-20 pl-24 pr-12 gap-16)
+  `,
+  light && tw`bg-neutral-15`,
+]);
 
 const TitleOuterWrapper = tw.div`
   w-full flex items-center gap-2
