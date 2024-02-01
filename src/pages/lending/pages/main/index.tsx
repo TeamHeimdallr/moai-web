@@ -11,6 +11,7 @@ import { useSupplyBorrowTabStore } from '~/states/pages/lending';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { MarketInfo } from './layouts/market-info';
+import { MarketSupplies } from './layouts/market-supplies';
 
 export const LendingMain = () => {
   useGAPage();
@@ -46,6 +47,7 @@ export const LendingMain = () => {
                     {t('Borrows')}
                   </Tab>
                 </TabWrapper>
+                <MarketSupplies />
               </ContentInnerWrapper>
 
               {/* my lists, market lists */}
@@ -87,12 +89,12 @@ const GnbWrapper = styled.div<DivProps>(({ banner }) => [
 ]);
 
 const ContentOuterWrapper = tw.div`
-  flex flex-col w-full gap-40 max-w-1440
+  w-full max-w-1440
 `;
 
 const ContentWrapper = tw.div`
   flex flex-col gap-40
-  xl:(gap-80)
+  md:(gap-80)
 `;
 
 const ContentInnerWrapper = tw.div`
@@ -108,7 +110,7 @@ interface TabProps {
 }
 const Tab = styled.div<TabProps>(({ selected }) => [
   tw`
-    font-b-18
+    font-b-18 clickable
     md:(font-b-20)
   `,
   selected ? tw`text-primary-60` : tw`text-neutral-60`,

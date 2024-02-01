@@ -20,7 +20,8 @@ import {
 } from '~/utils';
 import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
 
-import { MarketInfoCard } from '../components/market-info-card';
+import { APYLarge } from '../components/apy';
+import { Card } from '../components/card';
 import { MarketInfoCurrentLTVPopup } from '../components/market-info-current-ltv-popup';
 import { MarketInfoHealthFactorPopup } from '../components/market-info-health-factor-popup';
 
@@ -71,10 +72,10 @@ export const MarketInfo = () => {
       </HeaderWrapper>
       <InfoWrapper>
         <InfoInnerWrapper>
-          <MarketInfoCard title={t('Net Worth')} value={`$${formatNumber(netWorth, 2)}`} />
-          <MarketInfoCard
+          <Card title={t('Net Worth')} value={`$${formatNumber(netWorth, 2)}`} />
+          <Card
             title={t('Net APY')}
-            value={`${formatNumber(netAPY, 2)}%`}
+            value={<APYLarge apy={netAPY} />}
             titleIcon={
               <ButtonIconSmall
                 icon={<IconQuestion />}
@@ -85,7 +86,7 @@ export const MarketInfo = () => {
         </InfoInnerWrapper>
         {evmAddress && (
           <InfoInnerWrapper>
-            <MarketInfoCard
+            <Card
               title={t('Health Factor')}
               iconButton={
                 <ButtonIconMedium icon={<IconNext />} onClick={handleHealthFactorClick} />
@@ -93,7 +94,7 @@ export const MarketInfo = () => {
               value={`${formatNumber(healthFactor, 2)}`}
               valueColor={`${healthFactorColor}`}
             />
-            <MarketInfoCard
+            <Card
               title={t('Current LTV')}
               iconButton={<ButtonIconMedium icon={<IconNext />} onClick={handleCurrentLTVClick} />}
               value={`${formatNumber(currentLTV, 2)}%`}
