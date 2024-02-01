@@ -17,6 +17,8 @@ export const useConnectXrpl = () => {
 
   const connect = async () => {
     if (!client) return;
+    if (client.isConnected()) return;
+
     await client.connect();
 
     setConnection(true);
