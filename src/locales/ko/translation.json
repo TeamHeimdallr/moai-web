@@ -45,6 +45,8 @@
   "Liquidity provision": "유동성 거래 내역",
   "Swaps": "구매 내역",
 
+  "No result": "결과가 없습니다",
+
   "90d": "90일",
   "180d": "180일",
   "365d": "365일",
@@ -370,5 +372,32 @@
   "current-ltv-assets": "자산",
   "current-ltv-debt": "대출",
   "current-ltv-you": "현재 지수",
-  "current-ltv-liquidation-threshold": "청산 임계값"
+  "current-ltv-liquidation-threshold": "청산 임계값",
+
+  "Supplies": "공급",
+  "Borrows": "대출",
+
+  "My Supplies": "나의 공급",
+
+  "lending-balance": "잔액",
+  "lending-apy": "APY",
+  "lending-collateral": "담보물",
+
+  "lending-supply-apy-tooltip": "인센티브를 포함한 모든 공급 자산에 대한 APY의 가중 평균",
+  "lending-supply-collateral-tooltip": "USD로 표시된 자산의 총액, 차입 자산의 담보로 사용될 수 있는 금액",
+
+  "lending-my-supply-collateral-tooltip": "제공된 자산을 담보로 사용할지 여부를 결정할 수 있게 해줍니다. 담보로 사용된 자산은 차입력과 건전성 지수에 영향을 미칩니다.",
+  "lending-assets-supply-collateral-tooltip": "제공된 자산을 담보로 사용할지 여부를 결정할 수 있게 해줍니다. 담보로 사용된 자산은 차입력과 건전성 지수에 영향을 미칩니다.",
+
+  "lending-asset": "자산",
+  "lending-my-balance": "나의 잔액",
+
+  "lending-supply": "공급하기",
+  "lending-withdraw": "출금하기",
+
+  "Assets to supply": "공급 가능 자산",
+  "lending-show-zero-balance": "잔액이 0인 자산 표시",
+
+  "lending-wallet-balance": "지갑 잔액",
+  "lending-assets-to-supply-empty": "공급 가능 자산이 없습니다."
 }

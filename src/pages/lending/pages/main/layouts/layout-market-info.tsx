@@ -20,11 +20,12 @@ import {
 } from '~/utils';
 import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
 
-import { MarketInfoCard } from './market-info-card';
-import { MarketInfoCurrentLTVPopup } from './market-info-current-ltv-popup';
-import { MarketInfoHealthFactorPopup } from './market-info-health-factor-popup';
+import { APYLarge } from '../components/apy';
+import { Card } from '../components/card';
+import { MarketInfoCurrentLTVPopup } from '../components/market-info-current-ltv-popup';
+import { MarketInfoHealthFactorPopup } from '../components/market-info-health-factor-popup';
 
-export const MarketInfo = () => {
+export const LayoutMarketInfo = () => {
   const { ref } = useGAInView({ name: 'lending-main-info' });
   const { t } = useTranslation();
 
@@ -71,10 +72,10 @@ export const MarketInfo = () => {
       </HeaderWrapper>
       <InfoWrapper>
         <InfoInnerWrapper>
-          <MarketInfoCard title={t('Net Worth')} value={`$${formatNumber(netWorth, 2)}`} />
-          <MarketInfoCard
+          <Card title={t('Net Worth')} value={`$${formatNumber(netWorth, 2)}`} />
+          <Card
             title={t('Net APY')}
-            value={`${formatNumber(netAPY, 2)}%`}
+            value={<APYLarge apy={netAPY} />}
             titleIcon={
               <ButtonIconSmall
                 icon={<IconQuestion />}
@@ -85,15 +86,15 @@ export const MarketInfo = () => {
         </InfoInnerWrapper>
         {evmAddress && (
           <InfoInnerWrapper>
-            <MarketInfoCard
+            <Card
               title={t('Health Factor')}
               iconButton={
                 <ButtonIconMedium icon={<IconNext />} onClick={handleHealthFactorClick} />
               }
-              value={`${formatNumber(healthFactor, 1)}`}
+              value={`${formatNumber(healthFactor, 2)}`}
               valueColor={`${healthFactorColor}`}
             />
-            <MarketInfoCard
+            <Card
               title={t('Current LTV')}
               iconButton={<ButtonIconMedium icon={<IconNext />} onClick={handleCurrentLTVClick} />}
               value={`${formatNumber(currentLTV, 2)}%`}
@@ -135,7 +136,8 @@ const LogoWrapper = tw.div`
 `;
 
 const Title = tw.div`
-  font-b-24 text-neutral-100
+  font-b-20 text-neutral-100
+  md:(font-b-24)
 `;
 
 const InfoWrapper = tw.div`

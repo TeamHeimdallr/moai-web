@@ -91,7 +91,8 @@ export const PoolHeader = () => {
 };
 
 const HeaderWrapper = tw.div`
-  flex flex-col gap-16
+  flex flex-col gap-16 px-20
+  md:(px-0)
 `;
 const TitleWrapper = tw.div`
   flex inline-flex gap-16 items-center

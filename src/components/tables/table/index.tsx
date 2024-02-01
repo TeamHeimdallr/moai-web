@@ -12,7 +12,7 @@ interface ReactTableProps<T extends object> {
   data: T[];
   columns: ColumnDef<T, ReactNode>[];
 
-  ratio: number[];
+  ratio: (number | string)[];
 
   emptyText?: string;
   hasMore?: boolean;
@@ -20,6 +20,9 @@ interface ReactTableProps<T extends object> {
   type?: 'darker' | 'lighter';
 
   skeletonHeight?: number;
+  slim?: boolean;
+
+  disableHover?: boolean;
 
   handleMoreClick?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,6 +41,9 @@ export const Table = <T extends object>({
   type,
 
   skeletonHeight,
+  slim,
+
+  disableHover,
 
   handleMoreClick,
   handleRowClick,
@@ -52,13 +58,15 @@ export const Table = <T extends object>({
   });
   const { t } = useTranslation();
 
-  const tableRatio = ratio.map(num => `minmax(0, ${num}fr)`).join(' ');
+  const tableRatio = ratio
+    .map(r => (typeof r === 'number' ? `minmax(0, ${r}fr)` : `minmax(0, ${r})`))
+    .join(' ');
 
   return (
     <StyledTable type={type}>
       <Header>
         {table.getHeaderGroups().map((headerGroup, i) => (
-          <HeaderInnerWrapper key={headerGroup.id + i} ratio={tableRatio}>
+          <HeaderInnerWrapper key={headerGroup.id + i} ratio={tableRatio} slim={slim}>
             {headerGroup.headers.map(header => (
               <Fragment key={header.id}>
                 {header.isPlaceholder
@@ -89,6 +97,8 @@ export const Table = <T extends object>({
                   key={row.id + i}
                   ratio={tableRatio}
                   type={type}
+                  slim={slim}
+                  disableHover={disableHover}
                   rounded={!hasMore && !isLoading}
                   onClick={() => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -121,6 +131,7 @@ export const Table = <T extends object>({
 interface TableProps {
   ratio?: string;
   type?: 'darker' | 'lighter';
+  slim?: boolean;
 }
 const StyledTable = styled.div<TableProps>(({ type }) => [
   tw`w-full bg-neutral-10 rounded-12 flex flex-col`,
@@ -143,29 +154,40 @@ const Body = styled.div<BodyProps>(({ height }) => [
     `,
 ]);
 
-const HeaderInnerWrapper = styled.div<TableProps>(({ ratio }) => [
+const HeaderInnerWrapper = styled.div<TableProps>(({ ratio, slim }) => [
   tw`grid w-full h-full gap-16`,
   css`
     & {
       grid-template-columns: ${ratio};
     }
   `,
+  slim && tw`gap-8`,
 ]);
 
 interface BTRProps {
   rounded?: boolean;
   ratio: string;
   type?: 'darker' | 'lighter';
+
+  slim?: boolean;
+  disableHover?: boolean;
 }
-const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio, type }) => [
+const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio, type, slim, disableHover }) => [
   tw`
-    grid w-full h-full px-24 py-20 clickable gap-16 hover:bg-neutral-15
+    grid w-full h-full px-24 py-20 gap-16
   `,
   rounded && tw`last:(rounded-b-10)`,
-  type === 'lighter' && tw`hover:bg-neutral-20`,
+  slim && tw`gap-8`,
+  !disableHover && (type === 'lighter' ? tw`hover:bg-neutral-20` : tw`hover:bg-neutral-15`),
+  !disableHover && tw`clickable`,
   css`
     & {
       grid-template-columns: ${ratio};
+    }
+    &:hover {
+      .toggle:not(.toggle-selected):not(.toggle-hover) {
+        background-color: ${COLOR.NEUTRAL[30]};
+      }
     }
   `,
 ]);

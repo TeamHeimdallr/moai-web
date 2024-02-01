@@ -69,3 +69,25 @@ export const useTableSwapHistoriesStore = create<State>()(
     }))
   )
 );
+
+export const useTableLendingMySuppliesSortStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'TABLE_LENDING_MY_SUPPLIES_SORT_STORE',
+      sort: { key: 'balance', order: 'desc' },
+      setSort: (sort: ITableSort) => set({ sort }),
+      resetSort: () => set({ sort: undefined }),
+    }))
+  )
+);
+
+export const useTableLendingAssetsToSupplySortStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'TABLE_LENDING_ASSETS_TO_SUPPLY_SORT_STORE',
+      sort: { key: 'balance', order: 'desc' },
+      setSort: (sort: ITableSort) => set({ sort }),
+      resetSort: () => set({ sort: undefined }),
+    }))
+  )
+);

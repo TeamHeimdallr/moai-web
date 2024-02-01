@@ -177,7 +177,8 @@ const GnbWrapper = styled.div<DivProps>(({ banner }) => [
 
 const InnerWrapper = styled.div<DivProps>(({ banner }) => [
   tw`
-    flex flex-col items-center gap-24 pb-120 px-20
+    flex flex-col items-center gap-24 pb-120
+    md:(px-20)
   `,
   banner ? tw`pt-164 mlg:(pt-180)` : tw`pt-112 mlg:(pt-120)`,
 ]);
