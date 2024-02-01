@@ -25,7 +25,7 @@ import { Card } from '../components/card';
 import { MarketInfoCurrentLTVPopup } from '../components/market-info-current-ltv-popup';
 import { MarketInfoHealthFactorPopup } from '../components/market-info-health-factor-popup';
 
-export const MarketInfo = () => {
+export const LayoutMarketInfo = () => {
   const { ref } = useGAInView({ name: 'lending-main-info' });
   const { t } = useTranslation();
 

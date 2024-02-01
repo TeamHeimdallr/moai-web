@@ -19,7 +19,7 @@ import { TOOLTIP_ID } from '~/types';
 import { APYMedium } from '../components/apy';
 import { Card } from '../components/card';
 
-export const MarketSupplies = () => {
+export const LayoutMarketSupplies = () => {
   const { t } = useTranslation();
 
   const { evm, fpass } = useConnectedWallet();

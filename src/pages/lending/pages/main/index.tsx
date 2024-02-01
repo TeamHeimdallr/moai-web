@@ -10,8 +10,8 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useSupplyBorrowTabStore } from '~/states/pages/lending';
 import { NETWORK, POPUP_ID } from '~/types';
 
-import { MarketInfo } from './layouts/market-info';
-import { MarketSupplies } from './layouts/market-supplies';
+import { LayoutMarketInfo } from './layouts/layout-market-info';
+import { LayoutMarketSupplies } from './layouts/layout-market-supplies';
 
 export const LendingMain = () => {
   useGAPage();
@@ -35,9 +35,10 @@ export const LendingMain = () => {
             <ContentWrapper>
               {/* market header, info */}
               <ContentInnerWrapper>
-                <MarketInfo />
+                <LayoutMarketInfo />
               </ContentInnerWrapper>
 
+              {/* my lists, market lists */}
               <ContentInnerWrapper>
                 <TabWrapper>
                   <Tab selected={type === 'supply'} onClick={() => setType('supply')}>
@@ -47,10 +48,8 @@ export const LendingMain = () => {
                     {t('Borrows')}
                   </Tab>
                 </TabWrapper>
-                <MarketSupplies />
+                <LayoutMarketSupplies />
               </ContentInnerWrapper>
-
-              {/* my lists, market lists */}
             </ContentWrapper>
           </ContentOuterWrapper>
         )}
