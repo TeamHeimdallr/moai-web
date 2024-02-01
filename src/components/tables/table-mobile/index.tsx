@@ -11,9 +11,10 @@ interface Data {
   meta?: any;
   rows: ReactNode[];
   dataRows: {
-    label: string;
+    label: ReactNode;
     value: ReactNode;
   }[];
+  bottomRows?: ReactNode[];
 }
 
 interface Props {
@@ -25,6 +26,7 @@ interface Props {
   type?: 'darker' | 'lighter';
 
   skeletonHeight?: number;
+  emptyText?: string;
 
   handleMoreClick?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,6 +39,7 @@ export const TableMobile = ({
 
   hasMore,
   type,
+  emptyText,
 
   skeletonHeight,
 
@@ -60,9 +63,9 @@ export const TableMobile = ({
           style={{ borderRadius: '0 0 12px 12px' }}
         />
       ) : isEmpty ? (
-        <EmptyWrapper>No liquidity pools</EmptyWrapper>
+        <EmptyWrapper>{emptyText || 'No result'}</EmptyWrapper>
       ) : (
-        data.map(({ meta, rows, dataRows }, i) => (
+        data.map(({ meta, rows, dataRows, bottomRows }, i) => (
           <ContentWrapper key={i} onClick={() => handleClick?.(meta)} className={meta?.className}>
             {rows.map((row, i) => (
               <Row key={i}>{row}</Row>
@@ -70,11 +73,12 @@ export const TableMobile = ({
             <DataRowWrapper>
               {dataRows.map(({ label, value }, i) => (
                 <DataRow key={i}>
-                  <DataLabel>{t(label)}</DataLabel>
+                  <DataLabel>{typeof label === 'string' ? t(label) : label}</DataLabel>
                   <DataValue>{value}</DataValue>
                 </DataRow>
               ))}
             </DataRowWrapper>
+            {bottomRows && bottomRows.map((row, i) => <Row key={i}>{row}</Row>)}
           </ContentWrapper>
         ))
       )}
