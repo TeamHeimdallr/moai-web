@@ -88,7 +88,7 @@ const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, disabled,
   type === 'large' && !hasImage && !selected && tw`px-14`,
   type === 'large' && !hasImage && selected && tw`py-7 px-13`,
 
-  type === 'small' && tw`px-8 py-4 rounded-6`,
+  type === 'small' && tw`px-8 py-4 rounded-8`,
   type === 'small' && selected && tw`py-3 px-7`,
 
   clickable && !disabled && tw`clickable`,
@@ -102,7 +102,8 @@ const TextWrapper = tw.div`
 `;
 
 const TokenText = tw.div`
-  font-r-16 leading-24
+  font-r-14
+  md:(font-r-16 leading-24)
 `;
 const Percentage = tw.div`
   font-r-12 text-neutral-80
