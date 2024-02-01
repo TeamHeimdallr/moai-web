@@ -36,3 +36,35 @@ export const TableHeaderComposition = () => <TableHeader label="Composition" ali
 export const TableHeaderAPR = () => <TableHeader label="APR" align="flex-end" />;
 
 export const TableHeaderMyAPR = () => <TableHeader label="My APR" align="flex-end" />;
+
+interface TooltipProps extends HTMLAttributes<HTMLDivElement> {
+  label: string;
+  tooltipIcon?: ReactNode;
+
+  align?: 'flex-start' | 'center' | 'flex-end';
+}
+
+export const TableHeaderTooltip = ({ label, tooltipIcon, align, ...rest }: TooltipProps) => {
+  const { t } = useTranslation();
+  return (
+    <TooltipWrapper align={align} {...rest}>
+      {t(label)}
+      {tooltipIcon}
+    </TooltipWrapper>
+  );
+};
+
+interface WrapperProps {
+  align?: 'flex-start' | 'center' | 'flex-end';
+}
+const TooltipWrapper = styled.div<WrapperProps>(({ align }) => [
+  tw`
+    flex-center w-full gap-2 font-m-14 text-neutral-80
+    md:(font-m-16)
+  `,
+
+  align &&
+    css`
+      justify-content: ${align};
+    `,
+]);

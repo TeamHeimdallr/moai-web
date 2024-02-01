@@ -68,7 +68,8 @@ interface SelectableHeaderPoolProps {
 }
 const SelectableHeaderText = styled.div<SelectableHeaderPoolProps>(({ selected }) => [
   tw`
-    flex items-center justify-end gap-4 w-full font-m-16 text-neutral-80 clickable
+    flex items-center justify-end gap-4 w-full font-m-14 text-neutral-80 clickable
+    md:(font-m-16)
     hover:(text-primary-80)
   `,
   selected && tw`text-primary-60 hover:(text-primary-60)`,
