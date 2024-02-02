@@ -158,7 +158,10 @@ export const useUserPoolTokenBalances = (props?: Props) => {
           ...tokenBalances,
         ]
       : tokenBalances || []
-  ) as (ITokenComposition & { balance: number; balanceRaw: bigint })[];
+  ).sort((a, b) => a?.symbol?.localeCompare(b?.symbol || '') || 0) as (ITokenComposition & {
+    balance: number;
+    balanceRaw: bigint;
+  })[];
 
   const userPoolTokenTotalValue = userPoolTokens?.reduce((acc, cur) => {
     const tokenValue = (cur?.balance || 0) * (cur?.price || 0);

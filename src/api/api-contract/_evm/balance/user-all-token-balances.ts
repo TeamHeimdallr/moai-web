@@ -91,24 +91,26 @@ export const useUserAllTokenBalances = () => {
     Number(formatUnits(supply || 0n, tokenDecimalsRaw?.[i] || 18))
   );
 
-  const userAllTokens = (tokens?.map((t, i) => {
-    if (
-      currentNetwork === NETWORK.EVM_SIDECHAIN &&
-      t.address === getWrappedTokenAddress(currentNetwork)
-    ) {
+  const userAllTokens = (
+    tokens?.map((t, i) => {
+      if (
+        currentNetwork === NETWORK.EVM_SIDECHAIN &&
+        t.address === getWrappedTokenAddress(currentNetwork)
+      ) {
+        return {
+          ...t,
+          balance: Number(nativeBalance?.formatted || 0),
+          totalSupply: 0,
+        };
+      }
+
       return {
         ...t,
-        balance: Number(nativeBalance?.formatted || 0),
-        totalSupply: 0,
+        balance: tokenBalances?.[i] || 0,
+        totalSupply: tokenTotalSupply?.[i] || 0,
       };
-    }
-
-    return {
-      ...t,
-      balance: tokenBalances?.[i] || 0,
-      totalSupply: tokenTotalSupply?.[i] || 0,
-    };
-  }) || []) as (IToken & {
+    }) || []
+  ).sort((a, b) => a.symbol.localeCompare(b.symbol)) as (IToken & {
     balance: number;
     totalSupply: number;
   })[];
