@@ -4,11 +4,11 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { IAmmInfo, NETWORK } from '~/types';
+import { IAmmInfo } from '~/types';
 
 interface Props {
-  network: NETWORK;
-  poolId: string;
+  network?: string;
+  poolId?: string;
 }
 export const useLpTokenTotalSupply = ({ network, poolId }: Props) => {
   const { isXrp } = useNetwork();
@@ -20,7 +20,7 @@ export const useLpTokenTotalSupply = ({ network, poolId }: Props) => {
     {
       params: {
         networkAbbr: network as string,
-        poolId: poolId,
+        poolId: poolId || '',
       },
     },
     {

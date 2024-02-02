@@ -151,8 +151,9 @@ export const useUserAllTokenBalances = () => {
     tokenBalancesRefetch();
   };
 
-  const userAllTokens = [...xrpBalance, ...tokenBalances].filter(t => !!t) as (IToken &
-    TokenBalance)[];
+  const userAllTokens = [...xrpBalance, ...tokenBalances]
+    .filter(t => !!t)
+    .sort((a, b) => a?.symbol?.localeCompare(b?.symbol || '') || 0) as (IToken & TokenBalance)[];
 
   return {
     userAllTokenBalances: userAllTokens,

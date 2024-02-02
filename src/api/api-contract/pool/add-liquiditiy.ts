@@ -51,6 +51,7 @@ export const useAddLiquidity = ({ id, tokens, enabled }: Props) => {
   });
 
   const resXrp = useAddLiquidityXrp({
+    poolId: id,
     token1: tokens[0],
     token2: tokens[1],
     enabled,

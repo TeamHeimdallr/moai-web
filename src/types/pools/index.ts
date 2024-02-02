@@ -216,6 +216,23 @@ export interface IAmmInfo extends BaseResponse {
   type: string;
 }
 
+export interface IXrplTxInfo extends BaseResponse {
+  id: number;
+  result: {
+    Account: string;
+    date: number;
+    hash: string;
+    meta: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      AffectedNodes: any[];
+      TransactionResult: string;
+    };
+    validated: boolean;
+  };
+  status: string;
+  type: string;
+}
+
 /*
  * Faucet tokens for XRPL Devnet
  */

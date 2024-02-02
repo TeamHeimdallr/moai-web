@@ -51,6 +51,7 @@ const _AddLiquidityInputGroup = () => {
   const ref = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
 
+  const [txHash, setTxHash] = useState('');
   const [opened, open] = useState(false);
   const toggle = () => open(!opened);
 
@@ -85,13 +86,14 @@ const _AddLiquidityInputGroup = () => {
   );
 
   const { pool } = poolData || {};
-  const { compositions } = pool || {};
+  const { compositions: _compositions } = pool || {};
 
   const { lpTokenPrice, userPoolTokens, refetch } = useUserPoolTokenBalances();
   const hasBalances = userPoolTokens.length > 0 && userPoolTokens.some(token => token.balance > 0);
 
   const { bptOut, priceImpact: priceImpactRaw } = useCalculateAddLiquidity({
     amountsIn: [inputValues[0], inputValues[1]],
+    txHash,
   });
   const priceImpact = hasBalances
     ? priceImpactRaw < 0.01
@@ -126,20 +128,13 @@ const _AddLiquidityInputGroup = () => {
   );
 
   const ableToAddLiquidityTokens = userPoolTokens.filter(token => token.balance > 0);
-  const getIsValidToAddLiquidity = () => {
-    if (isXrp) {
-      if (!compositions) return;
-      return ableToAddLiquidityTokens.length === compositions.length; // in xrp, should have all pool token balances to add liquidity
-    }
-
-    return ableToAddLiquidityTokens.length > 0; // in evm, should have at least one pool token balance to add liquidity
-  };
-  const isValidToAddLiquidity = getIsValidToAddLiquidity();
+  const isValidToAddLiquidity = ableToAddLiquidityTokens.length > 0;
 
   const totalValue = userPoolTokens.reduce(
     (acc, cur, i) => (acc += (cur.price || 0) * (inputValues[i] || 0)),
     0
   );
+
   const tokensIn = userPoolTokens.map((token, i) => ({
     ...token,
     amount: inputValues[i],
@@ -243,7 +238,7 @@ const _AddLiquidityInputGroup = () => {
             {`${t('Price impact')} ${priceImpact}%`}
             <ButtonWrapper>
               <ButtonPrimarySmall
-                disabled={isXrp || !hasBalances}
+                disabled={!hasBalances}
                 text={'Optimize'}
                 onClick={() => {
                   gaAction({
@@ -298,6 +293,7 @@ const _AddLiquidityInputGroup = () => {
           bptOut={bptOut}
           priceImpact={priceImpact}
           refetchBalance={refetch}
+          handleSuccess={(hash: string) => setTxHash(hash)}
         />
       )}
     </Wrapper>

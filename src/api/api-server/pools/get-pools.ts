@@ -62,6 +62,10 @@ export const useGetPoolsQuery = (request: Request, options?: QueryOption) => {
         ...pool,
         volume: pool.volume / 2,
         apr: pool.apr ? (pool.apr - pool.moaiApr) / 2 + pool.moaiApr : undefined,
+        compositions: dataDoubleVol.data?.pools.map(pool => ({
+          ...pool,
+          compositions: pool.compositions?.sort((a, b) => a.symbol.localeCompare(b.symbol)),
+        })),
       })),
     },
   };
@@ -102,6 +106,7 @@ export const useGetPoolsInfinityQuery = (request: Request, options?: InfinityQue
           ...pool,
           volume: pool.volume / 2,
           apr: pool.apr ? (pool.apr - pool.moaiApr) / 2 + pool.moaiApr : undefined,
+          compositions: pool.compositions?.sort((a, b) => a.symbol.localeCompare(b.symbol)),
         })),
       })),
     },

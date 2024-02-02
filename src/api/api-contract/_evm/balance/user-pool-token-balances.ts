@@ -101,23 +101,28 @@ export const useUserPoolTokenBalances = (props?: Props) => {
 
   const userPoolTokenBalances = tokenBalances?.slice(1) || [];
   const userPoolTokenBalancesRaw = tokenBalancesRaw?.slice(1) || [];
-  const userPoolTokens = (compositions?.map((composition, i) => {
-    if (
-      currentNetwork === NETWORK.EVM_SIDECHAIN &&
-      composition.address === getWrappedTokenAddress(currentNetwork)
-    ) {
+  const userPoolTokens = (
+    compositions?.map((composition, i) => {
+      if (
+        currentNetwork === NETWORK.EVM_SIDECHAIN &&
+        composition.address === getWrappedTokenAddress(currentNetwork)
+      ) {
+        return {
+          ...composition,
+          balance: Number(nativeBalance?.formatted || 0),
+        };
+      }
+
       return {
         ...composition,
-        balance: Number(nativeBalance?.formatted || 0),
+        balance: userPoolTokenBalances?.[i] || 0,
+        balanceRaw: userPoolTokenBalancesRaw?.[i] || 0n,
       };
-    }
-
-    return {
-      ...composition,
-      balance: userPoolTokenBalances?.[i] || 0,
-      balanceRaw: userPoolTokenBalancesRaw?.[i] || 0n,
-    };
-  }) || []) as (ITokenComposition & { balance: number; balanceRaw: bigint })[];
+    }) || []
+  ).sort((a, b) => a.symbol.localeCompare(b.symbol)) as (ITokenComposition & {
+    balance: number;
+    balanceRaw: bigint;
+  })[];
 
   const userPoolTokenTotalValue = userPoolTokens.reduce((acc, cur) => {
     const tokenValue = (cur?.balance || 0) * (cur?.price || 0);

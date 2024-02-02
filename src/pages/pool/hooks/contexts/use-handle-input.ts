@@ -1,10 +1,8 @@
 import { FormState } from 'react-hook-form';
-import { min, minBy } from 'lodash-es';
 import { strip } from 'number-precision';
 
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
-import { useNetwork } from '~/hooks/contexts/use-network';
 import { IPool, IToken } from '~/types';
 
 interface InputChange {
@@ -27,8 +25,6 @@ interface Props {
   setInputValues: (value: number[]) => void;
 }
 export const useHandleInput = ({ pool, formState, inputValues, setInputValues }: Props) => {
-  const { isXrp } = useNetwork();
-
   const { compositions } = pool || {};
   const { userPoolTokens, userPoolTokenTotalValue } = useUserPoolTokenBalances();
 
@@ -39,10 +35,10 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
   };
 
   /*
-   xrp add lp change handler - cannot add single token or amounts that can be break pool weight
+   cannot add single token or amounts that can be break pool weight
    to make zero price impact, set value1:value2 to balanc1:balance2
   */
-  const handleChangeAuto = ({ token, value, idx }: InputChange) => {
+  const _handleChangeAuto = ({ token, value, idx }: InputChange) => {
     if (!token) return;
 
     const changingPoolTokenBalance =
@@ -136,22 +132,15 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
         return (token?.balance || 0) >= currentValue;
       })
       ?.every(v => v) || false;
-  const isValidXrp =
-    isValid &&
-    userPoolTokens?.filter(token => token.balance > 0)?.length === userPoolTokens?.length;
-
   const totalValueMaxed =
     userPoolTokens.reduce((acc, _cur, i) => acc + (inputValues[i] || 0), 0) ===
     userPoolTokenTotalValue;
 
-  const totalValueMaxedXrp =
-    min(userPoolTokens.map((_, i) => inputValues[i])) === minBy(userPoolTokens, 'value')?.balance;
-
   return {
     handleOptimize,
-    handleChange: isXrp ? handleChangeAuto : handleChange,
-    handleTotalMax: isXrp ? () => handleOptimize(true) : handleTotalMax,
-    isValid: isXrp ? isValidXrp : isValid,
-    totalValueMaxed: isXrp ? totalValueMaxedXrp : totalValueMaxed,
+    handleChange,
+    handleTotalMax,
+    isValid,
+    totalValueMaxed,
   };
 };

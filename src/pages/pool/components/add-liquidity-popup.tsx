@@ -52,6 +52,7 @@ interface Props {
   priceImpact: string;
 
   refetchBalance?: () => void;
+  handleSuccess?: (hash: string) => void;
 }
 
 export const AddLiquidityPopup = ({
@@ -61,6 +62,7 @@ export const AddLiquidityPopup = ({
   bptOut,
   priceImpact,
   refetchBalance,
+  handleSuccess,
 }: Props) => {
   return (
     <Suspense fallback={<_AddLiquidityPopupSkeleton />}>
@@ -71,6 +73,7 @@ export const AddLiquidityPopup = ({
         bptOut={bptOut}
         priceImpact={priceImpact}
         refetchBalance={refetchBalance}
+        handleSuccess={handleSuccess}
       />
     </Suspense>
   );
@@ -83,6 +86,7 @@ const _AddLiquidityPopup = ({
   bptOut,
   priceImpact,
   refetchBalance,
+  handleSuccess,
 }: Props) => {
   const { ref } = useGAInView({ name: 'add-liquidity-popup' });
   const { gaAction } = useGAAction();
@@ -135,10 +139,12 @@ const _AddLiquidityPopup = ({
   const tokenLength = isXrp ? 1 : tokensIn?.filter(t => t.amount > 0)?.length || 0;
   const token1Amount = tokensIn?.[0]?.amount || 0;
   const token2Amount = tokensIn?.[1]?.amount || 0;
+  const totalAmount =
+    tokensIn?.reduce((acc, cur) => acc + (cur.amount || 0) * (cur.price || 0), 0) || 0;
 
   const token1ApproveEnabled = token1Amount > 0 && !isXrp;
   const token2ApproveEnabled = token2Amount > 0 && !isXrp;
-  const token3ApproveEnabled = bptOut > 0 && isXrp;
+  const token3ApproveEnabled = isXrp;
 
   const {
     allow: allowToken1,
@@ -189,7 +195,7 @@ const _AddLiquidityPopup = ({
     estimateFee: estimateToken3ApproveFee,
   } = useApprove({
     amount: parseUnits(
-      `${(bptOut || 0).toFixed(18)}`,
+      `${(10 ** 10 || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, lpToken?.symbol || '')
     ),
     symbol: lpToken?.symbol || '',
@@ -545,6 +551,11 @@ const _AddLiquidityPopup = ({
   };
 
   useEffect(() => {
+    if (isSuccess && txData?.hash) handleSuccess?.(txData.hash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, txData?.hash]);
+
+  useEffect(() => {
     if (allowSuccess1) refetchAllowance1();
     if (allowSuccess2) refetchAllowance2();
     if (allowSuccess3) refetchAllowance3();
@@ -733,9 +744,9 @@ const _AddLiquidityPopup = ({
           <List title={t(`You're expected to receive`)}>
             <TokenList
               type="large"
-              title={`${formatNumber(bptOut, 6)}`}
+              title={`${formatNumber(bptOut, 6, 'floor')}`}
               subTitle={`${lpToken?.symbol || ''}`}
-              description={`$${formatNumber(bptOut * lpTokenPrice, 6)}`}
+              description={`$${formatNumber(bptOut * lpTokenPrice, 6, 'floor')}`}
               image={
                 <Jazzicon
                   diameter={36}
@@ -760,7 +771,7 @@ const _AddLiquidityPopup = ({
             <List title={t(`Summary`)}>
               <Summary>
                 <SummaryTextTitle>{t('Total liquidity')}</SummaryTextTitle>
-                <SummaryText>{`$${formatNumber(bptOut * lpTokenPrice, 6)}`}</SummaryText>
+                <SummaryText>{`$${formatNumber(totalAmount, 4)}`}</SummaryText>
               </Summary>
               <Summary>
                 <SummaryTextTitle>{t('Price impact')}</SummaryTextTitle>
