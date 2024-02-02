@@ -162,6 +162,8 @@
   "No wallet balance for some pool tokens": "풀 토큰에 대한 지갑 잔액이 없습니다.",
   "Balance": "잔액",
   "Price impact": "가격 영향",
+  "Optimize": "최적화",
+  "Max": "최대",
   "accept-high-price-impact-message": "위와 같이 유동성을 공급할 경우, 가격에 큰 영향을 미칠 수 있음에 동의합니다.",
   "Preview": "미리보기",
   "Add liquidity preview": "유동성 공급 미리보기",

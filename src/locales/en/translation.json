@@ -148,6 +148,8 @@
   "No wallet balance for some pool tokens": "No wallet balance for some pool tokens :",
   "Balance": "Balance",
   "Price impact": "Price impact",
+  "Optimize": "Optimize",
+  "Max": "Max",
   "accept-high-price-impact-message": "I accept the high price impact from depositing, moving the market price base on the depth of the market.",
   "Preview": "Preview",
   "Add liquidity preview": "Add liquidity preview",

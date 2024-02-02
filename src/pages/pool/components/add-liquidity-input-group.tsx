@@ -181,9 +181,9 @@ const _AddLiquidityInputGroup = () => {
   const defaultToken = compositions?.[0];
 
   useEffect(() => {
-    if (!selectedToken) selectToken(defaultToken);
+    selectToken(defaultToken);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultToken, selectedToken]);
+  }, [defaultToken]);
 
   useEffect(() => {
     if (!isSingle) return;
@@ -301,7 +301,7 @@ const _AddLiquidityInputGroup = () => {
                 <ButtonWrapper>
                   <ButtonPrimarySmall
                     disabled={!hasBalances}
-                    text={'Optimize'}
+                    text={t('Optimize')}
                     onClick={() => {
                       gaAction({
                         action: 'optimize',
