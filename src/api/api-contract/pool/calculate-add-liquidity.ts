@@ -5,12 +5,13 @@ import { useCalculateAddLiquidity as useCalculateAddLiquidityXrp } from '../_xrp
 
 interface Props {
   amountsIn: number[];
+  txHash?: string;
 }
-export const useCalculateAddLiquidity = ({ amountsIn }: Props) => {
+export const useCalculateAddLiquidity = ({ amountsIn, txHash }: Props) => {
   const { isEvm } = useNetwork();
 
-  const resEvm = useCalculateAddLiquidityEvm({ amountsIn });
-  const resXrp = useCalculateAddLiquidityXrp({ amountsIn });
+  const resEvm = useCalculateAddLiquidityEvm({ amountsIn, txHash });
+  const resXrp = useCalculateAddLiquidityXrp({ amountsIn, txHash });
 
   return isEvm ? resEvm : resXrp;
 };

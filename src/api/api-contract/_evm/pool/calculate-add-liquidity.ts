@@ -11,6 +11,7 @@ import { BALANCER_LP_ABI } from '~/abi';
 
 interface Props {
   amountsIn: number[];
+  txHash?: string;
 }
 
 export const useCalculateAddLiquidity = ({ amountsIn }: Props) => {
