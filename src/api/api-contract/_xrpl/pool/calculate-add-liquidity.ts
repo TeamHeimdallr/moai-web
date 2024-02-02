@@ -59,7 +59,7 @@ export const useCalculateAddLiquidity = ({ txHash, amountsIn }: Props) => {
   const current = node?.FinalFields?.LPTokenBalance?.value || 0;
   const prev = node?.PreviousFields?.LPTokenBalance?.value || 0;
 
-  const { bptOut: expectedBptOut } = calcBptOutAmountAndPriceImpact({
+  const { bptOut: expectedBptOut, priceImpact } = calcBptOutAmountAndPriceImpact({
     balances: compositions?.map(c => c.balance || 0) || [],
     normalizedWeights: compositions?.map(c => c.currentWeight || 0) || [],
     amountsIn,
@@ -76,6 +76,6 @@ export const useCalculateAddLiquidity = ({ txHash, amountsIn }: Props) => {
   const bptOut = Number(current) - Number(prev) || expectedBptOut || 0;
   return {
     bptOut,
-    priceImpact: 0,
+    priceImpact,
   };
 };

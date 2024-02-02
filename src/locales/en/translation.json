@@ -163,8 +163,12 @@
   "Confirming": "Confirming",
 
   "Withdraw from pool": "Withdraw from pool",
-  "Proportional pool tokens": "Proportional pool tokens",
-  "Single token": "Single token",
+
+  "Proportional pool tokens deposit": "Proportional pool tokens",
+  "Proportional pool tokens withdraw": "Proportional pool tokens",
+  "Single token deposit": "Single token",
+  "Single token withdraw": "Single token",
+
   "You provide": "You provide",
   "You receive": "You receive",
   "Withdrawal preview": "Withdrawal preview",

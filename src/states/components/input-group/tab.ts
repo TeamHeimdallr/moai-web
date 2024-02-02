@@ -22,3 +22,18 @@ export const useWithdrawLiquidityInputGroupTabStore = create<State>()(
     }))
   )
 );
+
+/**
+ * deposit liquidity input group tab - proportional | single
+ *
+ */
+export const useAddLiquidityInputGroupTabStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'ADD_LIQUIDITY_INPUT_GROUP_TAB_STORE',
+
+      selectedTab: 'double',
+      selectTab: (selectedTab: string | undefined) => set({ selectedTab }),
+    }))
+  )
+);
