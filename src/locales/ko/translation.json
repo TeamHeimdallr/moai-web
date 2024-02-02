@@ -402,5 +402,6 @@
   "lending-show-zero-balance": "잔액이 0인 자산 표시",
 
   "lending-wallet-balance": "지갑 잔액",
+  "lending-my-supplies-empty": "공급한 자산이 없습니다.",
   "lending-assets-to-supply-empty": "공급 가능 자산이 없습니다."
 }

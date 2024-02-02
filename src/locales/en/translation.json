@@ -391,5 +391,6 @@
   "lending-show-zero-balance": "show assets with 0 balance",
 
   "lending-wallet-balance": "Wallet balance",
+  "lending-my-supplies-empty": "Nothing supplied yet",
   "lending-assets-to-supply-empty": "Empty assets to supply"
 }

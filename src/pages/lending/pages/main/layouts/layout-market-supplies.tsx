@@ -34,7 +34,6 @@ export const LayoutMarketSupplies = () => {
     tableData: tableDataMySupplies,
     mobileTableColumn: mobileTableColumnMySupplies,
     mobileTableData: mobileTableDataMySupplies,
-    mySupplies,
     hasNextPage: hasNextPageMySupplies,
     fetchNextPage: fetchNextPageMySupplies,
   } = useTableMySupplies();
@@ -48,11 +47,11 @@ export const LayoutMarketSupplies = () => {
     fetchNextPage: fetchNextPageAssetsToSupply,
   } = useTableAssetsToSupply();
 
-  const { isMD } = useMediaQuery();
+  const { isMD, isLG } = useMediaQuery();
 
   return (
     <Wrapper>
-      {evmAddress && mySupplies && mySupplies.length > 0 && (
+      {evmAddress && (
         <ContentWrapper>
           <Title>{t('My Supplies')}</Title>
           <CardWrapper>
@@ -89,9 +88,9 @@ export const LayoutMarketSupplies = () => {
             <Table
               data={tableDataMySupplies}
               columns={tableColumnsMySupplies}
-              ratio={[1, 1, 1, 1, '196px']}
+              ratio={isLG ? [1, 1, 1, 1, '196px'] : [1, 1, 1, 1, '94px']}
               type="lighter"
-              slim
+              emptyText={t('lending-my-supplies-empty')}
               hasMore={hasNextPageMySupplies}
               handleMoreClick={() => fetchNextPageMySupplies()}
             />
@@ -99,6 +98,7 @@ export const LayoutMarketSupplies = () => {
             <TableMobile
               data={mobileTableDataMySupplies}
               columns={mobileTableColumnMySupplies}
+              emptyText={t('lending-my-supplies-empty')}
               hasMore={hasNextPageMySupplies}
               handleMoreClick={fetchNextPageMySupplies}
             />
@@ -112,9 +112,8 @@ export const LayoutMarketSupplies = () => {
           <Table
             data={tableDataAssetsToSupply}
             columns={tableColumnsAssetsToSupply}
-            ratio={[1, 1, 1, 1, '196px']}
+            ratio={isLG ? [1, 1, 1, 1, '196px'] : [1, 1, 1, 1, '94px']}
             type="lighter"
-            slim
             emptyText={t('lending-assets-to-supply-empty')}
             hasMore={hasNextPageAssetsToSupply}
             handleMoreClick={() => fetchNextPageAssetsToSupply()}
