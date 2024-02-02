@@ -3,6 +3,8 @@ import { strip } from 'number-precision';
 
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { useAddLiquidityInputGroupTabStore } from '~/states/components/input-group/tab';
 import { IPool, IToken } from '~/types';
 
 interface InputChange {
@@ -25,8 +27,11 @@ interface Props {
   setInputValues: (value: number[]) => void;
 }
 export const useHandleInput = ({ pool, formState, inputValues, setInputValues }: Props) => {
+  const { isXrp } = useNetwork();
   const { compositions } = pool || {};
   const { userPoolTokens, userPoolTokenTotalValue } = useUserPoolTokenBalances();
+
+  const { selectedTab } = useAddLiquidityInputGroupTabStore();
 
   /* evm add lp change handler */
   const handleChange = ({ idx, value }: InputChange) => {
@@ -38,7 +43,7 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
    cannot add single token or amounts that can be break pool weight
    to make zero price impact, set value1:value2 to balanc1:balance2
   */
-  const _handleChangeAuto = ({ token, value, idx }: InputChange) => {
+  const handleChangeAuto = ({ token, value, idx }: InputChange) => {
     if (!token) return;
 
     const changingPoolTokenBalance =
@@ -53,6 +58,7 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
       idx === 0
         ? [value || 0, expectedRemainedTokenValue]
         : [expectedRemainedTokenValue, value || 0];
+    if (inputValues[0] === updateValue[0] || inputValues[1] === updateValue[1]) return;
     setInputValues(updateValue);
   };
 
@@ -138,7 +144,7 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
 
   return {
     handleOptimize,
-    handleChange,
+    handleChange: isXrp && selectedTab === 'double' ? handleChangeAuto : handleChange,
     handleTotalMax,
     isValid,
     totalValueMaxed,

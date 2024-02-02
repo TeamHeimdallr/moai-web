@@ -59,8 +59,8 @@ const _WithdrawLiquidityInputGroup = () => {
   const [inputValueRaw, setInputValueRaw] = useState<bigint>();
 
   const tabs = [
-    { key: 'proportional', name: t('Proportional pool tokens') },
-    { key: 'single', name: t('Single token'), disabled: true },
+    { key: 'proportional', name: t('Proportional pool tokens withdraw') },
+    { key: 'single', name: t('Single token withdraw'), disabled: true },
   ];
   const { selectedTab, selectTab } = useWithdrawLiquidityInputGroupTabStore();
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.WITHDRAW_LP);

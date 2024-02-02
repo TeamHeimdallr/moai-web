@@ -1,4 +1,4 @@
-import { Suspense, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -12,25 +12,29 @@ import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-t
 import { useCalculateAddLiquidity } from '~/api/api-contract/pool/calculate-add-liquidity';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
-import { IconSetting } from '~/assets/icons';
+import { IconDown, IconSetting } from '~/assets/icons';
 
 import { Slippage } from '~/components/account';
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge, ButtonPrimarySmall } from '~/components/buttons';
 import { Checkbox, InputNumber } from '~/components/inputs';
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
+import { Tab } from '~/components/tab';
 import { Token } from '~/components/token';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { useOnClickOutside } from '~/hooks/utils';
+import { useOnClickOutside, usePrevious } from '~/hooks/utils';
 import { formatNumber, getNetworkAbbr, getNetworkFull, getTokenDecimal } from '~/utils';
+import { useAddLiquidityInputGroupTabStore } from '~/states/components/input-group/tab';
+import { useAddLiquidityTokenStore } from '~/states/components/input-group/token';
 import { IPool, POPUP_ID } from '~/types';
 
 import { useHandleInput } from '../hooks/contexts/use-handle-input';
 
 import { AddLiquidityPopup } from './add-liquidity-popup';
+import { AddLiquiditySelectTokenPopup } from './add-liquidity-select-token-popup';
 
 interface InputFormState {
   input1: number;
@@ -55,6 +59,10 @@ const _AddLiquidityInputGroup = () => {
   const [opened, open] = useState(false);
   const toggle = () => open(!opened);
 
+  const { opened: selectTokenPopupOpened, open: openSelectTokenPopup } = usePopup(
+    POPUP_ID.ADD_LIQUIDITY_SELECT_TOKEN
+  );
+
   useOnClickOutside([ref, iconRef], () => open(false));
 
   const { network, id } = useParams();
@@ -67,6 +75,16 @@ const _AddLiquidityInputGroup = () => {
   const [checkedPriceImpact, checkPriceImpact] = useState(false);
 
   const { t } = useTranslation();
+
+  const tabs = [
+    { key: 'double', name: t('Proportional pool tokens deposit') },
+    { key: 'single', name: t('Single token deposit') },
+  ];
+  const { selectedTab, selectTab } = useAddLiquidityInputGroupTabStore();
+  const { token: selectedToken, setToken: selectToken } = useAddLiquidityTokenStore();
+
+  const isSingle = selectedTab === 'single';
+  const prevSelectedTokenSymbol = usePrevious<string | undefined>(selectedToken?.symbol);
 
   const { isXrp } = useNetwork();
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
@@ -86,7 +104,7 @@ const _AddLiquidityInputGroup = () => {
   );
 
   const { pool } = poolData || {};
-  const { compositions: _compositions } = pool || {};
+  const { compositions } = pool || {};
 
   const { lpTokenPrice, userPoolTokens, refetch } = useUserPoolTokenBalances();
   const hasBalances = userPoolTokens.length > 0 && userPoolTokens.some(token => token.balance > 0);
@@ -160,10 +178,33 @@ const _AddLiquidityInputGroup = () => {
     poolImpactError ? 'deposit-impact-error-message' : 'unknown-error-message'
   );
 
+  const defaultToken = compositions?.[0];
+
+  useEffect(() => {
+    selectToken(defaultToken);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultToken]);
+
+  useEffect(() => {
+    if (!isSingle) return;
+
+    if (selectedToken !== prevSelectedTokenSymbol) {
+      _setInputValues([0, 0]);
+    }
+  }, [isSingle, prevSelectedTokenSymbol, selectedToken]);
+
+  useEffect(() => {
+    _setInputValues([0, 0]);
+  }, [isSingle]);
+
   return (
     <Wrapper>
       <Header>
-        <Title>{t('Enter liquidity amount')}</Title>
+        {isXrp ? (
+          <Tab tabs={tabs} selectedTab={selectedTab} onClick={selectTab} />
+        ) : (
+          <Title>{t('Enter liquidity amount')}</Title>
+        )}
 
         <IconWrapper onClick={toggle} ref={iconRef}>
           <IconSetting fill={opened ? '#F5FF83' : '#9296AD'} width={20} height={20} />
@@ -175,83 +216,106 @@ const _AddLiquidityInputGroup = () => {
         )}
       </Header>
       <InnerWrapper>
-        {!isValidToAddLiquidity && (
-          <AlertMessage
-            title={t(`Insufficient balance`)}
-            description={t(`insufficient-balance-message`)}
-            type="warning"
-          />
-        )}
-        {isValidToAddLiquidity &&
-          userPoolTokens.map((token, idx) => {
-            const tokenValue = (token?.price || 0) * (inputValues[idx] || 0);
-            if (token.balance === 0) {
-              return (
-                <NoBalanceAlert key={token.symbol}>
-                  {t('No wallet balance for some pool tokens')} {token.symbol}
-                </NoBalanceAlert>
-              );
-            }
-            return (
-              <InputNumber
-                key={token.symbol + idx}
-                name={`input${idx + 1}`}
-                control={control}
-                token={<Token token={token.symbol} image imageUrl={token.image} />}
-                tokenName={token.symbol}
-                tokenValue={tokenValue}
-                balance={token.balance}
-                handleChange={value => handleChange({ token, value, idx })}
-                slider={inputValues[idx] > 0}
-                value={inputValues[idx]}
-                setValue={setValue}
-                formState={formState}
-                maxButton
-                blurAll={inputBlurAll}
-                blured={inputBlured}
-                autoFocus={isXrp}
-              />
-            );
-          })}
+        <ContentWrapper>
+          {isXrp && <SubTitle>{t('You provide')}</SubTitle>}
+          {!isValidToAddLiquidity && (
+            <AlertMessage
+              title={t(`Insufficient balance`)}
+              description={t(`insufficient-balance-message`)}
+              type="warning"
+            />
+          )}
+          {isValidToAddLiquidity &&
+            userPoolTokens.map((token, idx) => {
+              const tokenValue = (token?.price || 0) * (inputValues[idx] || 0);
+              if (token.balance === 0) {
+                return (
+                  <NoBalanceAlert key={token.symbol}>
+                    {t('No wallet balance for some pool tokens')} {token.symbol}
+                  </NoBalanceAlert>
+                );
+              }
 
-        <Total>
-          <TotalInnerWrapper>
-            <TotalText>{t`Total liquidity`}</TotalText>
-            <TotalValueWrapper>
-              <TotalValue>{`$${formatNumber(totalValue, 2)}`}</TotalValue>
-              <ButtonPrimarySmall
-                text={totalValueMaxed ? 'Maxed' : 'Max'}
-                onClick={() => {
-                  gaAction({
-                    action: 'total-max',
-                    buttonType: 'primary-small',
-                    data: { page: 'add-liquidity' },
-                  });
-                  handleTotalMax();
-                }}
-                style={{ width: 'auto' }}
-                disabled={totalValueMaxed || !hasBalances}
-              />
-            </TotalValueWrapper>
-          </TotalInnerWrapper>
-          <PriceImpact error={priceImpactRaw >= 3}>
-            {`${t('Price impact')} ${priceImpact}%`}
-            <ButtonWrapper>
-              <ButtonPrimarySmall
-                disabled={!hasBalances}
-                text={'Optimize'}
-                onClick={() => {
-                  gaAction({
-                    action: 'optimize',
-                    buttonType: 'primary-small',
-                    data: { page: 'add-liquidity' },
-                  });
-                  handleOptimize();
-                }}
-              />
-            </ButtonWrapper>
-          </PriceImpact>
-        </Total>
+              if (isSingle && selectedToken?.address !== token?.address) return null;
+              return (
+                <InputNumber
+                  key={token.symbol + idx}
+                  name={`input${idx + 1}`}
+                  control={control}
+                  token={
+                    isSingle ? (
+                      <Token
+                        token={selectedToken?.symbol || defaultToken?.symbol || ''}
+                        icon={<IconDown />}
+                        image
+                        imageUrl={selectedToken?.image || defaultToken?.image || ''}
+                      />
+                    ) : (
+                      <Token token={token.symbol} image imageUrl={token.image} />
+                    )
+                  }
+                  tokenName={token.symbol}
+                  tokenValue={tokenValue}
+                  balance={token.balance}
+                  handleChange={value => handleChange({ token, value, idx })}
+                  handleTokenClick={openSelectTokenPopup}
+                  slider={inputValues[idx] > 0}
+                  value={inputValues[idx]}
+                  setValue={setValue}
+                  formState={formState}
+                  maxButton
+                  blurAll={inputBlurAll}
+                  blured={inputBlured}
+                  autoFocus={isXrp}
+                  // disabled={inputValues[other] !== 0}
+                />
+              );
+            })}
+        </ContentWrapper>
+
+        <ContentWrapper>
+          {isXrp && <SubTitle>{t('Summary')}</SubTitle>}
+          <Total>
+            <TotalInnerWrapper>
+              <TotalText>{t`Total liquidity`}</TotalText>
+              <TotalValueWrapper>
+                <TotalValue>{`$${formatNumber(totalValue, 2)}`}</TotalValue>
+                <ButtonPrimarySmall
+                  text={totalValueMaxed ? 'Maxed' : 'Max'}
+                  onClick={() => {
+                    gaAction({
+                      action: 'total-max',
+                      buttonType: 'primary-small',
+                      data: { page: 'add-liquidity' },
+                    });
+                    handleTotalMax();
+                  }}
+                  style={{ width: 'auto' }}
+                  disabled={totalValueMaxed || !hasBalances}
+                />
+              </TotalValueWrapper>
+            </TotalInnerWrapper>
+            <PriceImpact error={priceImpactRaw >= 3}>
+              {`${t('Price impact')} ${priceImpact}%`}
+              {!(isXrp && isSingle) && (
+                <ButtonWrapper>
+                  <ButtonPrimarySmall
+                    disabled={!hasBalances}
+                    text={t('Optimize')}
+                    onClick={() => {
+                      gaAction({
+                        action: 'optimize',
+                        buttonType: 'primary-small',
+                        data: { page: 'add-liquidity' },
+                      });
+                      handleOptimize();
+                    }}
+                  />
+                </ButtonWrapper>
+              )}
+            </PriceImpact>
+          </Total>
+        </ContentWrapper>
       </InnerWrapper>
 
       {priceImpactRaw > 3 && (
@@ -294,6 +358,13 @@ const _AddLiquidityInputGroup = () => {
           priceImpact={priceImpact}
           refetchBalance={refetch}
           handleSuccess={(hash: string) => setTxHash(hash)}
+        />
+      )}
+
+      {selectTokenPopupOpened && (
+        <AddLiquiditySelectTokenPopup
+          userPoolTokenBalances={userPoolTokens}
+          compositions={compositions}
         />
       )}
     </Wrapper>
@@ -340,6 +411,14 @@ const SlippageWrapper = tw.div`
 
 const InnerWrapper = tw.div`
   flex flex-col gap-16
+`;
+
+const ContentWrapper = tw.div`
+  flex flex-col gap-8
+`;
+
+const SubTitle = tw.div`
+  text-neutral-100 font-m-12
 `;
 
 const IconWrapper = tw.div`

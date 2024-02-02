@@ -148,6 +148,8 @@
   "No wallet balance for some pool tokens": "No wallet balance for some pool tokens :",
   "Balance": "Balance",
   "Price impact": "Price impact",
+  "Optimize": "Optimize",
+  "Max": "Max",
   "accept-high-price-impact-message": "I accept the high price impact from depositing, moving the market price base on the depth of the market.",
   "Preview": "Preview",
   "Add liquidity preview": "Add liquidity preview",
@@ -163,8 +165,12 @@
   "Confirming": "Confirming",
 
   "Withdraw from pool": "Withdraw from pool",
-  "Proportional pool tokens": "Proportional pool tokens",
-  "Single token": "Single token",
+
+  "Proportional pool tokens deposit": "Proportional pool tokens",
+  "Proportional pool tokens withdraw": "Proportional pool tokens",
+  "Single token deposit": "Single token",
+  "Single token withdraw": "Single token",
+
   "You provide": "You provide",
   "You receive": "You receive",
   "Withdrawal preview": "Withdrawal preview",
