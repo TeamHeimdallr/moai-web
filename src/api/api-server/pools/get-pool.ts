@@ -37,6 +37,9 @@ export const useGetPoolQuery = (request: Request, options?: QueryOption) => {
             dataDoubleVol.data?.pool.moaiApr
           : 0,
         volume: dataDoubleVol.data?.pool.volume ? dataDoubleVol.data?.pool.volume / 2 : 0,
+        compositions: dataDoubleVol.data?.pool.compositions?.sort((a, b) =>
+          a.symbol.localeCompare(b.symbol)
+        ),
       } as IPool,
     },
   };

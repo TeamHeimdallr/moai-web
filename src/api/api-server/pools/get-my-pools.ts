@@ -61,6 +61,10 @@ export const useGetMyPoolsQuery = (request: Request, options?: MutateOptions) =>
       pools: dataDoubleVol.data?.pools.map(pool => ({
         ...pool,
         apr: pool.apr ? (pool.apr - pool.moaiApr) / 2 + pool.moaiApr : undefined,
+        compositions: dataDoubleVol.data?.pools.map(pool => ({
+          ...pool,
+          compositions: pool.compositions?.sort((a, b) => a.symbol.localeCompare(b.symbol)),
+        })),
       })),
     },
   };
