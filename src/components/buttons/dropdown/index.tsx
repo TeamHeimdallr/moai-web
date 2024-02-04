@@ -7,7 +7,7 @@ import { IconDown } from '~/assets/icons';
 
 import { useMediaQuery } from '~/hooks/utils';
 
-interface ButtonDrodDownProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonDrodDownProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   image?: string;
   imageAlt?: string;
   imageTitle?: string;
@@ -16,6 +16,8 @@ interface ButtonDrodDownProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
   selected?: boolean;
   opened?: boolean;
+
+  enableTextBreakpoint?: boolean;
 }
 
 export const ButtonDropdown = ({
@@ -24,14 +26,16 @@ export const ButtonDropdown = ({
   imageTitle,
   text,
   opened,
+  enableTextBreakpoint = true,
   ...rest
 }: ButtonDrodDownProps) => {
   const { isMLG } = useMediaQuery();
+
   return (
     <Wrapper opened={opened} {...rest}>
       {image && <Image src={image} alt={imageAlt} title={imageTitle} />}
       <IconTextWrapper>
-        {isMLG && <Text>{text}</Text>}
+        {enableTextBreakpoint ? isMLG && <Text>{text}</Text> : <Text>{text}</Text>}
         <Icon opened={opened}>
           <IconDown width={16} height={16} fill={COLOR.NEUTRAL[60]} />
         </Icon>

@@ -27,6 +27,7 @@ interface Props {
 
   skeletonHeight?: number;
   emptyText?: string;
+  overflow?: string;
 
   handleMoreClick?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,6 +43,7 @@ export const TableMobile = ({
   emptyText,
 
   skeletonHeight,
+  overflow,
 
   handleMoreClick,
   handleClick,
@@ -51,7 +53,7 @@ export const TableMobile = ({
   const isEmpty = !data || data.length === 0;
 
   return (
-    <Wrapper type={type}>
+    <Wrapper type={type} overflow={overflow}>
       <Header>{columns}</Header>
       <Divider type={type} />
       {skeletonHeight ? (
@@ -94,12 +96,17 @@ export const TableMobile = ({
 
 interface WrapperProps {
   type?: 'darker' | 'lighter';
+  overflow?: string;
 }
-const Wrapper = styled.div<WrapperProps>(({ type }) => [
+const Wrapper = styled.div<WrapperProps>(({ type, overflow }) => [
   tw`
     w-full flex flex-col bg-neutral-10 rounded-12 overflow-hidden
   `,
   type === 'lighter' && tw`bg-neutral-15`,
+  overflow &&
+    css`
+      overflow: ${overflow};
+    `,
 ]);
 const Header = tw.div`
   py-16 px-20 flex justify-end items-center

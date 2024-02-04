@@ -23,7 +23,6 @@ const Wrapper = styled.div<WrapperProps>(({ align }) => [
     flex items-center justify-end gap-8
     flex-row
     md:(flex-col)
-    lg:(flex-row)
   `,
   align &&
     css`

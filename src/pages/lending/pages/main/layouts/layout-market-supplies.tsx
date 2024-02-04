@@ -6,14 +6,17 @@ import { IconQuestion } from '~/assets/icons';
 import { ButtonIconSmall } from '~/components/buttons';
 import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
+import { Toggle } from '~/components/toggle';
 import { Tooltip } from '~/components/tooltips/base';
 
 import { useTableAssetsToSupply } from '~/pages/lending/hooks/table/use-table-assets-to-suppy';
 import { useTableMySupplies } from '~/pages/lending/hooks/table/use-table-my-supplies';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber } from '~/utils';
+import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
 import { TOOLTIP_ID } from '~/types';
 
 import { APYMedium } from '../components/apy';
@@ -22,8 +25,9 @@ import { Card } from '../components/card';
 export const LayoutMarketSupplies = () => {
   const { t } = useTranslation();
 
-  const { evm, fpass } = useConnectedWallet();
-  const evmAddress = evm?.address || fpass?.address;
+  const { setShowZeroBalances, showZeroBalances } = useShowZeroBalanceAssetsStore();
+  const { selectedNetwork } = useNetwork();
+  const { currentAddress } = useConnectedWallet(selectedNetwork);
 
   const balance = 24000;
   const apy = 0.001;
@@ -47,11 +51,11 @@ export const LayoutMarketSupplies = () => {
     fetchNextPage: fetchNextPageAssetsToSupply,
   } = useTableAssetsToSupply();
 
-  const { isMD, isLG } = useMediaQuery();
+  const { isMD } = useMediaQuery();
 
   return (
     <Wrapper>
-      {evmAddress && (
+      {currentAddress && (
         <ContentWrapper>
           <Title>{t('My Supplies')}</Title>
           <CardWrapper>
@@ -88,7 +92,7 @@ export const LayoutMarketSupplies = () => {
             <Table
               data={tableDataMySupplies}
               columns={tableColumnsMySupplies}
-              ratio={isLG ? [1, 1, 1, 1, '196px'] : [1, 1, 1, 1, '94px']}
+              ratio={[1, 1, 1, 1, '94px']}
               type="lighter"
               emptyText={t('lending-my-supplies-empty')}
               hasMore={hasNextPageMySupplies}
@@ -107,12 +111,20 @@ export const LayoutMarketSupplies = () => {
       )}
 
       <ContentWrapper>
-        <Title>{t('Assets to supply')}</Title>
+        <TitleWrapper>
+          <Title>{t('Assets to supply')}</Title>
+          {currentAddress && (
+            <ToggleWrapper>
+              <ToggleLabel>{t('lending-show-zero-balance')}</ToggleLabel>
+              <Toggle selected={showZeroBalances} onClick={setShowZeroBalances} />
+            </ToggleWrapper>
+          )}
+        </TitleWrapper>
         {isMD ? (
           <Table
             data={tableDataAssetsToSupply}
             columns={tableColumnsAssetsToSupply}
-            ratio={isLG ? [1, 1, 1, 1, '196px'] : [1, 1, 1, 1, '94px']}
+            ratio={[1, 1, 1, 1, '94px']}
             type="lighter"
             emptyText={t('lending-assets-to-supply-empty')}
             hasMore={hasNextPageAssetsToSupply}
@@ -153,9 +165,24 @@ const ContentWrapper = tw.div`
   md:(px-24 pt-20 pb-24)
 `;
 
+const TitleWrapper = tw.div`
+  flex justify-between
+  flex-col gap-4 items-start
+  md:(flex-row gap-0 items-center)
+`;
+
 const Title = tw.div`
   font-b-18 text-neutral-100
   md:(font-b-20)
+`;
+
+const ToggleWrapper = tw.div`
+  flex items-center gap-10
+`;
+
+const ToggleLabel = tw.div`
+  font-m-14 text-neutral-80
+  md:(font-m-16)
 `;
 
 const CardWrapper = tw.div`
