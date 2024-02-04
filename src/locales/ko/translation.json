@@ -402,5 +402,34 @@
   "lending-show-zero-balance": "잔액이 0인 자산 표시",
 
   "lending-wallet-balance": "지갑 잔액",
-  "lending-assets-to-supply-empty": "공급 가능 자산이 없습니다."
+  "lending-my-supplies-empty": "공급한 자산이 없습니다.",
+  "lending-assets-to-supply-empty": "공급 가능 자산이 없습니다.",
+
+  "lending-borrow": "빌리기",
+  "lending-repay": "상환하기",
+  "lending-my-debt": "나의 대출",
+  "lending-apy-type": "APY 방식",
+
+  "My Borrows": "나의 대출",
+  "lending-borrow-power-used": "사용 중인 차입 능력",
+  "lending-my-borrows-empty": "대출 자산이 없습니다.",
+
+  "variable": "변동",
+  "stable": "고정",
+
+  "Select APY type to switch": "APY 방식을 선택하세요.",
+  "lending-apy-variable": "APY, 변동",
+  "lending-apy-stable": "APY, 고정",
+  "lending-available": "대출 한도",
+
+  "lending-borrow-apy-tooltip": "인센티브를 포함한 모든 대출 자산에 대한 APY의 가중 평균",
+  "lending-borrow-borrow-power-used-tooltip": "총 차입 능력 중 사용 중인 비율. 이는 공급된 담보의 금액과 전체 대출 가능한 금액에 기반합니다.",
+
+  "lending-borrow-apy-type-tooltip": "변동 및 고정 이자율 간 전환을 허용합니다. 변동 이자율은 예비 자금의 양에 따라 증가하거나 감소할 수 있으며, 고정 이자율은 대출 기간 동안 동일하게 유지됩니다.",
+  "lending-borrow-available-tooltip": "공급한 담보에 기반한 대출 받을 수 있는 총 금액입니다.",
+
+  "lending-borrow-apy-variable-tooltip": "변동 이자율은 시장 조건에 따라 변동되기 때문에 단기 포지션에 추천합니다.",
+
+  "Assets to borrow": "대출 가능 자산",
+  "lending-assets-to-borrow-empty": "대출 가능 자산이 없습니다."
 }

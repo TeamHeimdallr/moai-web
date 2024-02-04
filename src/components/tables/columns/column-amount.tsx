@@ -7,14 +7,15 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   balance: number;
   value: number;
 
+  empty?: boolean;
   align?: 'flex-start' | 'center' | 'flex-end';
 }
 
-export const TableColumnAmount = ({ balance, value, ...rest }: Props) => {
+export const TableColumnAmount = ({ balance, value, empty, ...rest }: Props) => {
   return (
     <Wrapper {...rest}>
-      <Balance>{formatNumber(balance, 4, 'round', 10000)}</Balance>
-      <Value>${formatNumber(value, 4, 'round', 10000)}</Value>
+      <Balance>{empty ? '-' : formatNumber(balance, 4, 'round', 10000)}</Balance>
+      <Value>{empty ? '' : `$${formatNumber(value, 4, 'round', 10000)}`}</Value>
     </Wrapper>
   );
 };
@@ -24,7 +25,7 @@ interface WrapperProps {
 }
 const Wrapper = styled.div<WrapperProps>(({ align }) => [
   tw`
-    flex flex-col items-end
+    flex flex-col items-end justify-center
     md:(gap-4)
   `,
   align &&

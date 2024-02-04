@@ -21,6 +21,8 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>(({ align }) => [
   tw`
     flex items-center justify-end gap-8
+    flex-row
+    md:(flex-col)
   `,
   align &&
     css`

@@ -2,6 +2,8 @@ import { ReactNode, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ColumnDef } from '@tanstack/react-table';
 
+import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
+
 import { IconQuestion } from '~/assets/icons';
 
 import { ASSET_URL } from '~/constants';
@@ -15,73 +17,59 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 import { TableColumnButtons } from '~/components/tables/columns/column-buttons';
-import { TableColumnCheck } from '~/components/tables/columns/column-check';
+import { TableColumnDropdownLendingApyType } from '~/components/tables/columns/column-dropdown-lending-apy-type';
 import { TableHeaderTooltip } from '~/components/tables/headers/header-normal';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
-import { useConnectedWallet } from '~/hooks/wallets';
-import { useTableLendingAssetsToSupplySortStore } from '~/states/components';
-import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
+import { getNetworkAbbr } from '~/utils';
+import { useTableLendingMyBorrowsSortStore } from '~/states/components';
 import { TOOLTIP_ID } from '~/types';
 
 import { APYSmall } from '../../pages/main/components/apy';
 
-export const useTableAssetsToSupply = () => {
-  const { sort, setSort } = useTableLendingAssetsToSupplySortStore();
-  const { showZeroBalances } = useShowZeroBalanceAssetsStore();
-
+export const useTableMyBorrows = () => {
+  const { sort, setSort } = useTableLendingMyBorrowsSortStore();
+  const { selectedNetwork } = useNetwork();
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
-  const { selectedNetwork } = useNetwork();
-  const { currentAddress } = useConnectedWallet(selectedNetwork);
 
-  // TODO: similar to my pools. get user balance, and call POST with user balances.
-  const assetsToSupplyData = {
+  // call contract
+  const myBorrowsData = {
     pages: [
       {
-        assetsToSupply: [
+        myBorrows: [
           {
             id: 1,
             asset: {
               symbol: 'XRP',
+              address: '123',
               image: `${ASSET_URL}/tokens/token-xrp.png`,
-
-              balance: currentAddress ? 123123 : 0,
-              price: 0.5,
-              value: currentAddress ? 123123 * 0.5 : 0,
+              debt: 5201.102,
             },
-            apy: 5.49,
-            collateral: true,
+            apy: [
+              { apy: 5.49, apyType: 'variable' },
+              { apy: 1.49, apyType: 'stable' },
+            ],
+            currentApy: { apy: 5.49, apyType: 'variable' },
           },
           {
             id: 2,
             asset: {
               symbol: 'USDC',
+              address: '234',
               image: `${ASSET_URL}/tokens/token-usdc.png`,
-
-              balance: currentAddress ? 2000 : 0,
-              price: 0.99998,
-              value: currentAddress ? 2000 * 0.99998 : 0,
+              debt: 239005.102,
             },
-            apy: 0.00249,
+            apy: [
+              { apy: 0.00249, apyType: 'variable' },
+              { apy: 0.00122, apyType: 'stable' },
+            ],
+            currentApy: { apy: 0.00122, apyType: 'stable' },
             collateral: false,
           },
-          {
-            id: 3,
-            asset: {
-              symbol: 'USDT',
-              image: `${ASSET_URL}/tokens/token-usdt.png`,
-
-              balance: 0,
-              price: 0.10001,
-              value: 0,
-            },
-            apy: 0.0081,
-            collateral: false,
-          },
-        ].filter(d => (showZeroBalances || !currentAddress ? true : d.asset.balance > 0)),
+        ],
       },
     ],
   };
@@ -89,14 +77,35 @@ export const useTableAssetsToSupply = () => {
   const hasNextPage = false;
   const fetchNextPage = () => {};
 
-  const assetsToSupply = useMemo(
-    () => assetsToSupplyData?.pages?.flatMap(page => page.assetsToSupply) || [],
-    [assetsToSupplyData?.pages]
-  );
+  const { data: tokenData } = useGetTokensQuery({
+    queries: {
+      filter: `network:eq:${getNetworkAbbr(selectedNetwork)}`,
+    },
+  });
 
-  const sortedAssetsToSupply = useMemo(() => {
-    if (sort?.key === 'balance') {
-      return assetsToSupply.sort((a, b) => {
+  const { tokens } = tokenData || {};
+
+  const myBorrows = useMemo(
+    () =>
+      (myBorrowsData?.pages?.flatMap(page => page.myBorrows) || []).map(d => {
+        const { price } = tokens?.find(b => b.symbol === d.asset.symbol) || {
+          price: 0,
+        };
+        const value = (d.asset.debt || 0) * (price || 0);
+
+        return {
+          ...d,
+          asset: {
+            ...d.asset,
+            value,
+          },
+        };
+      }),
+    [myBorrowsData?.pages, tokens]
+  );
+  const sortedMyBorrows = useMemo(() => {
+    if (sort?.key === 'debt') {
+      return myBorrows.sort((a, b) => {
         if (sort.order === 'desc') {
           return b.asset.value - a.asset.value;
         }
@@ -104,20 +113,25 @@ export const useTableAssetsToSupply = () => {
       });
     }
     if (sort?.key === 'apy') {
-      return assetsToSupply.sort((a, b) => {
+      return myBorrows.sort((a, b) => {
         if (sort.order === 'desc') {
-          return b.apy - a.apy;
+          return b.currentApy.apy - a.currentApy.apy;
         }
-        return a.apy - b.apy;
+        return a.currentApy.apy - b.currentApy.apy;
       });
     }
 
-    return assetsToSupply;
-  }, [assetsToSupply, sort]);
+    return myBorrows;
+  }, [myBorrows, sort]);
 
   const tableData = useMemo(
     () =>
-      sortedAssetsToSupply?.map(d => {
+      sortedMyBorrows?.map((d, i) => {
+        const handleApyTypeSelect = (address: string, apyType: string) => {
+          // TODO: call contract
+          console.log(address, apyType);
+        };
+
         return {
           meta: { id: d.id, asset: d.asset },
           asset: (
@@ -126,28 +140,30 @@ export const useTableAssetsToSupply = () => {
               disableSelectedToken
             />
           ),
-          balance: (
-            <TableColumnAmount
-              balance={d.asset.balance}
-              value={d.asset.value}
-              align="center"
-              empty={!currentAddress}
+          debt: <TableColumnAmount balance={d.asset.debt} value={d.asset.value} align="center" />,
+          apy: <TableColumn value={<APYSmall apy={d.currentApy.apy} />} align="center" />,
+          apyType: (
+            <TableColumnDropdownLendingApyType
+              address={d.asset.address}
+              type={d.currentApy}
+              types={d.apy}
+              handleClick={handleApyTypeSelect}
+              style={{ zIndex: 20 + (sortedMyBorrows.length - i) }}
             />
           ),
-          apy: <TableColumn value={<APYSmall apy={d.apy} />} align="center" />,
-          collateral: <TableColumnCheck active={d.collateral} align="center" />,
           buttons: (
-            <TableColumnButtons align="flex-end">
+            <TableColumnButtons align="center">
+              <ButtonPrimaryMedium text={t('lending-borrow')} onClick={() => {}} />
               <ButtonPrimaryMedium
-                text={t('lending-supply')}
+                text={t('lending-repay')}
                 onClick={() => {}}
-                style={{ width: '94px' }}
+                buttonType="outlined"
               />
             </TableColumnButtons>
           ),
         };
       }),
-    [currentAddress, sortedAssetsToSupply, t]
+    [sortedMyBorrows, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -162,16 +178,16 @@ export const useTableAssetsToSupply = () => {
       {
         header: () => (
           <TableHeaderSortable
-            sortKey="balance"
+            sortKey="debt"
             sort={sort}
             setSort={setSort}
-            label="lending-wallet-balance"
-            tableKey="lending-supplies-wallet-balance"
+            label="lending-my-debt"
+            tableKey="lending-borrows-my-debt"
             align="center"
           />
         ),
         cell: row => row.renderValue(),
-        accessorKey: 'balance',
+        accessorKey: 'debt',
       },
       {
         header: () => (
@@ -180,7 +196,7 @@ export const useTableAssetsToSupply = () => {
             sort={sort}
             setSort={setSort}
             label="lending-apy"
-            tableKey="lending-supplies-my-balance"
+            tableKey="lending-borrows-apy"
             align="center"
           />
         ),
@@ -190,17 +206,17 @@ export const useTableAssetsToSupply = () => {
       {
         header: () => (
           <TableHeaderTooltip
-            label="lending-collateral"
+            label="lending-apy-type"
             tooltipIcon={
               <ButtonIconSmall
                 icon={<IconQuestion />}
-                data-tooltip-id={TOOLTIP_ID.LENDING_SUPPLY_MY_COLLATERAL}
+                data-tooltip-id={TOOLTIP_ID.LENDING_BORROW_APY_TYPE}
               />
             }
           />
         ),
         cell: row => row.renderValue(),
-        accessorKey: 'collateral',
+        accessorKey: 'apyType',
       },
       {
         header: () => <div />,
@@ -214,7 +230,12 @@ export const useTableAssetsToSupply = () => {
 
   const mobileTableData = useMemo(
     () =>
-      sortedAssetsToSupply.map((d, i) => {
+      sortedMyBorrows.map((d, i) => {
+        const handleApyTypeSelect = (address: string, apyType: string) => {
+          // TODO: call contract
+          console.log(address, apyType);
+        };
+
         return {
           rows: [
             <TableColumnToken
@@ -225,9 +246,9 @@ export const useTableAssetsToSupply = () => {
           ],
           bottomRows: [
             <TableColumnButtons key={i} style={{ width: '100%' }}>
-              <ButtonPrimaryMedium text={t('lending-supply')} onClick={() => {}} />
+              <ButtonPrimaryMedium text={t('lending-borrow')} onClick={() => {}} />
               <ButtonPrimaryMedium
-                text={t('lending-withdraw')}
+                text={t('lending-repay')}
                 onClick={() => {}}
                 buttonType="outlined"
               />
@@ -235,42 +256,50 @@ export const useTableAssetsToSupply = () => {
           ],
           dataRows: [
             {
-              label: 'lending-my-balance',
-              value: <TableColumnAmount balance={d.asset.balance} value={d.asset.value} />,
+              label: 'lending-my-debt',
+              value: <TableColumnAmount balance={d.asset.debt} value={d.asset.value} />,
             },
             {
               label: 'lending-apy',
-              value: <TableColumn value={<APYSmall apy={d.apy} />} align="flex-end" />,
+              value: <TableColumn value={<APYSmall apy={d.currentApy.apy} />} align="flex-end" />,
             },
             {
               label: (
                 <TableHeaderTooltip
-                  label="lending-collateral"
+                  label="lending-apy-type"
                   tooltipIcon={
                     <IconQuestion
                       width={16}
                       height={16}
-                      data-tooltip-id={TOOLTIP_ID.LENDING_SUPPLY_MY_COLLATERAL}
+                      data-tooltip-id={TOOLTIP_ID.LENDING_BORROW_APY_TYPE}
                     />
                   }
                 />
               ),
-              value: <TableColumnCheck active={d.collateral} />,
+              value: (
+                <TableColumnDropdownLendingApyType
+                  address={d.asset.address}
+                  type={d.currentApy}
+                  types={d.apy}
+                  handleClick={handleApyTypeSelect}
+                  style={{ zIndex: 20 + (sortedMyBorrows.length - i) }}
+                />
+              ),
             },
           ],
         };
       }),
-    [sortedAssetsToSupply, t]
+    [sortedMyBorrows, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
     () => (
       <TableHeaderSortable
-        sortKey="balance"
-        label="My balance"
+        sortKey="debt"
+        label="lending-my-debt"
         sort={sort}
         setSort={setSort}
-        tableKey="lending-supplies-my-balance"
+        tableKey="lending-borrows-my-debt"
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -278,7 +307,7 @@ export const useTableAssetsToSupply = () => {
   );
 
   useEffect(() => {
-    if (!isMD) setSort({ key: 'balance', order: 'desc' });
+    if (!isMD) setSort({ key: 'debt', order: 'desc' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMD]);
 
@@ -289,7 +318,8 @@ export const useTableAssetsToSupply = () => {
     mobileTableData,
     mobileTableColumn,
 
-    assetsToSupply,
+    myBorrows,
+    sortedMyBorrows,
 
     hasNextPage,
     fetchNextPage,

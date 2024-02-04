@@ -35,6 +35,7 @@ export const useTableMySupplies = () => {
 
   const { isMD } = useMediaQuery();
 
+  // call contract
   const mySuppliesData = {
     pages: [
       {
@@ -134,9 +135,9 @@ export const useTableMySupplies = () => {
             />
           ),
           balance: (
-            <TableColumnAmount balance={d.asset.balance} value={d.asset.value} align="flex-end" />
+            <TableColumnAmount balance={d.asset.balance} value={d.asset.value} align="center" />
           ),
-          apy: <TableColumn value={<APYSmall apy={d.apy} />} align="flex-end" />,
+          apy: <TableColumn value={<APYSmall apy={d.apy} />} align="center" />,
           collateral: <TableColumnToggle selected={d.collateral} handleSelect={handleToggle} />,
           buttons: (
             <TableColumnButtons>
@@ -170,6 +171,7 @@ export const useTableMySupplies = () => {
             setSort={setSort}
             label="lending-my-balance"
             tableKey="lending-supplies-my-balance"
+            align="center"
           />
         ),
         cell: row => row.renderValue(),
@@ -182,7 +184,8 @@ export const useTableMySupplies = () => {
             sort={sort}
             setSort={setSort}
             label="lending-apy"
-            tableKey="lending-supplies-my-balance"
+            tableKey="lending-supplies-my-apy"
+            align="center"
           />
         ),
         cell: row => row.renderValue(),
@@ -276,7 +279,7 @@ export const useTableMySupplies = () => {
     () => (
       <TableHeaderSortable
         sortKey="balance"
-        label="My balance"
+        label="lending-my-balance"
         sort={sort}
         setSort={setSort}
         tableKey="lending-supplies-my-balance"
@@ -299,6 +302,7 @@ export const useTableMySupplies = () => {
     mobileTableColumn,
 
     mySupplies,
+    sortedMySupplies,
 
     hasNextPage,
     fetchNextPage,

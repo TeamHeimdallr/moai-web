@@ -1,4 +1,4 @@
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
@@ -17,6 +17,9 @@ interface TableHeaderSortableProps extends HTMLAttributes<HTMLDivElement> {
   setSort?: (sorting: ITableSort) => void;
 
   tableKey?: string;
+  align?: 'flex-start' | 'center' | 'flex-end';
+
+  tooltipIcon?: ReactNode;
 }
 export const TableHeaderSortable = ({
   label,
@@ -26,6 +29,9 @@ export const TableHeaderSortable = ({
   setSort,
 
   tableKey,
+  align,
+
+  tooltipIcon,
   ...rest
 }: TableHeaderSortableProps) => {
   const { gaAction } = useGAAction();
@@ -55,9 +61,13 @@ export const TableHeaderSortable = ({
         });
         setSort?.(toggleTableSorting({ order: sort?.order ?? 'asc', key: sortKey }));
       }}
+      align={align}
       {...rest}
     >
-      {t(label)}
+      <InnerWrapper>
+        {t(label)}
+        {tooltipIcon}
+      </InnerWrapper>
       {sort?.key === sortKey && icon}
     </SelectableHeaderText>
   );
@@ -65,8 +75,9 @@ export const TableHeaderSortable = ({
 
 interface SelectableHeaderPoolProps {
   selected?: boolean;
+  align?: 'flex-start' | 'center' | 'flex-end';
 }
-const SelectableHeaderText = styled.div<SelectableHeaderPoolProps>(({ selected }) => [
+const SelectableHeaderText = styled.div<SelectableHeaderPoolProps>(({ selected, align }) => [
   tw`
     flex items-center justify-end gap-4 w-full font-m-14 text-neutral-80 clickable
     md:(font-m-16)
@@ -90,4 +101,12 @@ const SelectableHeaderText = styled.div<SelectableHeaderPoolProps>(({ selected }
         fill: ${COLOR.PRIMARY[60]};
       }
     `,
+  align &&
+    css`
+      justify-content: ${align};
+    `,
 ]);
+
+const InnerWrapper = tw.div`
+  flex items-center gap-2
+`;

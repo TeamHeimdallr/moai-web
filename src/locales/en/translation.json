@@ -391,5 +391,34 @@
   "lending-show-zero-balance": "show assets with 0 balance",
 
   "lending-wallet-balance": "Wallet balance",
-  "lending-assets-to-supply-empty": "Empty assets to supply"
+  "lending-my-supplies-empty": "Nothing supplied yet",
+  "lending-assets-to-supply-empty": "Empty assets to supply",
+
+  "lending-borrow": "Borrow",
+  "lending-repay": "Repay",
+  "lending-my-debt": "My debt",
+  "lending-apy-type": "APY type",
+
+  "My Borrows": "My Borrows",
+  "lending-borrow-power-used": "Borrow power used",
+  "lending-my-borrows-empty": "Nothing borrowed yet",
+
+  "variable": "Variable",
+  "stable": "Stable",
+
+  "Select APY type to switch": "Select APY type to switch",
+  "lending-apy-variable": "APY, variable",
+  "lending-apy-stable": "APY, stable",
+  "lending-available": "Available",
+
+  "lending-borrow-apy-tooltip": "The weighted average of APY for all borrowed assets, including incentives.",
+  "lending-borrow-borrow-power-used-tooltip": "The % of your total borrowing power used. This is based on the amount of your collateral supplied and the total amount that you can borrow.",
+
+  "lending-borrow-apy-type-tooltip": "Allows you to switch between variable and stable interest rates, where variable rate can increase and decrease depending on the amount of liquidity in the reserve, and stable rate will stay the same for the duration of your loan.",
+  "lending-borrow-available-tooltip": "This is the total amount available for you to borrow. You can borrow based on your collateral and until the borrow cap is reached.",
+
+  "lending-borrow-apy-variable-tooltip": "Variable interest rate will fluctuate based on the market conditions. Recommended for short-term positions.",
+
+  "Assets to borrow": "Assets to borrow",
+  "lending-assets-to-borrow-empty": "Empty assets to borrow"
 }

@@ -10,6 +10,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useSupplyBorrowTabStore } from '~/states/pages/lending';
 import { NETWORK, POPUP_ID } from '~/types';
 
+import { LayoutMarketBorrows } from './layouts/layout-market-borrows';
 import { LayoutMarketInfo } from './layouts/layout-market-info';
 import { LayoutMarketSupplies } from './layouts/layout-market-supplies';
 
@@ -48,7 +49,8 @@ export const LendingMain = () => {
                     {t('Borrows')}
                   </Tab>
                 </TabWrapper>
-                <LayoutMarketSupplies />
+                {type === 'supply' && <LayoutMarketSupplies />}
+                {type === 'borrow' && <LayoutMarketBorrows />}
               </ContentInnerWrapper>
             </ContentWrapper>
           </ContentOuterWrapper>
@@ -67,10 +69,9 @@ interface DivProps {
 }
 const InnerWrapper = styled.div<DivProps>(({ banner }) => [
   tw`  
-    flex flex-col pt-120 pb-120 px-0 pt-112
-    md:(px-20)
+    flex flex-col pb-120 px-0 pt-112
+    md:(px-20 items-center)
     mlg:(pt-120)
-    xl:(px-80 items-center)
   `,
   banner &&
     tw`
@@ -88,7 +89,7 @@ const GnbWrapper = styled.div<DivProps>(({ banner }) => [
 ]);
 
 const ContentOuterWrapper = tw.div`
-  w-full max-w-1440
+  w-full max-w-840
 `;
 
 const ContentWrapper = tw.div`
