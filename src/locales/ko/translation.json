@@ -430,6 +430,28 @@
 
   "lending-borrow-apy-variable-tooltip": "변동 이자율은 시장 조건에 따라 변동되기 때문에 단기 포지션에 추천합니다.",
 
+  "Return to lending page": "대출 화면으로 돌아가기",
+
   "Assets to borrow": "대출 가능 자산",
-  "lending-assets-to-borrow-empty": "대출 가능 자산이 없습니다."
+  "lending-assets-to-borrow-empty": "대출 가능 자산이 없습니다.",
+
+  "Disable as collateral": "담보 비활성화하기",
+  "disable-collateral-alert": "이 자산의 담보 비활성화는 차입 능력과 건전성 지수에 영향을 미칩니다.",
+  "Supply balance": "공급 금액",
+  "disable-collateral-button": "{{symbol}}를 담보로 비활성화하기",
+  "Confirm in wallet": "지갑 서명을 완료해주세요.",
+
+  "Disabled collateral confirmed!": "담보를 비활성화했습니다.",
+  "lending-disable-collateral-success": "{{symbol}}는 담보로 사용되지 않습니다.",
+  "Disable collateral failed": "담보 비활성화에 실패했습니다.",
+  "lending-disable-collateral-failed": "담보를 비활성화하지 못했습니다. 다시 시도해주세요.",
+
+  "Enable as collateral": "담보 활성화하기",
+  "enable-collateral-alert": "이 자산을 담보로 활성화하면 차입 능력과 건전성 지수가 증가하지만, 건전성 지수가 1 미만으로 떨어지면 청산될 수 있습니다.",
+  "enable-collateral-button": "{{symbol}}를 담보로 활성화하기",
+
+  "Enabled collateral confirmed!": "담보를 활성화했습니다.",
+  "lending-enable-collateral-success": "{{symbol}}를 담보로 사용합니다.",
+  "Enable collateral failed": "담보 활성화에 실패했습니다.",
+  "lending-enable-collateral-failed": "담보를 활성화하지 못했습니다. 다시 시도해주세요."
 }

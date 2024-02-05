@@ -6,8 +6,6 @@ import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { IconQuestion } from '~/assets/icons';
 
-import { ASSET_URL } from '~/constants';
-
 import { ButtonIconSmall, ButtonPrimaryMedium } from '~/components/buttons';
 import {
   TableColumn,
@@ -26,6 +24,7 @@ import { getNetworkAbbr } from '~/utils';
 import { useTableLendingMyBorrowsSortStore } from '~/states/components';
 import { TOOLTIP_ID } from '~/types';
 
+import { myBorrowsData } from '../../data';
 import { APYSmall } from '../../pages/main/components/apy';
 
 export const useTableMyBorrows = () => {
@@ -34,45 +33,6 @@ export const useTableMyBorrows = () => {
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
-
-  // call contract
-  const myBorrowsData = {
-    pages: [
-      {
-        myBorrows: [
-          {
-            id: 1,
-            asset: {
-              symbol: 'XRP',
-              address: '123',
-              image: `${ASSET_URL}/tokens/token-xrp.png`,
-              debt: 5201.102,
-            },
-            apy: [
-              { apy: 5.49, apyType: 'variable' },
-              { apy: 1.49, apyType: 'stable' },
-            ],
-            currentApy: { apy: 5.49, apyType: 'variable' },
-          },
-          {
-            id: 2,
-            asset: {
-              symbol: 'USDC',
-              address: '234',
-              image: `${ASSET_URL}/tokens/token-usdc.png`,
-              debt: 239005.102,
-            },
-            apy: [
-              { apy: 0.00249, apyType: 'variable' },
-              { apy: 0.00122, apyType: 'stable' },
-            ],
-            currentApy: { apy: 0.00122, apyType: 'stable' },
-            collateral: false,
-          },
-        ],
-      },
-    ],
-  };
 
   const hasNextPage = false;
   const fetchNextPage = () => {};
@@ -101,7 +61,7 @@ export const useTableMyBorrows = () => {
           },
         };
       }),
-    [myBorrowsData?.pages, tokens]
+    [tokens]
   );
   const sortedMyBorrows = useMemo(() => {
     if (sort?.key === 'debt') {

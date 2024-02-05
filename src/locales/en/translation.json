@@ -419,6 +419,28 @@
 
   "lending-borrow-apy-variable-tooltip": "Variable interest rate will fluctuate based on the market conditions. Recommended for short-term positions.",
 
+  "Return to lending page": "Return to lending page",
+
   "Assets to borrow": "Assets to borrow",
-  "lending-assets-to-borrow-empty": "Empty assets to borrow"
+  "lending-assets-to-borrow-empty": "Empty assets to borrow",
+
+  "Disable as collateral": "Disable as collateral",
+  "disable-collateral-alert": "Disabled this asset as collateral affects your borrowing power and Heath Factor.",
+  "Supply balance": "Supply balance",
+  "disable-collateral-button": "Disable {{symbol}} as collateral",
+  "Confirm in wallet": "Confirm in wallet",
+
+  "Disabled collateral confirmed!": "Disabled collateral confirmed!",
+  "lending-disable-collateral-success": "Your {{symbol}} is not used as collateral.",
+  "Disable collateral failed": "Disable collateral failed",
+  "lending-disable-collateral-failed": "Disabled collateral has failed. Please try again.",
+
+  "Enable as collateral": "Enable as collateral",
+  "enable-collateral-alert": "Enabling this asset as collateral increases your borrowing power and Health Factor. However, it can get liquidated if your health factor drops below 1.",
+  "enable-collateral-button": "Enable {{symbol}} as collateral",
+
+  "Enabled collateral confirmed!": "Enabled collateral confirmed!",
+  "lending-enable-collateral-success": "Your {{symbol}} is used as collateral.",
+  "Enable collateral failed": "Enable collateral failed",
+  "lending-enable-collateral-failed": "Enable collateral has failed. Please try again."
 }

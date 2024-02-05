@@ -13,6 +13,10 @@ import { formatNumber } from '~/utils';
 import { useAddLiquidityTokenStore } from '~/states/components/input-group/token';
 import { IToken, ITokenComposition, POPUP_ID } from '~/types';
 
+type Token = ITokenComposition & {
+  balance: number;
+  balanceRaw: bigint;
+};
 interface Props {
   userPoolTokenBalances: (IToken & { balance: number })[];
   compositions: ITokenComposition[];
@@ -26,7 +30,7 @@ export const AddLiquiditySelectTokenPopup = ({ userPoolTokenBalances, compositio
   const { token: selectedToken, setToken } = useAddLiquidityTokenStore();
   const { close } = usePopup(POPUP_ID.ADD_LIQUIDITY_SELECT_TOKEN);
 
-  const handleSelect = async (token: IToken) => {
+  const handleSelect = async (token: Token) => {
     if (token.symbol === selectedToken?.symbol) return;
 
     setToken(token);
@@ -59,7 +63,7 @@ export const AddLiquiditySelectTokenPopup = ({ userPoolTokenBalances, compositio
                       action: 'add-liquidity-select-token',
                       data: { page: 'add-liquidity', token: token.symbol },
                     });
-                    handleSelect(token);
+                    handleSelect({ ...token, balance } as Token);
                   }}
                   backgroundColor={COLOR.NEUTRAL[15]}
                 />
