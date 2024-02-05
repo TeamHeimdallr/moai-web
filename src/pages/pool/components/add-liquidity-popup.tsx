@@ -195,7 +195,7 @@ const _AddLiquidityPopup = ({
     estimateFee: estimateToken3ApproveFee,
   } = useApprove({
     amount: parseUnits(
-      `${(10 ** 10 || 0).toFixed(18)}`,
+      `${(bptOut || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, lpToken?.symbol || '')
     ),
     symbol: lpToken?.symbol || '',
