@@ -2,11 +2,15 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
 import { logger } from '~/states/middleware/logger';
-import { IToken } from '~/types';
+import { ITokenComposition } from '~/types';
 
+type Token = ITokenComposition & {
+  balance: number;
+  balanceRaw: bigint;
+};
 interface State {
-  token: IToken | undefined;
-  setToken: (token: IToken | undefined) => void;
+  token: Token | undefined;
+  setToken: (token: Token | undefined) => void;
 }
 export const useAddLiquidityTokenStore = create<State>()(
   immer(
