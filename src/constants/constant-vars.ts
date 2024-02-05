@@ -1,4 +1,4 @@
-import { IS_LOCAL } from '~/constants';
+import { IS_DEVNET, IS_LOCAL } from '~/constants';
 
 import { IGnbMenu, NETWORK } from '~/types';
 
@@ -55,7 +55,7 @@ export const GNB_MENU: IGnbMenu[] = [
     id: 'faucet',
     text: 'Faucet',
     path: '/faucet',
-    show: !IS_LOCAL,
+    show: IS_LOCAL || IS_DEVNET,
     network: [NETWORK.XRPL],
   },
 ];
