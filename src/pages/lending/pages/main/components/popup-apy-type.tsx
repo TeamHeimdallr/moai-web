@@ -7,7 +7,6 @@ import tw, { styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
@@ -21,33 +20,22 @@ import { DATE_FORMATTER, formatNumber } from '~/utils';
 import { POPUP_ID } from '~/types';
 
 interface Params {
-  asset: {
-    symbol: string;
-    image: string;
-    balance?: number;
-    value?: number;
-  };
-}
-interface Props {
-  type: 'enable' | 'disable';
+  address: string;
+  type: 'variable' | 'stable';
+  apy: number;
 }
 
-export const PopupCollateral = ({ type }: Props) => {
-  const { ref } = useGAInView({ name: 'lending-enable-collateral-popup' });
+export const PopupApyType = () => {
+  const { ref } = useGAInView({ name: 'lending-change-apy-popup' });
   const { gaAction } = useGAAction();
   const navigate = useNavigate();
 
-  const isEnable = type === 'enable';
-  const popupId = isEnable
-    ? POPUP_ID.LENDING_SUPPLY_ENABLE_COLLATERAL
-    : POPUP_ID.LENDING_SUPPLY_DISABLE_COLLATERAL;
-
   const { t } = useTranslation();
   const { isMD } = useMediaQuery();
-  const { params: _params, close } = usePopup(popupId);
+  const { params: _params, close } = usePopup(POPUP_ID.LENDING_BORROW_CHANGE_APY_TYPE);
 
   const params = _params as Params;
-  const { symbol, image, balance, value } = params?.asset || {};
+  const { address, apy, type } = params || {};
 
   // TODO: connect to contract
   const isIdle = true;
@@ -59,15 +47,13 @@ export const PopupCollateral = ({ type }: Props) => {
   const txDate = new Date();
 
   const buttonText = useMemo(() => {
-    if (isLoading) return t('Confirm in wallet');
+    if (isLoading) return t('Switching rate');
     if (!isIdle) {
       if (isSuccess) return t('Return to lending page');
       return t('Try again');
     }
-    return t(isEnable ? 'enable-collateral-button' : 'disable-collateral-button', {
-      symbol,
-    });
-  }, [isEnable, isIdle, isLoading, isSuccess, symbol, t]);
+    return t('Switch rate');
+  }, [isIdle, isLoading, isSuccess, t]);
 
   const handleButtonClick = () => {
     if (isLoading) return;
@@ -75,7 +61,7 @@ export const PopupCollateral = ({ type }: Props) => {
       if (isSuccess) {
         gaAction({
           action: 'go-to-lending-page',
-          data: { component: `${type}-collateral-popup`, link: `lending` },
+          data: { component: 'change-apr-type-popup', address, to: type },
         });
 
         close();
@@ -88,17 +74,13 @@ export const PopupCollateral = ({ type }: Props) => {
     }
 
     // TODO: call contract
-    if (isEnable) {
-      close();
-      return;
-    }
     close();
   };
 
   return (
     <Popup
-      id={popupId}
-      title={isIdle ? t(isEnable ? 'Enable as collateral' : 'Disable as collateral') : ''}
+      id={POPUP_ID.LENDING_BORROW_CHANGE_APY_TYPE}
+      title={isIdle ? t('Switch APY type') : ''}
       button={
         <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
@@ -117,25 +99,14 @@ export const PopupCollateral = ({ type }: Props) => {
               <IconWrapper>
                 <IconCheck width={40} height={40} />
               </IconWrapper>
-              <SuccessTitle>
-                {t(isEnable ? 'Enabled collateral confirmed!' : 'Disabled collateral confirmed!')}
-              </SuccessTitle>
-              <SuccessSubTitle>
-                {t(
-                  isEnable
-                    ? 'lending-enable-collateral-success'
-                    : 'lending-disable-collateral-success',
-                  { symbol }
-                )}
-              </SuccessSubTitle>
+              <SuccessTitle>{t('Switch confirmed!')}</SuccessTitle>
+              <SuccessSubTitle>{t('lending-switch-apy-type-success', { type })}</SuccessSubTitle>
             </SuccessWrapper>
-            <List title={t('Supply balance')}>
+            <List title={t('Transaction overview')}>
               <TokenList
-                type="large"
-                title={`${formatNumber(balance, 6, 'round', 100000)} ${symbol}`}
-                description={`$${formatNumber(value, 4, 'round', 100000)}`}
-                image={image}
-                leftAlign
+                type="medium"
+                title={t('New APY')}
+                balance={`${t(type)} ${formatNumber(apy, 6, 'round', 1000)}%`}
               />
             </List>
             <Scanner onClick={() => {}}>
@@ -154,33 +125,19 @@ export const PopupCollateral = ({ type }: Props) => {
               <FailedIconWrapper>
                 <IconCancel width={40} height={40} />
               </FailedIconWrapper>
-              <SuccessTitle>
-                {t(isEnable ? 'Enable collateral failed' : 'Disable collateral failed')}
-              </SuccessTitle>
-              <SuccessSubTitle>
-                {t(
-                  isEnable
-                    ? 'lending-enable-collateral-failed'
-                    : 'lending-disable-collateral-failed'
-                )}
-              </SuccessSubTitle>
+              <SuccessTitle>{t('Switch failed')}</SuccessTitle>
+              <SuccessSubTitle>{t('lending-switch-apy-type-failed', { type })}</SuccessSubTitle>
             </FailedWrapper>
           </InnerWrapper>
         )}
 
         {isIdle && (
           <InnerWrapper style={{ gap: isIdle ? (isMD ? 24 : 20) : 40 }}>
-            <AlertMessage
-              type="error"
-              title={t(isEnable ? 'enable-collateral-alert' : 'disable-collateral-alert')}
-            />
-            <List title={'Supply balance'}>
+            <List title={t('Transaction overview')}>
               <TokenList
-                type="large"
-                title={`${formatNumber(balance, 6, 'round', 100000)} ${symbol}`}
-                description={`$${formatNumber(value, 4, 'round', 100000)}`}
-                image={image}
-                leftAlign
+                type="medium"
+                title={t('New APY')}
+                balance={`${t(type)} ${formatNumber(apy, 6, 'round', 1000)}%`}
               />
             </List>
             <GasFeeWrapper>
@@ -207,7 +164,7 @@ export const PopupCollateral = ({ type }: Props) => {
 
 const Wrapper = tw.div`
   flex flex-col gap-20 px-20 py-0
-  md:(gap-24 px-24)
+  md:(gap-24 px-24 pt-4)
 `;
 
 const InnerWrapper = tw.div`

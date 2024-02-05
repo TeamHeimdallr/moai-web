@@ -18,11 +18,12 @@ import { TableColumnButtons } from '~/components/tables/columns/column-buttons';
 import { TableColumnDropdownLendingApyType } from '~/components/tables/columns/column-dropdown-lending-apy-type';
 import { TableHeaderTooltip } from '~/components/tables/headers/header-normal';
 
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
 import { useTableLendingMyBorrowsSortStore } from '~/states/components';
-import { TOOLTIP_ID } from '~/types';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { myBorrowsData } from '../../data';
 import { APYSmall } from '../../pages/main/components/apy';
@@ -33,6 +34,8 @@ export const useTableMyBorrows = () => {
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
+
+  const { open: openApyChange } = usePopup(POPUP_ID.LENDING_BORROW_CHANGE_APY_TYPE);
 
   const hasNextPage = false;
   const fetchNextPage = () => {};
@@ -87,9 +90,14 @@ export const useTableMyBorrows = () => {
   const tableData = useMemo(
     () =>
       sortedMyBorrows?.map((d, i) => {
-        const handleApyTypeSelect = (address: string, apyType: string) => {
-          // TODO: call contract
-          console.log(address, apyType);
+        const handleApyTypeSelect = (address: string, apyType: string, apy: number) => {
+          openApyChange({
+            params: {
+              address,
+              type: apyType,
+              apy: apy,
+            },
+          });
         };
 
         return {
@@ -123,7 +131,7 @@ export const useTableMyBorrows = () => {
           ),
         };
       }),
-    [sortedMyBorrows, t]
+    [openApyChange, sortedMyBorrows, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -191,9 +199,14 @@ export const useTableMyBorrows = () => {
   const mobileTableData = useMemo(
     () =>
       sortedMyBorrows.map((d, i) => {
-        const handleApyTypeSelect = (address: string, apyType: string) => {
-          // TODO: call contract
-          console.log(address, apyType);
+        const handleApyTypeSelect = (address: string, apyType: string, apy: number) => {
+          openApyChange({
+            params: {
+              address,
+              type: apyType,
+              apy: apy,
+            },
+          });
         };
 
         return {
@@ -249,7 +262,7 @@ export const useTableMyBorrows = () => {
           ],
         };
       }),
-    [sortedMyBorrows, t]
+    [openApyChange, sortedMyBorrows, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

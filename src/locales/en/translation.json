@@ -442,5 +442,17 @@
   "Enabled collateral confirmed!": "Enabled collateral confirmed!",
   "lending-enable-collateral-success": "Your {{symbol}} is used as collateral.",
   "Enable collateral failed": "Enable collateral failed",
-  "lending-enable-collateral-failed": "Enable collateral has failed. Please try again."
+  "lending-enable-collateral-failed": "Enable collateral has failed. Please try again.",
+
+  "Switch APY type": "Switch APY type",
+  "Transaction overview": "Transaction overview",
+  "New APY": "New APY",
+
+  "Switch rate": "Switch rate",
+  "Switching rate": "Switching rate",
+
+  "Switch confirmed!": "Switch confirmed!",
+  "Switch failed": "Switch failed",
+  "lending-switch-apy-type-success": "Successfully switched to {{type}} rate.",
+  "lending-switch-apy-type-failed": "Switch to {{type}} rate has failed. Please try again."
 }

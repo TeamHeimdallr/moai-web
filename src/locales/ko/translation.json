@@ -453,5 +453,17 @@
   "Enabled collateral confirmed!": "담보를 활성화했습니다.",
   "lending-enable-collateral-success": "{{symbol}}를 담보로 사용합니다.",
   "Enable collateral failed": "담보 활성화에 실패했습니다.",
-  "lending-enable-collateral-failed": "담보를 활성화하지 못했습니다. 다시 시도해주세요."
+  "lending-enable-collateral-failed": "담보를 활성화하지 못했습니다. 다시 시도해주세요.",
+
+  "Switch APY type": "APY 타입 변경",
+  "Transaction overview": "요약",
+  "New APY": "새로운 APY",
+
+  "Switch rate": "이자 방식 변경하기",
+  "Switching rate": "이자 방식을 변경하고 있습니다.",
+
+  "Switch confirmed!": "성공적으로 변경했습니다!",
+  "Switch failed": "변경에 실패했습니다.",
+  "lending-switch-apy-type-success": "{{type}}이자율로 변경 완료했습니다.",
+  "lending-switch-apy-type-failed": "{{type}}이자율로 변경에 실패했습니다. 다시 시도해주세요."
 }
