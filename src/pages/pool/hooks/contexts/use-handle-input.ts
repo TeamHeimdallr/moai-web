@@ -129,7 +129,6 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
 
   const isValid =
     userPoolTokens
-      ?.filter(token => token.balance > 0)
       ?.map((token, i) => {
         const currentValue = inputValues[i];
         const isFormError = formState?.errors?.[`input${i + 1}`] !== undefined;

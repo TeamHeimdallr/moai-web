@@ -25,7 +25,7 @@ import { Token } from '~/components/token';
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { useOnClickOutside, usePrevious } from '~/hooks/utils';
+import { useOnClickOutside } from '~/hooks/utils';
 import { formatNumber, getNetworkAbbr, getNetworkFull, getTokenDecimal } from '~/utils';
 import { useAddLiquidityInputGroupTabStore } from '~/states/components/input-group/tab';
 import { useAddLiquidityTokenStore } from '~/states/components/input-group/token';
@@ -84,7 +84,6 @@ const _AddLiquidityInputGroup = () => {
   const { token: selectedToken, setToken: selectToken } = useAddLiquidityTokenStore();
 
   const isSingle = selectedTab === 'single';
-  const prevSelectedTokenSymbol = usePrevious<string | undefined>(selectedToken?.symbol);
 
   const { isXrp } = useNetwork();
   const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.ADD_LP);
@@ -178,24 +177,16 @@ const _AddLiquidityInputGroup = () => {
     poolImpactError ? 'deposit-impact-error-message' : 'unknown-error-message'
   );
 
-  const defaultToken = compositions?.[0];
+  const defaultToken = userPoolTokens?.[0];
 
   useEffect(() => {
     selectToken(defaultToken);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultToken]);
-
-  useEffect(() => {
-    if (!isSingle) return;
-
-    if (selectedToken !== prevSelectedTokenSymbol) {
-      _setInputValues([0, 0]);
-    }
-  }, [isSingle, prevSelectedTokenSymbol, selectedToken]);
+  }, [defaultToken?.symbol]);
 
   useEffect(() => {
     _setInputValues([0, 0]);
-  }, [isSingle]);
+  }, [isSingle, selectedToken?.symbol]);
 
   return (
     <Wrapper>
@@ -228,13 +219,6 @@ const _AddLiquidityInputGroup = () => {
           {isValidToAddLiquidity &&
             userPoolTokens.map((token, idx) => {
               const tokenValue = (token?.price || 0) * (inputValues[idx] || 0);
-              if (token.balance === 0) {
-                return (
-                  <NoBalanceAlert key={token.symbol}>
-                    {t('No wallet balance for some pool tokens')} {token.symbol}
-                  </NoBalanceAlert>
-                );
-              }
 
               if (isSingle && selectedToken?.address !== token?.address) return null;
               return (
@@ -267,7 +251,6 @@ const _AddLiquidityInputGroup = () => {
                   blurAll={inputBlurAll}
                   blured={inputBlured}
                   autoFocus={isXrp}
-                  // disabled={inputValues[other] !== 0}
                 />
               );
             })}
@@ -280,19 +263,29 @@ const _AddLiquidityInputGroup = () => {
               <TotalText>{t`Total liquidity`}</TotalText>
               <TotalValueWrapper>
                 <TotalValue>{`$${formatNumber(totalValue, 2)}`}</TotalValue>
-                <ButtonPrimarySmall
-                  text={totalValueMaxed ? 'Maxed' : 'Max'}
-                  onClick={() => {
-                    gaAction({
-                      action: 'total-max',
-                      buttonType: 'primary-small',
-                      data: { page: 'add-liquidity' },
-                    });
-                    handleTotalMax();
-                  }}
-                  style={{ width: 'auto' }}
-                  disabled={totalValueMaxed || !hasBalances}
-                />
+                {!(isXrp && isSingle) && (
+                  <ButtonPrimarySmall
+                    text={totalValueMaxed ? 'Maxed' : 'Max'}
+                    onClick={() => {
+                      if (!isSingle && ableToAddLiquidityTokens.length <= 1) return;
+                      if (isSingle && selectedToken?.balance === 0) return;
+
+                      gaAction({
+                        action: 'total-max',
+                        buttonType: 'primary-small',
+                        data: { page: 'add-liquidity' },
+                      });
+                      handleTotalMax();
+                    }}
+                    style={{ width: 'auto' }}
+                    disabled={
+                      totalValueMaxed ||
+                      !hasBalances ||
+                      (!isSingle && ableToAddLiquidityTokens.length <= 1) ||
+                      (isSingle && selectedToken?.balance === 0)
+                    }
+                  />
+                )}
               </TotalValueWrapper>
             </TotalInnerWrapper>
             <PriceImpact error={priceImpactRaw >= 3}>
@@ -300,9 +293,9 @@ const _AddLiquidityInputGroup = () => {
               {!(isXrp && isSingle) && (
                 <ButtonWrapper>
                   <ButtonPrimarySmall
-                    disabled={!hasBalances}
                     text={t('Optimize')}
                     onClick={() => {
+                      if (!isSingle && ableToAddLiquidityTokens.length <= 1) return;
                       gaAction({
                         action: 'optimize',
                         buttonType: 'primary-small',
@@ -310,6 +303,7 @@ const _AddLiquidityInputGroup = () => {
                       });
                       handleOptimize();
                     }}
+                    disabled={!hasBalances || (!isSingle && ableToAddLiquidityTokens.length <= 1)}
                   />
                 </ButtonWrapper>
               )}
@@ -434,7 +428,7 @@ const Total = tw.div`
 `;
 
 const TotalInnerWrapper = tw.div`
-  flex justify-between gap-8
+  flex justify-between gap-8 h-28
 `;
 
 const TotalText = tw.div`
@@ -452,13 +446,10 @@ interface DivProps {
   error?: boolean;
 }
 const PriceImpact = styled.div<DivProps>(({ error }) => [
-  tw`flex justify-between items-center text-neutral-100 font-r-14 whitespace-pre-wrap`,
+  tw`flex justify-between items-center text-neutral-100 font-r-14 whitespace-pre-wrap h-28`,
   error && tw`text-red-50`,
 ]);
 
-const NoBalanceAlert = tw.div`
-  font-r-14 text-neutral-70
-`;
 const CheckPriceImpact = tw.div`
   flex gap-16 font-r-14 text-neutral-100
 `;

@@ -145,7 +145,19 @@ export const useUserPoolTokenBalances = (props?: Props) => {
     })
     .flat();
 
-  const tokenBalances = uniqBy(tokenBalancesNotUniq, 'address');
+  const _tokenBalances = uniqBy(tokenBalancesNotUniq, 'address');
+  const tokenBalances = compositions
+    ?.map(composition => {
+      if (composition.symbol === 'XRP') return;
+
+      const balance = _tokenBalances?.find(b => b.address === composition.address)?.balance || 0;
+      return {
+        ...composition,
+        balance,
+        balanceRaw: BigInt(parseUnits(balance.toString(), 6)),
+      };
+    })
+    .filter(c => !!c) as (ITokenComposition & { balance: number })[];
   const xrpComposition = compositions?.find(token => token.symbol === 'XRP');
   const userPoolTokens = (
     xrpComposition

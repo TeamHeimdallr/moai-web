@@ -131,8 +131,8 @@ export const useUserAllTokenBalances = () => {
     .flat();
 
   const userTokenBalances = uniqBy(userTokenBalancesNotUniq, 'address');
-  const tokenBalances =
-    tokens?.map(t => {
+  const tokenBalances = (tokens
+    ?.map(t => {
       if (t.symbol === 'XRP') return;
 
       const balance = userTokenBalances?.find(b => b.address === t.address)?.balance || 0;
@@ -142,7 +142,8 @@ export const useUserAllTokenBalances = () => {
         balance,
         totalSupply,
       } as IToken & TokenBalance;
-    }) || ([] as (IToken & TokenBalance)[]);
+    })
+    .filter(c => !!c) || []) as (IToken & TokenBalance)[];
 
   const refetch = () => {
     if (!walletAddress) return;
