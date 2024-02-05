@@ -31,13 +31,13 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>(({ type }) => [
   tw`flex items-start gap-4 p-8 rounded-8`,
 
-  type === 'error' && tw`bg-red-50/20 text-red-50`,
+  type === 'error' && tw`bg-red-50/20 text-orange-50`,
   type === 'error' &&
     css`
       & svg {
         width: 16px;
         height: 16px;
-        fill: ${COLOR.RED[50]};
+        fill: ${COLOR.ORANGE[50]};
       }
     `,
 
