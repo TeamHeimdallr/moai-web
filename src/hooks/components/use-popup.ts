@@ -2,27 +2,31 @@ import { usePopupStore } from '~/states/components/popup';
 
 interface Props {
   id?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  params?: any;
   callback?: (id?: string) => void;
   unmountCallback?: (id?: string) => void;
   callImmediately?: boolean;
 }
 export const usePopup = (id?: string) => {
   const {
-    opened: _opened,
     open: _open,
     close: _close,
-    reset,
+    opened: _opened,
+    params: _params,
     callback: _callback,
     unmountCallback: _unmountCallback,
+    reset,
   } = usePopupStore();
 
   const opened = id ? _opened.find(i => i === id) : false;
+  const params = id ? _params[id] : undefined;
   const callback = id ? _callback[id] : undefined;
   const unmountCallback = id ? _unmountCallback[id] : undefined;
 
   const open = (props?: Props) => {
-    const { callback, unmountCallback, callImmediately } = props || {};
-    _open({ id, callback, unmountCallback, callImmediately });
+    const { params, callback, unmountCallback, callImmediately } = props || {};
+    _open({ id, params, callback, unmountCallback, callImmediately });
   };
 
   const close = (props?: Props) => {
@@ -32,6 +36,7 @@ export const usePopup = (id?: string) => {
 
   return {
     opened,
+    params,
     callback,
     unmountCallback,
     open,
