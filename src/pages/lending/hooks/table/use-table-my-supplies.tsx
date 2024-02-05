@@ -6,8 +6,6 @@ import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { IconQuestion } from '~/assets/icons';
 
-import { ASSET_URL } from '~/constants';
-
 import { ButtonIconSmall, ButtonPrimaryMedium } from '~/components/buttons';
 import {
   TableColumn,
@@ -20,12 +18,14 @@ import {
 import { TableColumnButtons } from '~/components/tables/columns/column-buttons';
 import { TableHeaderTooltip } from '~/components/tables/headers/header-normal';
 
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
 import { useTableLendingMySuppliesSortStore } from '~/states/components';
-import { TOOLTIP_ID } from '~/types';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
+import { mySuppliesData } from '../../data';
 import { APYSmall } from '../../pages/main/components/apy';
 
 export const useTableMySupplies = () => {
@@ -35,35 +35,8 @@ export const useTableMySupplies = () => {
 
   const { isMD } = useMediaQuery();
 
-  // call contract
-  const mySuppliesData = {
-    pages: [
-      {
-        mySupplies: [
-          {
-            id: 1,
-            asset: {
-              symbol: 'XRP',
-              image: `${ASSET_URL}/tokens/token-xrp.png`,
-              balance: 5201.102,
-            },
-            apy: 5.49,
-            collateral: true,
-          },
-          {
-            id: 2,
-            asset: {
-              symbol: 'USDC',
-              image: `${ASSET_URL}/tokens/token-usdc.png`,
-              balance: 239005.102,
-            },
-            apy: 0.00249,
-            collateral: false,
-          },
-        ],
-      },
-    ],
-  };
+  const { open: openCollateralEnable } = usePopup(POPUP_ID.LENDING_SUPPLY_ENABLE_COLLATERAL);
+  const { open: openCollateralDisable } = usePopup(POPUP_ID.LENDING_SUPPLY_DISABLE_COLLATERAL);
 
   const hasNextPage = false;
   const fetchNextPage = () => {};
@@ -92,7 +65,7 @@ export const useTableMySupplies = () => {
           },
         };
       }),
-    [mySuppliesData?.pages, tokens]
+    [tokens]
   );
   const sortedMySupplies = useMemo(() => {
     if (sort?.key === 'balance') {
@@ -118,12 +91,12 @@ export const useTableMySupplies = () => {
   const tableData = useMemo(
     () =>
       sortedMySupplies?.map(d => {
-        const handleToggle = () => {
-          if (d.collateral) {
-            // TODO: open tollateral disable popup
+        const handleToggle = (current: boolean) => {
+          if (current) {
+            openCollateralDisable({ params: { asset: d.asset } });
             return;
           }
-          // TODO: open tollateral enable popup
+          openCollateralEnable({ params: { asset: d.asset } });
         };
 
         return {
@@ -151,7 +124,7 @@ export const useTableMySupplies = () => {
           ),
         };
       }),
-    [sortedMySupplies, t]
+    [openCollateralDisable, openCollateralEnable, sortedMySupplies, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -219,12 +192,12 @@ export const useTableMySupplies = () => {
   const mobileTableData = useMemo(
     () =>
       sortedMySupplies.map((d, i) => {
-        const handleToggle = () => {
-          if (d.collateral) {
-            // TODO: open tollateral disable popup
+        const handleToggle = (current: boolean) => {
+          if (current) {
+            openCollateralDisable({ params: { asset: d.asset } });
             return;
           }
-          // TODO: open tollateral enable popup
+          openCollateralEnable({ params: { asset: d.asset } });
         };
 
         return {
@@ -272,7 +245,7 @@ export const useTableMySupplies = () => {
           ],
         };
       }),
-    [sortedMySupplies, t]
+    [openCollateralDisable, openCollateralEnable, sortedMySupplies, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

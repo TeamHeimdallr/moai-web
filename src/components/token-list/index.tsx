@@ -3,7 +3,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { css, styled } from 'twin.macro';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  image: string | ReactNode;
+  image?: string | ReactNode;
   title: string;
 
   type?: 'selectable' | 'campaign' | 'medium' | 'large';
@@ -33,7 +33,7 @@ export const TokenList = ({
   return (
     <Wrapper {...rest} type={type} backgroundColor={backgroundColor} selected={selected}>
       <LeftWrapper>
-        {typeof image === 'string' ? <Image src={image} /> : image}
+        {image && (typeof image === 'string' ? <Image src={image} /> : image)}
         <TitleWrapper>
           <TitleInnerWrapper>
             <Title type={type}>{title}</Title>
@@ -66,7 +66,7 @@ const Wrapper = styled.div<DivProps>(({ type, backgroundColor, selected }) => [
   type === 'selectable'
     ? tw`border-transparent border-solid px-11 py-7 rounded-8 border-1 hover:bg-neutral-20 clickable`
     : type === 'medium'
-    ? tw`px-24 py-8`
+    ? tw`px-16 py-12`
     : type === 'campaign'
     ? tw`px-16 py-12`
     : tw`px-24 py-12`,

@@ -15,7 +15,7 @@ export const TableColumnAmount = ({ balance, value, empty, ...rest }: Props) => 
   return (
     <Wrapper {...rest}>
       <Balance>{empty ? '-' : formatNumber(balance, 4, 'round', 10000)}</Balance>
-      <Value>{empty ? '' : `$${formatNumber(value, 4, 'round', 10000)}`}</Value>
+      {!empty && <Value>{`$${formatNumber(value, 4, 'round', 10000)}`}</Value>}
     </Wrapper>
   );
 };

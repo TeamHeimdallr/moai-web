@@ -179,16 +179,11 @@ const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio, type, slim, dis
   `,
   rounded && tw`last:(rounded-b-10)`,
   slim && tw`gap-8`,
-  !disableHover && (type === 'lighter' ? tw`hover:bg-neutral-20` : tw`hover:bg-neutral-15`),
+  !disableHover && (type === 'lighter' ? tw`hover:bg-neutral-17` : tw`hover:bg-neutral-15`),
   !disableHover && tw`clickable`,
   css`
     & {
       grid-template-columns: ${ratio};
-    }
-    &:hover {
-      .toggle:not(.toggle-selected):not(.toggle-hover) {
-        background-color: ${COLOR.NEUTRAL[30]};
-      }
     }
   `,
 ]);

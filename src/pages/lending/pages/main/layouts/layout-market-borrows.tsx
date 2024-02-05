@@ -9,16 +9,17 @@ import { TableMobile } from '~/components/tables/table-mobile';
 import { Tooltip } from '~/components/tooltips/base';
 
 import { useTableAssetsToBorrow } from '~/pages/lending/hooks/table/use-table-assets-to-borrow';
-import { useTableAssetsToSupply } from '~/pages/lending/hooks/table/use-table-assets-to-suppy';
 import { useTableMyBorrows } from '~/pages/lending/hooks/table/use-table-my-borrows';
 
+import { usePopup } from '~/hooks/components';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber } from '~/utils';
-import { TOOLTIP_ID } from '~/types';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { APYMedium } from '../components/apy';
 import { Card } from '../components/card';
+import { PopupApyType } from '../components/popup-apy-type';
 
 export const LayoutMarketBorrows = () => {
   const { t } = useTranslation();
@@ -29,6 +30,8 @@ export const LayoutMarketBorrows = () => {
   const balance = 24000;
   const apy = 0.001;
   const borrowPowerUsed = 0.6;
+
+  const { opened: changeApyTypeOpened } = usePopup(POPUP_ID.LENDING_BORROW_CHANGE_APY_TYPE);
 
   const {
     tableColumns: tableColumnsMyBorrows,
@@ -150,6 +153,8 @@ export const LayoutMarketBorrows = () => {
       <Tooltip id={TOOLTIP_ID.LENDING_BORROW_APY_VARIABLE} place="bottom">
         <TooltipContent>{t('lending-borrow-apy-variable-tooltip')}</TooltipContent>
       </Tooltip>
+
+      {changeApyTypeOpened && <PopupApyType />}
     </Wrapper>
   );
 };

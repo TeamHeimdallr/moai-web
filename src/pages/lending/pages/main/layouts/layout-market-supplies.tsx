@@ -12,15 +12,17 @@ import { Tooltip } from '~/components/tooltips/base';
 import { useTableAssetsToSupply } from '~/pages/lending/hooks/table/use-table-assets-to-suppy';
 import { useTableMySupplies } from '~/pages/lending/hooks/table/use-table-my-supplies';
 
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber } from '~/utils';
 import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
-import { TOOLTIP_ID } from '~/types';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { APYMedium } from '../components/apy';
 import { Card } from '../components/card';
+import { PopupCollateral } from '../components/popup-collateral';
 
 export const LayoutMarketSupplies = () => {
   const { t } = useTranslation();
@@ -28,6 +30,12 @@ export const LayoutMarketSupplies = () => {
   const { setShowZeroBalances, showZeroBalances } = useShowZeroBalanceAssetsStore();
   const { selectedNetwork } = useNetwork();
   const { currentAddress } = useConnectedWallet(selectedNetwork);
+  const { opened: enableCollateralPopupOpened } = usePopup(
+    POPUP_ID.LENDING_SUPPLY_ENABLE_COLLATERAL
+  );
+  const { opened: disableCollateralPopupOpened } = usePopup(
+    POPUP_ID.LENDING_SUPPLY_DISABLE_COLLATERAL
+  );
 
   const balance = 24000;
   const apy = 0.001;
@@ -152,6 +160,9 @@ export const LayoutMarketSupplies = () => {
       <Tooltip id={TOOLTIP_ID.LENDING_SUPPLY_MY_COLLATERAL} place="bottom">
         <TooltipContent>{t('lending-my-supply-collateral-tooltip')}</TooltipContent>
       </Tooltip>
+
+      {enableCollateralPopupOpened && <PopupCollateral type="enable" />}
+      {disableCollateralPopupOpened && <PopupCollateral type="disable" />}
     </Wrapper>
   );
 };

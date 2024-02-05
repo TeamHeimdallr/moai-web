@@ -1,5 +1,4 @@
-import { HTMLAttributes, useState } from 'react';
-import classNames from 'classnames';
+import { HTMLAttributes } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -8,20 +7,8 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Toggle = ({ selected, ...rest }: Props) => {
-  const [hover, setHover] = useState(false);
-
   return (
-    <Wrapper
-      className={classNames({
-        toggle: true,
-        'toggle-selected': selected,
-        'toggle-hover': hover,
-      })}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      selected={selected}
-      {...rest}
-    >
+    <Wrapper selected={selected} {...rest}>
       <Circle selected={selected} />
     </Wrapper>
   );

@@ -17,7 +17,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   address: string; // asset address
   type: Type;
   types: Type[];
-  handleClick?: (address: string, apyType: string) => void;
+  handleClick?: (address: string, apyType: string, apy: number) => void;
 }
 export const TableColumnDropdownLendingApyType = ({
   address,
@@ -34,8 +34,10 @@ export const TableColumnDropdownLendingApyType = ({
 
   useOnClickOutside([ref], () => open(false));
 
-  const onClick = (apyType: string) => {
-    handleClick?.(address, apyType);
+  const onClick = (apyType: string, apy: number) => {
+    if (apyType === currentType.apyType) return;
+
+    handleClick?.(address, apyType, apy);
     open(false);
   };
 
@@ -54,7 +56,11 @@ export const TableColumnDropdownLendingApyType = ({
             <Divider />
             <ListWrapper>
               {types.map(({ apyType, apy }) => (
-                <List key={apyType} onClick={() => onClick(apyType)}>
+                <List
+                  key={apyType}
+                  onClick={() => onClick(apyType, apy)}
+                  disabled={apyType === currentType.apyType}
+                >
                   <Text grow>{t(`lending-apy-${apyType}`)}</Text>
                   <Text>{`${apy}%`}</Text>
                   <IconWrapper>
@@ -95,10 +101,16 @@ const Divider = tw.div`
   w-full h-1 bg-neutral-20
 `;
 
-const List = tw.div`
-  w-full pl-12 pr-8 py-8 flex gap-8 rounded-8 clickable select-none
-  hover:(bg-neutral-20)
-`;
+interface ListWrapper {
+  disabled?: boolean;
+}
+const List = styled.div<ListWrapper>(({ disabled }) => [
+  tw`
+    w-full pl-12 pr-8 py-8 flex gap-8 rounded-8 clickable select-none
+    hover:(bg-neutral-20)
+  `,
+  disabled && tw`opacity-50 non-clickable`,
+]);
 
 interface TextProps {
   grow?: boolean;
