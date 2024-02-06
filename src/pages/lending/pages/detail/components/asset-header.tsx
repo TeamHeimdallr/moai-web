@@ -18,7 +18,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { getNetworkAbbr } from '~/utils';
 import { NETWORK } from '~/types';
 
-export const LendingHeader = () => {
+export const AssetHeader = () => {
   const { ref } = useGAInView({ name: 'lending-detail-header' });
   const { gaAction } = useGAAction();
 

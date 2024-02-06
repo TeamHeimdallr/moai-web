@@ -4,12 +4,13 @@ import tw, { styled } from 'twin.macro';
 
 interface MarketInfoCardProps {
   title: string;
-  titleIcon?: React.ReactNode;
+  titleIcon?: ReactNode;
 
-  iconButton?: React.ReactNode;
+  iconButton?: ReactNode;
 
   value: ReactNode;
   valueColor?: string;
+  valueIcon?: ReactNode;
 
   light?: boolean;
 }
@@ -19,6 +20,7 @@ export const InfoCard = ({
   iconButton,
   value,
   valueColor,
+  valueIcon,
   light,
 }: MarketInfoCardProps) => {
   return (
@@ -30,7 +32,10 @@ export const InfoCard = ({
         </TitleWrapper>
         {iconButton && <IconButtonWrapper>{iconButton}</IconButtonWrapper>}
       </TitleOuterWrapper>
-      <ValueWrapper color={valueColor}>{value}</ValueWrapper>
+      <ValueWrapper color={valueColor}>
+        {value}
+        {valueIcon}
+      </ValueWrapper>
     </Wrapper>
   );
 };
@@ -64,7 +69,7 @@ interface ValueWrapperProps {
 }
 const ValueWrapper = styled.div<ValueWrapperProps>(({ color }) => [
   tw`
-    font-m-18 text-neutral-100
+    font-m-18 text-neutral-100 flex-center gap-4
     md:(font-m-20)
   `,
   color &&
