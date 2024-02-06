@@ -16,6 +16,7 @@ import { NETWORK, POPUP_ID } from '~/types';
 
 import { AssetHeader } from './components/asset-header';
 import { AssetInfo } from './components/asset-info';
+import { AssetSupplyInfo } from './components/asset-supply-info';
 
 export const LendingDetail = () => {
   useGAPage();
@@ -63,6 +64,7 @@ export const LendingDetail = () => {
             <ContentWrapper>
               <LeftContentWrapper>
                 <AssetInfo />
+                <AssetSupplyInfo />
               </LeftContentWrapper>
               <RightContentWrapper></RightContentWrapper>
             </ContentWrapper>

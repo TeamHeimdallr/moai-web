@@ -461,5 +461,9 @@
   "Reserve Size": "Reserve Size",
   "Available Liquidity": "Available Liquidity",
   "Utilization Rate": "Utilization Rate",
-  "Oracle Price": "Oracle Price"
+  "Oracle Price": "Oracle Price",
+
+  "Supply info": "Supply info",
+  "Total supplied": "Total supplied",
+  "total-supplied-description": "Asset supply is limited to a certain amount to reduce protocol exposure to the asset and to help manage risks involved."
 }

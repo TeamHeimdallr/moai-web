@@ -472,5 +472,9 @@
   "Reserve Size": "총 예치량",
   "Available Liquidity": "이용 가능 유동성",
   "Utilization Rate": "이용률",
-  "Oracle Price": "오라클 가격"
+  "Oracle Price": "오라클 가격",
+
+  "Supply info": "공급 정보",
+  "Total supplied": "총 공급량",
+  "total-supplied-description": "자산에 대한 프로토콜 노출을 줄이고 관련 위험을 관리하기 위해 자산 공급은 일정량으로 제한됩니다."
 }

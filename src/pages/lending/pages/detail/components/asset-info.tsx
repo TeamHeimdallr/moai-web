@@ -13,8 +13,8 @@ export const AssetInfo = () => {
   const { t } = useTranslation();
 
   // TODO: connect to API
-  const reserveSize = 2398450000;
-  const availableLiquidity = 689080000;
+  const reserveSize = 239845000;
+  const availableLiquidity = 68908000;
   const utilizationRate = (availableLiquidity / reserveSize) * 100;
   const oraclePrice = 0.582378;
 
@@ -25,21 +25,21 @@ export const AssetInfo = () => {
       <InnerWrapper>
         <InfoCard
           title={t('Reserve Size')}
-          value={`$${formatNumber(reserveSize, 4, 'round', 1000)}`}
+          value={`$${formatNumber(reserveSize, 4, 'floor', 1000)}`}
         />
         <InfoCard
           title={t('Available Liquidity')}
-          value={`$${formatNumber(availableLiquidity, 4, 'round', 1000)}`}
+          value={`$${formatNumber(availableLiquidity, 4, 'floor', 1000)}`}
         />
       </InnerWrapper>
       <InnerWrapper>
         <InfoCard
           title={t('Utilization Rate')}
-          value={`${formatNumber(utilizationRate, 2, 'round', 1000)}%`}
+          value={`${formatNumber(utilizationRate, 2, 'floor', 1000)}%`}
         />
         <InfoCard
           title={t('Oracle Price')}
-          value={`$${formatNumber(oraclePrice, 4, 'round', 1000)}`}
+          value={`$${formatNumber(oraclePrice, 4, 'floor', 1000)}`}
           valueIcon={<ButtonIconMedium icon={<IconLink />} onClick={handleOracleLink} />}
         />
       </InnerWrapper>
