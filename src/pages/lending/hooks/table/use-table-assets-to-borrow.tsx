@@ -42,6 +42,8 @@ export const useTableAssetsToBorrow = () => {
               availables: 123123,
               price: 0.5,
               value: 123123 * 0.5,
+
+              address: '0xCCCCcCCc00000002000000000000000000000000',
             },
             apy: 5.49,
           },
@@ -54,6 +56,8 @@ export const useTableAssetsToBorrow = () => {
               availables: 2000,
               price: 0.99998,
               value: 2000 * 0.99998,
+
+              address: '0xcCcCCCCc00000864000000000000000000000000',
             },
             apy: 0.00249,
           },
@@ -183,6 +187,7 @@ export const useTableAssetsToBorrow = () => {
     () =>
       sortedAssetsToBorrow.map((d, i) => {
         return {
+          meta: { id: d.id, asset: d.asset },
           rows: [
             <TableColumnToken
               key={i}

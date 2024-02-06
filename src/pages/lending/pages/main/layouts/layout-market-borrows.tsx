@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { IconQuestion } from '~/assets/icons';
@@ -22,6 +23,7 @@ import { Card } from '../components/card';
 import { PopupApyType } from '../components/popup-apy-type';
 
 export const LayoutMarketBorrows = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { evm, fpass } = useConnectedWallet();
@@ -52,6 +54,16 @@ export const LayoutMarketBorrows = () => {
   } = useTableAssetsToBorrow();
 
   const { isMD } = useMediaQuery();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleRowClick = (meta: any) => {
+    if (!meta) return;
+
+    const { asset } = meta;
+    if (!asset) return;
+
+    navigate(`/lending/${asset.address}`);
+  };
 
   return (
     <Wrapper>
@@ -96,6 +108,7 @@ export const LayoutMarketBorrows = () => {
               type="lighter"
               emptyText={t('lending-my-borrows-empty')}
               hasMore={hasNextPageMyBorrows}
+              handleRowClick={handleRowClick}
               handleMoreClick={() => fetchNextPageMyBorrows()}
             />
           ) : (
@@ -105,6 +118,7 @@ export const LayoutMarketBorrows = () => {
               emptyText={t('lending-my-borrows-empty')}
               hasMore={hasNextPageMyBorrows}
               handleMoreClick={fetchNextPageMyBorrows}
+              handleClick={handleRowClick}
               overflow="visible"
             />
           )}
@@ -121,6 +135,7 @@ export const LayoutMarketBorrows = () => {
             type="lighter"
             emptyText={t('lending-assets-to-borrow-empty')}
             hasMore={hasNextPageAssetsToBorrow}
+            handleRowClick={handleRowClick}
             handleMoreClick={() => fetchNextPageAssetsToBorrow()}
           />
         ) : (
@@ -130,6 +145,7 @@ export const LayoutMarketBorrows = () => {
             emptyText={t('lending-assets-to-borrow-empty')}
             hasMore={hasNextPageAssetsToBorrow}
             handleMoreClick={fetchNextPageAssetsToBorrow}
+            handleClick={handleRowClick}
           />
         )}
       </ContentWrapper>
