@@ -11,7 +11,12 @@ export const XummQrPopup = () => {
   const { t } = useTranslation();
 
   return (
-    <Popup id={POPUP_ID.XUMM_QR} title={t('Action required in wallet')}>
+    <Popup
+      id={POPUP_ID.XUMM_QR}
+      title={t('Action required in wallet')}
+      zIndex={22}
+      maxWidth={372.5}
+    >
       <Wrapper>
         <QrWrapper>
           <Qr style={{ backgroundImage: `url(${qr})` }} />
@@ -23,7 +28,7 @@ export const XummQrPopup = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col items-center gap-40 px-24 pt-40 pb-24
+  flex flex-col items-center gap-24 px-24 pt-4 pb-24
 `;
 const QrWrapper = tw.div`
   p-24 rounded-24 bg-center bg-cover bg-no-repeat bg-white flex-center
