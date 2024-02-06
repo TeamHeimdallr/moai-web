@@ -8,6 +8,8 @@ import { ASSET_URL } from '~/constants';
 import { ButtonIconMedium, ButtonIconSmall } from '~/components/buttons';
 import { Tooltip } from '~/components/tooltips/base';
 
+import { APYLarge } from '~/pages/lending/components/apy';
+import { InfoCard } from '~/pages/lending/components/info-card';
 import { titleMap } from '~/pages/lending/data';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
@@ -22,8 +24,6 @@ import {
 } from '~/utils';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
-import { APYLarge } from '../components/apy';
-import { Card } from '../components/card';
 import { MarketInfoCurrentLTVPopup } from '../components/market-info-current-ltv-popup';
 import { MarketInfoHealthFactorPopup } from '../components/market-info-health-factor-popup';
 
@@ -82,7 +82,7 @@ export const LayoutMarketInfo = () => {
         </InfoInnerWrapper>
         {evmAddress && (
           <InfoInnerWrapper>
-            <Card
+            <InfoCard
               title={t('Health Factor')}
               iconButton={
                 <ButtonIconMedium icon={<IconNext />} onClick={handleHealthFactorClick} />
@@ -90,7 +90,7 @@ export const LayoutMarketInfo = () => {
               value={`${formatNumber(healthFactor)}`}
               valueColor={`${healthFactorColor}`}
             />
-            <Card
+            <InfoCard
               title={t('Current LTV')}
               iconButton={<ButtonIconMedium icon={<IconNext />} onClick={handleCurrentLTVClick} />}
               value={`${formatNumber(currentLTV)}%`}

@@ -12,6 +12,8 @@ import { TableMobile } from '~/components/tables/table-mobile';
 import { Toggle } from '~/components/toggle';
 import { Tooltip } from '~/components/tooltips/base';
 
+import { APYMedium } from '~/pages/lending/components/apy';
+import { InfoCard } from '~/pages/lending/components/info-card';
 import { useTableAssetsToSupply } from '~/pages/lending/hooks/table/use-table-assets-to-suppy';
 import { useTableMySupplies } from '~/pages/lending/hooks/table/use-table-my-supplies';
 
@@ -23,8 +25,6 @@ import { formatNumber, getNetworkAbbr } from '~/utils';
 import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
-import { APYMedium } from '../components/apy';
-import { Card } from '../components/card';
 import { PopupCollateral } from '../components/popup-collateral';
 
 export const LayoutMarketSupplies = () => {
@@ -83,12 +83,12 @@ export const LayoutMarketSupplies = () => {
         <ContentWrapper>
           <Title>{t('My Supplies')}</Title>
           <CardWrapper>
-            <Card
+            <InfoCard
               title={t('lending-balance')}
               value={`$${formatNumber(balance, 2, 'floor', MILLION, 2)}`}
               light
             />
-            <Card
+            <InfoCard
               title={t('lending-apy')}
               titleIcon={
                 <ButtonIconSmall
@@ -99,7 +99,7 @@ export const LayoutMarketSupplies = () => {
               value={<APYMedium apy={apy} />}
               light
             />
-            <Card
+            <InfoCard
               title={t('lending-collateral')}
               titleIcon={
                 <ButtonIconSmall

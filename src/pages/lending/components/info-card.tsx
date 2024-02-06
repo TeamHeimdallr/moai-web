@@ -13,7 +13,7 @@ interface MarketInfoCardProps {
 
   light?: boolean;
 }
-export const Card = ({
+export const InfoCard = ({
   title,
   titleIcon,
   iconButton,

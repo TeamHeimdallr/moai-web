@@ -26,7 +26,7 @@ import { useTableLendingMyBorrowsSortStore } from '~/states/components';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { myBorrowsData } from '../../data';
-import { APYSmall } from '../../pages/main/components/apy';
+import { APYSmall } from '../../components/apy';
 
 export const useTableMyBorrows = () => {
   const { sort, setSort } = useTableLendingMyBorrowsSortStore();

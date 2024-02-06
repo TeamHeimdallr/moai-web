@@ -11,6 +11,8 @@ import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 import { Tooltip } from '~/components/tooltips/base';
 
+import { APYMedium } from '~/pages/lending/components/apy';
+import { InfoCard } from '~/pages/lending/components/info-card';
 import { useTableAssetsToBorrow } from '~/pages/lending/hooks/table/use-table-assets-to-borrow';
 import { useTableMyBorrows } from '~/pages/lending/hooks/table/use-table-my-borrows';
 
@@ -21,8 +23,6 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr } from '~/utils';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
-import { APYMedium } from '../components/apy';
-import { Card } from '../components/card';
 import { PopupApyType } from '../components/popup-apy-type';
 
 export const LayoutMarketBorrows = () => {
@@ -75,12 +75,12 @@ export const LayoutMarketBorrows = () => {
         <ContentWrapper>
           <Title>{t('My Borrows')}</Title>
           <CardWrapper>
-            <Card
+            <InfoCard
               title={t('lending-balance')}
               value={`$${formatNumber(balance, 2, 'floor', MILLION, 2)}`}
               light
             />
-            <Card
+            <InfoCard
               title={t('lending-apy')}
               titleIcon={
                 <ButtonIconSmall
@@ -91,7 +91,7 @@ export const LayoutMarketBorrows = () => {
               value={<APYMedium apy={apy} />}
               light
             />
-            <Card
+            <InfoCard
               title={t('lending-borrow-power-used')}
               titleIcon={
                 <ButtonIconSmall

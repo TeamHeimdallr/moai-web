@@ -20,7 +20,7 @@ import { useMediaQuery } from '~/hooks/utils';
 import { useTableLendingAssetsToBorrowSortStore } from '~/states/components';
 import { TOOLTIP_ID } from '~/types';
 
-import { APYSmall } from '../../pages/main/components/apy';
+import { APYSmall } from '../../components/apy';
 
 export const useTableAssetsToBorrow = () => {
   const { sort, setSort } = useTableLendingAssetsToBorrowSortStore();

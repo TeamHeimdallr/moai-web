@@ -25,7 +25,7 @@ import { useTableLendingAssetsToSupplySortStore } from '~/states/components';
 import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
 import { TOOLTIP_ID } from '~/types';
 
-import { APYSmall } from '../../pages/main/components/apy';
+import { APYSmall } from '../../components/apy';
 
 export const useTableAssetsToSupply = () => {
   const { sort, setSort } = useTableLendingAssetsToSupplySortStore();
