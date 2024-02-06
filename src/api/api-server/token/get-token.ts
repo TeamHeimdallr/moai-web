@@ -6,8 +6,8 @@ import { encodeQuery } from '~/utils';
 import { IToken } from '~/types';
 
 interface Queries {
-  symbol: string;
-  networkAbbr: string;
+  symbol?: string;
+  networkAbbr?: string;
   address?: string;
   currency?: string;
 }
