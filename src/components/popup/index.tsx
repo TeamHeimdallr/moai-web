@@ -22,6 +22,8 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
   disableClose?: boolean;
   maxWidth?: number;
+
+  zIndex?: number;
 }
 
 export const Popup = ({
@@ -32,6 +34,7 @@ export const Popup = ({
   icon,
   disableClose,
   maxWidth,
+  zIndex,
   ...rest
 }: Props) => {
   const { isMD } = useMediaQuery();
@@ -46,7 +49,7 @@ export const Popup = ({
 
   return (
     <>
-      <ContentContainer ref={popupRef} maxWidth={maxWidth} {...rest}>
+      <ContentContainer ref={popupRef} maxWidth={maxWidth} zIndex={zIndex} {...rest}>
         <InnerWrapper>
           <Header>
             <TitleWrapper>
@@ -59,28 +62,48 @@ export const Popup = ({
 
           <ContentWrapper>{children}</ContentWrapper>
 
-          <Footer>
-            <ButtonWrapper>{button}</ButtonWrapper>
-          </Footer>
+          {button && (
+            <Footer>
+              <ButtonWrapper>{button}</ButtonWrapper>
+            </Footer>
+          )}
         </InnerWrapper>
       </ContentContainer>
-      {isMD && <Dim />}
+      {isMD && <Dim zIndex={zIndex} />}
     </>
   );
 };
-const Dim = tw.div`
-  fixed w-screen h-screen bg-neutral-0/60 top-0 left-0 z-20
-`;
+
+interface DimProps {
+  zIndex?: number;
+}
+const Dim = styled.div<DimProps>(({ zIndex }) => [
+  tw`
+    fixed w-screen h-screen bg-neutral-0/60 top-0 left-0 z-20
+  `,
+  css`
+    backdrop-filter: blur(2px);
+  `,
+  zIndex &&
+    css`
+      z-index: ${zIndex - 1};
+    `,
+]);
 
 interface ContentContainerProps {
   maxWidth?: number;
+  zIndex?: number;
 }
-const ContentContainer = styled.div<ContentContainerProps>(({ maxWidth }) => [
+const ContentContainer = styled.div<ContentContainerProps>(({ maxWidth, zIndex }) => [
   tw`
     absolute-center fixed w-full top-0 left-0 z-21 flex justify-center
     xs:(h-full)
     md:(py-0 h-auto max-w-452)
   `,
+  zIndex &&
+    css`
+      z-index: ${zIndex};
+    `,
   maxWidth &&
     css`
       @media ${BREAKPOINT.MEDIA_MD} {

@@ -51,6 +51,8 @@ export const useTableAssetsToSupply = () => {
               balance: currentAddress ? 123123 : 0,
               price: 0.5,
               value: currentAddress ? 123123 * 0.5 : 0,
+
+              address: '0xCCCCcCCc00000002000000000000000000000000',
             },
             apy: 5.49,
             collateral: true,
@@ -64,6 +66,8 @@ export const useTableAssetsToSupply = () => {
               balance: currentAddress ? 2000 : 0,
               price: 0.99998,
               value: currentAddress ? 2000 * 0.99998 : 0,
+
+              address: '0xcCcCCCCc00000864000000000000000000000000',
             },
             apy: 0.00249,
             collateral: false,
@@ -71,12 +75,14 @@ export const useTableAssetsToSupply = () => {
           {
             id: 3,
             asset: {
-              symbol: 'USDT',
-              image: `${ASSET_URL}/tokens/token-usdt.png`,
+              symbol: 'ASTO',
+              image: `${ASSET_URL}/tokens/token-asto.png`,
 
               balance: 0,
-              price: 0.10001,
+              price: 0.037040386348962784,
               value: 0,
+
+              address: '0xcCcCCccC00004464000000000000000000000000',
             },
             apy: 0.0081,
             collateral: false,
@@ -216,6 +222,7 @@ export const useTableAssetsToSupply = () => {
     () =>
       sortedAssetsToSupply.map((d, i) => {
         return {
+          meta: { id: d.id, asset: d.asset },
           rows: [
             <TableColumnToken
               key={i}

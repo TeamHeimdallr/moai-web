@@ -14,7 +14,7 @@ export interface IToken {
 
   image?: string; // token image url
 
-  decimals?: number;
+  decimal?: number;
 
   price?: number;
 

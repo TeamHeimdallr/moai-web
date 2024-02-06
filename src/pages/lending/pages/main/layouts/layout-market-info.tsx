@@ -8,6 +8,8 @@ import { ASSET_URL } from '~/constants';
 import { ButtonIconMedium, ButtonIconSmall } from '~/components/buttons';
 import { Tooltip } from '~/components/tooltips/base';
 
+import { titleMap } from '~/pages/lending/data';
+
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -18,7 +20,7 @@ import {
   formatNumber,
   getNetworkAbbr,
 } from '~/utils';
-import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { APYLarge } from '../components/apy';
 import { Card } from '../components/card';
@@ -35,12 +37,6 @@ export const LayoutMarketInfo = () => {
   const { selectedNetwork } = useNetwork();
   const networkAbbr = getNetworkAbbr(selectedNetwork);
   const backgroundUrl = `${ASSET_URL}/images/network-${networkAbbr}.png`;
-
-  const titleMap = {
-    [NETWORK.THE_ROOT_NETWORK]: 'The Root Network',
-    [NETWORK.XRPL]: 'XRPL',
-    [NETWORK.EVM_SIDECHAIN]: 'Evm Sidechain',
-  };
 
   const { open: openHealthFactorPopup, opened: healthFactorPopupOpened } = usePopup(
     POPUP_ID.LENDING_HEALTH_FACTOR

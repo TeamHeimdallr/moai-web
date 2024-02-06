@@ -6,7 +6,8 @@ import { Gnb } from '~/components/gnb';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
-import { useNetwork } from '~/hooks/contexts/use-network';
+import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
+import { usePrevious } from '~/hooks/utils';
 import { useSupplyBorrowTabStore } from '~/states/pages/lending';
 import { NETWORK, POPUP_ID } from '~/types';
 
@@ -21,9 +22,16 @@ export const LendingMain = () => {
 
   const targetNetork = [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN];
   const { selectedNetwork } = useNetwork();
+  const previousNetwork = usePrevious<NETWORK>(selectedNetwork);
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
   const { type, setType } = useSupplyBorrowTabStore();
+
+  useForceNetwork({
+    targetNetwork: targetNetork,
+    changeTargetNetwork: previousNetwork || targetNetork[0],
+    callCallbackUnmounted: true,
+  });
 
   return (
     <Wrapper>

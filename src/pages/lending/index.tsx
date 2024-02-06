@@ -1,10 +1,7 @@
 import { Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
-import { usePrevious } from '~/hooks/utils';
 import { useMaintanence } from '~/hooks/utils/use-maintanence';
-import { NETWORK } from '~/types';
 
 import { LendingBorrow } from './pages/borrow';
 import { LendingDetail } from './pages/detail';
@@ -15,14 +12,6 @@ import { LendingWithdraw } from './pages/withdraw';
 
 const LendingPage = () => {
   const { getMaintanence } = useMaintanence();
-  const { selectedNetwork } = useNetwork();
-  const previousNetwork = usePrevious<NETWORK>(selectedNetwork);
-
-  useForceNetwork({
-    targetNetwork: [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN],
-    changeTargetNetwork: previousNetwork || selectedNetwork,
-    callCallbackUnmounted: true,
-  });
 
   return (
     <Routes>
@@ -36,21 +25,30 @@ const LendingPage = () => {
         )}
       />
       <Route
-        path="/:id"
+        path="/:network/:symbol"
         element={getMaintanence(
-          '/lending/:id',
+          '/lending/:network/:symbol',
           <Suspense fallback={<></>}>
             <LendingDetail />
           </Suspense>
         )}
       />
-      <Route path="/:id/supply" element={getMaintanence('/pools/:id/supply', <LendingSupply />)} />
       <Route
-        path="/:id/withdraw"
-        element={getMaintanence('/pools/:id/withdraw', <LendingWithdraw />)}
+        path="/:network/:symbol/supply"
+        element={getMaintanence('/lending/:network/:symbol/supply', <LendingSupply />)}
       />
-      <Route path="/:id/borrow" element={getMaintanence('/pools/:id/borrow', <LendingBorrow />)} />
-      <Route path="/:id/replay" element={getMaintanence('/pools/:id/replay', <LendingRepay />)} />
+      <Route
+        path="/:network/:symbol/withdraw"
+        element={getMaintanence('/lending/:network/:symbol/withdraw', <LendingWithdraw />)}
+      />
+      <Route
+        path="/:network/:symbol/borrow"
+        element={getMaintanence('/lending/:network/:symbol/borrow', <LendingBorrow />)}
+      />
+      <Route
+        path="/:network/:symbol/replay"
+        element={getMaintanence('/lending/:network/:symbol/replay', <LendingRepay />)}
+      />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

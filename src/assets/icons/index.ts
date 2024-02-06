@@ -1,3 +1,4 @@
+import IconAddToken from './icon-add-token.svg?react';
 import IconAlert from './icon-alert.svg?react';
 import IconArrowDown from './icon-arrow-down.svg?react';
 import IconArrowNext from './icon-arrow-next.svg?react';
@@ -66,6 +67,7 @@ import IconWallet from './icon-wallet.svg?react';
 import IconWeb from './icon-web.svg?react';
 
 export {
+  IconAddToken,
   IconAlert,
   IconArrowDown,
   IconArrowNext,

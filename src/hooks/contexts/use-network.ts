@@ -50,6 +50,7 @@ interface UseFroceNetwork {
   targetNetwork?: NETWORK[];
   changeTargetNetwork?: NETWORK;
   callCallbackUnmounted?: boolean;
+  redirectTo?: string;
 }
 export const useForceNetwork = ({
   popupId,
@@ -58,6 +59,7 @@ export const useForceNetwork = ({
   targetNetwork,
   changeTargetNetwork,
   callCallbackUnmounted,
+  redirectTo,
 }: UseFroceNetwork) => {
   const navigate = useNavigate();
   const { network } = useParams();
@@ -91,7 +93,7 @@ export const useForceNetwork = ({
     const callback = () => {
       selectNetwork(selectedNetwork);
       reset();
-      navigate('/');
+      navigate(redirectTo || '/');
     };
 
     const unmountCallback = () => {
@@ -115,7 +117,7 @@ export const useForceNetwork = ({
       selectNetwork(changeTargetNetwork || selectedNetwork);
       reset();
 
-      if (!changeTargetNetwork) navigate('/');
+      if (!changeTargetNetwork) navigate(redirectTo || '/');
     };
 
     const unmountCallback = () => {

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { IconQuestion } from '~/assets/icons';
@@ -16,7 +17,7 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkAbbr } from '~/utils';
 import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
@@ -25,11 +26,14 @@ import { Card } from '../components/card';
 import { PopupCollateral } from '../components/popup-collateral';
 
 export const LayoutMarketSupplies = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { setShowZeroBalances, showZeroBalances } = useShowZeroBalanceAssetsStore();
   const { selectedNetwork } = useNetwork();
   const { currentAddress } = useConnectedWallet(selectedNetwork);
+  const networkAbbr = getNetworkAbbr(selectedNetwork);
+
   const { opened: enableCollateralPopupOpened } = usePopup(
     POPUP_ID.LENDING_SUPPLY_ENABLE_COLLATERAL
   );
@@ -60,6 +64,16 @@ export const LayoutMarketSupplies = () => {
   } = useTableAssetsToSupply();
 
   const { isMD } = useMediaQuery();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleRowClick = (meta: any) => {
+    if (!meta) return;
+
+    const { asset } = meta;
+    if (!asset || !asset?.symbol) return;
+
+    navigate(`/lending/${networkAbbr}/${asset.symbol}`);
+  };
 
   return (
     <Wrapper>
@@ -104,6 +118,7 @@ export const LayoutMarketSupplies = () => {
               type="lighter"
               emptyText={t('lending-my-supplies-empty')}
               hasMore={hasNextPageMySupplies}
+              handleRowClick={handleRowClick}
               handleMoreClick={() => fetchNextPageMySupplies()}
             />
           ) : (
@@ -112,6 +127,7 @@ export const LayoutMarketSupplies = () => {
               columns={mobileTableColumnMySupplies}
               emptyText={t('lending-my-supplies-empty')}
               hasMore={hasNextPageMySupplies}
+              handleClick={handleRowClick}
               handleMoreClick={fetchNextPageMySupplies}
             />
           )}
@@ -136,6 +152,7 @@ export const LayoutMarketSupplies = () => {
             type="lighter"
             emptyText={t('lending-assets-to-supply-empty')}
             hasMore={hasNextPageAssetsToSupply}
+            handleRowClick={handleRowClick}
             handleMoreClick={() => fetchNextPageAssetsToSupply()}
           />
         ) : (
@@ -144,6 +161,7 @@ export const LayoutMarketSupplies = () => {
             columns={mobileTableColumnAssetsToSupply}
             emptyText={t('lending-assets-to-supply-empty')}
             hasMore={hasNextPageAssetsToSupply}
+            handleClick={handleRowClick}
             handleMoreClick={fetchNextPageAssetsToSupply}
           />
         )}

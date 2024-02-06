@@ -210,6 +210,7 @@ export const useTableMyBorrows = () => {
         };
 
         return {
+          meta: { id: d.id, asset: d.asset },
           rows: [
             <TableColumnToken
               key={i}
