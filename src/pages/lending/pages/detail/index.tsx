@@ -14,7 +14,7 @@ import { usePrevious } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
-import { LendingHeader } from './layouts/header';
+import { LendingHeader } from './layouts/layout-header';
 
 export const LendingDetail = () => {
   useGAPage();
