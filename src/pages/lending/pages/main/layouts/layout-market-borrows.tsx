@@ -13,9 +13,10 @@ import { useTableAssetsToBorrow } from '~/pages/lending/hooks/table/use-table-as
 import { useTableMyBorrows } from '~/pages/lending/hooks/table/use-table-my-borrows';
 
 import { usePopup } from '~/hooks/components';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkAbbr } from '~/utils';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { APYMedium } from '../components/apy';
@@ -26,8 +27,9 @@ export const LayoutMarketBorrows = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const { evm, fpass } = useConnectedWallet();
-  const evmAddress = evm?.address || fpass?.address;
+  const { selectedNetwork } = useNetwork();
+  const { currentAddress } = useConnectedWallet(selectedNetwork);
+  const networkAbbr = getNetworkAbbr(selectedNetwork);
 
   const balance = 24000;
   const apy = 0.001;
@@ -60,14 +62,14 @@ export const LayoutMarketBorrows = () => {
     if (!meta) return;
 
     const { asset } = meta;
-    if (!asset) return;
+    if (!asset || !asset?.symbol) return;
 
-    navigate(`/lending/${asset.address}`);
+    navigate(`/lending/${networkAbbr}/${asset.symbol}`);
   };
 
   return (
     <Wrapper>
-      {evmAddress && (
+      {currentAddress && (
         <ContentWrapper>
           <Title>{t('My Borrows')}</Title>
           <CardWrapper>

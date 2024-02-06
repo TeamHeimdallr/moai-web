@@ -17,7 +17,7 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatNumber } from '~/utils';
+import { formatNumber, getNetworkAbbr } from '~/utils';
 import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
@@ -32,6 +32,8 @@ export const LayoutMarketSupplies = () => {
   const { setShowZeroBalances, showZeroBalances } = useShowZeroBalanceAssetsStore();
   const { selectedNetwork } = useNetwork();
   const { currentAddress } = useConnectedWallet(selectedNetwork);
+  const networkAbbr = getNetworkAbbr(selectedNetwork);
+
   const { opened: enableCollateralPopupOpened } = usePopup(
     POPUP_ID.LENDING_SUPPLY_ENABLE_COLLATERAL
   );
@@ -68,9 +70,9 @@ export const LayoutMarketSupplies = () => {
     if (!meta) return;
 
     const { asset } = meta;
-    if (!asset) return;
+    if (!asset || !asset?.symbol) return;
 
-    navigate(`/lending/${asset.address}`);
+    navigate(`/lending/${networkAbbr}/${asset.symbol}`);
   };
 
   return (
