@@ -68,8 +68,8 @@ export const LayoutMarketInfo = () => {
       </HeaderWrapper>
       <InfoWrapper>
         <InfoInnerWrapper>
-          <Card title={t('Net Worth')} value={`$${formatNumber(netWorth)}`} />
-          <Card
+          <InfoCard title={t('Net Worth')} value={`$${formatNumber(netWorth)}`} />
+          <InfoCard
             title={t('Net APY')}
             value={<APYLarge apy={netAPY} />}
             titleIcon={

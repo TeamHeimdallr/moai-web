@@ -25,8 +25,8 @@ import { getNetworkAbbr } from '~/utils';
 import { useTableLendingMySuppliesSortStore } from '~/states/components';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
-import { mySuppliesData } from '../../data';
 import { APYSmall } from '../../components/apy';
+import { mySuppliesData } from '../../data';
 
 export const useTableMySupplies = () => {
   const { sort, setSort } = useTableLendingMySuppliesSortStore();
