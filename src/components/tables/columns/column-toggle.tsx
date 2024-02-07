@@ -11,7 +11,13 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 export const TableColumnToggle = ({ selected, handleSelect, ...rest }: Props) => {
   return (
     <Wrapper {...rest}>
-      <Toggle selected={selected} onClick={() => handleSelect(selected)} />
+      <Toggle
+        selected={selected}
+        onClick={e => {
+          e.stopPropagation();
+          handleSelect(selected);
+        }}
+      />
     </Wrapper>
   );
 };

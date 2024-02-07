@@ -28,16 +28,17 @@ export const TableColumnDropdownLendingApyType = ({
 }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const [opened, open] = useState(false);
-  const toggle = () => open(!opened);
+  const toggle = (e: SyntheticEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    open(!opened);
+  };
 
   const { t } = useTranslation();
 
   useOnClickOutside([ref], () => open(false));
 
   const onClick = (e: SyntheticEvent<HTMLDivElement>, apyType: string, apy: number) => {
-    e.preventDefault();
     e.stopPropagation();
-
     if (apyType === currentType.apyType) return;
 
     handleClick?.(address, apyType, apy);
@@ -49,7 +50,7 @@ export const TableColumnDropdownLendingApyType = ({
       <InnerWrapper>
         <ButtonDropdown
           text={t(currentType.apyType)}
-          onClick={toggle}
+          onClick={e => toggle(e)}
           style={{ paddingLeft: '16px' }}
           enableTextBreakpoint={false}
         />
