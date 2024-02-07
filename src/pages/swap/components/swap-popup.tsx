@@ -31,13 +31,7 @@ import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import {
-  DATE_FORMATTER,
-  formatFloat,
-  formatNumber,
-  getNetworkFull,
-  getTokenDecimal,
-} from '~/utils';
+import { DATE_FORMATTER, formatNumber, getNetworkFull, getTokenDecimal } from '~/utils';
 import {
   useApproveNetworkFeeErrorStore,
   useSwapNetworkFeeErrorStore,
@@ -166,11 +160,10 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     fromToken && toToken
       ? fromInput
         ? Number(
-            formatFloat(
+            (
               toTokenReserve -
-                toTokenReserve * (fromTokenReserve / (fromTokenReserve + numFromInput * (1 - fee))),
-              6
-            )
+              toTokenReserve * (fromTokenReserve / (fromTokenReserve + numFromInput * (1 - fee)))
+            ).toFixed(6)
           )
         : undefined
       : undefined;

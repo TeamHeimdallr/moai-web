@@ -67,7 +67,12 @@ export const useTableLiquidityPool = () => {
             tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
           />
         ),
-        poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+        poolValue: (
+          <TableColumn
+            value={`$${formatNumber(d.value, 4, 'floor', 1000000, 2)}`}
+            align="flex-end"
+          />
+        ),
         volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
         apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
       })),

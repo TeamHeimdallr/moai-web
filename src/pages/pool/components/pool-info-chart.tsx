@@ -13,7 +13,7 @@ import { ButtonChipSmall } from '~/components/buttons';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
-import { formatFloat, formatNumber, formatNumberWithUnit } from '~/utils';
+import { formatNumber } from '~/utils';
 import {
   usePoolInfoChartSelectedRangeStore,
   usePoolInfoChartSelectedTabStore,
@@ -177,8 +177,8 @@ export const PoolInfoChart = () => {
                     type: 'linear',
                     ticks: {
                       callback: (value: string | number) => {
-                        if (Number(value) < 1) return `$${formatFloat(Number(value), 4)}`;
-                        return `$${formatNumberWithUnit(Number(value))}`;
+                        if (Number(value) < 1) return `$${Number(value).toFixed(4)}`;
+                        return `$${formatNumber(Number(value), 2, 'floor', 1000, 2)}`;
                       },
                       color: COLOR.NEUTRAL[60],
                       crossAlign: 'far',

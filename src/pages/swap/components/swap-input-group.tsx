@@ -30,13 +30,7 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import {
-  formatFloat,
-  formatNumber,
-  getNetworkAbbr,
-  getNetworkFull,
-  getTokenDecimal,
-} from '~/utils';
+import { formatNumber, getNetworkAbbr, getNetworkFull, getTokenDecimal } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
 import { NETWORK, SwapKind } from '~/types';
@@ -216,14 +210,11 @@ const _SwapInputGroup = () => {
     fromToken && toToken
       ? fromInput
         ? Number(
-            formatFloat(
-              strip(
-                toTokenReserve -
-                  toTokenReserve *
-                    (fromTokenReserve / (fromTokenReserve + Number(fromInput) * (1 - fee)))
-              ),
-              6
-            )
+            strip(
+              toTokenReserve -
+                toTokenReserve *
+                  (fromTokenReserve / (fromTokenReserve + Number(fromInput) * (1 - fee)))
+            ).toFixed(6)
           )
         : undefined
       : undefined;
