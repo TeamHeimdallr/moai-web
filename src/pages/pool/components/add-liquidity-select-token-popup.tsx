@@ -3,6 +3,8 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 
+import { THOUSAND } from '~/constants';
+
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 
@@ -55,8 +57,8 @@ export const AddLiquiditySelectTokenPopup = ({ userPoolTokenBalances, compositio
                   title={token.symbol}
                   image={token.image}
                   type={'selectable'}
-                  balance={balance ? `${formatNumber(balance, 4)}` : '0'}
-                  value={`$${token.price ? `${formatNumber(balance * token.price, 4)}` : '0'}`}
+                  balance={balance ? `${formatNumber(balance, 4, 'floor', THOUSAND, 0)}` : '0'}
+                  value={`$${token.price ? `${formatNumber(balance * token.price)}` : '0'}`}
                   selected={selectedToken?.symbol === token.symbol}
                   onClick={() => {
                     gaAction({

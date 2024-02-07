@@ -59,7 +59,7 @@ export const Token = ({
           />
         ))}
       <TextWrapper>
-        <TokenText>{title ? title : token}</TokenText>
+        <TokenText type={type}>{title ? title : token}</TokenText>
         {percentage && <Percentage>{percentage}%</Percentage>}
         {icon && <IconWrapper>{icon}</IconWrapper>}
       </TextWrapper>
@@ -101,10 +101,15 @@ const TextWrapper = tw.div`
   flex gap-4 items-end uppercase
 `;
 
-const TokenText = tw.div`
-  font-r-14
-  md:(font-r-16 leading-24)
-`;
+interface TokenWrapperProps {
+  type?: 'large' | 'small';
+}
+const TokenText = styled.div<TokenWrapperProps>(({ type }) => [
+  tw`
+    font-r-14
+  `,
+  type === 'large' && tw`font-r-16`,
+]);
 const Percentage = tw.div`
   font-r-12 text-neutral-80
 `;

@@ -4,6 +4,8 @@ import tw from 'twin.macro';
 
 import { IconQuestion } from '~/assets/icons';
 
+import { MILLION, THOUSAND } from '~/constants';
+
 import { ButtonIconSmall } from '~/components/buttons';
 import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
@@ -75,7 +77,7 @@ export const LayoutMarketBorrows = () => {
           <CardWrapper>
             <Card
               title={t('lending-balance')}
-              value={`$${formatNumber(balance, 4, 'round', 100000)}`}
+              value={`$${formatNumber(balance, 2, 'floor', MILLION, 2)}`}
               light
             />
             <Card
@@ -97,7 +99,7 @@ export const LayoutMarketBorrows = () => {
                   data-tooltip-id={TOOLTIP_ID.LENDING_BORROW_BORROW_POWER_USED}
                 />
               }
-              value={`${formatNumber(borrowPowerUsed, 4, 'round', 1000)}%`}
+              value={`${formatNumber(borrowPowerUsed, 2, 'floor', THOUSAND, 0)}%`}
               light
             />
           </CardWrapper>

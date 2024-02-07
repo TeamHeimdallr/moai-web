@@ -115,7 +115,7 @@ const _AddLiquidityInputGroup = () => {
   const priceImpact = hasBalances
     ? priceImpactRaw < 0.01
       ? '< 0.01'
-      : formatNumber(priceImpactRaw, 2)
+      : formatNumber(priceImpactRaw)
     : '0.00';
 
   const schema = yup.object().shape({
@@ -262,7 +262,7 @@ const _AddLiquidityInputGroup = () => {
             <TotalInnerWrapper>
               <TotalText>{t`Total liquidity`}</TotalText>
               <TotalValueWrapper>
-                <TotalValue>{`$${formatNumber(totalValue, 2)}`}</TotalValue>
+                <TotalValue>{`$${formatNumber(totalValue)}`}</TotalValue>
                 {!(isXrp && isSingle) && (
                   <ButtonPrimarySmall
                     text={totalValueMaxed ? 'Maxed' : 'Max'}

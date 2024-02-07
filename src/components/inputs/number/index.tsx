@@ -8,7 +8,7 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 
-import { NETWORK_IMAGE_MAPPER } from '~/constants';
+import { NETWORK_IMAGE_MAPPER, THOUSAND } from '~/constants';
 
 import { ButtonPrimarySmall } from '~/components/buttons/primary';
 
@@ -188,7 +188,9 @@ export const InputNumber = ({
               <BalanceOuterWrapper>
                 <BalanceWrapper>
                   <BalanceLabel>{t('Balance')}</BalanceLabel>
-                  <BalanceValue>{formatNumber(currentBalance || 0, 2, 'floor')}</BalanceValue>
+                  <BalanceValue>
+                    {formatNumber(currentBalance || 0, 4, 'floor', THOUSAND, 0)}
+                  </BalanceValue>
                   {maxButton && (
                     <ButtonPrimarySmall
                       text={handledValue === currentBalance ? 'Maxed' : 'Max'}
@@ -200,7 +202,7 @@ export const InputNumber = ({
                       disabled={handledValue === currentBalance}
                     />
                   )}
-                  <TokenUSDValue>${formatNumber(tokenValue || 0, 2, 'floor')}</TokenUSDValue>
+                  <TokenUSDValue>${formatNumber(tokenValue || 0)}</TokenUSDValue>
                 </BalanceWrapper>
                 {slider && (
                   <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>

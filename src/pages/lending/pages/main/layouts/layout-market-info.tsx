@@ -68,7 +68,7 @@ export const LayoutMarketInfo = () => {
       </HeaderWrapper>
       <InfoWrapper>
         <InfoInnerWrapper>
-          <Card title={t('Net Worth')} value={`$${formatNumber(netWorth, 2)}`} />
+          <Card title={t('Net Worth')} value={`$${formatNumber(netWorth)}`} />
           <Card
             title={t('Net APY')}
             value={<APYLarge apy={netAPY} />}
@@ -87,13 +87,13 @@ export const LayoutMarketInfo = () => {
               iconButton={
                 <ButtonIconMedium icon={<IconNext />} onClick={handleHealthFactorClick} />
               }
-              value={`${formatNumber(healthFactor, 2)}`}
+              value={`${formatNumber(healthFactor)}`}
               valueColor={`${healthFactorColor}`}
             />
             <Card
               title={t('Current LTV')}
               iconButton={<ButtonIconMedium icon={<IconNext />} onClick={handleCurrentLTVClick} />}
-              value={`${formatNumber(currentLTV, 2)}%`}
+              value={`${formatNumber(currentLTV)}%`}
               valueColor={`${currentLTVColor}`}
             />
           </InfoInnerWrapper>

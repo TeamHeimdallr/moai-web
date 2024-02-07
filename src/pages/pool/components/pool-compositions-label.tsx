@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
+import { THOUSAND } from '~/constants';
+
 import { formatNumber } from '~/utils';
 import { ITokenComposition } from '~/types';
 
@@ -24,9 +26,9 @@ export const TokenCompositionLabel = ({ composition, idx }: Props) => {
       </TokenSymbolWrapper>
       <TokenValueWrapper>
         <TokenBalance>
-          {formatNumber(balance, 4, 'round', 1000)} {symbol}
+          {formatNumber(balance, 4, 'floor', THOUSAND, 4)} {symbol}
         </TokenBalance>
-        <TokenValue>${formatNumber(value, 4, 'round', 1000)}</TokenValue>
+        <TokenValue>${formatNumber(value)}</TokenValue>
       </TokenValueWrapper>
     </Wrapper>
   );

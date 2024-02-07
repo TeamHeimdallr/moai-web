@@ -2,6 +2,8 @@ import { HTMLAttributes, ReactNode } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { css, styled } from 'twin.macro';
 
+import { THOUSAND } from '~/constants';
+
 import { formatNumber } from '~/utils';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -30,9 +32,9 @@ export const TokenList = ({
           {token}
         </Token>
         <Description>
-          <Balance>{formatNumber(balance)}</Balance>
+          <Balance>{formatNumber(balance, 4, 'floor', THOUSAND, 0)}</Balance>
           {/* compare value whether undefined or not, since value could be 0 */}
-          {value !== undefined && <Value>${formatNumber(value, 2)}</Value>}
+          {value !== undefined && <Value>${formatNumber(value)}</Value>}
         </Description>
       </TokenWrapper>
       {button && <ButtonWrapper>{button}</ButtonWrapper>}

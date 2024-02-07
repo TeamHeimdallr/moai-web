@@ -6,6 +6,8 @@ import tw, { styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconDivision, IconEquals, IconTriangle } from '~/assets/icons';
 
+import { THOUSAND } from '~/constants';
+
 import { BadgeText } from '~/components/badges';
 import { Popup } from '~/components/popup';
 
@@ -25,7 +27,7 @@ export const MarketInfoHealthFactorPopup = ({ assets, debt, criteria }: Props) =
   const healthFactorRaw = assets / debt;
   const healthFactorRatio = Math.max(Math.min(healthFactorRaw / criteria, 1), 0);
 
-  const healthFactor = formatNumber(assets / debt, 2, 'round', 1000);
+  const healthFactor = formatNumber(assets / debt, 2, 'floor', THOUSAND, 2);
   const healthFactorColor = calculateHealthFactorColor(healthFactorRaw);
 
   const [position, setPosition] = useState(0);
@@ -70,7 +72,7 @@ export const MarketInfoHealthFactorPopup = ({ assets, debt, criteria }: Props) =
         <ContentWrapper>
           <ExpressWrapper>
             <NumberBadgeWrapper>
-              <ExpressNumber>{`$${formatNumber(assets, 1, 'round', 1000)}`}</ExpressNumber>
+              <ExpressNumber>{`$${formatNumber(assets, 2, 'floor', THOUSAND, 2)}`}</ExpressNumber>
               <BadgeText
                 text={t('health-factor-assets')}
                 backgroundColor={COLOR.PRIMARY[20]}
@@ -83,7 +85,7 @@ export const MarketInfoHealthFactorPopup = ({ assets, debt, criteria }: Props) =
             </ExpressIcon>
 
             <NumberBadgeWrapper>
-              <ExpressNumber>{`$${formatNumber(debt, 1, 'round', 1000)}`}</ExpressNumber>
+              <ExpressNumber>{`$${formatNumber(debt, 2, 'floor', THOUSAND, 2)}`}</ExpressNumber>
               <BadgeText
                 text={t('health-factor-debt')}
                 backgroundColor={COLOR.PRIMARY[20]}

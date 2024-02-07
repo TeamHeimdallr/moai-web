@@ -80,7 +80,7 @@ export const UserPoolBalances = () => {
     <Wrapper ref={ref}>
       <Header>
         {t('My liquidity')}
-        <Balance>${formatNumber(userLpTokenValue || 0, 4)}</Balance>
+        <Balance>${formatNumber(userLpTokenValue || 0)}</Balance>
       </Header>
       <Divider />
       <TokenLists>
@@ -94,14 +94,14 @@ export const UserPoolBalances = () => {
             />
           }
           title={lpToken?.symbol || lpTokenSymbol}
-          balance={formatNumber(userLpTokenBalance || 0, 4)}
+          balance={formatNumber(userLpTokenBalance || 0, 4, 'floor', 0)}
           type={isMD ? 'large' : 'medium'}
         />
       </TokenLists>
       <Footer>
         <FooterBalanceWrapper>
           {t('Wallet balance')}
-          <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0, 4)}`}</FooterBalance>
+          <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0)}`}</FooterBalance>
         </FooterBalanceWrapper>
         <ButtonWrapper>
           {address ? (

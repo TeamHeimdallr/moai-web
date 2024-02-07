@@ -106,7 +106,7 @@ export const PopupApyType = () => {
               <TokenList
                 type="medium"
                 title={t('New APY')}
-                balance={`${t(type)} ${formatNumber(apy, 6, 'round', 1000)}%`}
+                balance={`${t(type)} ${formatNumber(apy)}%`}
               />
             </List>
             <Scanner onClick={() => {}}>
@@ -137,7 +137,7 @@ export const PopupApyType = () => {
               <TokenList
                 type="medium"
                 title={t('New APY')}
-                balance={`${t(type)} ${formatNumber(apy, 6, 'round', 1000)}%`}
+                balance={`${t(type)} ${formatNumber(apy)}%`}
               />
             </List>
             <GasFeeWrapper>

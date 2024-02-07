@@ -18,7 +18,7 @@ import { useSorFallbackQuery } from '~/api/api-server/sor/get-swap-fallback';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconDown } from '~/assets/icons';
 
-import { EVM_VAULT_ADDRESS } from '~/constants';
+import { EVM_VAULT_ADDRESS, THOUSAND } from '~/constants';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
@@ -30,13 +30,7 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import {
-  formatFloat,
-  formatNumber,
-  getNetworkAbbr,
-  getNetworkFull,
-  getTokenDecimal,
-} from '~/utils';
+import { formatNumber, getNetworkAbbr, getNetworkFull, getTokenDecimal } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { useSwapStore } from '~/states/pages';
 import { NETWORK, SwapKind } from '~/types';
@@ -216,14 +210,11 @@ const _SwapInputGroup = () => {
     fromToken && toToken
       ? fromInput
         ? Number(
-            formatFloat(
-              strip(
-                toTokenReserve -
-                  toTokenReserve *
-                    (fromTokenReserve / (fromTokenReserve + Number(fromInput) * (1 - fee)))
-              ),
-              6
-            )
+            strip(
+              toTokenReserve -
+                toTokenReserve *
+                  (fromTokenReserve / (fromTokenReserve + Number(fromInput) * (1 - fee)))
+            ).toFixed(6)
           )
         : undefined
       : undefined;
@@ -358,9 +349,13 @@ const _SwapInputGroup = () => {
             />
           </InputInnerWrapper>
           {fromToken && toToken && (
-            <InputLabel>{`1 ${fromToken.symbol} = ${formatNumber(swapRatio, 6)} ${
-              toToken.symbol
-            }`}</InputLabel>
+            <InputLabel>{`1 ${fromToken.symbol} = ${formatNumber(
+              swapRatio,
+              6,
+              'floor',
+              THOUSAND,
+              0
+            )} ${toToken.symbol}`}</InputLabel>
           )}
         </InputWrapper>
 

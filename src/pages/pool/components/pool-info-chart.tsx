@@ -9,11 +9,13 @@ import { useGetChartQuery } from '~/api/api-server/pools/get-charts';
 
 import { COLOR } from '~/assets/colors';
 
+import { THOUSAND } from '~/constants';
+
 import { ButtonChipSmall } from '~/components/buttons';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
-import { formatFloat, formatNumber, formatNumberWithUnit } from '~/utils';
+import { formatNumber } from '~/utils';
 import {
   usePoolInfoChartSelectedRangeStore,
   usePoolInfoChartSelectedTabStore,
@@ -96,7 +98,7 @@ export const PoolInfoChart = () => {
           ))}
         </HeaderTitleWrapper>
         <HeaderValueWrapper>
-          <HeaderValue>${formatNumber(totalValue, 4)}</HeaderValue>
+          <HeaderValue>${formatNumber(totalValue)}</HeaderValue>
           <HeaderValueLabel>{totalValueCaption}</HeaderValueLabel>
         </HeaderValueWrapper>
       </Header>
@@ -177,8 +179,7 @@ export const PoolInfoChart = () => {
                     type: 'linear',
                     ticks: {
                       callback: (value: string | number) => {
-                        if (Number(value) < 1) return `$${formatFloat(Number(value), 4)}`;
-                        return `$${formatNumberWithUnit(Number(value))}`;
+                        return `$${formatNumber(Number(value), 4, 'floor', THOUSAND, 0)}`;
                       },
                       color: COLOR.NEUTRAL[60],
                       crossAlign: 'far',

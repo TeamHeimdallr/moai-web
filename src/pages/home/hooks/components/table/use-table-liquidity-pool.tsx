@@ -5,6 +5,8 @@ import { uniqBy } from 'lodash-es';
 
 import { useGetPoolsInfinityQuery } from '~/api/api-server/pools/get-pools';
 
+import { MILLION } from '~/constants';
+
 import { NetworkChip } from '~/components/network-chip';
 import {
   TableColumn,
@@ -67,9 +69,13 @@ export const useTableLiquidityPool = () => {
             tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
           />
         ),
-        poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
-        volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
-        apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+        poolValue: (
+          <TableColumn value={`$${formatNumber(d.value, 2, 'floor', MILLION)}`} align="flex-end" />
+        ),
+        volume: (
+          <TableColumn value={`$${formatNumber(d.volume, 2, 'floor', MILLION)}`} align="flex-end" />
+        ),
+        apr: <TableColumn value={`${formatNumber(d.apr)}%`} align="flex-end" />,
       })),
     [pools, showAllPools]
   );
@@ -147,15 +153,25 @@ export const useTableLiquidityPool = () => {
         dataRows: [
           {
             label: 'Pool value',
-            value: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+            value: (
+              <TableColumn
+                value={`$${formatNumber(d.value, 2, 'floor', MILLION)}`}
+                align="flex-end"
+              />
+            ),
           },
           {
             label: 'Volume (24h)',
-            value: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
+            value: (
+              <TableColumn
+                value={`$${formatNumber(d.volume, 2, 'floor', MILLION)}`}
+                align="flex-end"
+              />
+            ),
           },
           {
             label: 'APR',
-            value: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+            value: <TableColumn value={`${formatNumber(d.apr)}%`} align="flex-end" />,
           },
         ],
       })),

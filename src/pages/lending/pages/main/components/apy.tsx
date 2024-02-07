@@ -15,7 +15,7 @@ export const APYLarge = ({ apy }: Props) => {
       </WrapperLarge>
     );
 
-  return <WrapperLarge>{`${formatNumber(apy, 2)}%`}</WrapperLarge>;
+  return <WrapperLarge>{`${formatNumber(apy)}%`}</WrapperLarge>;
 };
 
 const WrapperLarge = tw.div`
@@ -37,7 +37,7 @@ export const APYMedium = ({ apy }: Props) => {
       </WrapperMedium>
     );
 
-  return <WrapperMedium>{`${formatNumber(apy, 2)}%`}</WrapperMedium>;
+  return <WrapperMedium>{`${formatNumber(apy)}%`}</WrapperMedium>;
 };
 
 const WrapperMedium = tw.div`
@@ -59,7 +59,7 @@ export const APYSmall = ({ apy }: Props) => {
       </WrapperSmall>
     );
 
-  return <WrapperSmall>{`${formatNumber(apy, 2)}%`}</WrapperSmall>;
+  return <WrapperSmall>{`${formatNumber(apy)}%`}</WrapperSmall>;
 };
 
 const WrapperSmall = tw.div`

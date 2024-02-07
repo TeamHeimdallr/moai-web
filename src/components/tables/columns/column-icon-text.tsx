@@ -28,7 +28,7 @@ const Wrapper = styled.div<WrapperProps>(({ align, address }) => [
     css`
       justify-content: ${align};
     `,
-  address && tw`address`,
+  address && tw`address gap-8`,
 ]);
 
 const IconWrapper = tw.div`

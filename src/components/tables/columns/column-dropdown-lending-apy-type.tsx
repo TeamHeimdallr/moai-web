@@ -1,4 +1,4 @@
-import { HTMLAttributes, useRef, useState } from 'react';
+import { HTMLAttributes, SyntheticEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
@@ -28,13 +28,17 @@ export const TableColumnDropdownLendingApyType = ({
 }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const [opened, open] = useState(false);
-  const toggle = () => open(!opened);
+  const toggle = (e: SyntheticEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    open(!opened);
+  };
 
   const { t } = useTranslation();
 
   useOnClickOutside([ref], () => open(false));
 
-  const onClick = (apyType: string, apy: number) => {
+  const onClick = (e: SyntheticEvent<HTMLDivElement>, apyType: string, apy: number) => {
+    e.stopPropagation();
     if (apyType === currentType.apyType) return;
 
     handleClick?.(address, apyType, apy);
@@ -46,7 +50,7 @@ export const TableColumnDropdownLendingApyType = ({
       <InnerWrapper>
         <ButtonDropdown
           text={t(currentType.apyType)}
-          onClick={toggle}
+          onClick={e => toggle(e)}
           style={{ paddingLeft: '16px' }}
           enableTextBreakpoint={false}
         />
@@ -58,7 +62,7 @@ export const TableColumnDropdownLendingApyType = ({
               {types.map(({ apyType, apy }) => (
                 <List
                   key={apyType}
-                  onClick={() => onClick(apyType, apy)}
+                  onClick={e => onClick(e, apyType, apy)}
                   disabled={apyType === currentType.apyType}
                 >
                   <Text grow>{t(`lending-apy-${apyType}`)}</Text>

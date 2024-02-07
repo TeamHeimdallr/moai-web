@@ -62,11 +62,7 @@ export const Popup = ({
 
           <ContentWrapper>{children}</ContentWrapper>
 
-          {button && (
-            <Footer>
-              <ButtonWrapper>{button}</ButtonWrapper>
-            </Footer>
-          )}
+          <Footer>{button && <ButtonWrapper>{button}</ButtonWrapper>}</Footer>
         </InnerWrapper>
       </ContentContainer>
       {isMD && <Dim zIndex={zIndex} />}

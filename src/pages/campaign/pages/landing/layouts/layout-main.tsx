@@ -12,7 +12,7 @@ import { IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 import Logo1 from '~/assets/logos/logo-campaign-1.svg?react';
 import Logo2 from '~/assets/logos/logo-campaign-2.svg?react';
 
-import { BASE_URL } from '~/constants';
+import { BASE_URL, MILLION, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 
@@ -77,19 +77,19 @@ const _LayoutMain = () => {
           <InfoWrapper>
             <Info>
               <Label>{t('Total value locked')}</Label>
-              <Text>${formatNumber(totalTvl)}</Text>
+              <Text>${formatNumber(totalTvl, 2, 'floor', MILLION, 2)}</Text>
             </Info>
             <Info>
               <Label>{t('Expected APR')}</Label>
               <TextInfoWrapper>
-                <Text>{apr ? formatNumber(apr, 4, 'round', 10000) : '0'}%</Text>
+                <Text>{apr ? formatNumber(apr, 2, 'floor', THOUSAND, 2) : '0'}%</Text>
                 <AprInfoWrapper>
                   <AprInfo>
-                    {moaiApr ? `+${formatNumber(moaiApr, 2, 'round', 10000)}%` : '0%'}
+                    {moaiApr ? `+${formatNumber(moaiApr, 2, 'floor', THOUSAND, 2)}%` : '0%'}
                     <IconTokenMoai width={16} height={16} />
                   </AprInfo>
                   <AprInfo>
-                    {`+${formatNumber(10, 4, 'round', 10000)}%`}
+                    {`+${formatNumber(10, 2, 'floor', THOUSAND, 2)}%`}
                     <IconTokenRoot width={16} height={16} />
                   </AprInfo>
                 </AprInfoWrapper>

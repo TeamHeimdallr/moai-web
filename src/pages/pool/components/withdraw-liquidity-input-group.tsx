@@ -14,6 +14,8 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { IconSetting } from '~/assets/icons';
 
+import { THOUSAND } from '~/constants';
+
 import { Slippage } from '~/components/account';
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
@@ -87,7 +89,7 @@ const _WithdrawLiquidityInputGroup = () => {
   const { proportionalTokensOut, priceImpact: priceImpactRaw } = useCalculateWithdrawLiquidity({
     bptIn: inputValue || 0,
   });
-  const priceImpact = priceImpactRaw < 0.01 ? '< 0.01' : formatNumber(priceImpactRaw, 2);
+  const priceImpact = priceImpactRaw < 0.01 ? '< 0.01' : formatNumber(priceImpactRaw);
   const withdrawTokenValue = (inputValue || 0) * (lpTokenPrice || 0);
   const withdrawTokenWeight = userLpTokenBalance ? (inputValue || 0) / userLpTokenBalance : 0;
 
@@ -171,8 +173,8 @@ const _WithdrawLiquidityInputGroup = () => {
                 <Fragment key={symbol + i}>
                   <TokenList
                     type="large"
-                    title={`${formatNumber(amount, 6)} ${symbol}`}
-                    description={`$${formatNumber(amount * (price || 0), 2)}`}
+                    title={`${formatNumber(amount, 4, 'floor', THOUSAND, 0)} ${symbol}`}
+                    description={`$${formatNumber(amount * (price || 0))}`}
                     image={image}
                     leftAlign
                   />

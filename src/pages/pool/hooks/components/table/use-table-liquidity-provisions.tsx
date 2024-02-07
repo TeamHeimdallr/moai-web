@@ -143,7 +143,7 @@ export const useTableLiquidityProvision = () => {
               }))}
             />
           ),
-          value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
+          value: <TableColumn value={`$${formatNumber(value)}`} align="flex-end" />,
           time: (
             <TableColumnLink
               token={translatedTime}
@@ -245,7 +245,7 @@ export const useTableLiquidityProvision = () => {
           dataRows: [
             {
               label: 'Value',
-              value: <TableColumn value={`$${formatNumber(value, 2)}`} align="flex-end" />,
+              value: <TableColumn value={`$${formatNumber(value)}`} align="flex-end" />,
             },
             {
               label: 'Time',
