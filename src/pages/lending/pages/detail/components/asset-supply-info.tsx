@@ -5,6 +5,8 @@ import tw, { styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconQuestion } from '~/assets/icons';
 
+import { THOUSAND } from '~/constants';
+
 import { ButtonIconSmall } from '~/components/buttons';
 import { Tooltip } from '~/components/tooltips/base';
 
@@ -47,14 +49,14 @@ export const AssetSupplyInfo = () => {
           }
           value={
             <>
-              <InfoText>{formatNumber(currentSupply, 2, 'floor', 1000)}</InfoText>
+              <InfoText>{formatNumber(currentSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
               <InfoTextSmall>of</InfoTextSmall>
-              <InfoText>{formatNumber(totalSupply, 2, 'floor', 1000)}</InfoText>
+              <InfoText>{formatNumber(totalSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
             </>
           }
           barChart
           barChartValue={ratio}
-          barChartLabel={`${formatNumber(ratio, 2, 'floor')}%`}
+          barChartLabel={`${formatNumber(ratio, 2, 'floor', THOUSAND, 2)}%`}
         />
         <AssetSupplyBorrowInfoCard
           title={t('APY')}
@@ -81,7 +83,7 @@ export const AssetSupplyInfo = () => {
                 data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_MAX_LTV}
               />
             }
-            value={`${formatNumber(maxLTV, 2, 'floor', 1000, 2)}%`}
+            value={`${formatNumber(maxLTV, 2, 'floor', THOUSAND, 2)}%`}
             light
           />
           <InfoCard
@@ -92,7 +94,7 @@ export const AssetSupplyInfo = () => {
                 data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD}
               />
             }
-            value={`${formatNumber(liquidationThreshold, 2, 'floor', 1000, 2)}%`}
+            value={`${formatNumber(liquidationThreshold, 2, 'floor', THOUSAND, 2)}%`}
             light
           />
           <InfoCard
@@ -103,7 +105,7 @@ export const AssetSupplyInfo = () => {
                 data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY}
               />
             }
-            value={`${formatNumber(liquidationPenalty, 2, 'floor', 1000, 2)}%`}
+            value={`${formatNumber(liquidationPenalty, 2, 'floor', THOUSAND, 2)}%`}
             light
           />
         </CollateralCards>

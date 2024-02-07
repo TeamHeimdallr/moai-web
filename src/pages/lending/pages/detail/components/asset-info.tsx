@@ -3,6 +3,8 @@ import tw from 'twin.macro';
 
 import { IconLink } from '~/assets/icons';
 
+import { MILLION } from '~/constants';
+
 import { ButtonIconMedium } from '~/components/buttons';
 
 import { InfoCard } from '~/pages/lending/components/info-card';
@@ -23,23 +25,14 @@ export const AssetInfo = () => {
   return (
     <Wrapper>
       <InnerWrapper>
-        <InfoCard
-          title={t('Reserve Size')}
-          value={`$${formatNumber(reserveSize, 4, 'floor', 1000)}`}
-        />
-        <InfoCard
-          title={t('Available Liquidity')}
-          value={`$${formatNumber(availableLiquidity, 4, 'floor', 1000)}`}
-        />
+        <InfoCard title={t('Reserve Size')} value={`$${formatNumber(reserveSize)}`} />
+        <InfoCard title={t('Available Liquidity')} value={`$${formatNumber(availableLiquidity)}`} />
       </InnerWrapper>
       <InnerWrapper>
-        <InfoCard
-          title={t('Utilization Rate')}
-          value={`${formatNumber(utilizationRate, 2, 'floor', 1000)}%`}
-        />
+        <InfoCard title={t('Utilization Rate')} value={`${formatNumber(utilizationRate)}%`} />
         <InfoCard
           title={t('Oracle Price')}
-          value={`$${formatNumber(oraclePrice, 4, 'floor', 1000)}`}
+          value={`$${formatNumber(oraclePrice, 2, 'floor', MILLION, 2)}`}
           valueIcon={<ButtonIconMedium icon={<IconLink />} onClick={handleOracleLink} />}
         />
       </InnerWrapper>
