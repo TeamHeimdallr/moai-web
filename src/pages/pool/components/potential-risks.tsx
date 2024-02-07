@@ -44,15 +44,18 @@ export const PotentialRisks = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col bg-neutral-10 rounded-12 px-24 py-20 gap-12
+  flex flex-col bg-neutral-10 rounded-12 px-20 py-20 gap-12
+  md:(px-24)
 `;
 
 const Title = tw.div`
-  font-b-20 text-neutral-100
+  font-b-18 text-neutral-100
+  md:(font-b-20)
 `;
 
 const Content = tw.div`
-  font-m-16 text-neutral-80
+  font-m-14 text-neutral-80
+  md:(font-m-16)
 `;
 
 const Link = tw.span`

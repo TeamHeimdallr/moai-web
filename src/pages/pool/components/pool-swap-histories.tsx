@@ -78,11 +78,15 @@ interface DivProps {
   opened?: boolean;
 }
 const Wrapper = styled.div<DivProps>(({ opened }) => [
-  opened ? tw`pb-24` : tw`pb-20`,
-  tw`flex flex-col gap-24 bg-neutral-10 rounded-12 px-24`,
+  opened ? tw`pb-16 md:(pb-24)` : tw`pb-16 md:(pb-20)`,
+  tw`
+    flex flex-col gap-24 bg-neutral-10 rounded-12 px-20
+    md:(px-24)
+  `,
 ]);
 const TitleWrapper = tw.div`
-  flex justify-between items-center pt-20
+  flex justify-between pt-16 items-center
+  md:(pt-20)
 `;
 const Title = tw.div`
   font-b-18 text-neutral-100
@@ -90,7 +94,10 @@ const Title = tw.div`
 `;
 
 const Icon = styled.div<DivProps>(({ opened }) => [
-  tw`p-2 transition-transform flex-center clickable`,
+  tw`
+    p-0 transition-transform flex-center clickable
+    md:(p-4)
+  `,
   css`
     transform: rotate(${opened ? '-180deg' : '0deg'});
   `,

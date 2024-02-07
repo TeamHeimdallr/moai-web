@@ -220,7 +220,8 @@ export const PoolInfoChart = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col bg-neutral-10 rounded-12 px-24 pt-20 pb-24 min-h-428 gap-20
+  flex flex-col bg-neutral-10 rounded-12 px-20 pt-20 pb-24 min-h-428 gap-20
+  md:(px-24)
 `;
 
 const Header = tw.div`
