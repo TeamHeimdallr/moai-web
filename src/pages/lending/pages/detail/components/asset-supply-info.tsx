@@ -3,66 +3,130 @@ import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { IconQuestion } from '~/assets/icons';
+import { IconCancel, IconCheck, IconQuestion } from '~/assets/icons';
 
 import { ButtonIconSmall } from '~/components/buttons';
 import { Tooltip } from '~/components/tooltips/base';
 
 import { APYMedium } from '~/pages/lending/components/apy';
+import { InfoCard } from '~/pages/lending/components/info-card';
 
 import { formatNumber } from '~/utils';
 import { TOOLTIP_ID } from '~/types';
 
+import { AssetSupplyBorrowInfoCard } from './asset-supply-borrow-info-card';
+
 export const AssetSupplyInfo = () => {
   const { t } = useTranslation();
 
+  // TODO: connect api
   const totalSupply = 2000000000;
   const currentSupply = 739845000;
   const ratio = (currentSupply / totalSupply) * 100;
 
   const apy = 0.0239;
+  const collateral = true;
+
+  const maxLTV = 70;
+  const liquidationThreshold = 75;
+  const liquidationPenalty = 12312323;
 
   return (
     <Wrapper>
       <HeaderTitle>{t('Supply info')}</HeaderTitle>
+
+      {/* supply info */}
       <InfoWrapper>
-        <InfoWrapper>
-          <InfoCard>
-            <Subtitle>
-              {t('Total supplied')}
-              <ButtonIconSmall
-                icon={<IconQuestion />}
-                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED}
-              />
-            </Subtitle>
-            <InfoTextWrapper>
+        <AssetSupplyBorrowInfoCard
+          title={t('Total supplied')}
+          titleIcon={
+            <ButtonIconSmall
+              icon={<IconQuestion />}
+              data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED}
+            />
+          }
+          value={
+            <>
               <InfoText>{formatNumber(currentSupply, 2, 'floor', 1000)}</InfoText>
               <InfoTextSmall>of</InfoTextSmall>
               <InfoText>{formatNumber(totalSupply, 2, 'floor', 1000)}</InfoText>
-            </InfoTextWrapper>
-            <InfoBarWrapper>
-              <InfoBar value={ratio} />
-              <InfoBarLabel>{`${formatNumber(ratio, 2, 'floor')}%`}</InfoBarLabel>
-            </InfoBarWrapper>
-          </InfoCard>
-          <InfoCard>
-            <Subtitle>{t('APY')}</Subtitle>
-            <APYMedium apy={apy} style={{ justifyContent: 'flex-start' }} />
-          </InfoCard>
-        </InfoWrapper>
+            </>
+          }
+          barChart
+          barChartValue={ratio}
+          barChartLabel={`${formatNumber(ratio, 2, 'floor')}%`}
+        />
+        <AssetSupplyBorrowInfoCard
+          title={t('APY')}
+          value={<APYMedium apy={apy} style={{ justifyContent: 'flex-start' }} />}
+        />
       </InfoWrapper>
+
       <ChartWrapper></ChartWrapper>
-      <CollateralWrapper></CollateralWrapper>
+
+      <CollateralWrapper>
+        <ContentTitle>
+          {t('Collateral usage')}
+          <ContentTitleCaptionWrapper collateral={collateral}>
+            {collateral ? <IconCheck /> : <IconCancel />}
+            {collateral ? t('Can be collateral') : t('Can not be collateral')}
+          </ContentTitleCaptionWrapper>
+        </ContentTitle>
+        <CollateralCards>
+          <InfoCard
+            title={t('Max LTV')}
+            titleIcon={
+              <ButtonIconSmall
+                icon={<IconQuestion />}
+                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_MAX_LTV}
+              />
+            }
+            value={`${formatNumber(maxLTV, 2, 'floor', 1000, 2)}%`}
+            light
+          />
+          <InfoCard
+            title={t('Liquidation threshold')}
+            titleIcon={
+              <ButtonIconSmall
+                icon={<IconQuestion />}
+                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD}
+              />
+            }
+            value={`${formatNumber(liquidationThreshold, 2, 'floor', 1000, 2)}%`}
+            light
+          />
+          <InfoCard
+            title={t('Liquidation penalty')}
+            titleIcon={
+              <ButtonIconSmall
+                icon={<IconQuestion />}
+                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY}
+              />
+            }
+            value={`${formatNumber(liquidationPenalty, 2, 'floor', 1000, 2)}%`}
+            light
+          />
+        </CollateralCards>
+      </CollateralWrapper>
 
       <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED} place="bottom">
         <TooltipContent>{t('total-supplied-description')}</TooltipContent>
+      </Tooltip>
+      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_MAX_LTV} place="bottom">
+        <TooltipContent>{t('max-ltv-description')}</TooltipContent>
+      </Tooltip>
+      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD} place="bottom">
+        <TooltipContent>{t('liquidity-threshold-description')}</TooltipContent>
+      </Tooltip>
+      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY} place="bottom">
+        <TooltipContent>{t('liquidity-penalty-description')}</TooltipContent>
       </Tooltip>
     </Wrapper>
   );
 };
 
 const Wrapper = tw.div`
-  flex flex-col bg-neutral-10 rounded-12 px-24 pt-20 pb-24 min-h-808 gap-32
+  flex flex-col bg-neutral-10 rounded-12 px-20 pt-20 pb-24 min-h-808 gap-32
 `;
 
 const HeaderTitle = tw.div`
@@ -70,70 +134,55 @@ const HeaderTitle = tw.div`
   md:(font-b-20)
 `;
 
-const Subtitle = tw.div`
-  flex items-center gap-4 text-primary-80
-  font-b-16
+const ContentTitle = tw.div`
+  flex items-center text-primary-80 font-b-14 gap-16
+  md:(font-b-16)
 `;
 
-const InfoWrapper = tw.div`
-  flex gap-16 w-full
-`;
-
-const InfoCard = tw.div`
-  flex flex-col gap-16 w-254 justify-start text-neutral-100
-  pr-24 pb-20
-`;
-
-const InfoTextWrapper = tw.div`
-  flex gap-4 items-center
-`;
-const InfoText = tw.div`
-  font-m-18
-`;
-const InfoTextSmall = tw.div`
-  font-r-16
-`;
-
-const InfoBarWrapper = tw.div`
-  flex flex-col gap-4
-`;
-
-interface InfoBarProps {
-  value: number;
+interface ContentTitleCaptionWrapperProps {
+  collateral?: boolean;
 }
-const InfoBar = styled.div<InfoBarProps>(({ value }) => [
+const ContentTitleCaptionWrapper = styled.div<ContentTitleCaptionWrapperProps>(({ collateral }) => [
   tw`
-    w-full h-4 bg-neutral-30 rounded-4 relative
+    flex items-center gap-4 font-m-14
+    md:(font-m-16)
   `,
-  css`
-    &:after {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-
-      min-width: 2px;
-      width: ${value > 99 ? 100 : value}%;
-      height: 4px;
-      background: ${COLOR.GREEN[50]};
-
-      border-top-left-radius: ${value > 0 ? '99999px' : '0'};
-      border-bottom-left-radius: ${value > 0 ? '99999px' : '0'};
-
-      border-top-right-radius: ${value > 99 ? '99999px' : '0'};
-      border-bottom-right-radius: ${value > 99 ? '99999px' : '0'};
-    }
-  `,
+  collateral ? tw`text-green-50` : tw`text-orange-50`,
+  collateral
+    ? css`
+        & svg {
+          fill: ${COLOR.GREEN[50]};
+        }
+      `
+    : css`
+        & svg {
+          fill: ${COLOR.ORANGE[50]};
+        }
+      `,
 ]);
 
-const InfoBarLabel = tw.div`
-  text-neutral-90
+const InfoWrapper = tw.div`
+  flex gap-16 w-full flex-wrap
+`;
+
+const InfoText = tw.div`
+  font-m-16
+  md:(font-m-18)
+`;
+const InfoTextSmall = tw.div`
   font-r-14
+  md:(font-r-16)
 `;
 
 const ChartWrapper = tw.div``;
 
-const CollateralWrapper = tw.div``;
+const CollateralWrapper = tw.div`
+  flex flex-col gap-16
+`;
+const CollateralCards = tw.div`
+  flex gap-16 flex-col
+  md:(flex-row)
+`;
 
 const TooltipContent = tw.div`
   w-266
