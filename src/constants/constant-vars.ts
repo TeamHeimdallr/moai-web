@@ -63,7 +63,12 @@ export const GNB_MENU: IGnbMenu[] = [
 /**
  * @description FORMAT NUMBER 를 진행할때 UNIT(K,M,B,T) 를 붙이는 기준
  */
-export const FORMAT_NUMBER_THRESHOLD = 10 ** 6; // 1M
+export const THOUSAND = 10 ** 3; // 1K
+export const MILLION = 10 ** 6; // 1M
+export const BILLION = 10 ** 9; // 1B
+export const TRILLION = 10 ** 12; // 1T
+export const FORMAT_NUMBER_THRESHOLD = MILLION; // 1M
+
 /**
  * @description RESPONSIVE BREAKPOINT
  */

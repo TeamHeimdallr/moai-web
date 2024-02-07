@@ -9,7 +9,7 @@ import { useGetRewardsListInfinityQuery } from '~/api/api-server/rewards/get-rew
 
 import { COLOR } from '~/assets/colors';
 
-import { SCANNER_URL } from '~/constants';
+import { MILLION, SCANNER_URL } from '~/constants';
 
 import { TableColumn, TableHeader } from '~/components/tables';
 import { TableColumnIconTextLink } from '~/components/tables/columns/column-icon-text-link';
@@ -94,15 +94,10 @@ export const useTableRewards = () => {
               }`}
             />
           ),
-          volume: (
-            <TableColumn
-              value={`$${formatNumber(d?.volume, 4, 'floor', 10 ** 6)}`}
-              align="flex-end"
-            />
-          ),
+          volume: <TableColumn value={`$${formatNumber(d?.volume)}`} align="flex-end" />,
           preminedToken: (
             <TableColumn
-              value={`${formatNumber(d?.premined, 4, 'floor', 10 ** 6)}`}
+              value={`${formatNumber(d?.premined, 3, 'floor', MILLION, 3)}`}
               align="flex-end"
             />
           ),

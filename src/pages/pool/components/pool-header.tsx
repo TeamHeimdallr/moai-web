@@ -78,7 +78,7 @@ export const PoolHeader = () => {
           <Token
             key={`${composition.symbol}-${i}`}
             token={composition.symbol}
-            percentage={Number(formatNumber(composition.weight, 4))}
+            percentage={Number(formatNumber(composition.weight, 2))}
             image
             imageUrl={composition.image}
             type="small"

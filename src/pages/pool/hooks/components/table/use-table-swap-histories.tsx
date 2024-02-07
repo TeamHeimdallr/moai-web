@@ -93,7 +93,7 @@ export const useTableSwapHistories = () => {
               },
               trader: (
                 <TableColumnIconText
-                  text={truncateAddress(d.trader, 4)}
+                  text={truncateAddress(d.trader, 3)}
                   icon={
                     <Jazzicon
                       diameter={24}
@@ -114,7 +114,7 @@ export const useTableSwapHistories = () => {
                   }))}
                 />
               ),
-              value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
+              value: <TableColumn value={`$${formatNumber(value)}`} align="flex-end" />,
               time: (
                 <TableColumnLink
                   token={translatedTime}

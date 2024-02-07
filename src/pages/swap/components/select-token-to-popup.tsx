@@ -8,6 +8,8 @@ import { useGetRecentlySelectedTokensQuery } from '~/api/api-server/token/get-re
 
 import { COLOR } from '~/assets/colors';
 
+import { THOUSAND } from '~/constants';
+
 import { Popup } from '~/components/popup';
 import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
@@ -109,10 +111,12 @@ export const SelectToTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props) 
                   title={token.symbol}
                   image={token.image}
                   type={'selectable'}
-                  balance={token.balance ? `${formatNumber(token.balance, 4)}` : '0'}
+                  balance={
+                    token.balance ? `${formatNumber(token.balance, 4, 'floor', THOUSAND, 0)}` : '0'
+                  }
                   value={`$${
                     token.price
-                      ? `${formatNumber(token.balance * (token.price || tokenPrice), 4)}`
+                      ? `${formatNumber(token.balance * (token.price || tokenPrice))}`
                       : '0'
                   }`}
                   selected={toToken?.symbol === token.symbol}

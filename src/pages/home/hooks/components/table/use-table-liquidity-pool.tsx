@@ -5,6 +5,8 @@ import { uniqBy } from 'lodash-es';
 
 import { useGetPoolsInfinityQuery } from '~/api/api-server/pools/get-pools';
 
+import { MILLION } from '~/constants';
+
 import { NetworkChip } from '~/components/network-chip';
 import {
   TableColumn,
@@ -68,13 +70,12 @@ export const useTableLiquidityPool = () => {
           />
         ),
         poolValue: (
-          <TableColumn
-            value={`$${formatNumber(d.value, 4, 'floor', 1000000, 2)}`}
-            align="flex-end"
-          />
+          <TableColumn value={`$${formatNumber(d.value, 2, 'floor', MILLION)}`} align="flex-end" />
         ),
-        volume: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
-        apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+        volume: (
+          <TableColumn value={`$${formatNumber(d.volume, 2, 'floor', MILLION)}`} align="flex-end" />
+        ),
+        apr: <TableColumn value={`${formatNumber(d.apr)}%`} align="flex-end" />,
       })),
     [pools, showAllPools]
   );
@@ -152,15 +153,25 @@ export const useTableLiquidityPool = () => {
         dataRows: [
           {
             label: 'Pool value',
-            value: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+            value: (
+              <TableColumn
+                value={`$${formatNumber(d.value, 2, 'floor', MILLION)}`}
+                align="flex-end"
+              />
+            ),
           },
           {
             label: 'Volume (24h)',
-            value: <TableColumn value={`$${formatNumber(d.volume, 2)}`} align="flex-end" />,
+            value: (
+              <TableColumn
+                value={`$${formatNumber(d.volume, 2, 'floor', MILLION)}`}
+                align="flex-end"
+              />
+            ),
           },
           {
             label: 'APR',
-            value: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+            value: <TableColumn value={`${formatNumber(d.apr)}%`} align="flex-end" />,
           },
         ],
       })),

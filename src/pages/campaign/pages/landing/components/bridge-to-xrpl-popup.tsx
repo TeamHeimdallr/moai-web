@@ -23,7 +23,7 @@ import {
 } from '~/assets/icons';
 import TokenXrp from '~/assets/icons/icon-token-xrp.svg';
 
-import { SCANNER_URL } from '~/constants';
+import { MILLION, SCANNER_URL } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
@@ -313,7 +313,13 @@ const _BridgeToXrplPopup = () => {
             <List title={t(`Summary`)}>
               <Summary>
                 <SummaryTextTitle>{t('Total')}</SummaryTextTitle>
-                <SummaryText>{`${formatNumber(inputValue)} XRP`}</SummaryText>
+                <SummaryText>{`${formatNumber(
+                  inputValue,
+                  6,
+                  'floor',
+                  MILLION,
+                  0
+                )} XRP`}</SummaryText>
               </Summary>
               <Divider />
               <GasFeeWrapper>

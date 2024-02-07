@@ -96,6 +96,8 @@ module.exports = {
       minHeight: theme => ({ ...defaultTheme.minHeight, ...theme('spacing') }),
       maxHeight: theme => ({ ...defaultTheme.maxHeight, ...theme('spacing') }),
 
+      flex: theme => ({ ...defaultTheme.flex, ...theme('spacing'), 2: '2 2 0%' }),
+
       lineHeight: theme => ({
         ...defaultTheme.lineHeight,
         ...convertSpacing([...Array(101).keys()]),

@@ -18,7 +18,7 @@ import { useSorFallbackQuery } from '~/api/api-server/sor/get-swap-fallback';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconDown } from '~/assets/icons';
 
-import { EVM_VAULT_ADDRESS } from '~/constants';
+import { EVM_VAULT_ADDRESS, THOUSAND } from '~/constants';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
@@ -349,9 +349,13 @@ const _SwapInputGroup = () => {
             />
           </InputInnerWrapper>
           {fromToken && toToken && (
-            <InputLabel>{`1 ${fromToken.symbol} = ${formatNumber(swapRatio, 6)} ${
-              toToken.symbol
-            }`}</InputLabel>
+            <InputLabel>{`1 ${fromToken.symbol} = ${formatNumber(
+              swapRatio,
+              6,
+              'floor',
+              THOUSAND,
+              0
+            )} ${toToken.symbol}`}</InputLabel>
           )}
         </InputWrapper>
 

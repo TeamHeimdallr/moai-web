@@ -5,6 +5,8 @@ import tw from 'twin.macro';
 
 import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
 
+import { MILLION, THOUSAND, TRILLION } from '~/constants';
+
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -42,11 +44,11 @@ export const RewardInfo = () => {
   const formattedEndsAt = endsAt ? `${format(new Date(endsAt), DATE_FORMATTER.MMM_d_yyyy)}` : '';
   const formattedEndsAtTime = endsAt ? `${format(new Date(endsAt), DATE_FORMATTER.HH_A_0)}` : '';
   const formattedTotalReward = totalReward
-    ? `${formatNumber(totalReward, 4, 'floor', 10 ** 8)}`
+    ? `${formatNumber(totalReward, 2, 'floor', TRILLION, 2)}`
     : '0';
 
-  const formattedMyVolume = myVolume ? `$${formatNumber(myVolume, 4)}` : '$0';
-  const formattedMyReward = myReward ? `${formatNumber(myReward, 4, 'floor', 10 ** 8)}` : '0';
+  const formattedMyVolume = myVolume ? `$${formatNumber(myVolume, 4, 'floor', THOUSAND, 0)}` : '$0';
+  const formattedMyReward = myReward ? `${formatNumber(myReward, 4, 'floor', MILLION, 4)}` : '0';
 
   return (
     <Wrapper ref={ref}>

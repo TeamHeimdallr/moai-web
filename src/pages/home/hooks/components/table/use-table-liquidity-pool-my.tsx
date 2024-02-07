@@ -6,6 +6,8 @@ import { isEqual } from 'lodash-es';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 
+import { MILLION } from '~/constants';
+
 import {
   TableColumn,
   TableColumnToken,
@@ -106,9 +108,16 @@ export const useTableMyLiquidityPool = () => {
             disableSelectedToken
           />
         ),
-        balance: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
-        poolValue: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
-        apr: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+        balance: (
+          <TableColumn
+            value={`$${formatNumber(d.balance, 2, 'floor', MILLION)}`}
+            align="flex-end"
+          />
+        ),
+        poolValue: (
+          <TableColumn value={`$${formatNumber(d.value, 2, 'floor', MILLION)}`} align="flex-end" />
+        ),
+        apr: <TableColumn value={`${formatNumber(d.apr)}%`} align="flex-end" />,
       })),
     [pools]
   );
@@ -164,15 +173,25 @@ export const useTableMyLiquidityPool = () => {
         dataRows: [
           {
             label: 'Pool value',
-            value: <TableColumn value={`$${formatNumber(d.value, 2)}`} align="flex-end" />,
+            value: (
+              <TableColumn
+                value={`$${formatNumber(d.value, 2, 'floor', MILLION)}`}
+                align="flex-end"
+              />
+            ),
           },
           {
             label: 'My Balance',
-            value: <TableColumn value={`$${formatNumber(d.balance, 2)}`} align="flex-end" />,
+            value: (
+              <TableColumn
+                value={`$${formatNumber(d.balance, 2, 'floor', MILLION)}`}
+                align="flex-end"
+              />
+            ),
           },
           {
             label: 'My APR',
-            value: <TableColumn value={`${formatNumber(d.apr, 2)}%`} align="flex-end" />,
+            value: <TableColumn value={`${formatNumber(d.apr)}%`} align="flex-end" />,
           },
         ],
       })),

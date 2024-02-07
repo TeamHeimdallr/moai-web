@@ -1,25 +1,27 @@
-import { FORMAT_NUMBER_THRESHOLD } from '~/constants';
+import { THOUSAND } from '~/constants';
 
 export const formatNumber = (
   data?: number | string,
   decimal = 2,
   type: 'round' | 'floor' = 'floor',
-  threshold: number = FORMAT_NUMBER_THRESHOLD,
-  fixedDecimal: number = 0
+  threshold: number = THOUSAND,
+  fixedDecimal: number = decimal
 ) => {
-  if (!data) return '';
+  if (data === undefined) return '0';
 
   const number = Number(data);
-  if (isNaN(number)) return '';
+  if (isNaN(number) || !number) return '0';
 
   // 단위 설정
   const units = ['', 'K', 'M', 'B', 'T', 'P', 'E'];
   let unitIndex = 0;
   let absNumber = Math.abs(number);
 
-  while (absNumber >= threshold && unitIndex < units.length - 1) {
-    absNumber /= threshold;
-    unitIndex++;
+  if (absNumber >= threshold) {
+    while (absNumber > THOUSAND && unitIndex < units.length - 1) {
+      absNumber /= THOUSAND;
+      unitIndex++;
+    }
   }
 
   // 소수점 처리

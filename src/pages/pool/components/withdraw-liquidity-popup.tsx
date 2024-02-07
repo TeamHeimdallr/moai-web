@@ -15,7 +15,7 @@ import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-a
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL } from '~/constants';
+import { SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -633,8 +633,20 @@ const _WithdrawLiquidityPopup = ({
           <List title={t(`You're providing`)}>
             <TokenList
               type="large"
-              title={`${formatNumber(Number(formatUnits(bptIn || 0n, 18)), 6)} ${lpToken?.symbol}`}
-              description={`$${formatNumber(totalValue)} (${withdrawTokenWeight.toFixed(4)}%)`}
+              title={`${formatNumber(
+                Number(formatUnits(bptIn || 0n, 18)),
+                4,
+                'floor',
+                THOUSAND,
+                0
+              )} ${lpToken?.symbol}`}
+              description={`$${formatNumber(totalValue)} (${formatNumber(
+                withdrawTokenWeight,
+                4,
+                'floor',
+                THOUSAND,
+                0
+              )}%)`}
               image={
                 <Jazzicon
                   diameter={36}
@@ -653,10 +665,14 @@ const _WithdrawLiquidityPopup = ({
               <Fragment key={`${symbol}-${i}`}>
                 <TokenList
                   type="large"
-                  title={`${amount.toFixed(6)} ${symbol}`}
-                  description={`$${formatNumber(amount * (price || 0))} (${(
-                    (currentWeight || 0) * 100
-                  )?.toFixed(2)}%)`}
+                  title={`${formatNumber(amount, 4, 'floor', THOUSAND, 0)} ${symbol}`}
+                  description={`$${formatNumber(amount * (price || 0))} (${formatNumber(
+                    (currentWeight || 0) * 100,
+                    2,
+                    'floor',
+                    THOUSAND,
+                    0
+                  )}%)`}
                   image={image}
                   leftAlign
                 />

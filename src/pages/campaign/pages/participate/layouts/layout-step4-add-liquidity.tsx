@@ -30,7 +30,7 @@ import {
 } from '~/assets/icons';
 import TokenXrp from '~/assets/icons/icon-token-xrp.svg';
 
-import { CAMPAIGN_ADDRESS, POOL_ID, SCANNER_URL } from '~/constants';
+import { CAMPAIGN_ADDRESS, POOL_ID, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
@@ -318,8 +318,8 @@ const _AddLiquidity = () => {
                     </LpTokenRight>
                   </LpTokenIconWrapper>
                 }
-                balance={`${formatNumber(actualBptOut, 4)}`}
-                value={`$${formatNumber(actualBptOut * lpTokenPrice, 4)}`}
+                balance={`${formatNumber(actualBptOut, 6, 'floor', THOUSAND, 0)}`}
+                value={`$${formatNumber(actualBptOut * lpTokenPrice)}`}
               />
             </List>
             <List title={t('Expected rewards')}>
@@ -416,8 +416,8 @@ const _AddLiquidity = () => {
                   </LpTokenRight>
                 </LpTokenIconWrapper>
               }
-              balance={`${formatNumber(actualBptOut, 4)}`}
-              value={`$${formatNumber(actualBptOut * lpTokenPrice, 4)}`}
+              balance={`${formatNumber(actualBptOut, 6, 'floor', THOUSAND, 0)}`}
+              value={`$${formatNumber(actualBptOut * lpTokenPrice)}`}
             />
           </List>
           <List title={t('Expected rewards')}>

@@ -1,6 +1,8 @@
 import { HTMLAttributes } from 'react';
 import tw, { css, styled } from 'twin.macro';
 
+import { THOUSAND } from '~/constants';
+
 import { formatNumber } from '~/utils';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -14,8 +16,8 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 export const TableColumnAmount = ({ balance, value, empty, ...rest }: Props) => {
   return (
     <Wrapper {...rest}>
-      <Balance>{empty ? '-' : formatNumber(balance, 4, 'round', 10000)}</Balance>
-      {!empty && <Value>{`$${formatNumber(value, 4, 'round', 10000)}`}</Value>}
+      <Balance>{empty ? '-' : formatNumber(balance, 4, 'floor', THOUSAND, 0)}</Balance>
+      {!empty && <Value>{`$${formatNumber(value)}`}</Value>}
     </Wrapper>
   );
 };

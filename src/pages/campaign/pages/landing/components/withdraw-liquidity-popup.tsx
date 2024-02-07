@@ -21,7 +21,7 @@ import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-t
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { POOL_ID, SCANNER_URL } from '~/constants';
+import { POOL_ID, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
@@ -364,7 +364,7 @@ const _WithdrawLiquidityPopup = ({
             <Fragment key={`XRP-1`}>
               <TokenList
                 type="large"
-                title={`${userXrpOutBalance.toFixed(6)} XRP`}
+                title={`${formatNumber(userXrpOutBalance, 6, 'floor', THOUSAND, 0)} XRP`}
                 description={`$${formatNumber(userXrpOutBalance * (xrpToken?.price || 0))}`}
                 image={xrpToken?.image}
                 leftAlign
@@ -377,7 +377,7 @@ const _WithdrawLiquidityPopup = ({
             <Fragment key={`XRP-1`}>
               <TokenList
                 type="large"
-                title={`${userXrpOutBalance.toFixed(6)} XRP`}
+                title={`${formatNumber(userXrpOutBalance, 6, 'floor', THOUSAND, 0)} XRP`}
                 description={`$${formatNumber(userXrpOutBalance * (xrpToken?.price || 0))}`}
                 image={xrpToken?.image}
                 leftAlign

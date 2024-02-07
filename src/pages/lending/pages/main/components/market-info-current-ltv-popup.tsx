@@ -6,6 +6,8 @@ import tw, { styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconDivision, IconEquals, IconTriangle } from '~/assets/icons';
 
+import { THOUSAND } from '~/constants';
+
 import { BadgeText } from '~/components/badges';
 import { Popup } from '~/components/popup';
 
@@ -67,7 +69,7 @@ export const MarketInfoCurrentLTVPopup = ({ assets, debt, criteria }: Props) => 
         <ContentWrapper>
           <ExpressWrapper>
             <NumberBadgeWrapper>
-              <ExpressNumber>{`$${formatNumber(debt, 1, 'round', 1000)}`}</ExpressNumber>
+              <ExpressNumber>{`$${formatNumber(debt, 2, 'floor', THOUSAND, 2)}`}</ExpressNumber>
               <BadgeText
                 text={t('current-ltv-debt')}
                 backgroundColor={COLOR.PRIMARY[20]}
@@ -80,7 +82,7 @@ export const MarketInfoCurrentLTVPopup = ({ assets, debt, criteria }: Props) => 
             </ExpressIcon>
 
             <NumberBadgeWrapper>
-              <ExpressNumber>{`$${formatNumber(assets, 1, 'round', 1000)}`}</ExpressNumber>
+              <ExpressNumber>{`$${formatNumber(assets, 2, 'floor', THOUSAND, 2)}`}</ExpressNumber>
               <BadgeText
                 text={t('current-ltv-assets')}
                 backgroundColor={COLOR.PRIMARY[20]}
@@ -94,7 +96,7 @@ export const MarketInfoCurrentLTVPopup = ({ assets, debt, criteria }: Props) => 
 
             <NumberBadgeWrapper>
               <ExpressNumber highlight style={{ color: ltvColor }}>
-                {`${formatNumber(ltv, 2, 'round', 1000)}%`}
+                {`${formatNumber(ltv)}%`}
               </ExpressNumber>
             </NumberBadgeWrapper>
           </ExpressWrapper>

@@ -16,7 +16,7 @@ import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { EVM_VAULT_ADDRESS, SCANNER_URL } from '~/constants';
+import { EVM_VAULT_ADDRESS, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -246,7 +246,9 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const effectivePrice =
     fromToken && toToken && swapRatio
-      ? `1 ${fromToken.symbol} = ${formatNumber(swapRatio, 6)} ${toToken.symbol}`
+      ? `1 ${fromToken.symbol} = ${formatNumber(swapRatio, 6, 'floor', THOUSAND, 0)} ${
+          toToken.symbol
+        }`
       : '';
 
   const fromTokenPrice =
@@ -274,6 +276,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const slippageText = `${Number(slippage.toFixed(2))}%`;
   const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
+  const totalAfterSlippageUsd = totalAfterSlippage * toTokenPrice;
 
   const step = useMemo(() => {
     if (isSuccess) return 2;
@@ -514,7 +517,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   {t('swap-success-message', {
                     fromValue: fromTokenActualAmount,
                     fromToken: fromToken?.symbol,
-                    toValue: formatNumber(toTokenActualAmount, 6),
+                    toValue: formatNumber(toTokenActualAmount, 6, 'floor', THOUSAND, 0),
                     toToken: toToken?.symbol,
                   })}
                 </SuccessSubTitle>
@@ -523,8 +526,14 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
             <List title={t(`Total swap`)}>
               <TokenList
-                title={`${formatNumber(toTokenActualAmount, 6)} ${toToken?.symbol}`}
-                description={`$${formatNumber(toTokenFinalValue, 4)}`}
+                title={`${formatNumber(
+                  toTokenActualAmount,
+                  6,
+                  'floor',
+                  THOUSAND,
+                  0
+                )} ${toToken?.symbol}`}
+                description={`$${formatNumber(toTokenFinalValue)}`}
                 image={toToken?.image}
                 type="large"
                 leftAlign
@@ -546,8 +555,8 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             <ListWrapper>
               <List title={`${t('Effective price')}: ${effectivePrice}`}>
                 <TokenList
-                  title={`${fromInput} ${fromToken?.symbol}`}
-                  description={`$${formatNumber(fromTokenValue, 4)}`}
+                  title={`${formatNumber(fromInput, 6, 'floor', THOUSAND, 0)} ${fromToken?.symbol}`}
+                  description={`$${formatNumber(fromTokenValue)}`}
                   image={fromToken?.image}
                   type="large"
                   leftAlign
@@ -559,8 +568,8 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   </ArrowDownWrapper>
                 </IconWrapper>
                 <TokenList
-                  title={`${toInput} ${toToken?.symbol}`}
-                  description={`$${formatNumber(toTokenValue, 4)}`}
+                  title={`${formatNumber(toInput, 6, 'floor', THOUSAND, 0)} ${toToken?.symbol}`}
+                  description={`$${formatNumber(toTokenValue)}`}
                   image={toToken?.image}
                   type="large"
                   leftAlign
@@ -590,7 +599,10 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                     <DetailInfoText>{t('Total expected after fees')}</DetailInfoText>
                     <DetailInfoText>{`${formatNumber(
                       selectedDetailInfo === 'TOKEN' ? totalAfterFee : totalAfterFeeUsd,
-                      6
+                      selectedDetailInfo === 'TOKEN' ? 6 : 2,
+                      'floor',
+                      THOUSAND,
+                      0
                     )} ${currentUnit}`}</DetailInfoText>
                   </DetailInfoTextWrapper>
                   <DetailInfoTextWrapper>
@@ -598,8 +610,11 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                       {t('least-user-get-message', { slippage: slippageText })}
                     </DetailInfoSubtext>
                     <DetailInfoSubtext>{`${formatNumber(
-                      totalAfterSlippage,
-                      6
+                      selectedDetailInfo === 'TOKEN' ? totalAfterSlippage : totalAfterSlippageUsd,
+                      selectedDetailInfo === 'TOKEN' ? 6 : 2,
+                      'floor',
+                      THOUSAND,
+                      0
                     )} ${currentUnit}`}</DetailInfoSubtext>
                   </DetailInfoTextWrapper>
                 </DetailInfoInnerWrapper>

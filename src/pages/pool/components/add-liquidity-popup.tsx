@@ -15,7 +15,7 @@ import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-a
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL } from '~/constants';
+import { SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -730,8 +730,8 @@ const _AddLiquidityPopup = ({
               <Fragment key={`${symbol}-${idx}`}>
                 <TokenList
                   type="large"
-                  title={`${formatNumber(amount, 6)} ${symbol}`}
-                  description={`$${formatNumber(amount * (price || 0), 4)}`}
+                  title={`${formatNumber(amount, 6, 'floor', THOUSAND, 0)} ${symbol}`}
+                  description={`$${formatNumber(amount * (price || 0))}`}
                   image={image}
                   leftAlign
                 />
@@ -744,9 +744,9 @@ const _AddLiquidityPopup = ({
           <List title={t(`You're expected to receive`)}>
             <TokenList
               type="large"
-              title={`${formatNumber(bptOut, 6, 'floor')}`}
+              title={`${formatNumber(bptOut, 4, 'floor', THOUSAND, 0)}`}
               subTitle={`${lpToken?.symbol || ''}`}
-              description={`$${formatNumber(bptOut * lpTokenPrice, 6, 'floor')}`}
+              description={`$${formatNumber(bptOut * lpTokenPrice)}`}
               image={
                 <Jazzicon
                   diameter={36}
@@ -771,7 +771,7 @@ const _AddLiquidityPopup = ({
             <List title={t(`Summary`)}>
               <Summary>
                 <SummaryTextTitle>{t('Total liquidity')}</SummaryTextTitle>
-                <SummaryText>{`$${formatNumber(totalAmount, 4)}`}</SummaryText>
+                <SummaryText>{`$${formatNumber(totalAmount)}`}</SummaryText>
               </Summary>
               <Summary>
                 <SummaryTextTitle>{t('Price impact')}</SummaryTextTitle>

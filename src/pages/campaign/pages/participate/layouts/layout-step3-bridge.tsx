@@ -21,7 +21,7 @@ import {
 } from '~/assets/icons';
 import TokenXrp from '~/assets/icons/icon-token-xrp.svg';
 
-import { SCANNER_URL } from '~/constants';
+import { SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
@@ -152,8 +152,8 @@ const _Bridge = () => {
           </SuccessMessageWrapper>
           <List title={t('total-bridge')}>
             <TokenList
-              title={`${formatNumber(toTokenActualAmount, 6)} XRP`}
-              description={`$${formatNumber(toTokenFinalValue, 4)}`}
+              title={`${formatNumber(toTokenActualAmount, 6, 'floor', THOUSAND, 0)} XRP`}
+              description={`$${formatNumber(toTokenFinalValue)}`}
               image={<IconTokenXrp width={36} />}
               type="large"
               leftAlign

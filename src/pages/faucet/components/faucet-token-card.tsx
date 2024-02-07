@@ -11,7 +11,7 @@ import { usePostFaucetXrpl } from '~/api/api-server/faucet/post-faucet-xrpl';
 import { COLOR } from '~/assets/colors';
 import { IconAlert } from '~/assets/icons';
 
-import { FAUCET_AMOUNT } from '~/constants';
+import { FAUCET_AMOUNT, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryMedium } from '~/components/buttons';
 
@@ -173,7 +173,9 @@ export const FaucetTokenCard = ({ token }: FaucetTokenCardProps) => {
             </IconWithErrorMsg>
           ) : (
             <TokenBalance>
-              {isConnected && allowance ? formatNumber(balance, 4) : t('No trustline')}
+              {isConnected && allowance
+                ? formatNumber(balance, 4, 'floor', THOUSAND, 0)
+                : t('No trustline')}
             </TokenBalance>
           )}
         </TokenNameBalance>

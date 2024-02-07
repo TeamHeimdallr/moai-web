@@ -7,6 +7,8 @@ import tw, { styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
+import { THOUSAND } from '~/constants';
+
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -132,8 +134,8 @@ export const PopupCollateral = ({ type }: Props) => {
             <List title={t('Supply balance')}>
               <TokenList
                 type="large"
-                title={`${formatNumber(balance, 6, 'round', 100000)} ${symbol}`}
-                description={`$${formatNumber(value, 4, 'round', 100000)}`}
+                title={`${formatNumber(balance, 4, 'floor', THOUSAND, 0)} ${symbol}`}
+                description={`$${formatNumber(value)}`}
                 image={image}
                 leftAlign
               />
@@ -177,8 +179,8 @@ export const PopupCollateral = ({ type }: Props) => {
             <List title={'Supply balance'}>
               <TokenList
                 type="large"
-                title={`${formatNumber(balance, 6, 'round', 100000)} ${symbol}`}
-                description={`$${formatNumber(value, 4, 'round', 100000)}`}
+                title={`${formatNumber(balance, 4, 'floor', THOUSAND, 0)} ${symbol}`}
+                description={`$${formatNumber(value)}`}
                 image={image}
                 leftAlign
               />

@@ -41,14 +41,16 @@ export const PoolInfo = () => {
   const tradingFee =
     currentNetwork === NETWORK.THE_ROOT_NETWORK ? tradingFeeRaw + protocolFee : tradingFeeRaw;
 
-  const formattedValue = value ? `$${formatNumber(value, 2)}` : '$0';
-  const formattedVolume = volume ? `$${formatNumber(volume, 2)}` : '$0';
+  const formattedValue = value ? `$${formatNumber(value)}` : '$0';
+  const formattedVolume = volume ? `$${formatNumber(volume)}` : '$0';
 
-  const formattedApr = apr ? `${formatNumber(apr, 4, 'round', 10000)}%` : '0%'; // swap apr
-  const formattedMoaiApr = moaiApr ? `${formatNumber(moaiApr, 4, 'round', 10000)}%` : '0%'; // moai pre-mining apr
-  const formattedSwapApr = `${formatNumber((apr || 0) - (moaiApr || 0), 4, 'round', 10000)}%`;
+  const formattedApr = apr ? `${formatNumber(apr)}%` : '0%'; // swap apr
+  const formattedMoaiApr = moaiApr ? `${formatNumber(moaiApr)}%` : '0%'; // moai pre-mining apr
+  const formattedSwapApr = `${formatNumber(
+    (apr || 0) < (moaiApr || 0) ? 0 : (apr || 0) - (moaiApr || 0)
+  )}%`;
 
-  const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100, 2)}%` : '0%';
+  const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100)}%` : '0%';
 
   return (
     <Wrapper ref={ref}>

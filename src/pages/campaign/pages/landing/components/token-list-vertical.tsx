@@ -2,6 +2,8 @@ import { HTMLAttributes, ReactNode } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { css, styled } from 'twin.macro';
 
+import { THOUSAND } from '~/constants';
+
 import { formatNumber } from '~/utils';
 import { IToken } from '~/types';
 
@@ -39,15 +41,23 @@ export const TokenListVertical = ({
           {token}
         </Token>
         <Description>
-          <Balance>{typeof balance === 'string' ? '-' : formatNumber(balance, 6)}</Balance>
+          <Balance>
+            {typeof balance === 'string' ? '-' : formatNumber(balance, 4, 'floor', THOUSAND, 0)}
+          </Balance>
           {/* compare value whether undefined or not, since value could be 0 */}
           {showValue && (
             <Value>
               {value !== undefined && (
                 <>
-                  ${formatNumber(value, 2)}{' '}
+                  ${formatNumber(value)}{' '}
                   {convertedBalance
-                    ? `(≈${formatNumber(convertedBalance)} ${convertedToken?.symbol})`
+                    ? `(≈${formatNumber(
+                        convertedBalance,
+                        4,
+                        'floor',
+                        THOUSAND,
+                        0
+                      )} ${convertedToken?.symbol})`
                     : ''}
                 </>
               )}

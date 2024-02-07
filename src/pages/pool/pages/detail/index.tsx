@@ -81,7 +81,7 @@ const InnerWrapper = styled.div<DivProps>(({ banner }) => [
     flex flex-col pt-120 pb-120 pt-112
     md:(px-20)
     mlg:(pt-120)
-    xl:(px-80 items-center)
+    xl:(items-center)
   `,
   banner &&
     tw`
@@ -99,23 +99,23 @@ const GnbWrapper = styled.div<DivProps>(({ banner }) => [
 ]);
 
 const ContentOuterWrapper = tw.div`
-  flex flex-col w-full gap-40 max-w-1440
+  flex flex-col w-full gap-40 max-w-1280
 `;
 
 const ContentWrapper = tw.div`
   flex flex-col gap-20
-  lg:(flex-row) 
+  lg:(grid grid-cols-3) 
   xl:(gap-40)
 `;
 
 const LeftContentWrapper = tw.div`
   flex flex-col gap-24 flex-1 min-w-0 order-2
-  lg:(order-1)
+  lg:(order-1 col-span-2)
 `;
 
 const RightContentWrapper = tw.div`
   w-full flex flex-col gap-24 order-1
-  lg:(order-2 w-400 items-start)
+  lg:(order-2 max-w-400 items-start col-span-1)
 `;
 
 export default PoolDetailMainPage;
