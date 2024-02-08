@@ -68,6 +68,7 @@ const _SwapInputGroup = () => {
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
+  const isXrpEvm = currentNetwork === NETWORK.EVM_SIDECHAIN;
 
   const { opened: selectTokenFromPopupOpened, open: openSelectTokenFromPopup } = usePopup(
     POPUP_ID.SWAP_SELECT_TOKEN_FROM
@@ -119,7 +120,7 @@ const _SwapInputGroup = () => {
       },
     },
     {
-      enabled: !isRoot && rightNetwork && !!currentNetworkAbbr,
+      enabled: !(isRoot || isXrpEvm) && rightNetwork && !!currentNetworkAbbr,
       staleTime: 1000 * 3,
     }
   );
@@ -138,7 +139,7 @@ const _SwapInputGroup = () => {
       },
     },
     {
-      enabled: isRoot && !!fromToken && !!toToken,
+      enabled: (isRoot || isXrpEvm) && !!fromToken && !!toToken,
       staleTime: 2000,
     }
   );

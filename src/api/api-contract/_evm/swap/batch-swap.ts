@@ -50,13 +50,14 @@ export const useBatchSwap = ({
   const { selectedNetwork, isEvm } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
+  const isXrpEvm = currentNetwork === NETWORK.EVM_SIDECHAIN;
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const { data: sorData } = useSorQuery(
     {
       queries: {
-        network: NETWORK.THE_ROOT_NETWORK,
+        network: currentNetwork,
         from: fromToken,
         to: toToken,
         amount: swapAmount.toString(),
@@ -91,7 +92,7 @@ export const useBatchSwap = ({
     functionName: 'batchSwap',
     account: walletAddress as Address,
     args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
-    enabled: enabled && isEvm && !!walletAddress && isRoot,
+    enabled: enabled && isEvm && !!walletAddress && (isRoot || isXrpEvm),
   });
 
   const { data, isLoading: isWriteLoading, writeAsync } = useContractWrite(config);
