@@ -140,9 +140,96 @@ const HomePage = () => {
     ],
   ];
 
+  const allTokensEvm = [
+    [
+      {
+        id: 0,
+        symbol: 'XRP',
+        network: NETWORK.EVM_SIDECHAIN,
+
+        address: '0x0000000000000000000000000000000000000000',
+        currency: 'XRP',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000000000000000n,
+        balance: 9000000000000000000000,
+      },
+      {
+        id: 1,
+        symbol: 'USDC',
+        network: NETWORK.EVM_SIDECHAIN,
+
+        address: '0xFB3f9101C7cB845958b7649ab1d52F2a30ca4294',
+        currency: 'USDC',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000000000000000n,
+        balance: 9000000000000000000000,
+      },
+    ],
+    [
+      {
+        id: 0,
+        symbol: 'MOAI',
+        network: NETWORK.EVM_SIDECHAIN,
+
+        address: '0x7cEf8d13B5aa9c3AEA3456C7845A441e58cEBC00',
+        currency: 'MOAI',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000000000000000n,
+        balance: 9000000000000000000000,
+      },
+      {
+        id: 1,
+        symbol: 'XRP',
+        network: NETWORK.EVM_SIDECHAIN,
+
+        address: '0x0000000000000000000000000000000000000000',
+        currency: 'XRP',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000000000000000n,
+        balance: 9000000000000000000000,
+      },
+    ],
+    [
+      {
+        id: 0,
+        symbol: 'WBTC',
+        network: NETWORK.EVM_SIDECHAIN,
+
+        address: '0x22e7163f6ED77D7ff19608392f06fdB4b12A0686',
+        currency: 'WBTC',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000000000000n,
+        balance: 9000000000000000000000,
+      },
+      {
+        id: 1,
+        symbol: 'XRP',
+        network: NETWORK.EVM_SIDECHAIN,
+
+        address: '0x0000000000000000000000000000000000000000',
+        currency: 'XRP',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 1000000000000000000n,
+        balance: 9000000000000000000000,
+      },
+    ],
+  ];
+
   const { writeAsync } = useAddLiquidity({
-    poolId: '0x4ba71e25c34af053a07fae82103c2f52a5ece1a3000200000000000000000003',
-    tokens: allTokens[3],
+    poolId: '0xf478268f9a73d60ba8a91b824c4909fb4dae9c67000200000000000000000004',
+    tokens: allTokensEvm[2],
     enabled: true,
   });
 
