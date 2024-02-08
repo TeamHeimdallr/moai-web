@@ -4,7 +4,6 @@ import { Address } from 'wagmi';
 
 import { useBatchSwap as useBatchSwapEvm } from '~/api/api-contract/_evm/swap/batch-swap';
 import { useBatchSwap as useBatchSwapFpass } from '~/api/api-contract/_evm/swap/substrate-batch-swap';
-import { useSwap as useSwapEvm } from '~/api/api-contract/_evm/swap/swap';
 import { useSwap as useSwapXrp } from '~/api/api-contract/_xrpl/swap/swap';
 
 import { EVM_TOKEN_ADDRESS } from '~/constants';
@@ -13,10 +12,10 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull, getTokenDecimal } from '~/utils';
 import { useSlippageStore } from '~/states/data';
-import { IToken, NETWORK, SwapKind } from '~/types';
+import { IToken, NETWORK } from '~/types';
 
 interface Props {
-  id: string;
+  id: string; // deprecated because we use batchswap
 
   fromToken?: IToken;
   fromInput?: number;
@@ -25,7 +24,7 @@ interface Props {
   toInput?: number;
   enabled?: boolean;
 }
-export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }: Props) => {
+export const useSwap = ({ id: _id, fromToken, fromInput, toToken, toInput, enabled }: Props) => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { slippage: slippageRaw } = useSlippageStore();
@@ -61,24 +60,25 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
               : toToken?.address,
         }
     : toToken;
-  const resEvm = useSwapEvm({
-    poolId: id,
-    singleSwap: [
-      id,
-      SwapKind.GivenIn,
-      handledFromToken?.address || '',
-      handledToToken?.address || '',
+
+  const resEvm = useBatchSwapEvm({
+    fromToken: (handledFromToken?.address || '0x0') as Address,
+    toToken: (handledToToken?.address || '0x0') as Address,
+    swapAmount: parseUnits(
+      `${(fromInput || 0).toFixed(18)}`,
+      getTokenDecimal(currentNetwork, fromToken?.symbol)
+    ),
+    fundManagement: [evmAddress, false, evmAddress, false],
+    limit: [
       parseUnits(
         `${(fromInput || 0).toFixed(18)}`,
         getTokenDecimal(currentNetwork, fromToken?.symbol)
       ),
-      '0x0',
+      -parseUnits(
+        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
+        getTokenDecimal(currentNetwork, toToken?.symbol)
+      ),
     ],
-    fundManagement: [evmAddress, false, evmAddress, false],
-    limit: parseUnits(
-      `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
-      getTokenDecimal(currentNetwork, toToken?.symbol)
-    ),
     enabled,
   });
 
