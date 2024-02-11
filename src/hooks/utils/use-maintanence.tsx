@@ -3,7 +3,7 @@ import { useGetMaintanenceQuery } from '~/api/api-server/maintanence/get-maintan
 import MaintenancePage from '~/pages/maintenance';
 
 export const useMaintanence = () => {
-  const { data } = useGetMaintanenceQuery({ staleTime: 1000 });
+  const { data } = useGetMaintanenceQuery({ staleTime: 3000 });
   const { data: maintanenceData } = data || {};
   const urls = maintanenceData?.map(m => m.url) || [];
 

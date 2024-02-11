@@ -8,15 +8,21 @@ import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
+import { usePrevious } from '~/hooks/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { FaucetList } from './components/faucet-list';
 
 const FaucetPage = () => {
   useGAPage();
+
+  const { selectedNetwork } = useNetwork();
+  const previousNetwork = usePrevious<NETWORK>(selectedNetwork);
+
+  const targetNetork = [NETWORK.XRPL, NETWORK.EVM_SIDECHAIN];
   useForceNetwork({
-    targetNetwork: [NETWORK.XRPL],
-    changeTargetNetwork: NETWORK.XRPL,
+    targetNetwork: targetNetork,
+    changeTargetNetwork: previousNetwork || targetNetork[0],
     callCallbackUnmounted: true,
   });
 
@@ -24,7 +30,6 @@ const FaucetPage = () => {
 
   const { t } = useTranslation();
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
-  const { selectedNetwork } = useNetwork();
 
   return (
     <Wrapper ref={ref}>
@@ -32,7 +37,7 @@ const FaucetPage = () => {
         <Gnb />
       </GnbWrapper>
       <InnerWrapper banner={!!bannerOpened}>
-        {selectedNetwork === NETWORK.XRPL && (
+        {targetNetork.includes(selectedNetwork) && (
           <ContentWrapper>
             <Title>{t('Faucet')}</Title>
 
