@@ -56,7 +56,7 @@ export const GNB_MENU: IGnbMenu[] = [
     text: 'Faucet',
     path: '/faucet',
     show: IS_LOCAL || IS_DEVNET,
-    network: [NETWORK.XRPL],
+    network: [NETWORK.XRPL, NETWORK.EVM_SIDECHAIN],
   },
 ];
 

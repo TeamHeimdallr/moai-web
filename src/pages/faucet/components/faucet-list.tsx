@@ -1,13 +1,17 @@
 import { Suspense } from 'react';
 import tw from 'twin.macro';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { getNetworkAbbr } from '~/utils';
 import { NETWORK } from '~/types';
 
-import { FaucetTokenCard } from './faucet-token-card';
+import { FaucetTokenCard as FaucetTokenCardEvmSidechain } from './faucet-token-card-evm-sidechain';
+import { FaucetTokenCard as FaucetTokenCardXrpl } from './faucet-token-card-xrpl';
 
 export const FaucetList = () => {
   return (
@@ -17,35 +21,46 @@ export const FaucetList = () => {
   );
 };
 const _FaucetList = () => {
-  const xrplNetwork = 'xrpl';
+  const ableNetworks = [NETWORK.XRPL, NETWORK.EVM_SIDECHAIN];
+
+  const { selectedNetwork } = useNetwork();
+  const networkAbbr = getNetworkAbbr(selectedNetwork);
+
+  const { userAllTokenBalances, refetch: refetchBalance } = useUserAllTokenBalances();
 
   const { data: tokensRawData } = useGetTokensQuery(
-    {
-      queries: {
-        filter: `network:in:${xrplNetwork}`,
-      },
-    },
+    { queries: { filter: `network:in:${networkAbbr}` } },
     { staleTime: 60 * 1000 }
   );
   const { tokens: tokensAll } = tokensRawData || {};
-  const tokens = tokensAll
-    ?.filter(
-      token => !token.isLpToken && token.network === NETWORK.XRPL && token.currency !== 'XRP'
-    )
-    .sort((a, b) => a.symbol.localeCompare(b.symbol));
 
+  const getTokens = () => {
+    if (!tokensAll) return [];
+
+    return tokensAll
+      .filter(token => !token.isLpToken && token.currency !== 'XRP')
+      .sort((a, b) => a.symbol.localeCompare(b.symbol))
+      .map(token => {
+        const balance = userAllTokenBalances?.find(b => b.address === token.address)?.balance ?? 0;
+        return { ...token, balance };
+      });
+  };
+
+  if (!ableNetworks.includes(selectedNetwork)) return;
   return (
-    <>
-      <Wrapper>
-        {tokens?.map(token => {
-          return (
-            <TokenCard key={token.id}>
-              <FaucetTokenCard token={token} />
-            </TokenCard>
-          );
-        })}
-      </Wrapper>
-    </>
+    <Wrapper>
+      {getTokens().map(token => {
+        return (
+          <TokenCard key={token.id}>
+            {selectedNetwork === NETWORK.XRPL ? (
+              <FaucetTokenCardXrpl token={token} refetchBalance={refetchBalance} />
+            ) : (
+              <FaucetTokenCardEvmSidechain token={token} refetchBalance={refetchBalance} />
+            )}
+          </TokenCard>
+        );
+      })}
+    </Wrapper>
   );
 };
 

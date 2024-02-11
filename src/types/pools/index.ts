@@ -242,3 +242,11 @@ export interface IFaucetXrplRequest {
   recipient: string;
   amount?: number;
 }
+
+/*
+ * Faucet tokens for Evm Sidechain Devnet
+ */
+export interface IFaucetEvmSidechainRequest {
+  tokenAddress: string;
+  walletAddress: string;
+}

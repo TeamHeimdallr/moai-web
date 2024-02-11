@@ -91,4 +91,11 @@ export const FAUCET_AMOUNT = {
     BTC: 2,
     ETH: 4,
   },
+  [NETWORK.EVM_SIDECHAIN]: {
+    MOAI: 100,
+    USDC: 100,
+    BTC: 1,
+    ETH: 100,
+    XRP: 10,
+  },
 };
