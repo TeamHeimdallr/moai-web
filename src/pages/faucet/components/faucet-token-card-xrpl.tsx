@@ -157,7 +157,7 @@ const TokenInfo = tw.div`
 `;
 const TokenNameBalance = tw.div``;
 const TokenName = tw.div`
-  text-neutral-100 font-r-14 gap-6
+  text-neutral-100 font-r-18 gap-6 h-32 flex items-center
 `;
 const TokenBalance = tw.div`
   font-r-14 text-neutral-60

@@ -3,15 +3,16 @@ import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import tw, { css, styled } from 'twin.macro';
+import { useWalletClient } from 'wagmi';
 
 import { usePostFaucetEvmSidechain } from '~/api/api-server/faucet/post-faucet-evm-sidechain';
 
 import { COLOR } from '~/assets/colors';
-import { IconAlert } from '~/assets/icons';
+import { IconAddToken, IconAlert } from '~/assets/icons';
 
 import { THOUSAND } from '~/constants';
 
-import { ButtonPrimaryMedium } from '~/components/buttons';
+import { ButtonIconMedium, ButtonPrimaryMedium } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -28,6 +29,7 @@ interface FaucetTokenCardProps {
 export const FaucetTokenCard = ({ token, refetchBalance }: FaucetTokenCardProps) => {
   const { selectedNetwork, isFpass } = useNetwork();
 
+  const { data: walletClient } = useWalletClient();
   const { evm } = useConnectedWallet();
   const { address } = evm;
 
@@ -65,6 +67,23 @@ export const FaucetTokenCard = ({ token, refetchBalance }: FaucetTokenCardProps)
     return t('Get Token', { symbol });
   };
 
+  const handleAddToken = async (token: IToken) => {
+    const { address, symbol, decimal } = token;
+    if (!address || !symbol || !decimal) return;
+
+    await walletClient?.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: {
+          address,
+          symbol,
+          decimals: decimal,
+        },
+      },
+    });
+  };
+
   useEffect(() => {
     // lack of faucet fund
     if (!faucetData?.code) return;
@@ -96,7 +115,12 @@ export const FaucetTokenCard = ({ token, refetchBalance }: FaucetTokenCardProps)
           <Jazzicon diameter={36} seed={jsNumberForAddress(token.address)} />
         )}
         <TokenNameBalance>
-          <TokenName>{token.symbol}</TokenName>
+          <TokenName>
+            {token.symbol}
+            {token.symbol !== 'XRP' && (
+              <ButtonIconMedium icon={<IconAddToken />} onClick={() => handleAddToken(token)} />
+            )}
+          </TokenName>
           {error ? (
             <IconWithErrorMsg>
               <IconAlert width={20} height={20} fill={COLOR.RED[50]} />
@@ -130,7 +154,7 @@ const TokenInfo = tw.div`
 `;
 const TokenNameBalance = tw.div``;
 const TokenName = tw.div`
-  text-neutral-100 font-r-14 gap-6
+  text-neutral-100 font-r-18 gap-4 flex items-center
 `;
 const TokenBalance = tw.div`
   font-r-14 text-neutral-60
