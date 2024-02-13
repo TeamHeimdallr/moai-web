@@ -39,6 +39,7 @@ const PoolDetailMainPage = () => {
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
+
   return (
     <Wrapper>
       <GnbWrapper banner={!!opened}>

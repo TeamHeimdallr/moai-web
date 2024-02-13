@@ -18,7 +18,7 @@ export const formatNumber = (
   let absNumber = Math.abs(number);
 
   if (absNumber >= threshold) {
-    while (absNumber > THOUSAND && unitIndex < units.length - 1) {
+    while (absNumber >= THOUSAND && unitIndex < units.length - 1) {
       absNumber /= THOUSAND;
       unitIndex++;
     }

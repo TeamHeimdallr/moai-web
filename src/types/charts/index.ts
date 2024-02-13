@@ -1,4 +1,4 @@
 export interface IChartData {
-  date: Date;
+  date: string;
   value: number;
 }

@@ -30,14 +30,12 @@ export const PoolCompositionsChart = ({ data }: Props) => {
         <svg width={'100%'} height={isMD ? '190px' : '144px'}>
           <LinearGradient
             id="pool-pie-gradient-left"
-            rotate={'180deg'}
             from="#FCFFD6"
             to="rgba(252, 255, 214, 0.10)"
             toOffset={'100%'}
           />
           <LinearGradient
             id="pool-pie-gradient-right"
-            rotate={'180deg'}
             from="#A3B6FF"
             to="rgba(163, 182, 255, 0.10)"
             toOffset={'100%'}
