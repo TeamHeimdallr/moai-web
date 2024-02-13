@@ -17,7 +17,6 @@ import { formatNumber } from '~/utils';
 import { TOOLTIP_ID } from '~/types';
 
 import { AssetSupplyBorrowInfoCard } from './asset-supply-borrow-info-card';
-import { AssetSupplyInfoChart } from './asset-supply-info-chart';
 
 export const AssetSupplyInfo = () => {
   const { t } = useTranslation();
@@ -35,86 +34,82 @@ export const AssetSupplyInfo = () => {
   const liquidationPenalty = 12312323;
 
   return (
-    <>
-      <Wrapper>
-        <HeaderTitle>{t('Supply info')}</HeaderTitle>
+    <Wrapper>
+      <HeaderTitle>{t('Supply info')}</HeaderTitle>
 
-        {/* supply info */}
-        <InfoWrapper>
-          <AssetSupplyBorrowInfoCard
-            title={t('Total supplied')}
+      {/* supply info */}
+      <InfoWrapper>
+        <AssetSupplyBorrowInfoCard
+          title={t('Total supplied')}
+          titleIcon={
+            <ButtonIconSmall
+              icon={<IconQuestion />}
+              data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED}
+            />
+          }
+          value={
+            <>
+              <InfoText>{formatNumber(currentSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
+              <InfoTextSmall>of</InfoTextSmall>
+              <InfoText>{formatNumber(totalSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
+            </>
+          }
+          barChart
+          barChartValue={ratio}
+          barChartLabel={`${formatNumber(ratio, 2, 'floor', THOUSAND, 2)}%`}
+        />
+        <AssetSupplyBorrowInfoCard
+          title={t('APY')}
+          value={<APYMedium apy={apy} style={{ justifyContent: 'flex-start' }} />}
+        />
+      </InfoWrapper>
+
+      <ChartWrapper></ChartWrapper>
+
+      <CollateralWrapper>
+        <ContentTitle>
+          {t('Collateral usage')}
+          <ContentTitleCaptionWrapper collateral={collateral}>
+            {collateral ? <IconCheck /> : <IconCancel />}
+            {collateral ? t('Can be collateral') : t('Can not be collateral')}
+          </ContentTitleCaptionWrapper>
+        </ContentTitle>
+        <CollateralCards>
+          <InfoCard
+            title={t('Max LTV')}
             titleIcon={
               <ButtonIconSmall
                 icon={<IconQuestion />}
-                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED}
+                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_MAX_LTV}
               />
             }
-            value={
-              <>
-                <InfoText>{formatNumber(currentSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
-                <InfoTextSmall>of</InfoTextSmall>
-                <InfoText>{formatNumber(totalSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
-              </>
+            value={`${formatNumber(maxLTV, 2, 'floor', THOUSAND, 2)}%`}
+            light
+          />
+          <InfoCard
+            title={t('Liquidation threshold')}
+            titleIcon={
+              <ButtonIconSmall
+                icon={<IconQuestion />}
+                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD}
+              />
             }
-            barChart
-            barChartValue={ratio}
-            barChartLabel={`${formatNumber(ratio, 2, 'floor', THOUSAND, 2)}%`}
+            value={`${formatNumber(liquidationThreshold, 2, 'floor', THOUSAND, 2)}%`}
+            light
           />
-          <AssetSupplyBorrowInfoCard
-            title={t('APY')}
-            value={<APYMedium apy={apy} style={{ justifyContent: 'flex-start' }} />}
+          <InfoCard
+            title={t('Liquidation penalty')}
+            titleIcon={
+              <ButtonIconSmall
+                icon={<IconQuestion />}
+                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY}
+              />
+            }
+            value={`${formatNumber(liquidationPenalty, 2, 'floor', THOUSAND, 2)}%`}
+            light
           />
-        </InfoWrapper>
-
-        <ChartWrapper>
-          <AssetSupplyInfoChart />
-        </ChartWrapper>
-
-        <CollateralWrapper>
-          <ContentTitle>
-            {t('Collateral usage')}
-            <ContentTitleCaptionWrapper collateral={collateral}>
-              {collateral ? <IconCheck /> : <IconCancel />}
-              {collateral ? t('Can be collateral') : t('Can not be collateral')}
-            </ContentTitleCaptionWrapper>
-          </ContentTitle>
-          <CollateralCards>
-            <InfoCard
-              title={t('Max LTV')}
-              titleIcon={
-                <ButtonIconSmall
-                  icon={<IconQuestion />}
-                  data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_MAX_LTV}
-                />
-              }
-              value={`${formatNumber(maxLTV, 2, 'floor', THOUSAND, 2)}%`}
-              light
-            />
-            <InfoCard
-              title={t('Liquidation threshold')}
-              titleIcon={
-                <ButtonIconSmall
-                  icon={<IconQuestion />}
-                  data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD}
-                />
-              }
-              value={`${formatNumber(liquidationThreshold, 2, 'floor', THOUSAND, 2)}%`}
-              light
-            />
-            <InfoCard
-              title={t('Liquidation penalty')}
-              titleIcon={
-                <ButtonIconSmall
-                  icon={<IconQuestion />}
-                  data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY}
-                />
-              }
-              value={`${formatNumber(liquidationPenalty, 2, 'floor', THOUSAND, 2)}%`}
-              light
-            />
-          </CollateralCards>
-        </CollateralWrapper>
-      </Wrapper>
+        </CollateralCards>
+      </CollateralWrapper>
 
       <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED} place="bottom">
         <TooltipContent>{t('total-supplied-description')}</TooltipContent>
@@ -128,7 +123,7 @@ export const AssetSupplyInfo = () => {
       <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY} place="bottom">
         <TooltipContent>{t('liquidity-penalty-description')}</TooltipContent>
       </Tooltip>
-    </>
+    </Wrapper>
   );
 };
 
