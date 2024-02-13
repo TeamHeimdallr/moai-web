@@ -1,10 +1,10 @@
-import { Doughnut } from 'react-chartjs-2';
 import { useTranslation } from 'react-i18next';
-import { ScriptableContext } from 'chart.js';
+import { LinearGradient } from '@visx/gradient';
+import { Group } from '@visx/group';
+import { Pie } from '@visx/shape';
 import tw from 'twin.macro';
 
-import { COLOR } from '~/assets/colors';
-
+import { useMediaQuery } from '~/hooks/utils';
 import { formatNumber } from '~/utils';
 import { ITokenComposition } from '~/types';
 
@@ -14,51 +14,70 @@ interface Props {
 
 export const PoolCompositionsChart = ({ data }: Props) => {
   const { t } = useTranslation();
+  const { isMD } = useMediaQuery();
 
-  const handleGradient = (context: ScriptableContext<'doughnut'>) => {
-    const { dataIndex } = context;
-    const { ctx, chartArea } = context.chart;
-    if (!chartArea) return;
+  const chartData = data.map(d => ({
+    id: d.symbol,
+    value: d.currentWeight || 0,
+  }));
 
-    const gradient1 = ctx.createLinearGradient(190, 100, 0, 290);
-    gradient1.addColorStop(0, COLOR.PRIMARY[80]);
-    gradient1.addColorStop(1, 'rgba(252, 255, 214, 0.1)');
-
-    const gradient2 = ctx.createLinearGradient(190, 100, 380, 290);
-    gradient2.addColorStop(0, '#A3B6FF');
-    gradient2.addColorStop(1, 'rgba(163, 182, 255, 0.1)');
-
-    return dataIndex === 0 ? gradient1 : gradient2;
-  };
   const totalValue = data?.reduce((acc, cur) => acc + (cur?.value || 0), 0) || 0;
 
+  const width = isMD ? 190 : 144;
   return (
     <Wrapper>
       <ChartWrapper>
-        <Doughnut
-          data={{
-            datasets: [
-              {
-                data: data.map(d => d?.currentWeight || 0),
-                backgroundColor: ctx => handleGradient(ctx),
-                borderWidth: 0,
-                circumference: 180,
-                rotation: -90,
-                spacing: 3,
-                borderRadius: 3,
-              },
-            ],
-          }}
-          options={{
-            cutout: '83%',
-            animation: false,
-            plugins: {
-              tooltip: {
-                enabled: false,
-              },
-            },
-          }}
-        />
+        <svg width={'100%'} height={isMD ? '190px' : '144px'}>
+          <LinearGradient
+            id="pool-pie-gradient-left"
+            rotate={'180deg'}
+            from="#FCFFD6"
+            to="rgba(252, 255, 214, 0.10)"
+            toOffset={'100%'}
+          />
+          <LinearGradient
+            id="pool-pie-gradient-right"
+            rotate={'180deg'}
+            from="#A3B6FF"
+            to="rgba(163, 182, 255, 0.10)"
+            toOffset={'100%'}
+          />
+
+          <Group top={isMD ? 190 : 144} left={isMD ? 190 : 144}>
+            <Pie
+              data={chartData}
+              pieValue={d => d.value}
+              outerRadius={width}
+              innerRadius={width - 36}
+              padAngle={0.015}
+              startAngle={-(Math.PI / 2)}
+              endAngle={Math.PI / 2}
+              cornerRadius={5}
+            >
+              {pie =>
+                pie.arcs.map((arc, i) => {
+                  const data = arc.data;
+                  const key = `arc-${data.id}-${i}`;
+                  const d = pie.path(arc) || '';
+                  const color =
+                    i === 0 ? `url('#pool-pie-gradient-left')` : `url('#pool-pie-gradient-right')`;
+
+                  return (
+                    <Group key={key}>
+                      <path
+                        d={d}
+                        fill={color}
+                        style={{
+                          boxShadow: '1px 1px 2px 0px rgba(255, 255, 255, 0.20) inset',
+                        }}
+                      />
+                    </Group>
+                  );
+                })
+              }
+            </Pie>
+          </Group>
+        </svg>
       </ChartWrapper>
       <TotalValue>
         <Amount>${formatNumber(totalValue)}</Amount>
@@ -69,19 +88,18 @@ export const PoolCompositionsChart = ({ data }: Props) => {
 };
 
 const Wrapper = tw.div`
-  relative flex items-end justify-center
-  w-288 h-288
-  md:(w-380 h-380)
+  relative flex-center
+  w-288 h-144
+  md:(w-380 h-190)
 `;
 
 const ChartWrapper = tw.div`
   absolute z-1 w-full h-full
-  md:(top-15)
 `;
 
 const TotalValue = tw.div`
-  flex-center flex-col gap-2 absolute absolute-center-x bottom-85
-  md:(bottom-120)
+  flex-center flex-col gap-2 absolute absolute-center-x bottom-16
+  md:(bottom-30)
 `;
 const Amount = tw.div`
   font-b-24 text-neutral-100
