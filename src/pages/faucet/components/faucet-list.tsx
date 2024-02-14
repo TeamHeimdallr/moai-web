@@ -1,14 +1,16 @@
 import { Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
+import { Tooltip } from '~/components/tooltips/base';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { getNetworkAbbr } from '~/utils';
-import { NETWORK } from '~/types';
+import { NETWORK, TOOLTIP_ID } from '~/types';
 
 import { FaucetTokenCard as FaucetTokenCardEvmSidechain } from './faucet-token-card-evm-sidechain';
 import { FaucetTokenCard as FaucetTokenCardXrpl } from './faucet-token-card-xrpl';
@@ -27,6 +29,8 @@ const _FaucetList = () => {
   const networkAbbr = getNetworkAbbr(selectedNetwork);
 
   const { userAllTokenBalances, refetch: refetchBalance } = useUserAllTokenBalances();
+
+  const { t } = useTranslation();
 
   const { data: tokensRawData } = useGetTokensQuery(
     { queries: { filter: `network:in:${networkAbbr}` } },
@@ -60,6 +64,9 @@ const _FaucetList = () => {
           </TokenCard>
         );
       })}
+      <Tooltip id={TOOLTIP_ID.EVM_SIDECHAIN_FAUCET_ADD_TOKEN} place="bottom">
+        <TooltipContent>{t('Add token to wallet')}</TooltipContent>
+      </Tooltip>
     </Wrapper>
   );
 };
@@ -89,3 +96,5 @@ const TokenCard = tw.div`
 const InputInnerWrapper = tw.div`
   flex flex-col gap-16 relative
 `;
+
+const TooltipContent = tw.div``;

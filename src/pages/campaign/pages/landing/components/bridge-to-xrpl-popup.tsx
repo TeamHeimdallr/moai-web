@@ -181,7 +181,7 @@ const _BridgeToXrplPopup = () => {
   const handleLink = () => {
     // Even if we don't use Fpass, we use substrate call so use extrinsicId.
     const txHash = txData?.extrinsicId;
-    const url = `${SCANNER_URL[currentNetwork || NETWORK.THE_ROOT_NETWORK]}/extrinsic/${txHash}`;
+    const url = `${SCANNER_URL[currentNetwork || NETWORK.THE_ROOT_NETWORK]}/extrinsics/${txHash}`;
 
     gaAction({
       action: 'go-to-transaction',

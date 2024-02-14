@@ -485,7 +485,7 @@ const _WithdrawLiquidityPopup = ({
   const handleLink = () => {
     const txHash = isFpass ? txData?.extrinsicId : isEvm ? txData?.transactionHash : txData?.hash;
     const url = `${SCANNER_URL[currentNetwork || NETWORK.THE_ROOT_NETWORK]}/${
-      isFpass ? 'extrinsic' : isEvm ? 'tx' : 'transactions'
+      isFpass ? 'extrinsics' : isEvm ? 'tx' : 'transactions'
     }/${txHash}`;
 
     gaAction({

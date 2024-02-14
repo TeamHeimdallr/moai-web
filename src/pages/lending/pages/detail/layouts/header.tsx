@@ -44,9 +44,7 @@ export const LendingHeader = () => {
   const { address, image, decimal } = token || {};
 
   const handleLink = () => {
-    const url = `${SCANNER_URL[selectedNetwork]}/${isRoot ? 'address' : 'token'}/${address}${
-      isRoot ? '?tab=evm_transactions' : '/token-transfers'
-    }`;
+    const url = `${SCANNER_URL[selectedNetwork]}/${isRoot ? 'addresses' : 'token'}/${address}`;
 
     gaAction({
       action: 'go-to-token',

@@ -18,7 +18,7 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber } from '~/utils';
-import { IToken, NETWORK, POPUP_ID } from '~/types';
+import { IToken, NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import i18n from '~/locales/i18n';
 
@@ -107,47 +107,57 @@ export const FaucetTokenCard = ({ token, refetchBalance }: FaucetTokenCardProps)
   const isLoading = isFaucetLoading;
 
   return (
-    <Wrapper>
-      <TokenInfo>
-        {token.image ? (
-          <Image src={token.image} />
-        ) : (
-          <Jazzicon diameter={36} seed={jsNumberForAddress(token.address)} />
-        )}
-        <TokenNameBalance>
-          <TokenName>
-            {token.symbol}
-            {token.symbol !== 'XRP' && (
-              <ButtonIconMedium icon={<IconAddToken />} onClick={() => handleAddToken(token)} />
-            )}
-          </TokenName>
-          {error ? (
-            <IconWithErrorMsg>
-              <IconAlert width={20} height={20} fill={COLOR.RED[50]} />
-              <ErrorMsg>{t('faucet-limit-message')}</ErrorMsg>
-            </IconWithErrorMsg>
+    <>
+      <Wrapper>
+        <TokenInfo>
+          {token.image ? (
+            <Image src={token.image} />
           ) : (
-            <TokenBalance>
-              {address ? formatNumber(token.balance, 4, 'floor', THOUSAND, 0) : ''}
-            </TokenBalance>
+            <Jazzicon diameter={36} seed={jsNumberForAddress(token.address)} />
           )}
-        </TokenNameBalance>
-      </TokenInfo>
-      <ButtonWrapper isConnectWallet={!!address} isLoading={isLoading}>
-        <ButtonPrimaryMedium
-          isLoading={isLoading}
-          buttonType="outlined"
-          hideLottie
-          text={buttonText(token.symbol)}
-          onClick={handleClickToken}
-        />
-      </ButtonWrapper>
-    </Wrapper>
+          <TokenNameBalance>
+            <TokenName>
+              {token.symbol}
+              {token.symbol !== 'XRP' && (
+                <ButtonIconMedium
+                  icon={<IconAddToken />}
+                  onClick={() => handleAddToken(token)}
+                  data-tooltip-id={TOOLTIP_ID.EVM_SIDECHAIN_FAUCET_ADD_TOKEN}
+                />
+              )}
+            </TokenName>
+            {error ? (
+              <IconWithErrorMsg>
+                <IconAlert width={20} height={20} fill={COLOR.RED[50]} />
+                <ErrorMsg>{t('faucet-limit-message')}</ErrorMsg>
+              </IconWithErrorMsg>
+            ) : (
+              <TokenBalance>
+                {address ? formatNumber(token.balance, 4, 'floor', THOUSAND, 0) : ''}
+              </TokenBalance>
+            )}
+          </TokenNameBalance>
+        </TokenInfo>
+        <ButtonOuterWrapper>
+          <ButtonWrapper isConnectWallet={!!address} isLoading={isLoading}>
+            <ButtonPrimaryMedium
+              isLoading={isLoading}
+              buttonType="outlined"
+              hideLottie
+              text={buttonText(token.symbol)}
+              onClick={handleClickToken}
+            />
+          </ButtonWrapper>
+        </ButtonOuterWrapper>
+      </Wrapper>
+    </>
   );
 };
 
 const Wrapper = tw.div`
-  flex rounded-8 gap-8 pb-12 p-16 bg-neutral-15 justify-between
+  flex flex-col rounded-8 gap-8 pb-12 p-16 bg-neutral-15 justify-between
+  items-start
+  md:(flex-row)
 `;
 const TokenInfo = tw.div`
   flex-center gap-12
@@ -161,6 +171,9 @@ const TokenBalance = tw.div`
 `;
 const Image = tw(LazyLoadImage)`w-36 h-36 rounded-18 shrink-0`;
 
+const ButtonOuterWrapper = tw.div`
+  flex w-full justify-end items-center
+`;
 interface ButtonWrapperProps {
   isConnectWallet: boolean;
   isLoading?: boolean;

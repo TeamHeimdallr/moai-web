@@ -35,9 +35,7 @@ export const XRPL_WSS = IS_MAINNET
   : 'wss://s.devnet.rippletest.net:51233';
 
 export const SCANNER_URL = {
-  [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET
-    ? 'https://explorer.rootnet.live'
-    : 'https://explorer.rootnet.cloud',
+  [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET ? 'https://rootscan.io' : 'https://porcini.rootscan.io',
   [NETWORK.EVM_SIDECHAIN]: IS_MAINNET
     ? 'https://evm-sidechain.xrpl.org'
     : 'https://evm-sidechain.xrpl.org',

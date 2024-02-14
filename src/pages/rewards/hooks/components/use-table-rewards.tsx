@@ -27,6 +27,7 @@ export const useTableRewards = () => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
   const { currentAddress } = useConnectedWallet(currentNetwork);
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const {
     data: rewardListData,
@@ -60,6 +61,12 @@ export const useTableRewards = () => {
   const tableData = useMemo(
     () =>
       rewardLists?.map((d, i) => {
+        const getLink = () => {
+          if (isXrp) return `${SCANNER_URL[currentNetwork]}/accounts/${d.address}`;
+          if (isRoot) return `${SCANNER_URL[currentNetwork]}/addresses/${d.address}`;
+          return `${SCANNER_URL[currentNetwork]}/address/${d.address}`;
+        };
+
         return {
           meta: {
             isMy: currentAddress && currentAddress === d?.address,
@@ -89,9 +96,7 @@ export const useTableRewards = () => {
               }
               address
               tableKey="rewards"
-              link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'accounts' : 'address'}/${
-                d?.address || ''
-              }`}
+              link={getLink()}
             />
           ),
           volume: <TableColumn value={`$${formatNumber(d?.volume)}`} align="flex-end" />,
@@ -103,7 +108,7 @@ export const useTableRewards = () => {
           ),
         };
       }),
-    [currentAddress, currentNetwork, isXrp, rewardLists]
+    [currentAddress, currentNetwork, isRoot, isXrp, rewardLists]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -139,6 +144,12 @@ export const useTableRewards = () => {
   const mobileTableData = useMemo(
     () =>
       rewardLists?.map((d, i) => {
+        const getLink = () => {
+          if (isXrp) return `${SCANNER_URL[currentNetwork]}/accounts/${d.address}`;
+          if (isRoot) return `${SCANNER_URL[currentNetwork]}/addresses/${d.address}`;
+          return `${SCANNER_URL[currentNetwork]}/address/${d.address}`;
+        };
+
         return {
           meta: {
             className:
@@ -165,9 +176,7 @@ export const useTableRewards = () => {
                 }
                 address
                 tableKey="rewards"
-                link={`${SCANNER_URL[currentNetwork]}/${isXrp ? 'accounts' : 'address'}/${
-                  d?.address || ''
-                }`}
+                link={getLink()}
               />
             </RowWrapper>,
           ],
@@ -194,7 +203,7 @@ export const useTableRewards = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentNetwork, isXrp, rewardLists]
+    [currentAddress, currentNetwork, isRoot, isXrp, rewardLists]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
