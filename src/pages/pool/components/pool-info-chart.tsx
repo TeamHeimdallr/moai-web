@@ -9,7 +9,7 @@ import { Group } from '@visx/group';
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import { scaleBand, scaleLinear, scaleTime } from '@visx/scale';
 import { Area, AreaClosed, Bar, Line } from '@visx/shape';
-import { useTooltip, withTooltip } from '@visx/tooltip';
+import { useTooltip } from '@visx/tooltip';
 import { bisector, extent } from '@visx/vendor/d3-array';
 import { format } from 'date-fns';
 import { enUS, ko } from 'date-fns/locale';
