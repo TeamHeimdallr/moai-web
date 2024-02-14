@@ -223,7 +223,7 @@ const _AddLiquidity = () => {
 
   const handleLink = () => {
     const txHash = isFpass ? txData?.extrinsicId : txData?.transactionHash;
-    const url = `${SCANNER_URL[selectedNetwork]}/${isFpass ? 'extrinsic' : 'tx'}/${txHash}`;
+    const url = `${SCANNER_URL[selectedNetwork]}/${isFpass ? 'extrinsics' : 'tx'}/${txHash}`;
 
     gaAction({
       action: 'go-to-transaction',

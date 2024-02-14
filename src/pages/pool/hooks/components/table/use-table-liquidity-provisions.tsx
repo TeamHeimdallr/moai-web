@@ -117,6 +117,18 @@ export const useTableLiquidityProvision = () => {
             ? t('Just now')
             : t(`${splittedTime[1]} ${splittedTime[2]}`, { time: splittedTime[0] });
 
+        const getLink = () => {
+          const hash = d.txHash;
+          const isExtrinsic = !hash.startsWith('0x');
+
+          if (isXrp) return `${SCANNER_URL[currentNetwork]}/transactions/${hash}`;
+          if (isRoot) {
+            if (isExtrinsic) return `${SCANNER_URL[currentNetwork]}/extrinsics/${hash}`;
+            return `${SCANNER_URL[currentNetwork]}/tx/${hash}`;
+          }
+          return `${SCANNER_URL[currentNetwork]}/tx/${hash}`;
+        };
+
         return {
           meta: {
             id: d.id,
@@ -149,9 +161,7 @@ export const useTableLiquidityProvision = () => {
               token={translatedTime}
               tableKey="liquidity-provision"
               align="flex-end"
-              link={`${SCANNER_URL[currentNetwork]}/${
-                isXrp ? 'transactions' : isRoot ? 'extrinsic' : 'tx'
-              }/${d.txHash}`}
+              link={getLink()}
             />
           ),
         };
@@ -220,6 +230,18 @@ export const useTableLiquidityProvision = () => {
             ? t('Just now')
             : t(`${splittedTime[1]} ${splittedTime[2]}`, { time: splittedTime[0] });
 
+        const getLink = () => {
+          const hash = d.txHash;
+          const isExtrinsic = !hash.startsWith('0x');
+
+          if (isXrp) return `${SCANNER_URL[currentNetwork]}/transactions/${hash}`;
+          if (isRoot) {
+            if (isExtrinsic) return `${SCANNER_URL[currentNetwork]}/extrinsics/${hash}`;
+            return `${SCANNER_URL[currentNetwork]}/tx/${hash}`;
+          }
+          return `${SCANNER_URL[currentNetwork]}/tx/${hash}`;
+        };
+
         return {
           rows: [
             <TableColumnIconText
@@ -249,15 +271,7 @@ export const useTableLiquidityProvision = () => {
             },
             {
               label: 'Time',
-              value: (
-                <TableColumnLink
-                  token={translatedTime}
-                  align="flex-end"
-                  link={`${SCANNER_URL[currentNetwork]}/${
-                    isXrp ? 'transactions' : isRoot ? 'extrinsic' : 'tx'
-                  }/${d.txHash}`}
-                />
-              ),
+              value: <TableColumnLink token={translatedTime} align="flex-end" link={getLink()} />,
             },
           ],
         };

@@ -15,14 +15,16 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { formatNumber, getNetworkFull } from '~/utils';
+import { NETWORK } from '~/types';
 
 export const PoolHeader = () => {
   const { ref } = useGAInView({ name: 'pool-detail-header' });
   const { gaAction } = useGAAction();
   const { network, id } = useParams();
 
-  const { selectedNetwork, isFpass, isXrp } = useNetwork();
+  const { selectedNetwork, isXrp } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const queryEnabled = !!network && !!id;
   const { data } = useGetPoolQuery(
@@ -44,8 +46,8 @@ export const PoolHeader = () => {
 
   const handleLink = () => {
     const url = `${SCANNER_URL[currentNetwork]}/${
-      isXrp ? 'accounts' : 'address'
-    }/${lpTokenAddress}?${isFpass ? 'tab=erc20_transfers' : ''}`;
+      isXrp ? 'accounts' : isRoot ? 'addresses' : 'token'
+    }/${lpTokenAddress}`;
 
     gaAction({
       action: 'pool-detail-header-click',

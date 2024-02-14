@@ -93,7 +93,7 @@ export const FuturepassCreatePopup = () => {
                       icon={<IconLink />}
                       onClick={() =>
                         window.open(
-                          `${SCANNER_URL[NETWORK.THE_ROOT_NETWORK]}/address/${fpass.address}`
+                          `${SCANNER_URL[NETWORK.THE_ROOT_NETWORK]}/addresses/${fpass.address}`
                         )
                       }
                     />
