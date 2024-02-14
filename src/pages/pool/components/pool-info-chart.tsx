@@ -13,7 +13,7 @@ import { withTooltip } from '@visx/tooltip';
 import { bisector, extent } from '@visx/vendor/d3-array';
 import { format } from 'date-fns';
 import { enUS, ko } from 'date-fns/locale';
-import { debounce, upperFirst } from 'lodash-es';
+import { upperFirst } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
 import { useGetChartQuery } from '~/api/api-server/pools/get-charts';
@@ -40,7 +40,6 @@ export const PoolInfoChart = () => {
   const chartRef = useRef<HTMLDivElement>(null);
 
   const [leftLabelWidth, setLeftLabelWidth] = useState(0);
-  const [selectedData, setSelectedData] = useState<IChartData | undefined>(undefined);
 
   const { network, id } = useParams();
   const { t, i18n } = useTranslation();
@@ -55,12 +54,15 @@ export const PoolInfoChart = () => {
     { key: 'tvl', name: 'TVL' },
     { key: 'fees', name: 'Fees' },
   ];
-  const ranges = [
-    { key: '90', name: t('90d') },
-    { key: '180', name: t('180d') },
-    { key: '365', name: t('365d') },
-    { key: 'all', name: t('All') },
-  ];
+  const ranges = useMemo(
+    () => [
+      { key: '90', name: t('90d') },
+      { key: '180', name: t('180d') },
+      { key: '365', name: t('365d') },
+      { key: 'all', name: t('All') },
+    ],
+    [t]
+  );
 
   const queryEnabled = !!network && !!id;
   const { data } = useGetChartQuery(
@@ -88,20 +90,15 @@ export const PoolInfoChart = () => {
     [selectedTab, feeData, tvlData, volumeData]
   );
   const totalValueSum = chartData?.reduce((acc, cur) => acc + cur.value, 0) || 0;
-  const getChartValue = () => {
+  const getChartValue = useMemo(() => {
     if (!chartData) return 0;
-    if (selectedData) return selectedData.value;
     if (selectedTab === 'tvl') return chartData[chartData.length - 1]?.value || 0;
     return totalValueSum;
-  };
-  const getChartCaption = () => {
+  }, [chartData, selectedTab, totalValueSum]);
+
+  const getChartCaption = useMemo(() => {
     if (!chartData) return '';
-    if (selectedData) {
-      const date = new Date(selectedData.date);
-      return `${format(date, 'MMM', { locale: isKo ? ko : enUS })} ${format(date, 'd')}${
-        isKo ? '일' : ''
-      }, ${format(date, 'yyyy')}`;
-    }
+
     if (selectedTab === 'tvl') return t(`current ${selectedTab}`);
 
     return t(`days ${selectedTab}`, {
@@ -111,7 +108,7 @@ export const PoolInfoChart = () => {
           }`
         : t(upperFirst(selectedRange)),
     });
-  };
+  }, [chartData, isKo, ranges, selectedRange, selectedTab, t]);
 
   useEffect(() => {
     const wrapper = chartRef.current;
@@ -147,8 +144,8 @@ export const PoolInfoChart = () => {
           ))}
         </HeaderTitleWrapper>
         <HeaderValueWrapper>
-          <HeaderValue>${formatNumber(getChartValue())}</HeaderValue>
-          <HeaderValueLabel>{getChartCaption()}</HeaderValueLabel>
+          <HeaderValue id="header-value">${formatNumber(getChartValue)}</HeaderValue>
+          <HeaderValueLabel id="header-caption">{getChartCaption}</HeaderValueLabel>
         </HeaderValueWrapper>
       </Header>
 
@@ -178,41 +175,63 @@ export const PoolInfoChart = () => {
                   domain: [0, Math.max(...chartData.map(d => d.value))],
                 });
 
+                const changeHeader = (d: IChartData | undefined) => {
+                  const headerValueDom = document.querySelector('#header-value');
+                  const headerCaptionDom = document.querySelector('#header-caption');
+
+                  if (d) {
+                    const formattedValue = `$${formatNumber(d.value)}`;
+                    const date = new Date(d.date);
+                    const formattedDate = `${format(date, 'MMM', {
+                      locale: isKo ? ko : enUS,
+                    })} ${format(date, 'd')}${isKo ? '일' : ''}, ${format(date, 'yyyy')}`;
+
+                    if (headerValueDom && headerCaptionDom) {
+                      headerValueDom.innerHTML = formattedValue;
+                      headerCaptionDom.innerHTML = formattedDate;
+                    }
+                  } else {
+                    if (headerValueDom && headerCaptionDom) {
+                      headerValueDom.innerHTML = `$${formatNumber(getChartValue)}`;
+                      headerCaptionDom.innerHTML = getChartCaption;
+                    }
+                  }
+                };
                 const handleBarHover = (
                   event: TouchEvent<SVGRectElement> | MouseEvent<SVGRectElement>,
                   d: IChartData | undefined
                 ) => {
                   const target = event.currentTarget;
+
                   if (d) target.style.fill = COLOR.PRIMARY[50];
                   else target.style.fill = COLOR.PRIMARY[80];
 
-                  setSelectedData(d);
+                  changeHeader(d);
                 };
 
-                const handleTooltip = debounce(
-                  (event: TouchEvent<SVGRectElement> | MouseEvent<SVGRectElement>) => {
-                    const { x } = localPoint(event) || { x: 0 };
-                    const x0 = dateScaleLine.invert(x);
-                    const index = bisectDate(chartData, x0, 1);
-                    const d0 = chartData[index - 1];
-                    const d1 = chartData[index];
-                    let d = d0;
-                    if (d1 && getDate(d1)) {
-                      d =
-                        x0.valueOf() - getDate(d0).valueOf() > getDate(d1).valueOf() - x0.valueOf()
-                          ? d1
-                          : d0;
-                    }
-                    showTooltip({
-                      tooltipData: d,
-                      tooltipLeft: x,
-                      tooltipTop: valueScale(d.value),
-                    });
-                    setSelectedData(d);
-                  },
-                  5,
-                  { leading: true }
-                );
+                const handleTooltip = (
+                  event: TouchEvent<SVGRectElement> | MouseEvent<SVGRectElement>
+                ) => {
+                  const { x } = localPoint(event) || { x: 0 };
+                  const x0 = dateScaleLine.invert(x);
+                  const index = bisectDate(chartData, x0, 1);
+                  const d0 = chartData[index - 1];
+                  const d1 = chartData[index];
+                  let d = d0;
+                  if (d1 && getDate(d1)) {
+                    d =
+                      x0.valueOf() - getDate(d0).valueOf() > getDate(d1).valueOf() - x0.valueOf()
+                        ? d1
+                        : d0;
+                  }
+                  showTooltip({
+                    tooltipData: d,
+                    tooltipLeft: x,
+                    tooltipTop: valueScale(d.value),
+                  });
+
+                  changeHeader(d);
+                };
 
                 if (selectedTab === 'volume' || selectedTab === 'fees')
                   return (
@@ -271,8 +290,8 @@ export const PoolInfoChart = () => {
                                 height={barHeight}
                                 rx={barWidth / 2}
                                 fill={COLOR.PRIMARY[80]}
-                                onMouseOver={e => handleBarHover(e, d)}
-                                onMouseOut={e => handleBarHover(e, undefined)}
+                                onMouseEnter={e => handleBarHover(e, d)}
+                                onMouseLeave={e => handleBarHover(e, undefined)}
                               />
                             );
                           })}
@@ -349,7 +368,7 @@ export const PoolInfoChart = () => {
                         onMouseMove={handleTooltip}
                         onMouseOut={() => {
                           hideTooltip();
-                          setSelectedData(undefined);
+                          changeHeader(undefined);
                         }}
                       />
                       {tooltipData && (
