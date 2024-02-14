@@ -151,8 +151,8 @@ export const PoolInfoChart = () => {
         </HeaderValueWrapper>
       </Header>
 
-      <ChartOuterWrapper ref={chartRef}>
-        <ChartWrapper>
+      <ChartOuterWrapper>
+        <ChartWrapper ref={chartRef}>
           <ParentSize debounceTime={50}>
             {({ width, height }) => {
               if (!chartData || !width || !height) return;
@@ -265,12 +265,13 @@ export const PoolInfoChart = () => {
                       hideTicks
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       tickFormat={d => `$${formatNumber(d as any, 2, 'floor', THOUSAND, 2)}`}
-                      left={leftLabelWidth + 12}
+                      left={12}
                       tickLabelProps={{
                         fill: COLOR.NEUTRAL[60],
                         fontFamily: 'Pretendard Variable',
                         fontSize: '11px',
                         fontWeight: 400,
+                        textAnchor: 'start',
                       }}
                       tickClassName="chart-tick-left"
                     />
@@ -305,7 +306,7 @@ export const PoolInfoChart = () => {
                   <svg width={width} height={height}>
                     <AxisBottom
                       numTicks={5}
-                      scale={dateScale}
+                      scale={dateScaleLine}
                       hideAxisLine
                       hideTicks
                       tickFormat={d => {
@@ -331,12 +332,13 @@ export const PoolInfoChart = () => {
                       hideTicks
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       tickFormat={d => `$${formatNumber(d as any, 2, 'floor', THOUSAND, 2)}`}
-                      left={leftLabelWidth + 12}
+                      left={12}
                       tickLabelProps={{
                         fill: COLOR.NEUTRAL[60],
                         fontFamily: 'Pretendard Variable',
                         fontSize: '11px',
                         fontWeight: 400,
+                        textAnchor: 'start',
                       }}
                       tickClassName="chart-tick-left"
                     />
