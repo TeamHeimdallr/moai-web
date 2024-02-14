@@ -468,7 +468,8 @@
   "lending-switch-apy-type-success": "{{type}}이자율로 변경 완료했습니다.",
   "lending-switch-apy-type-failed": "{{type}}이자율로 변경에 실패했습니다. 다시 시도해주세요.",
 
-  "Add token to wallet": "토큰 추가하기",
+  "Add token to wallet": "지갑에 토큰 추가하기",
+  "View token contract": "토큰 컨트랙트 보기",
 
   "Reserve Size": "총 예치량",
   "Available Liquidity": "이용 가능 유동성",
