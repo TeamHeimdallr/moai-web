@@ -1,14 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent, TouchEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { AxisBottom, AxisLeft } from '@visx/axis';
+import { curveMonotoneX } from '@visx/curve';
+import { localPoint } from '@visx/event';
+import { LinearGradient } from '@visx/gradient';
 import { Group } from '@visx/group';
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
-import { scaleBand, scaleLinear } from '@visx/scale';
-import { BarRounded } from '@visx/shape';
+import { scaleBand, scaleLinear, scaleTime } from '@visx/scale';
+import { Area, AreaClosed, Bar, Line } from '@visx/shape';
+import { withTooltip } from '@visx/tooltip';
+import { bisector, extent } from '@visx/vendor/d3-array';
 import { format } from 'date-fns';
 import { enUS, ko } from 'date-fns/locale';
-import { upperFirst } from 'lodash-es';
+import { debounce, upperFirst } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
 import { useGetChartQuery } from '~/api/api-server/pools/get-charts';
@@ -150,97 +155,225 @@ export const PoolInfoChart = () => {
       <ChartOuterWrapper>
         <ChartWrapper ref={chartRef}>
           <ParentSize>
-            {({ width, height }) => {
-              if (!chartData) return;
+            {withTooltip(
+              ({ width, height, showTooltip, hideTooltip, tooltipData, tooltipLeft = 0 }) => {
+                if (!chartData) return;
 
-              const dateScale = scaleBand<string>({
-                range: [leftLabelWidth + 8, width],
-                domain: chartData.map(d => d.date),
-                padding: 0.25,
-              });
+                const bisectDate = bisector<IChartData, Date>(d => new Date(d.date)).left;
+                const getDate = (d: IChartData) => new Date(d.date);
 
-              const valueScale = scaleLinear<number>({
-                range: [height - 20, 0],
-                domain: [0, Math.max(...chartData.map(d => d.value))],
-              });
+                const dateScale = scaleBand<string>({
+                  range: [leftLabelWidth + 8, width],
+                  domain: chartData.map(d => d.date),
+                  padding: 0.25,
+                });
 
-              if (selectedTab === 'volume' || selectedTab === 'fees')
-                return (
-                  <svg width={width} height={height}>
-                    <AxisBottom
-                      numTicks={5}
-                      scale={dateScale}
-                      hideAxisLine
-                      hideTicks
-                      tickFormat={d => {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const date = new Date(d as any);
-                        return `${format(date, 'MMM', {
-                          locale: isKo ? ko : enUS,
-                        })} ${format(date, 'd')}${isKo ? '일' : ''}`;
-                      }}
-                      top={height - 16 - 8}
-                      left={0}
-                      tickLabelProps={() => ({
-                        fill: COLOR.NEUTRAL[60],
-                        fontFamily: 'Pretendard Variable',
-                        fontSize: '11px',
-                        fontWeight: 400,
-                      })}
-                    />
-                    <AxisLeft
-                      numTicks={5}
-                      scale={valueScale}
-                      hideAxisLine
-                      hideTicks
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      tickFormat={d => `$${formatNumber(d as any, 2, 'floor', THOUSAND, 2)}`}
-                      left={leftLabelWidth + 12}
-                      tickLabelProps={{
-                        fill: COLOR.NEUTRAL[60],
-                        fontFamily: 'Pretendard Variable',
-                        fontSize: '11px',
-                        fontWeight: 400,
-                      }}
-                      tickClassName="chart-tick-left"
-                    />
-                    <Group>
-                      {leftLabelWidth > 0 &&
-                        chartData.map((d, i) => {
-                          const barHeight = Math.max(height - 20 - valueScale(d.value), 1);
-                          const barX = dateScale(d.date) || 0;
-                          const barY = height - 20 - barHeight;
+                const dateScaleLine = scaleTime({
+                  range: [leftLabelWidth + 8, width],
+                  domain: extent(chartData, d => new Date(d.date)) as [Date, Date],
+                });
 
-                          const barWidth = dateScale.bandwidth();
-                          return (
-                            <BarRounded
-                              key={`bar-${i}`}
-                              x={barX}
-                              y={barY}
-                              width={barWidth}
-                              height={barHeight}
-                              radius={barWidth / 2}
-                              all
-                              fill={COLOR.PRIMARY[80]}
-                              onMouseEnter={e => {
-                                const target = e.currentTarget;
-                                target.style.fill = COLOR.PRIMARY[50];
+                const valueScale = scaleLinear<number>({
+                  range: [height - 20, 0],
+                  domain: [0, Math.max(...chartData.map(d => d.value))],
+                });
 
-                                setSelectedData(d);
-                              }}
-                              onMouseLeave={e => {
-                                const target = e.currentTarget;
-                                target.style.fill = COLOR.PRIMARY[80];
+                const handleBarHover = (
+                  event: TouchEvent<SVGRectElement> | MouseEvent<SVGRectElement>,
+                  d: IChartData | undefined
+                ) => {
+                  const target = event.currentTarget;
+                  if (d) target.style.fill = COLOR.PRIMARY[50];
+                  else target.style.fill = COLOR.PRIMARY[80];
 
-                                setSelectedData(undefined);
-                              }}
-                            />
-                          );
-                        })}
-                    </Group>
-                  </svg>
+                  setSelectedData(d);
+                };
+
+                const handleTooltip = debounce(
+                  (event: TouchEvent<SVGRectElement> | MouseEvent<SVGRectElement>) => {
+                    const { x } = localPoint(event) || { x: 0 };
+                    const x0 = dateScaleLine.invert(x);
+                    const index = bisectDate(chartData, x0, 1);
+                    const d0 = chartData[index - 1];
+                    const d1 = chartData[index];
+                    let d = d0;
+                    if (d1 && getDate(d1)) {
+                      d =
+                        x0.valueOf() - getDate(d0).valueOf() > getDate(d1).valueOf() - x0.valueOf()
+                          ? d1
+                          : d0;
+                    }
+                    showTooltip({
+                      tooltipData: d,
+                      tooltipLeft: x,
+                      tooltipTop: valueScale(d.value),
+                    });
+                    setSelectedData(d);
+                  },
+                  5,
+                  { leading: true }
                 );
-            }}
+
+                if (selectedTab === 'volume' || selectedTab === 'fees')
+                  return (
+                    <svg width={width} height={height}>
+                      <AxisBottom
+                        numTicks={5}
+                        scale={dateScale}
+                        hideAxisLine
+                        hideTicks
+                        tickFormat={d => {
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          const date = new Date(d as any);
+                          return `${format(date, 'MMM', {
+                            locale: isKo ? ko : enUS,
+                          })} ${format(date, 'd')}${isKo ? '일' : ''}`;
+                        }}
+                        top={height - 16 - 8}
+                        left={0}
+                        tickLabelProps={() => ({
+                          fill: COLOR.NEUTRAL[60],
+                          fontFamily: 'Pretendard Variable',
+                          fontSize: '11px',
+                          fontWeight: 400,
+                        })}
+                      />
+                      <AxisLeft
+                        numTicks={5}
+                        scale={valueScale}
+                        hideAxisLine
+                        hideTicks
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        tickFormat={d => `$${formatNumber(d as any, 2, 'floor', THOUSAND, 2)}`}
+                        left={leftLabelWidth + 12}
+                        tickLabelProps={{
+                          fill: COLOR.NEUTRAL[60],
+                          fontFamily: 'Pretendard Variable',
+                          fontSize: '11px',
+                          fontWeight: 400,
+                        }}
+                        tickClassName="chart-tick-left"
+                      />
+                      <Group>
+                        {leftLabelWidth > 0 &&
+                          chartData.map((d, i) => {
+                            const barHeight = Math.max(height - 20 - valueScale(d.value), 1);
+                            const barX = dateScale(d.date) || 0;
+                            const barY = height - 20 - barHeight;
+
+                            const barWidth = dateScale.bandwidth();
+                            return (
+                              <Bar
+                                key={`bar-${i}`}
+                                x={barX}
+                                y={barY}
+                                width={barWidth}
+                                height={barHeight}
+                                rx={barWidth / 2}
+                                fill={COLOR.PRIMARY[80]}
+                                onMouseOver={e => handleBarHover(e, d)}
+                                onMouseOut={e => handleBarHover(e, undefined)}
+                              />
+                            );
+                          })}
+                      </Group>
+                    </svg>
+                  );
+
+                if (selectedTab === 'tvl') {
+                  return (
+                    <svg width={width} height={height}>
+                      <AxisBottom
+                        numTicks={5}
+                        scale={dateScale}
+                        hideAxisLine
+                        hideTicks
+                        tickFormat={d => {
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          const date = new Date(d as any);
+                          return `${format(date, 'MMM', {
+                            locale: isKo ? ko : enUS,
+                          })} ${format(date, 'd')}${isKo ? '일' : ''}`;
+                        }}
+                        top={height - 16 - 8}
+                        left={0}
+                        tickLabelProps={() => ({
+                          fill: COLOR.NEUTRAL[60],
+                          fontFamily: 'Pretendard Variable',
+                          fontSize: '11px',
+                          fontWeight: 400,
+                        })}
+                      />
+                      <AxisLeft
+                        numTicks={5}
+                        scale={valueScale}
+                        hideAxisLine
+                        hideTicks
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        tickFormat={d => `$${formatNumber(d as any, 2, 'floor', THOUSAND, 2)}`}
+                        left={leftLabelWidth + 12}
+                        tickLabelProps={{
+                          fill: COLOR.NEUTRAL[60],
+                          fontFamily: 'Pretendard Variable',
+                          fontSize: '11px',
+                          fontWeight: 400,
+                        }}
+                        tickClassName="chart-tick-left"
+                      />
+                      <AreaClosed<IChartData>
+                        data={chartData}
+                        x={d => dateScaleLine(new Date(d.date)) || 0}
+                        y={d => valueScale(d.value) || 0}
+                        yScale={valueScale}
+                        strokeWidth={1}
+                        fill="url(#chart-tvl-gradient)"
+                        curve={curveMonotoneX}
+                      />
+                      <Area<IChartData>
+                        data={chartData}
+                        x={d => dateScaleLine(new Date(d.date)) || 0}
+                        y={d => valueScale(d.value) || 0}
+                        strokeWidth={1}
+                        stroke={COLOR.PRIMARY[60]}
+                        curve={curveMonotoneX}
+                      />
+                      <Bar
+                        x={leftLabelWidth + 8}
+                        y={0}
+                        width={width - leftLabelWidth - 8}
+                        height={height - 20}
+                        fill="transparent"
+                        rx={14}
+                        onTouchStart={handleTooltip}
+                        onTouchMove={handleTooltip}
+                        onMouseMove={handleTooltip}
+                        onMouseOut={() => {
+                          hideTooltip();
+                          setSelectedData(undefined);
+                        }}
+                      />
+                      {tooltipData && (
+                        <Line
+                          from={{ x: tooltipLeft, y: 0 }}
+                          to={{ x: tooltipLeft, y: height - 20 }}
+                          stroke={COLOR.NEUTRAL[100]}
+                          strokeWidth={1}
+                          pointerEvents="none"
+                          strokeDasharray="2,2"
+                        />
+                      )}
+                      <LinearGradient
+                        id="chart-tvl-gradient"
+                        from={COLOR.PRIMARY[60]}
+                        fromOpacity={0.5}
+                        to={COLOR.PRIMARY[60]}
+                        toOpacity={0}
+                      />
+                    </svg>
+                  );
+                }
+              }
+            )}
           </ParentSize>
         </ChartWrapper>
         <ChartRangeWrapper>
