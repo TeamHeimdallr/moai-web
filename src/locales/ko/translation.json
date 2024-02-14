@@ -465,5 +465,7 @@
   "Switch confirmed!": "성공적으로 변경했습니다!",
   "Switch failed": "변경에 실패했습니다.",
   "lending-switch-apy-type-success": "{{type}}이자율로 변경 완료했습니다.",
-  "lending-switch-apy-type-failed": "{{type}}이자율로 변경에 실패했습니다. 다시 시도해주세요."
+  "lending-switch-apy-type-failed": "{{type}}이자율로 변경에 실패했습니다. 다시 시도해주세요.",
+
+  "Add token to wallet": "토큰 추가하기"
 }

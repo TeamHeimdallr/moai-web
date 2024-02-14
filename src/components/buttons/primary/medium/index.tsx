@@ -82,7 +82,7 @@ const Wrapper = styled.button<WrapperProps>(({ isLoading, buttonType, icon }) =>
     tw`
       bg-transparent border-solid border-1 border-primary-60 text-primary-60
 
-      disabled:(border-none non-clickable bg-neutral-5 text-neutral-40)
+      disabled:(border-transparent non-clickable bg-neutral-5 text-neutral-40)
     `,
   buttonType === 'outlined' &&
     isLoading &&

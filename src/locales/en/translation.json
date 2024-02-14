@@ -454,5 +454,7 @@
   "Switch confirmed!": "Switch confirmed!",
   "Switch failed": "Switch failed",
   "lending-switch-apy-type-success": "Successfully switched to {{type}} rate.",
-  "lending-switch-apy-type-failed": "Switch to {{type}} rate has failed. Please try again."
+  "lending-switch-apy-type-failed": "Switch to {{type}} rate has failed. Please try again.",
+
+  "Add token to wallet": "Add token to wallet"
 }
