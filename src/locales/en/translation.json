@@ -47,6 +47,7 @@
 
   "No result": "No result",
 
+  "Fees": "Fees",
   "90d": "90d",
   "180d": "180d",
   "365d": "365d",
@@ -54,6 +55,19 @@
   "days volume": "{{ days }} days volume",
   "days fees": "{{ days }} days fee",
   "current tvl": "Current TVL",
+
+  "Jan": "Jan",
+  "Feb": "Feb",
+  "Mar": "Mar",
+  "Apr": "Apr",
+  "May": "May",
+  "Jul": "Jul",
+  "Jun": "Jun",
+  "Aug": "Aug",
+  "Sep": "Sep",
+  "Oct": "Oct",
+  "Nov": "Nov",
+  "Dec": "Dec",
 
   "Action": "Action",
   "Tokens": "Tokens",

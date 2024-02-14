@@ -47,12 +47,13 @@
 
   "No result": "결과가 없습니다",
 
+  "Fees": "수수료",
   "90d": "90일",
   "180d": "180일",
   "365d": "365일",
   "All": "전체",
-  "days volume": "{{ days }}일간 거래량",
-  "days fees": "{{ days }}일간 수수료",
+  "days volume": "{{ days }} 거래량",
+  "days fees": "{{ days }} 수수료",
   "current TVL": "현재 TVL",
   "current tvl": "현재 TVL",
 

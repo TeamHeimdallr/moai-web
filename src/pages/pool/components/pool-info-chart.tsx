@@ -7,6 +7,7 @@ import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { BarRounded } from '@visx/shape';
 import { format } from 'date-fns';
+import { enUS, ko } from 'date-fns/locale';
 import { upperFirst } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
@@ -34,8 +35,11 @@ export const PoolInfoChart = () => {
   const chartRef = useRef<HTMLDivElement>(null);
 
   const [leftLabelWidth, setLeftLabelWidth] = useState(0);
+  const [selectedData, setSelectedData] = useState<IChartData | undefined>(undefined);
+
   const { network, id } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
 
   const { selectedTab, selectTab } = usePoolInfoChartSelectedTabStore();
   const { selectedTab: selectedRange, selectTab: selectRange } =
@@ -79,12 +83,30 @@ export const PoolInfoChart = () => {
     [selectedTab, feeData, tvlData, volumeData]
   );
   const totalValueSum = chartData?.reduce((acc, cur) => acc + cur.value, 0) || 0;
-  const totalValue =
-    selectedTab === 'tvl' ? chartData?.[(chartData?.length || 0) - 1].value : totalValueSum;
-  const totalValueCaption =
-    selectedTab === 'tvl'
-      ? t(`current ${selectedTab}`)
-      : t(`days ${selectedTab}`, { days: upperFirst(selectedRange) });
+  const getChartValue = () => {
+    if (!chartData) return 0;
+    if (selectedData) return selectedData.value;
+    if (selectedTab === 'tvl') return chartData[chartData.length - 1]?.value || 0;
+    return totalValueSum;
+  };
+  const getChartCaption = () => {
+    if (!chartData) return '';
+    if (selectedData) {
+      const date = new Date(selectedData.date);
+      return `${format(date, 'MMM', { locale: isKo ? ko : enUS })} ${format(date, 'd')}${
+        isKo ? '일' : ''
+      }, ${format(date, 'yyyy')}`;
+    }
+    if (selectedTab === 'tvl') return t(`current ${selectedTab}`);
+
+    return t(`days ${selectedTab}`, {
+      days: isKo
+        ? `${t(ranges.find(r => r.key === selectedRange)?.name || '')}${
+            selectedRange !== 'all' ? '간' : ''
+          }`
+        : t(upperFirst(selectedRange)),
+    });
+  };
 
   useEffect(() => {
     const wrapper = chartRef.current;
@@ -96,7 +118,7 @@ export const PoolInfoChart = () => {
       .map(element => Math.ceil(element?.getBBox()?.width ?? 0))
       .reduce((res, curr) => (curr >= res ? curr : res), 0);
 
-    setLeftLabelWidth(max);
+    setLeftLabelWidth(Math.max(max, 44));
   }, [chartData]);
 
   return (
@@ -120,8 +142,8 @@ export const PoolInfoChart = () => {
           ))}
         </HeaderTitleWrapper>
         <HeaderValueWrapper>
-          <HeaderValue>${formatNumber(totalValue)}</HeaderValue>
-          <HeaderValueLabel>{totalValueCaption}</HeaderValueLabel>
+          <HeaderValue>${formatNumber(getChartValue())}</HeaderValue>
+          <HeaderValueLabel>{getChartCaption()}</HeaderValueLabel>
         </HeaderValueWrapper>
       </Header>
 
@@ -132,7 +154,7 @@ export const PoolInfoChart = () => {
               if (!chartData) return;
 
               const dateScale = scaleBand<string>({
-                range: [leftLabelWidth + 8, width - 8],
+                range: [leftLabelWidth + 8, width],
                 domain: chartData.map(d => d.date),
                 padding: 0.25,
               });
@@ -150,8 +172,13 @@ export const PoolInfoChart = () => {
                       scale={dateScale}
                       hideAxisLine
                       hideTicks
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      tickFormat={d => format(new Date(d as any), 'MMM')}
+                      tickFormat={d => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const date = new Date(d as any);
+                        return `${format(date, 'MMM', {
+                          locale: isKo ? ko : enUS,
+                        })} ${format(date, 'd')}${isKo ? '일' : ''}`;
+                      }}
                       top={height - 16 - 8}
                       left={0}
                       tickLabelProps={() => ({
@@ -195,6 +222,18 @@ export const PoolInfoChart = () => {
                               radius={barWidth / 2}
                               all
                               fill={COLOR.PRIMARY[80]}
+                              onMouseEnter={e => {
+                                const target = e.currentTarget;
+                                target.style.fill = COLOR.PRIMARY[50];
+
+                                setSelectedData(d);
+                              }}
+                              onMouseLeave={e => {
+                                const target = e.currentTarget;
+                                target.style.fill = COLOR.PRIMARY[80];
+
+                                setSelectedData(undefined);
+                              }}
                             />
                           );
                         })}
