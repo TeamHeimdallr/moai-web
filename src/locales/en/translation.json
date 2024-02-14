@@ -47,6 +47,7 @@
 
   "No result": "No result",
 
+  "Fees": "Fees",
   "90d": "90d",
   "180d": "180d",
   "365d": "365d",
@@ -54,6 +55,19 @@
   "days volume": "{{ days }} days volume",
   "days fees": "{{ days }} days fee",
   "current tvl": "Current TVL",
+
+  "Jan": "Jan",
+  "Feb": "Feb",
+  "Mar": "Mar",
+  "Apr": "Apr",
+  "May": "May",
+  "Jul": "Jul",
+  "Jun": "Jun",
+  "Aug": "Aug",
+  "Sep": "Sep",
+  "Oct": "Oct",
+  "Nov": "Nov",
+  "Dec": "Dec",
 
   "Action": "Action",
   "Tokens": "Tokens",
@@ -456,5 +470,31 @@
   "lending-switch-apy-type-success": "Successfully switched to {{type}} rate.",
   "lending-switch-apy-type-failed": "Switch to {{type}} rate has failed. Please try again.",
 
-  "Add token to wallet": "Add token to wallet"
+  "Add token to wallet": "Add token to wallet",
+  "View token contract": "View token contract",
+
+  "Reserve Size": "Reserve Size",
+  "Available Liquidity": "Available Liquidity",
+  "Utilization Rate": "Utilization Rate",
+  "Oracle Price": "Oracle Price",
+
+  "Supply info": "Supply info",
+  "Total supplied": "Total supplied",
+  "total-supplied-description": "Asset supply is limited to a certain amount to reduce protocol exposure to the asset and to help manage risks involved.",
+
+  "Supply APR": "Supply APR",
+  "Collateral usage": "Collateral usage",
+
+  "Can be collateral": "Can be collateral",
+  "Can not be collateral": "Can not be collateral",
+
+  "Max LTV": "Max LTV",
+  "Liquidation threshold": "Liquidation threshold",
+  "Liquidation penalty": "Liquidation penalty",
+
+  "max-ltv-description": "The Maximum LTV ratio represents the maximum borrowing power of a specific collateral. For example, if a collateral has an LTV of 75%, the user can borrow up to 0.75 worth of XRP in the principal currency for every 1 XRP worth of collateral.",
+  "liquidity-threshold-description": "This represents the threshold at which a borrow position will be considered undercollateralized and subject to liquidation for each collateral. For example, if a collateral has a liquidation threshold of 80%, it means that the position will be liquidated when the debt value is worth 80% of the collateral value.",
+  "liquidity-penalty-description": "When a liquidation occurs, liquidators repay up to 50% of the outstanding borrowed amount on behalf of the borrower. In return, they can buy the collateral at a discount and keep the difference (liquidation penalty) as a bonus.",
+
+  "Avg": "Avg"
 }

@@ -36,3 +36,15 @@ export const usePoolInfoChartSelectedRangeStore = create<State>()(
     }))
   )
 );
+
+export const useLendingAssetSupplyInfoChartSelectedRangeStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'LENDING_ASSET_SUPPLY_INFO_CHART_SELECT_RANGE_STORE',
+
+      // selectedTab: '24h',
+      selectedTab: 'all',
+      selectTab: (selectedTab: string | undefined) => set({ selectedTab }),
+    }))
+  )
+);

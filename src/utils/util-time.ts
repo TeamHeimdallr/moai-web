@@ -6,6 +6,7 @@ export const DATE_FORMATTER = {
   HHMM_AA_mm_dd: 'h:mm aa, MMM d',
   HHMMSS: 'HH:mm:ss',
   FULL: 'ccc, MMM dd, yyyy, hh:mm:ss a O',
+  HALF: 'MMM dd, hh:mm:ss a',
 };
 
 export const elapsedTime = (timestamp: number, suffix: string = ' ago') => {

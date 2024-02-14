@@ -14,7 +14,9 @@ import { usePrevious } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
-import { LendingHeader } from './layouts/header';
+import { AssetHeader } from './components/asset-header';
+import { AssetInfo } from './components/asset-info';
+import { AssetSupplyInfo } from './components/asset-supply-info';
 
 export const LendingDetail = () => {
   useGAPage();
@@ -35,7 +37,7 @@ export const LendingDetail = () => {
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
 
-  const { data: tokenData } = useGetTokenQuery(
+  const { data: tokenData, isFetched } = useGetTokenQuery(
     {
       queries: {
         networkAbbr,
@@ -47,8 +49,8 @@ export const LendingDetail = () => {
   const { token } = tokenData || {};
 
   useEffect(() => {
-    if (!token) navigate('/lending');
-  }, [navigate, token]);
+    if (isFetched && !token) navigate('/lending');
+  }, [navigate, token, isFetched]);
 
   return (
     <Wrapper>
@@ -58,9 +60,12 @@ export const LendingDetail = () => {
       <InnerWrapper banner={!!opened}>
         {targetNetork.includes(selectedNetwork) && (
           <ContentOuterWrapper>
-            <LendingHeader />
+            <AssetHeader />
             <ContentWrapper>
-              <LeftContentWrapper></LeftContentWrapper>
+              <LeftContentWrapper>
+                <AssetInfo />
+                <AssetSupplyInfo />
+              </LeftContentWrapper>
               <RightContentWrapper></RightContentWrapper>
             </ContentWrapper>
           </ContentOuterWrapper>

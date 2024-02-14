@@ -1,7 +1,18 @@
-import { Bar } from 'react-chartjs-2';
+import { MouseEvent, TouchEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { add, format } from 'date-fns';
+import { AxisBottom, AxisLeft } from '@visx/axis';
+import { curveMonotoneX } from '@visx/curve';
+import { localPoint } from '@visx/event';
+import { LinearGradient } from '@visx/gradient';
+import { Group } from '@visx/group';
+import ParentSize from '@visx/responsive/lib/components/ParentSize';
+import { scaleBand, scaleLinear, scaleTime } from '@visx/scale';
+import { Area, AreaClosed, Bar, Line } from '@visx/shape';
+import { useTooltip } from '@visx/tooltip';
+import { bisector, extent } from '@visx/vendor/d3-array';
+import { format } from 'date-fns';
+import { enUS, ko } from 'date-fns/locale';
 import { upperFirst } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
@@ -20,29 +31,40 @@ import {
   usePoolInfoChartSelectedRangeStore,
   usePoolInfoChartSelectedTabStore,
 } from '~/states/components/chart/tab';
+import { IChartData } from '~/types';
 
 export const PoolInfoChart = () => {
   const { ref } = useGAInView({ name: 'pool-detail-info-chart' });
   const { gaAction } = useGAAction();
 
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  const [leftLabelWidth, setLeftLabelWidth] = useState(0);
+
   const { network, id } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
 
   const { selectedTab, selectTab } = usePoolInfoChartSelectedTabStore();
   const { selectedTab: selectedRange, selectTab: selectRange } =
     usePoolInfoChartSelectedRangeStore();
+
+  const { tooltipData, tooltipLeft, showTooltip, hideTooltip } = useTooltip();
 
   const tabs = [
     { key: 'volume', name: 'Volume' },
     { key: 'tvl', name: 'TVL' },
     { key: 'fees', name: 'Fees' },
   ];
-  const ranges = [
-    { key: '90', name: t('90d') },
-    { key: '180', name: t('180d') },
-    { key: '365', name: t('365d') },
-    { key: 'all', name: t('All') },
-  ];
+  const ranges = useMemo(
+    () => [
+      { key: '90', name: t('90d') },
+      { key: '180', name: t('180d') },
+      { key: '365', name: t('365d') },
+      { key: 'all', name: t('All') },
+    ],
+    [t]
+  );
 
   const queryEnabled = !!network && !!id;
   const { data } = useGetChartQuery(
@@ -63,19 +85,45 @@ export const PoolInfoChart = () => {
 
   const { VOLUME: volumeData, TVL: tvlData, FEE: feeData } = data || {};
 
-  const chartDataRaw =
-    selectedTab === 'volume' ? volumeData : selectedTab === 'tvl' ? tvlData : feeData;
-
-  const chartDataWithoutPadding = chartDataRaw || [];
-  const chartData = [...chartDataWithoutPadding, { date: add(new Date(), { days: 1 }), value: 0 }];
+  const chartData = useMemo(
+    () =>
+      (selectedTab === 'volume' ? volumeData : selectedTab === 'tvl' ? tvlData : feeData) ||
+      ([] as IChartData[]),
+    [selectedTab, feeData, tvlData, volumeData]
+  );
   const totalValueSum = chartData?.reduce((acc, cur) => acc + cur.value, 0) || 0;
+  const getChartValue = useMemo(() => {
+    if (!chartData) return 0;
+    if (selectedTab === 'tvl') return chartData[chartData.length - 1]?.value || 0;
+    return totalValueSum;
+  }, [chartData, selectedTab, totalValueSum]);
 
-  const totalValue =
-    selectedTab === 'tvl' ? chartDataRaw?.[(chartDataRaw?.length || 0) - 2].value : totalValueSum;
-  const totalValueCaption =
-    selectedTab === 'tvl'
-      ? t(`current ${selectedTab}`)
-      : t(`days ${selectedTab}`, { days: upperFirst(selectedRange) });
+  const getChartCaption = useMemo(() => {
+    if (!chartData) return '';
+
+    if (selectedTab === 'tvl') return t(`current ${selectedTab}`);
+
+    return t(`days ${selectedTab}`, {
+      days: isKo
+        ? `${t(ranges.find(r => r.key === selectedRange)?.name || '')}${
+            selectedRange !== 'all' ? '간' : ''
+          }`
+        : t(upperFirst(selectedRange)),
+    });
+  }, [chartData, isKo, ranges, selectedRange, selectedTab, t]);
+
+  useEffect(() => {
+    const wrapper = chartRef.current;
+    if (!wrapper) return;
+
+    const tickLabels = wrapper.querySelectorAll('.chart-tick-left svg');
+
+    const max = (Object.values(tickLabels) as SVGSVGElement[])
+      .map(element => Math.ceil(element?.getBBox()?.width ?? 0))
+      .reduce((res, curr) => (curr >= res ? curr : res), 0);
+
+    setLeftLabelWidth(Math.max(max, 44));
+  }, [chartData]);
 
   return (
     <Wrapper ref={ref}>
@@ -98,104 +146,256 @@ export const PoolInfoChart = () => {
           ))}
         </HeaderTitleWrapper>
         <HeaderValueWrapper>
-          <HeaderValue>${formatNumber(totalValue)}</HeaderValue>
-          <HeaderValueLabel>{totalValueCaption}</HeaderValueLabel>
+          <HeaderValue id="header-value">${formatNumber(getChartValue)}</HeaderValue>
+          <HeaderValueLabel id="header-caption">{getChartCaption}</HeaderValueLabel>
         </HeaderValueWrapper>
       </Header>
 
       <ChartOuterWrapper>
-        <ChartWrapper>
-          {chartData && (
-            <Bar
-              style={{ width: '100%', height: '270px' }}
-              data={{
-                datasets: [
-                  {
-                    data: chartData || [],
-                    backgroundColor: COLOR.PRIMARY[80],
-                    hoverBackgroundColor: COLOR.PRIMARY[100],
-                    borderRadius: 4,
-                    minBarLength: 2,
-                    clip: {
-                      left: selectedRange === '90' ? 6 : selectedRange === '180' ? 2 : 1,
-                      top: 0,
-                      right: selectedRange === '90' ? -6 : selectedRange === '180' ? -2 : -1,
-                      bottom: 0,
-                    },
-                  },
-                ],
-              }}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: false,
-                plugins: {
-                  tooltip: { enabled: false },
-                  legend: { display: false },
-                },
-                parsing: {
-                  xAxisKey: 'date',
-                  yAxisKey: 'value',
-                },
-                layout: {
-                  autoPadding: false,
-                  padding: {
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                  },
-                },
-                scales: {
-                  x: {
-                    type: 'time',
-                    time: {
-                      unit: 'month',
-                      displayFormats: {
-                        month: 'MMM',
-                      },
-                    },
-                    border: { display: false },
-                    offset: false,
-                    ticks: {
-                      callback: (value: string | number) => {
-                        const date = new Date(value);
-                        const formattedDate = format(date, 'MMM');
+        <ChartWrapper ref={chartRef}>
+          <ParentSize debounceTime={50}>
+            {({ width, height }) => {
+              if (!chartData || !width || !height) return;
 
-                        return t(formattedDate);
-                      },
-                      color: COLOR.NEUTRAL[60],
-                      font: {
-                        family: 'Pretendard Variable',
-                        size: 11,
-                        lineHeight: '18px',
-                      },
-                    },
-                    grid: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    type: 'linear',
-                    ticks: {
-                      callback: (value: string | number) => {
-                        return `$${formatNumber(Number(value), 4, 'floor', THOUSAND, 0)}`;
-                      },
-                      color: COLOR.NEUTRAL[60],
-                      crossAlign: 'far',
-                      font: {
-                        family: 'Pretendard Variable',
-                        size: 11,
-                        lineHeight: '18px',
-                      },
-                    },
-                    border: { display: false },
-                    grid: { display: false },
-                  },
-                },
-              }}
-            />
-          )}
+              const bisectDate = bisector<IChartData, Date>(d => new Date(d.date)).left;
+              const getDate = (d: IChartData) => new Date(d.date);
+
+              const dateScale = scaleBand<string>({
+                range: [leftLabelWidth + 8, width],
+                domain: chartData.map(d => d.date),
+                padding: 0.25,
+              });
+
+              const dateScaleLine = scaleTime({
+                range: [leftLabelWidth + 8, width],
+                domain: extent(chartData, d => new Date(d.date)) as [Date, Date],
+              });
+
+              const valueScale = scaleLinear<number>({
+                range: [height - 20, 0],
+                domain: [0, Math.max(...chartData.map(d => d.value))],
+              });
+
+              const changeHeader = (d: IChartData | undefined) => {
+                const headerValueDom = document.querySelector('#header-value');
+                const headerCaptionDom = document.querySelector('#header-caption');
+
+                if (d) {
+                  const formattedValue = `$${formatNumber(d.value)}`;
+                  const date = new Date(d.date);
+                  const formattedDate = `${format(date, 'MMM', {
+                    locale: isKo ? ko : enUS,
+                  })} ${format(date, 'd')}${isKo ? '일' : ''}, ${format(date, 'yyyy')}`;
+
+                  if (headerValueDom && headerCaptionDom) {
+                    headerValueDom.innerHTML = formattedValue;
+                    headerCaptionDom.innerHTML = formattedDate;
+                  }
+                } else {
+                  if (headerValueDom && headerCaptionDom) {
+                    headerValueDom.innerHTML = `$${formatNumber(getChartValue)}`;
+                    headerCaptionDom.innerHTML = getChartCaption;
+                  }
+                }
+              };
+              const handleBarHover = (
+                event: TouchEvent<SVGRectElement> | MouseEvent<SVGRectElement>,
+                d: IChartData | undefined
+              ) => {
+                const target = event.currentTarget;
+
+                if (d) target.style.fill = COLOR.PRIMARY[50];
+                else target.style.fill = COLOR.PRIMARY[80];
+
+                changeHeader(d);
+              };
+
+              const handleTooltip = (
+                event: TouchEvent<SVGRectElement> | MouseEvent<SVGRectElement>
+              ) => {
+                const { x } = localPoint(event) || { x: 0 };
+                const x0 = dateScaleLine.invert(x);
+                const index = bisectDate(chartData, x0, 1);
+                const d0 = chartData[index - 1];
+                const d1 = chartData[index];
+                let d = d0;
+                if (d1 && getDate(d1)) {
+                  d =
+                    x0.valueOf() - getDate(d0).valueOf() > getDate(d1).valueOf() - x0.valueOf()
+                      ? d1
+                      : d0;
+                }
+                showTooltip({
+                  tooltipData: d,
+                  tooltipLeft: x,
+                  tooltipTop: valueScale(d.value),
+                });
+
+                changeHeader(d);
+              };
+
+              if (selectedTab === 'volume' || selectedTab === 'fees')
+                return (
+                  <svg width={width} height={height}>
+                    <AxisBottom
+                      numTicks={5}
+                      scale={dateScale}
+                      hideAxisLine
+                      hideTicks
+                      tickFormat={d => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const date = new Date(d as any);
+                        return `${format(date, 'MMM', {
+                          locale: isKo ? ko : enUS,
+                        })} ${format(date, 'd')}${isKo ? '일' : ''}`;
+                      }}
+                      top={height - 16 - 8}
+                      left={0}
+                      tickLabelProps={() => ({
+                        fill: COLOR.NEUTRAL[60],
+                        fontFamily: 'Pretendard Variable',
+                        fontSize: '11px',
+                        fontWeight: 400,
+                      })}
+                    />
+                    <AxisLeft
+                      numTicks={5}
+                      scale={valueScale}
+                      hideAxisLine
+                      hideTicks
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      tickFormat={d => `$${formatNumber(d as any, 2, 'floor', THOUSAND, 2)}`}
+                      left={12}
+                      tickLabelProps={{
+                        fill: COLOR.NEUTRAL[60],
+                        fontFamily: 'Pretendard Variable',
+                        fontSize: '11px',
+                        fontWeight: 400,
+                        textAnchor: 'start',
+                      }}
+                      tickClassName="chart-tick-left"
+                    />
+                    <Group>
+                      {leftLabelWidth > 0 &&
+                        chartData.map((d, i) => {
+                          const barHeight = Math.max(height - 20 - valueScale(d.value), 1);
+                          const barX = dateScale(d.date) || 0;
+                          const barY = height - 20 - barHeight;
+
+                          const barWidth = dateScale.bandwidth();
+                          return (
+                            <Bar
+                              key={`bar-${i}`}
+                              x={barX}
+                              y={barY}
+                              width={barWidth}
+                              height={barHeight}
+                              rx={barWidth / 2}
+                              fill={COLOR.PRIMARY[80]}
+                              onMouseEnter={e => handleBarHover(e, d)}
+                              onMouseLeave={e => handleBarHover(e, undefined)}
+                            />
+                          );
+                        })}
+                    </Group>
+                  </svg>
+                );
+
+              if (selectedTab === 'tvl') {
+                return (
+                  <svg width={width} height={height}>
+                    <AxisBottom
+                      numTicks={5}
+                      scale={dateScaleLine}
+                      hideAxisLine
+                      hideTicks
+                      tickFormat={d => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const date = new Date(d as any);
+                        return `${format(date, 'MMM', {
+                          locale: isKo ? ko : enUS,
+                        })} ${format(date, 'd')}${isKo ? '일' : ''}`;
+                      }}
+                      top={height - 16 - 8}
+                      left={0}
+                      tickLabelProps={() => ({
+                        fill: COLOR.NEUTRAL[60],
+                        fontFamily: 'Pretendard Variable',
+                        fontSize: '11px',
+                        fontWeight: 400,
+                      })}
+                    />
+                    <AxisLeft
+                      numTicks={5}
+                      scale={valueScale}
+                      hideAxisLine
+                      hideTicks
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      tickFormat={d => `$${formatNumber(d as any, 2, 'floor', THOUSAND, 2)}`}
+                      left={12}
+                      tickLabelProps={{
+                        fill: COLOR.NEUTRAL[60],
+                        fontFamily: 'Pretendard Variable',
+                        fontSize: '11px',
+                        fontWeight: 400,
+                        textAnchor: 'start',
+                      }}
+                      tickClassName="chart-tick-left"
+                    />
+                    <AreaClosed<IChartData>
+                      data={chartData}
+                      x={d => dateScaleLine(new Date(d.date)) || 0}
+                      y={d => valueScale(d.value) || 0}
+                      yScale={valueScale}
+                      strokeWidth={1}
+                      fill="url(#chart-tvl-gradient)"
+                      curve={curveMonotoneX}
+                    />
+                    <Area<IChartData>
+                      data={chartData}
+                      x={d => dateScaleLine(new Date(d.date)) || 0}
+                      y={d => valueScale(d.value) || 0}
+                      strokeWidth={1}
+                      stroke={COLOR.PRIMARY[60]}
+                      curve={curveMonotoneX}
+                    />
+                    <Bar
+                      x={leftLabelWidth + 8}
+                      y={0}
+                      width={width - leftLabelWidth - 8}
+                      height={height - 20}
+                      fill="transparent"
+                      rx={14}
+                      onTouchStart={handleTooltip}
+                      onTouchMove={handleTooltip}
+                      onMouseMove={handleTooltip}
+                      onMouseOut={() => {
+                        hideTooltip();
+                        changeHeader(undefined);
+                      }}
+                    />
+                    {tooltipData && (
+                      <Line
+                        from={{ x: tooltipLeft, y: 0 }}
+                        to={{ x: tooltipLeft, y: height - 20 }}
+                        stroke={COLOR.NEUTRAL[100]}
+                        strokeWidth={1}
+                        pointerEvents="none"
+                        strokeDasharray="2,2"
+                      />
+                    )}
+                    <LinearGradient
+                      id="chart-tvl-gradient"
+                      from={COLOR.PRIMARY[60]}
+                      fromOpacity={0.5}
+                      to={COLOR.PRIMARY[60]}
+                      toOpacity={0}
+                    />
+                  </svg>
+                );
+              }
+            }}
+          </ParentSize>
         </ChartWrapper>
         <ChartRangeWrapper>
           {ranges.map(range => (
@@ -220,7 +420,8 @@ export const PoolInfoChart = () => {
 };
 
 const Wrapper = tw.div`
-  flex flex-col bg-neutral-10 rounded-12 px-24 pt-20 pb-24 min-h-428 gap-20
+  flex flex-col bg-neutral-10 rounded-12 px-20 pt-20 pb-24 min-h-412 gap-20
+  md:(px-24)
 `;
 
 const Header = tw.div`
@@ -261,7 +462,7 @@ const ChartOuterWrapper = tw.div`
 `;
 
 const ChartWrapper = tw.div`
-  w-full min-h-270 flex-center relative
+  w-full h-256 flex-center relative
 `;
 
 const ChartRangeWrapper = tw.div`

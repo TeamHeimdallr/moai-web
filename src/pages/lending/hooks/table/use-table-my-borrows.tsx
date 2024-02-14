@@ -25,8 +25,8 @@ import { getNetworkAbbr } from '~/utils';
 import { useTableLendingMyBorrowsSortStore } from '~/states/components';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
+import { APYSmall } from '../../components/apy';
 import { myBorrowsData } from '../../data';
-import { APYSmall } from '../../pages/main/components/apy';
 
 export const useTableMyBorrows = () => {
   const { sort, setSort } = useTableLendingMyBorrowsSortStore();

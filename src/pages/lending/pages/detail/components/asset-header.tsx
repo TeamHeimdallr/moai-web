@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { useWalletClient } from 'wagmi';
@@ -9,6 +10,7 @@ import { IconAddToken, IconLink } from '~/assets/icons';
 import { ASSET_URL, IS_MAINNET, SCANNER_URL } from '~/constants';
 
 import { ButtonIconMedium } from '~/components/buttons/icon';
+import { Tooltip } from '~/components/tooltips/base';
 
 import { titleMap } from '~/pages/lending/data';
 
@@ -16,9 +18,9 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { getNetworkAbbr } from '~/utils';
-import { NETWORK } from '~/types';
+import { NETWORK, TOOLTIP_ID } from '~/types';
 
-export const LendingHeader = () => {
+export const AssetHeader = () => {
   const { ref } = useGAInView({ name: 'lending-detail-header' });
   const { gaAction } = useGAAction();
 
@@ -26,6 +28,8 @@ export const LendingHeader = () => {
 
   const { symbol } = useParams();
   const { selectedNetwork } = useNetwork();
+
+  const { t } = useTranslation();
 
   const networkAbbr = getNetworkAbbr(selectedNetwork);
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
@@ -79,24 +83,42 @@ export const LendingHeader = () => {
 
   if (!token) return <></>;
   return (
-    <HeaderWrapper ref={ref}>
-      <SubtitleWrapper>
-        <LogoWrapper style={{ backgroundImage: `url(${logoUrl})` }} />
-        {`${titleMap[selectedNetwork]} Market`}
-      </SubtitleWrapper>
-      <TitleWrapper>
-        <TokenImageWrapper style={{ backgroundImage: `url(${image})` }} />
-        <TitleIconWrapper>
-          {symbol}
-          <IconWrapper>
-            <ButtonIconMedium icon={<IconLink />} onClick={handleLink} />
-            <ButtonIconMedium icon={<IconAddToken />} onClick={handleAddToken} />
-          </IconWrapper>
-        </TitleIconWrapper>
-      </TitleWrapper>
-    </HeaderWrapper>
+    <HeaderOuterWrapper>
+      <HeaderWrapper ref={ref}>
+        <SubtitleWrapper>
+          <LogoWrapper style={{ backgroundImage: `url(${logoUrl})` }} />
+          {`${titleMap[selectedNetwork]} Market`}
+        </SubtitleWrapper>
+        <TitleWrapper>
+          <TokenImageWrapper style={{ backgroundImage: `url(${image})` }} />
+          <TitleIconWrapper>
+            {symbol}
+            <IconWrapper>
+              <ButtonIconMedium
+                icon={<IconLink />}
+                onClick={handleLink}
+                data-tooltip-id={TOOLTIP_ID.LENDING_VIEW_TOKEN_CONTRACT}
+              />
+              <ButtonIconMedium
+                icon={<IconAddToken />}
+                onClick={handleAddToken}
+                data-tooltip-id={TOOLTIP_ID.LENDING_ADD_TOKEN}
+              />
+            </IconWrapper>
+          </TitleIconWrapper>
+        </TitleWrapper>
+      </HeaderWrapper>
+      <Tooltip id={TOOLTIP_ID.LENDING_VIEW_TOKEN_CONTRACT} place="bottom">
+        {t('View token contract')}
+      </Tooltip>
+      <Tooltip id={TOOLTIP_ID.LENDING_ADD_TOKEN} place="bottom">
+        {t('Add token to wallet')}
+      </Tooltip>
+    </HeaderOuterWrapper>
   );
 };
+
+const HeaderOuterWrapper = tw.div``;
 
 const HeaderWrapper = tw.div`
   flex flex-col gap-12 px-20

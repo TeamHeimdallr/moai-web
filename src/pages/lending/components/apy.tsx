@@ -1,21 +1,22 @@
+import { HTMLAttributes } from 'react';
 import tw from 'twin.macro';
 
 import { formatNumber } from '~/utils';
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   apy: number;
 }
 
-export const APYLarge = ({ apy }: Props) => {
+export const APYLarge = ({ apy, ...rest }: Props) => {
   if (apy < 0.01)
     return (
-      <WrapperLarge>
+      <WrapperLarge {...rest}>
         <IconLarge>{'<'}</IconLarge>
         0.01%
       </WrapperLarge>
     );
 
-  return <WrapperLarge>{`${formatNumber(apy)}%`}</WrapperLarge>;
+  return <WrapperLarge {...rest}>{`${formatNumber(apy)}%`}</WrapperLarge>;
 };
 
 const WrapperLarge = tw.div`
@@ -28,16 +29,16 @@ const IconLarge = tw.div`
   md:(font-m-20)
 `;
 
-export const APYMedium = ({ apy }: Props) => {
+export const APYMedium = ({ apy, ...rest }: Props) => {
   if (apy < 0.01)
     return (
-      <WrapperMedium>
+      <WrapperMedium {...rest}>
         <IconMedium>{'<'}</IconMedium>
         0.01%
       </WrapperMedium>
     );
 
-  return <WrapperMedium>{`${formatNumber(apy)}%`}</WrapperMedium>;
+  return <WrapperMedium {...rest}>{`${formatNumber(apy)}%`}</WrapperMedium>;
 };
 
 const WrapperMedium = tw.div`
@@ -50,16 +51,16 @@ const IconMedium = tw.div`
   md:(font-m-18)
 `;
 
-export const APYSmall = ({ apy }: Props) => {
+export const APYSmall = ({ apy, ...rest }: Props) => {
   if (apy < 0.01)
     return (
-      <WrapperSmall>
+      <WrapperSmall {...rest}>
         <IconSmall>{'<'}</IconSmall>
         0.01%
       </WrapperSmall>
     );
 
-  return <WrapperSmall>{`${formatNumber(apy)}%`}</WrapperSmall>;
+  return <WrapperSmall {...rest}>{`${formatNumber(apy)}%`}</WrapperSmall>;
 };
 
 const WrapperSmall = tw.div`
