@@ -86,7 +86,7 @@ export const AssetBorrowInfo = ({ token }: Props) => {
           />
           <AssetSupplyBorrowInfoCard
             title={t('Borrow cap')}
-            value={formatNumber(borrowCap, 2, 'floor', THOUSAND, 2)}
+            value={<InfoText>{formatNumber(borrowCap, 2, 'floor', THOUSAND, 2)}</InfoText>}
             caption={`$${formatNumber(borrowCap * (price || 0), 2, 'floor', THOUSAND, 2)}`}
           />
         </InfoWrapper>
@@ -137,11 +137,11 @@ export const AssetBorrowInfo = ({ token }: Props) => {
 
 const OuterWrapper = tw.div``;
 const Wrapper = tw.div`
-  flex flex-col bg-neutral-10 rounded-12 px-20 pt-20 pb-24 min-h-808 gap-32
+  flex flex-col bg-neutral-10 rounded-12 px-24 pt-20 pb-24 min-h-808 gap-32
 `;
 
 const HeaderTitle = tw.div`
-  font-b-18 text-neutral-100 clickable
+  font-b-18 text-neutral-100
   md:(font-b-20)
 `;
 

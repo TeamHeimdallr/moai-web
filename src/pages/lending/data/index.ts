@@ -2,7 +2,7 @@ import { set, sub } from 'date-fns';
 
 import { ASSET_URL } from '~/constants';
 
-import { NETWORK } from '~/types';
+import { IChartXYData, NETWORK } from '~/types';
 
 export const titleMap = {
   [NETWORK.THE_ROOT_NETWORK]: 'The Root Network',
@@ -527,3 +527,9 @@ export const supplyAprDataStatic24h = [
     value: 1.9933769996473973,
   },
 ];
+
+export const interestRateModelData: IChartXYData[] = Array.from({ length: 202 }).map((_, i) => {
+  const x = i * 0.5;
+  if (i < 150) return { x, y: 0 + i * 0.01 };
+  return { x, y: 150 * 0.01 + (i - 150) * 1 };
+});

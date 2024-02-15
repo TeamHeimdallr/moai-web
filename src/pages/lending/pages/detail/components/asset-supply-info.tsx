@@ -31,7 +31,7 @@ export const AssetSupplyInfo = () => {
 
   const maxLTV = 70;
   const liquidationThreshold = 75;
-  const liquidationPenalty = 12312323;
+  const liquidationPenalty = 12.123;
 
   return (
     <OuterWrapper>
@@ -133,11 +133,11 @@ export const AssetSupplyInfo = () => {
 const OuterWrapper = tw.div``;
 
 const Wrapper = tw.div`
-  flex flex-col bg-neutral-10 rounded-12 px-20 pt-20 pb-24 min-h-808 gap-32
+  flex flex-col bg-neutral-10 rounded-12 px-24 pt-20 pb-24 min-h-808 gap-32
 `;
 
 const HeaderTitle = tw.div`
-  font-b-18 text-neutral-100 clickable
+  font-b-18 text-neutral-100
   md:(font-b-20)
 `;
 
