@@ -114,13 +114,6 @@ export const AssetSupplyInfoChart = () => {
         </HeaderValueWrapper>
       </Header>
 
-      <LabelWrapper>
-        <Label>
-          <LabelDot />
-          {t('Supply APR')}
-        </Label>
-      </LabelWrapper>
-
       <ChartOuterWrapper>
         <ChartWrapper ref={chartRef}>
           <ParentSize debounceTime={50}>
@@ -329,6 +322,14 @@ export const AssetSupplyInfoChart = () => {
             }}
           </ParentSize>
         </ChartWrapper>
+
+        <LabelWrapper>
+          <Label>
+            <LabelDot />
+            {t('Supply APR')}
+          </Label>
+        </LabelWrapper>
+
         <ChartRangeWrapper>
           {ranges.map(range => (
             <ButtonChipSmall
@@ -382,7 +383,7 @@ const HeaderValue = tw.div`
   md:(font-m-24)
 `;
 const HeaderValueLabel = tw.div`
-  font-r-12 text-neutral-60
+  font-r-14 text-neutral-60
 `;
 
 const LabelWrapper = tw.div`

@@ -112,11 +112,7 @@ export const useTableAssetsToBorrow = () => {
           apy: <TableColumn value={<APYSmall apy={d.apy} />} align="center" />,
           buttons: (
             <TableColumnButtons align="center">
-              <ButtonPrimaryMedium
-                text={t('lending-borrow')}
-                onClick={() => {}}
-                style={{ width: '94px' }}
-              />
+              <ButtonPrimaryMedium text={t('lending-borrow')} onClick={() => {}} />
             </TableColumnButtons>
           ),
         };
@@ -159,15 +155,9 @@ export const useTableAssetsToBorrow = () => {
             sortKey="apy"
             sort={sort}
             setSort={setSort}
-            label="lending-apy-variable"
-            tableKey="lending-borrows-apy-variables"
+            label="lending-apy"
+            tableKey="lending-borrows-apy"
             align="center"
-            tooltipIcon={
-              <ButtonIconSmall
-                icon={<IconQuestion />}
-                data-tooltip-id={TOOLTIP_ID.LENDING_BORROW_APY_VARIABLE}
-              />
-            }
           />
         ),
         cell: row => row.renderValue(),

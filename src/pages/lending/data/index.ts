@@ -528,8 +528,18 @@ export const supplyAprDataStatic24h = [
   },
 ];
 
-export const interestRateModelData: IChartXYData[] = Array.from({ length: 202 }).map((_, i) => {
-  const x = i * 0.5;
-  if (i < 150) return { x, y: 0 + i * 0.01 };
-  return { x, y: 150 * 0.01 + (i - 150) * 1 };
-});
+export const interestRateModelSupplyData: IChartXYData[] = Array.from({ length: 202 }).map(
+  (_, i) => {
+    const x = i * 0.5;
+    if (i < 150) return { x, y: 0 + i * 0.01 };
+    return { x, y: 150 * 0.01 + (i - 150) * 1 };
+  }
+);
+
+export const interestRateModelBorrowData: IChartXYData[] = Array.from({ length: 202 }).map(
+  (_, i) => {
+    const x = i * 0.5;
+    if (i < 150) return { x, y: 0 + i * 0.04 };
+    return { x, y: 150 * 0.04 + (i - 150) * 2.5 };
+  }
+);

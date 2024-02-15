@@ -96,7 +96,7 @@ export const useTableLendingMyBorrowsSortStore = create<State>()(
   immer(
     logger(set => ({
       name: 'TABLE_LENDING_MY_BORROWS_SORT_STORE',
-      sort: { key: 'balance', order: 'desc' },
+      sort: { key: 'debt', order: 'desc' },
       setSort: (sort: ITableSort) => set({ sort }),
       resetSort: () => set({ sort: undefined }),
     }))
@@ -107,7 +107,7 @@ export const useTableLendingAssetsToBorrowSortStore = create<State>()(
   immer(
     logger(set => ({
       name: 'TABLE_LENDING_ASSETS_TO_BORROW_SORT_STORE',
-      sort: { key: 'balance', order: 'desc' },
+      sort: { key: 'available', order: 'desc' },
       setSort: (sort: ITableSort) => set({ sort }),
       resetSort: () => set({ sort: undefined }),
     }))

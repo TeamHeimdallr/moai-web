@@ -70,7 +70,7 @@ interface ValueWrapperProps {
 const ValueWrapper = styled.div<ValueWrapperProps>(({ color }) => [
   tw`
     font-m-18 text-neutral-100 flex-center gap-4
-    md:(font-m-20 leading-26)
+    md:(font-m-20 leading-26 h-32)
   `,
   color &&
     css`

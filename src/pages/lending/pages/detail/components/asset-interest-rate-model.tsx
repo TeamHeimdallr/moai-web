@@ -13,11 +13,10 @@ import { bisector } from '@visx/vendor/d3-array';
 import tw from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { IconDot } from '~/assets/icons';
 
-import { THOUSAND, TRILLION } from '~/constants';
+import { THOUSAND } from '~/constants';
 
-import { interestRateModelData } from '~/pages/lending/data';
+import { interestRateModelBorrowData, interestRateModelSupplyData } from '~/pages/lending/data';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { formatNumber } from '~/utils';
@@ -38,9 +37,8 @@ export const AsseInterestModel = () => {
     utilizationRate < 0.01
       ? '< 0.01%'
       : `${formatNumber(utilizationRate, 2, 'floor', THOUSAND, 2)}%`;
-  const apr = 1.39;
-  const apyType: string = 'variable'; // 'stable' | 'variable';
-  const utilizationAmount = 4385609020.29;
+  const borrowApr = 1.89;
+  const supplyApr = 1.39;
 
   const chartRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -50,17 +48,17 @@ export const AsseInterestModel = () => {
     currentTextBg: 0,
     optimalTextBg: 0,
   });
-  const [rate, setRate] = useState<number | undefined>(0);
 
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
 
   const { tooltipData, tooltipLeft, showTooltip, hideTooltip } = useTooltip();
 
-  const chartData = interestRateModelData;
+  const chartDataSupply = interestRateModelSupplyData;
+  const chartDataBorrow = interestRateModelBorrowData;
 
-  const wrapper = chartRef.current;
   useEffect(() => {
+    const wrapper = chartRef.current;
     if (!wrapper) return;
 
     const leftTickLabels = wrapper.querySelectorAll('.chart-tick-left svg');
@@ -76,17 +74,12 @@ export const AsseInterestModel = () => {
     const optimalTextWidth = optimalText?.getBoundingClientRect().width || 0;
     const optimalTextBgMax = Math.max(Math.ceil(optimalTextWidth) + 16, 60);
 
-    console.log({
-      leftLabelMax,
-      currentTexBgtMax,
-      optimalTextBgMax,
-    });
     setWidthData({
       leftLabel: leftLabelMax,
       currentTextBg: currentTexBgtMax,
       optimalTextBg: optimalTextBgMax,
     });
-  }, [wrapper, chartData, isKo]);
+  }, [chartDataSupply, chartDataBorrow, isKo]);
 
   return (
     <Wrapper ref={ref}>
@@ -94,354 +87,377 @@ export const AsseInterestModel = () => {
         <HeaderTitleWrapper>
           <HeaderTitle>{t('Interest rate model')}</HeaderTitle>
         </HeaderTitleWrapper>
-        <HeaderValueWrapper>
-          <HeaderValue id="header-value">{formattedUtilizationRate}</HeaderValue>
-          <HeaderValueLabel>{t('Utilization rate')}</HeaderValueLabel>
-        </HeaderValueWrapper>
+        <HeaderValueOuterWrapper>
+          <HeaderValueWrapper>
+            <HeaderValue id="header-value-utilization">{formattedUtilizationRate}</HeaderValue>
+            <HeaderValueLabel>{t('Utilization rate')}</HeaderValueLabel>
+          </HeaderValueWrapper>
+          <HeaderValueWrapper>
+            <HeaderValue id="header-value-borrow-apr">{formattedUtilizationRate}</HeaderValue>
+            <HeaderValueLabel>{t('Borrow APR')}</HeaderValueLabel>
+          </HeaderValueWrapper>
+          <HeaderValueWrapper>
+            <HeaderValue id="header-value-supply-apr">{formattedUtilizationRate}</HeaderValue>
+            <HeaderValueLabel>{t('Supply APR')}</HeaderValueLabel>
+          </HeaderValueWrapper>
+        </HeaderValueOuterWrapper>
       </Header>
 
-      <InnerWrapper>
-        <ChartOuterWrapper>
-          <LabelOuterWrapper>
-            <LabelWrapper>
-              <Label>
-                <LabelDot />
-                {`${t('Borrow APR')}, ${t(`${apyType}-small`)}`}
-              </Label>
-            </LabelWrapper>
-            <LabelWrapper>
-              <Label>
-                <LabelDot style={{ backgroundColor: '#A3B6FF' }} />
-                {t('Utilization rate')}
-              </Label>
-            </LabelWrapper>
-          </LabelOuterWrapper>
-          <ChartWrapper ref={chartRef}>
-            <ParentSize debounceTime={50}>
-              {({ width, height }) => {
-                if (!chartData) return;
+      <ChartOuterWrapper>
+        <ChartWrapper ref={chartRef}>
+          <ParentSize debounceTime={50}>
+            {({ width, height }) => {
+              if (!chartDataSupply || !chartDataBorrow) return;
 
-                const bisectX = bisector<IChartXYData, number>(d => d.x).left;
-                const getX = (d: IChartXYData) => d.x;
+              const bisectX = bisector<IChartXYData, number>(d => d.x).left;
+              const getX = (d: IChartXYData) => d.x;
 
-                const xMax = Math.max(...chartData.map(d => d.x));
-                const yMax = Math.max(...chartData.map(d => d.y));
+              const xMax = Math.max(...chartDataSupply.map(d => d.x));
+              const yMax = Math.max(...chartDataSupply.map(d => d.y));
+              const xMaxBorrow = Math.max(...chartDataBorrow.map(d => d.x));
+              const yMaxBorrow = Math.max(...chartDataBorrow.map(d => d.y));
 
-                const xScale = scaleLinear({
-                  range: [widthData.leftLabel + 8, width],
-                  domain: [0, xMax],
+              const xScale = scaleLinear({
+                range: [widthData.leftLabel + 8, width],
+                domain: [0, xMax],
+              });
+
+              const yScale = scaleLinear<number>({
+                range: [height - 20, 0],
+                domain: [0, Math.max(yMax + 10, yMaxBorrow + 10)],
+              });
+
+              const xScaleBorrow = scaleLinear({
+                range: [widthData.leftLabel + 8, width],
+                domain: [0, xMaxBorrow],
+              });
+
+              const yScaleBorrow = scaleLinear<number>({
+                range: [height - 20, 0],
+                domain: [0, yMaxBorrow + 10],
+              });
+
+              const changeHeader = (d: IChartXYData | undefined) => {
+                const header = headerRef.current;
+                if (!header) return;
+
+                const headerValueUtilizationDom = header.querySelector('#header-value-utilization');
+                const headerValueBorowAprDom = header.querySelector('#header-value-borrow-apr');
+                const headerValueSupplyAprDom = header.querySelector('#header-value-supply-apr');
+
+                if (
+                  !headerValueUtilizationDom ||
+                  !headerValueBorowAprDom ||
+                  !headerValueSupplyAprDom
+                )
+                  return;
+
+                if (d) {
+                  const formattedValue =
+                    d.y < 0.01 ? '< 0.01%' : `${formatNumber(d.x, 2, 'floor', THOUSAND, 2)}%`;
+                  headerValueUtilizationDom.innerHTML = formattedValue;
+
+                  const borrowApr = chartDataBorrow?.find(data => data.x === d.x)?.y || 0;
+                  const supplyApr = chartDataSupply?.find(data => data.x === d.x)?.y || 0;
+                  headerValueBorowAprDom.innerHTML = `${formatNumber(
+                    borrowApr,
+                    2,
+                    'floor',
+                    THOUSAND,
+                    2
+                  )}%`;
+                  headerValueSupplyAprDom.innerHTML = `${formatNumber(
+                    supplyApr,
+                    2,
+                    'floor',
+                    THOUSAND,
+                    2
+                  )}%`;
+                } else {
+                  headerValueUtilizationDom.innerHTML = formattedUtilizationRate;
+                  headerValueBorowAprDom.innerHTML = `${formatNumber(
+                    borrowApr,
+                    2,
+                    'floor',
+                    THOUSAND,
+                    2
+                  )}%`;
+                  headerValueSupplyAprDom.innerHTML = `${formatNumber(
+                    supplyApr,
+                    2,
+                    'floor',
+                    THOUSAND,
+                    2
+                  )}%`;
+                }
+              };
+
+              const handleTooltip = (
+                event: TouchEvent<SVGRectElement> | MouseEvent<SVGRectElement>
+              ) => {
+                const { x } = localPoint(event) || { x: 0 };
+                const x0 = xScale.invert(x);
+                const index = bisectX(chartDataSupply, x0, 1);
+                const d0 = chartDataSupply[index - 1];
+                const d1 = chartDataSupply[index];
+                let d = d0;
+                if (d1 && getX(d1)) {
+                  d =
+                    x0.valueOf() - getX(d0).valueOf() > getX(d1).valueOf() - x0.valueOf() ? d1 : d0;
+                }
+                showTooltip({
+                  tooltipData: d,
+                  tooltipLeft: x,
+                  tooltipTop: yScale(d.y),
                 });
 
-                const yScale = scaleLinear<number>({
-                  range: [height - 20, 0],
-                  domain: [0, yMax + 10],
-                });
+                changeHeader(d);
+              };
 
-                const changeHeader = (d: IChartXYData | undefined) => {
-                  const header = headerRef.current;
-                  if (!header) return;
+              const currentUtilizationRateX = xScale.invert(xScale(utilizationRate));
+              const currentUtilizationRateIdx = bisectX(
+                chartDataSupply,
+                currentUtilizationRateX,
+                1
+              );
+              const currentUtilizationRateData = chartDataSupply[currentUtilizationRateIdx];
+              const currentUtilizationRateY = yScale(currentUtilizationRateData.y);
 
-                  const headerValueDom = header.querySelector('#header-value');
+              const currentTextXScale = xScale(utilizationRate);
+              const currentTextX =
+                utilizationRate > 50
+                  ? currentTextXScale - widthData.currentTextBg - 4
+                  : currentTextXScale + 4;
 
-                  if (d) {
-                    const formattedValue =
-                      d.y < 0.01 ? '< 0.01%' : `${formatNumber(d.y, 2, 'floor', THOUSAND, 2)}%`;
-                    if (headerValueDom) {
-                      headerValueDom.innerHTML = formattedValue;
-                    }
-                  } else {
-                    if (headerValueDom) {
-                      headerValueDom.innerHTML = formattedUtilizationRate;
-                    }
-                  }
-                };
+              const optimalUtilizationRateX = xScale.invert(xScale(optimalUtilizationRate));
+              const optimalUtilizationRateIdx = bisectX(
+                chartDataSupply,
+                optimalUtilizationRateX,
+                1
+              );
+              const optimalUtilizationRateData = chartDataSupply[optimalUtilizationRateIdx];
+              const optimalUtilizationRateY = yScale(optimalUtilizationRateData.y);
 
-                const handleTooltip = (
-                  event: TouchEvent<SVGRectElement> | MouseEvent<SVGRectElement>
-                ) => {
-                  const { x } = localPoint(event) || { x: 0 };
-                  const x0 = xScale.invert(x);
-                  const index = bisectX(chartData, x0, 1);
-                  const d0 = chartData[index - 1];
-                  const d1 = chartData[index];
-                  let d = d0;
-                  if (d1 && getX(d1)) {
-                    d =
-                      x0.valueOf() - getX(d0).valueOf() > getX(d1).valueOf() - x0.valueOf()
-                        ? d1
-                        : d0;
-                  }
-                  showTooltip({
-                    tooltipData: d,
-                    tooltipLeft: x,
-                    tooltipTop: yScale(d.y),
-                  });
+              const optimalTextXScale = xScale(optimalUtilizationRate);
+              const optimalTextX =
+                optimalUtilizationRate > 50
+                  ? optimalTextXScale - widthData.optimalTextBg - 4
+                  : optimalTextXScale + 4;
 
-                  changeHeader(d);
-                  setRate(d.y);
-                };
+              return (
+                <svg width={width} height={height}>
+                  <AxisBottom
+                    numTicks={5}
+                    scale={xScale}
+                    hideAxisLine
+                    hideTicks
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    tickFormat={d => `${formatNumber(d as any, 0, 'floor', THOUSAND, 0)}%`}
+                    top={height - 16 - 13}
+                    left={0}
+                    tickLabelProps={(_value, i, values) => {
+                      const isFirst = i === 0;
+                      const isLast = i === values[values.length - 1].index;
 
-                const currentUtilizationRateX = xScale.invert(xScale(utilizationRate));
-                const currentUtilizationRateIdx = bisectX(chartData, currentUtilizationRateX, 1);
-                const currentUtilizationRateData = chartData[currentUtilizationRateIdx];
-                const currentUtilizationRateY = yScale(currentUtilizationRateData.y);
+                      const base = {
+                        fill: COLOR.NEUTRAL[60],
+                        fontFamily: 'Pretendard Variable',
+                        fontSize: '11px',
+                        fontWeight: 400,
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        verticalAnchor: 'start' as any,
+                      };
 
-                const currentTextXScale = xScale(utilizationRate);
-                const currentTextX =
-                  utilizationRate > 50
-                    ? currentTextXScale - widthData.currentTextBg - 4
-                    : currentTextXScale + 4;
+                      if (isFirst) return { ...base, textAnchor: 'start' };
+                      if (isLast) return { ...base, textAnchor: 'end' };
+                      return { ...base, textAnchor: 'middle' };
+                    }}
+                    tickClassName="chart-tick-bottom"
+                  />
+                  <AxisLeft
+                    numTicks={4}
+                    scale={yScale}
+                    hideAxisLine
+                    hideTicks
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    tickFormat={d => `${formatNumber(d as any, 0, 'floor', THOUSAND, 0)}%`}
+                    left={8}
+                    tickLabelProps={(_value, i, values) => {
+                      const isFirst = i === 0;
+                      const isLast = i === values[values.length - 1].index;
 
-                const optimalUtilizationRateX = xScale.invert(xScale(optimalUtilizationRate));
-                const optimalUtilizationRateIdx = bisectX(chartData, optimalUtilizationRateX, 1);
-                const optimalUtilizationRateData = chartData[optimalUtilizationRateIdx];
-                const optimalUtilizationRateY = yScale(optimalUtilizationRateData.y);
+                      const base = {
+                        fill: COLOR.NEUTRAL[60],
+                        fontFamily: 'Pretendard Variable',
+                        fontSize: '11px',
+                        fontWeight: 400,
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        textAnchor: 'start' as any,
+                      };
 
-                const optimalTextXScale = xScale(optimalUtilizationRate);
-                const optimalTextX =
-                  optimalUtilizationRate > 50
-                    ? optimalTextXScale - widthData.optimalTextBg - 4
-                    : optimalTextXScale + 4;
+                      if (isFirst) return { ...base, verticalAnchor: 'end' };
+                      if (isLast) return { ...base, verticalAnchor: 'start' };
+                      return { ...base, verticalAnchor: 'middle' };
+                    }}
+                    tickClassName="chart-tick-left"
+                  />
 
-                return (
-                  <svg width={width} height={height}>
-                    <AxisBottom
-                      numTicks={5}
-                      scale={xScale}
-                      hideAxisLine
-                      hideTicks
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      tickFormat={d => `${formatNumber(d as any, 0, 'floor', THOUSAND, 0)}%`}
-                      top={height - 16 - 13}
-                      left={0}
-                      tickLabelProps={(_value, i, values) => {
-                        const isFirst = i === 0;
-                        const isLast = i === values[values.length - 1].index;
-
-                        const base = {
-                          fill: COLOR.NEUTRAL[60],
-                          fontFamily: 'Pretendard Variable',
-                          fontSize: '11px',
-                          fontWeight: 400,
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          verticalAnchor: 'start' as any,
-                        };
-
-                        if (isFirst) return { ...base, textAnchor: 'start' };
-                        if (isLast) return { ...base, textAnchor: 'end' };
-                        return { ...base, textAnchor: 'middle' };
+                  <Area<IChartXYData>
+                    data={chartDataSupply}
+                    x={d => xScale(d.x) || 0}
+                    y={d => yScale(d.y) || 0}
+                    strokeWidth={1}
+                    stroke={COLOR.PRIMARY[60]}
+                    curve={curveMonotoneX}
+                  />
+                  <Area<IChartXYData>
+                    data={chartDataBorrow}
+                    x={d => xScaleBorrow(d.x) || 0}
+                    y={d => yScaleBorrow(d.y) || 0}
+                    strokeWidth={1}
+                    stroke={'#A3B6FF'}
+                    curve={curveMonotoneX}
+                  />
+                  <Group>
+                    <Line
+                      from={{
+                        x: xScale(utilizationRate),
+                        y: 24,
                       }}
-                      tickClassName="chart-tick-bottom"
-                    />
-                    <AxisLeft
-                      numTicks={4}
-                      scale={yScale}
-                      hideAxisLine
-                      hideTicks
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      tickFormat={d => `${formatNumber(d as any, 0, 'floor', THOUSAND, 0)}%`}
-                      left={8}
-                      tickLabelProps={(_value, i, values) => {
-                        const isFirst = i === 0;
-                        const isLast = i === values[values.length - 1].index;
-
-                        const base = {
-                          fill: COLOR.NEUTRAL[60],
-                          fontFamily: 'Pretendard Variable',
-                          fontSize: '11px',
-                          fontWeight: 400,
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          textAnchor: 'start' as any,
-                        };
-
-                        if (isFirst) return { ...base, verticalAnchor: 'end' };
-                        if (isLast) return { ...base, verticalAnchor: 'start' };
-                        return { ...base, verticalAnchor: 'middle' };
+                      to={{
+                        x: xScale(utilizationRate),
+                        y: currentUtilizationRateY,
                       }}
-                      tickClassName="chart-tick-left"
-                    />
-
-                    <Area<IChartXYData>
-                      data={chartData}
-                      x={d => xScale(d.x) || 0}
-                      y={d => yScale(d.y) || 0}
+                      stroke={COLOR.GREEN[50]}
                       strokeWidth={1}
-                      stroke={COLOR.PRIMARY[60]}
-                      curve={curveMonotoneX}
+                      pointerEvents="none"
+                      strokeDasharray="2,2"
                     />
-                    {widthData.currentTextBg > 0 && (
-                      <Group>
-                        <Line
-                          from={{
-                            x: xScale(utilizationRate),
-                            y: 24,
-                          }}
-                          to={{
-                            x: xScale(utilizationRate),
-                            y: currentUtilizationRateY,
-                          }}
-                          stroke="#A3B6FF"
-                          strokeWidth={1}
-                          pointerEvents="none"
-                          strokeDasharray="2,2"
-                        />
-                        <Bar
-                          x={currentTextX}
-                          y={24}
-                          width={widthData.currentTextBg}
-                          height={24}
-                          rx={12}
-                          fill={COLOR.NEUTRAL[30]}
-                        />
-                        <Text
-                          x={currentTextX + 8}
-                          y={24 + 12 + 4}
-                          fill={COLOR.NEUTRAL[100]}
-                          fontSize={11}
-                          fontWeight={400}
-                          lineHeight={16}
-                          fontFamily="Pretendard Variable"
-                          textAnchor="start"
-                          className="chart-avg-text-current"
-                        >
-                          {`${t('Current')} ${formatNumber(
-                            utilizationRate,
-                            2,
-                            'floor',
-                            THOUSAND,
-                            2
-                          )}%`}
-                        </Text>
-                      </Group>
-                    )}
-                    {widthData.optimalTextBg > 0 && (
-                      <Group>
-                        <Line
-                          from={{
-                            x: xScale(optimalUtilizationRate),
-                            y: height - 20 - 1 - 130,
-                          }}
-                          to={{
-                            x: xScale(optimalUtilizationRate),
-                            y: optimalUtilizationRateY,
-                          }}
-                          stroke="#A3B6FF"
-                          strokeWidth={1}
-                          pointerEvents="none"
-                          strokeDasharray="2,2"
-                        />
-                        <Bar
-                          x={optimalTextX}
-                          y={height - 20 - 1 - 130}
-                          width={widthData.optimalTextBg}
-                          height={24}
-                          rx={12}
-                          fill={COLOR.NEUTRAL[30]}
-                        />
-                        <Text
-                          x={optimalTextX + 8}
-                          y={height - 20 - 1 - 130 + 12 + 4}
-                          fill={COLOR.NEUTRAL[100]}
-                          fontSize={11}
-                          fontWeight={400}
-                          lineHeight={16}
-                          fontFamily="Pretendard Variable"
-                          textAnchor="start"
-                          className="chart-avg-text-optimal"
-                        >
-                          {`${t('Optimal')} ${formatNumber(
-                            optimalUtilizationRate,
-                            2,
-                            'floor',
-                            THOUSAND,
-                            2
-                          )}%`}
-                        </Text>
-                      </Group>
-                    )}
-                    {width && height && (
-                      <Bar
-                        x={widthData.leftLabel + 8}
-                        y={0}
-                        width={width - widthData.leftLabel - 8}
-                        height={height - 20}
-                        fill="transparent"
-                        rx={14}
-                        onTouchStart={handleTooltip}
-                        onTouchMove={handleTooltip}
-                        onMouseMove={handleTooltip}
-                        onMouseOut={() => {
-                          hideTooltip();
-                          changeHeader(undefined);
-                          setRate(undefined);
-                        }}
-                      />
-                    )}
-                    {tooltipData && (
-                      <Line
-                        from={{ x: tooltipLeft, y: 0 }}
-                        to={{ x: tooltipLeft, y: height - 20 }}
-                        stroke={COLOR.NEUTRAL[100]}
-                        strokeWidth={1}
-                        pointerEvents="none"
-                        strokeDasharray="2,2"
-                      />
-                    )}
-                  </svg>
-                );
-              }}
-            </ParentSize>
-          </ChartWrapper>
-        </ChartOuterWrapper>
+                    <Bar
+                      x={currentTextX}
+                      y={24}
+                      width={widthData.currentTextBg}
+                      height={24}
+                      rx={12}
+                      fill={COLOR.NEUTRAL[30]}
+                    />
+                    <Text
+                      x={currentTextX + 8}
+                      y={24 + 12 + 4}
+                      fill={COLOR.NEUTRAL[100]}
+                      fontSize={11}
+                      fontWeight={400}
+                      lineHeight={16}
+                      fontFamily="Pretendard Variable"
+                      textAnchor="start"
+                      className="chart-avg-text-current"
+                    >
+                      {`${t('Current')} ${formatNumber(utilizationRate, 2, 'floor', THOUSAND, 2)}%`}
+                    </Text>
+                  </Group>
+                  <Group>
+                    <Line
+                      from={{
+                        x: xScale(optimalUtilizationRate),
+                        y: height - 20 - 1 - 130,
+                      }}
+                      to={{
+                        x: xScale(optimalUtilizationRate),
+                        y: optimalUtilizationRateY,
+                      }}
+                      stroke={COLOR.GREEN[50]}
+                      strokeWidth={1}
+                      pointerEvents="none"
+                      strokeDasharray="2,2"
+                    />
+                    <Bar
+                      x={optimalTextX}
+                      y={height - 20 - 1 - 130}
+                      width={widthData.optimalTextBg}
+                      height={24}
+                      rx={12}
+                      fill={COLOR.NEUTRAL[30]}
+                    />
+                    <Text
+                      x={optimalTextX + 8}
+                      y={height - 20 - 1 - 130 + 12 + 4}
+                      fill={COLOR.NEUTRAL[100]}
+                      fontSize={11}
+                      fontWeight={400}
+                      lineHeight={16}
+                      fontFamily="Pretendard Variable"
+                      textAnchor="start"
+                      className="chart-avg-text-optimal"
+                    >
+                      {`${t('Optimal')} ${formatNumber(
+                        optimalUtilizationRate,
+                        2,
+                        'floor',
+                        THOUSAND,
+                        2
+                      )}%`}
+                    </Text>
+                  </Group>
+                  {width && height && (
+                    <Bar
+                      x={widthData.leftLabel + 8}
+                      y={0}
+                      width={width - widthData.leftLabel - 8}
+                      height={height - 20}
+                      fill="transparent"
+                      rx={14}
+                      onTouchStart={handleTooltip}
+                      onTouchMove={handleTooltip}
+                      onMouseMove={handleTooltip}
+                      onMouseOut={() => {
+                        hideTooltip();
+                        changeHeader(undefined);
+                      }}
+                    />
+                  )}
+                  {tooltipData && (
+                    <Line
+                      from={{ x: tooltipLeft, y: 0 }}
+                      to={{ x: tooltipLeft, y: height - 20 }}
+                      stroke={COLOR.NEUTRAL[100]}
+                      strokeWidth={1}
+                      pointerEvents="none"
+                      strokeDasharray="2,2"
+                    />
+                  )}
+                </svg>
+              );
+            }}
+          </ParentSize>
+        </ChartWrapper>
+        <LabelOuterWrapper>
+          <LabelWrapper>
+            <Label>
+              <LabelDot style={{ backgroundColor: COLOR.GREEN[50] }} />
+              {t('Utilization rate')}
+            </Label>
+          </LabelWrapper>
 
-        <InfoWrapper>
-          <InfoInnerWrapper>
-            <Bullet>
-              <IconDot width={4} height={4} fill={COLOR.NEUTRAL[80]} />
-            </Bullet>
-            <InfoText>
-              {t('Utilization rate')} : <InfoTextBold>{formattedUtilizationRate}</InfoTextBold>
-            </InfoText>
-          </InfoInnerWrapper>
-          <InfoInnerWrapper>
-            <Bullet>
-              <IconDot width={4} height={4} fill={COLOR.NEUTRAL[80]} />
-            </Bullet>
-            <InfoText>
-              {t('borrow-amount-to-reach-utilization', {
-                rate: formatNumber(rate || utilizationRate, 2, 'floor', THOUSAND, 2),
-              })}{' '}
-              :{' '}
-              <InfoTextBold>{`$${formatNumber(
-                utilizationAmount,
-                2,
-                'floor',
-                TRILLION,
-                2
-              )}`}</InfoTextBold>
-            </InfoText>
-          </InfoInnerWrapper>
-          <InfoInnerWrapper>
-            <Bullet>
-              <IconDot width={4} height={4} fill={COLOR.NEUTRAL[80]} />
-            </Bullet>
-            <InfoText>
-              {`${t('Borrow APR')}, ${t(`${apyType}-small`)}`} :{' '}
-              <InfoTextBold>{`${formatNumber(apr, 2, 'floor', THOUSAND, 2)}%`}</InfoTextBold>
-            </InfoText>
-          </InfoInnerWrapper>
-        </InfoWrapper>
-      </InnerWrapper>
+          <LabelWrapper>
+            <Label>
+              <LabelDot style={{ backgroundColor: '#A3B6FF' }} />
+              {t('Borrow APR')}
+            </Label>
+          </LabelWrapper>
+          <LabelWrapper>
+            <Label>
+              <LabelDot />
+              {t('Supply APR')}
+            </Label>
+          </LabelWrapper>
+        </LabelOuterWrapper>
+      </ChartOuterWrapper>
     </Wrapper>
   );
 };
 
 const Wrapper = tw.div`
-  flex flex-col bg-neutral-10 rounded-12 min-h-482 gap-20 px-24 pt-20 pb-24
-`;
-
-const InnerWrapper = tw.div`
-  flex flex-col gap-40
+  flex flex-col bg-neutral-10 rounded-12 min-h-368 gap-20 px-24 pt-20 pb-24
 `;
 
 const Header = tw.div`
@@ -458,6 +474,10 @@ const HeaderTitle = tw.div`
   md:(font-b-20)
 `;
 
+const HeaderValueOuterWrapper = tw.div`
+  flex gap-20
+`;
+
 const HeaderValueWrapper = tw.div`
   flex flex-col items-end
 `;
@@ -467,7 +487,7 @@ const HeaderValue = tw.div`
   md:(font-m-24)
 `;
 const HeaderValueLabel = tw.div`
-  font-r-12 text-neutral-60
+  font-r-14 text-neutral-60
 `;
 
 const LabelOuterWrapper = tw.div`
@@ -478,7 +498,7 @@ const LabelWrapper = tw.div`
   flex justify-end items-center
 `;
 const Label = tw.div`
-  flex gap-8 items-center font-r-12 text-neutral-100
+  flex gap-8 items-center font-r-12 leading-18 text-neutral-100
 `;
 const LabelDot = tw.div`
   w-6 h-6 rounded-full bg-primary-60
@@ -490,20 +510,4 @@ const ChartOuterWrapper = tw.div`
 
 const ChartWrapper = tw.div`
   w-full h-220 flex-center relative
-`;
-
-const InfoWrapper = tw.div`
-  flex flex-col gap-4
-`;
-const InfoInnerWrapper = tw.div`
-  flex items-center
-`;
-const Bullet = tw.div`
-  flex-center px-8 flex-shrink-0
-`;
-const InfoText = tw.div`
-  font-r-14 text-neutral-80
-`;
-const InfoTextBold = tw.span`
-  font-m-14 text-neutral-100
 `;

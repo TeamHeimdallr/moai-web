@@ -64,9 +64,9 @@ export const LayoutMarketBorrows = () => {
     if (!meta) return;
 
     const { asset } = meta;
-    if (!asset || !asset?.symbol) return;
+    if (!asset || !asset?.address) return;
 
-    navigate(`/lending/${networkAbbr}/${asset.symbol}`);
+    navigate(`/lending/${networkAbbr}/${asset.address}`);
   };
 
   return (
@@ -108,7 +108,7 @@ export const LayoutMarketBorrows = () => {
             <Table
               data={tableDataMyBorrows}
               columns={tableColumnsMyBorrows}
-              ratio={[1, 1, 1, 1, '94px']}
+              ratio={[1, 1, 1, '94px']}
               type="lighter"
               emptyText={t('lending-my-borrows-empty')}
               hasMore={hasNextPageMyBorrows}
@@ -135,7 +135,7 @@ export const LayoutMarketBorrows = () => {
           <Table
             data={tableDataAssetsToBorrow}
             columns={tableColumnsAssetsToBorrow}
-            ratio={[1, 1, '317px', '94px']}
+            ratio={[1, 1, 1, '94px']}
             type="lighter"
             emptyText={t('lending-assets-to-borrow-empty')}
             hasMore={hasNextPageAssetsToBorrow}
@@ -168,10 +168,6 @@ export const LayoutMarketBorrows = () => {
 
       <Tooltip id={TOOLTIP_ID.LENDING_BORROW_AVAIABLE} place="bottom">
         <TooltipContent>{t('lending-borrow-available-tooltip')}</TooltipContent>
-      </Tooltip>
-
-      <Tooltip id={TOOLTIP_ID.LENDING_BORROW_APY_VARIABLE} place="bottom">
-        <TooltipContent>{t('lending-borrow-apy-variable-tooltip')}</TooltipContent>
       </Tooltip>
 
       {changeApyTypeOpened && <PopupApyType />}

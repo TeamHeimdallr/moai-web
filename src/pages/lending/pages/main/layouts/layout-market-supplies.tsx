@@ -72,7 +72,7 @@ export const LayoutMarketSupplies = () => {
     if (!meta) return;
 
     const { asset } = meta;
-    if (!asset || !asset?.symbol) return;
+    if (!asset || !asset?.address) return;
 
     navigate(`/lending/${networkAbbr}/${asset.address}`);
   };
