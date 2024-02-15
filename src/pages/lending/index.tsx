@@ -25,29 +25,29 @@ const LendingPage = () => {
         )}
       />
       <Route
-        path="/:network/:symbol"
+        path="/:network/:address"
         element={getMaintanence(
-          '/lending/:network/:symbol',
+          '/lending/:network/:address',
           <Suspense fallback={<></>}>
             <LendingDetail />
           </Suspense>
         )}
       />
       <Route
-        path="/:network/:symbol/supply"
-        element={getMaintanence('/lending/:network/:symbol/supply', <LendingSupply />)}
+        path="/:network/:address/supply"
+        element={getMaintanence('/lending/:network/:address/supply', <LendingSupply />)}
       />
       <Route
-        path="/:network/:symbol/withdraw"
-        element={getMaintanence('/lending/:network/:symbol/withdraw', <LendingWithdraw />)}
+        path="/:network/:address/withdraw"
+        element={getMaintanence('/lending/:network/:address/withdraw', <LendingWithdraw />)}
       />
       <Route
-        path="/:network/:symbol/borrow"
-        element={getMaintanence('/lending/:network/:symbol/borrow', <LendingBorrow />)}
+        path="/:network/:address/borrow"
+        element={getMaintanence('/lending/:network/:address/borrow', <LendingBorrow />)}
       />
       <Route
-        path="/:network/:symbol/replay"
-        element={getMaintanence('/lending/:network/:symbol/replay', <LendingRepay />)}
+        path="/:network/:address/replay"
+        element={getMaintanence('/lending/:network/:address/replay', <LendingRepay />)}
       />
 
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -49,7 +49,7 @@ export const AssetSupplyBorrowInfoCard = ({
 
 const Wrapper = tw.div`
   flex flex-col gap-16 justify-start text-neutral-100
-  flex-1 max-w-254 min-w-152 pr-24 pb-20
+  flex-1 pr-24 pb-20
 `;
 
 const Title = tw.div`

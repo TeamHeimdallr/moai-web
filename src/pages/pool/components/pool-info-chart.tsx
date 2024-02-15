@@ -38,6 +38,7 @@ export const PoolInfoChart = () => {
   const { gaAction } = useGAAction();
 
   const chartRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const [leftLabelWidth, setLeftLabelWidth] = useState(0);
 
@@ -127,7 +128,7 @@ export const PoolInfoChart = () => {
 
   return (
     <Wrapper ref={ref}>
-      <Header>
+      <Header ref={headerRef}>
         <HeaderTitleWrapper>
           {tabs.map(tab => (
             <HeaderTitle
@@ -177,8 +178,11 @@ export const PoolInfoChart = () => {
               });
 
               const changeHeader = (d: IChartData | undefined) => {
-                const headerValueDom = document.querySelector('#header-value');
-                const headerCaptionDom = document.querySelector('#header-caption');
+                const header = headerRef.current;
+                if (!header) return;
+
+                const headerValueDom = header.querySelector('#header-value');
+                const headerCaptionDom = header.querySelector('#header-caption');
 
                 if (d) {
                   const formattedValue = `$${formatNumber(d.value)}`;
