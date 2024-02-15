@@ -32,7 +32,7 @@ export const LayoutMarketInfo = () => {
   const { t } = useTranslation();
 
   const { evm, fpass } = useConnectedWallet();
-  const evmAddress = evm?.address || fpass?.address || 'test';
+  const evmAddress = evm?.address || fpass?.address;
 
   const { selectedNetwork } = useNetwork();
   const networkAbbr = getNetworkAbbr(selectedNetwork);

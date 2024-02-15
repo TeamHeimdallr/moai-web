@@ -28,10 +28,7 @@ import { formatNumber } from '~/utils';
 import { useLendingAssetBorrowInfoChartSelectedRangeStore } from '~/states/components/chart/tab';
 import { IChartData } from '~/types';
 
-interface Props {
-  apyType: string;
-}
-export const AssetBorrowInfoChart = ({ apyType }: Props) => {
+export const AssetBorrowInfoChart = () => {
   const { ref } = useGAInView({ name: 'lending-asset-borrow-info-chart' });
   const { gaAction } = useGAAction();
 
@@ -109,20 +106,13 @@ export const AssetBorrowInfoChart = ({ apyType }: Props) => {
     <Wrapper ref={ref}>
       <Header ref={headerRef}>
         <HeaderTitleWrapper>
-          <HeaderTitle>{`${t('Borrow APR')}, ${t(`${apyType}-small`)}`}</HeaderTitle>
+          <HeaderTitle>{t('Borrow APR')}</HeaderTitle>
         </HeaderTitleWrapper>
         <HeaderValueWrapper>
           <HeaderValue id="header-value">${formatNumber(chartValue)}</HeaderValue>
           <HeaderValueLabel id="header-caption">{chartCaption}</HeaderValueLabel>
         </HeaderValueWrapper>
       </Header>
-
-      <LabelWrapper>
-        <Label>
-          <LabelDot />
-          {`${t('Borrow APR')}, ${t(`${apyType}-small`)}`}
-        </Label>
-      </LabelWrapper>
 
       <ChartOuterWrapper>
         <ChartWrapper ref={chartRef}>
@@ -332,6 +322,12 @@ export const AssetBorrowInfoChart = ({ apyType }: Props) => {
             }}
           </ParentSize>
         </ChartWrapper>
+        <LabelWrapper>
+          <Label>
+            <LabelDot />
+            {t('Borrow APR')}
+          </Label>
+        </LabelWrapper>
         <ChartRangeWrapper>
           {ranges.map(range => (
             <ButtonChipSmall
@@ -385,7 +381,7 @@ const HeaderValue = tw.div`
   md:(font-m-24)
 `;
 const HeaderValueLabel = tw.div`
-  font-r-12 text-neutral-60
+  font-r-14 text-neutral-60
 `;
 
 const LabelWrapper = tw.div`

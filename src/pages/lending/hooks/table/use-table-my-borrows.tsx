@@ -4,9 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
-import { IconQuestion } from '~/assets/icons';
-
-import { ButtonIconSmall, ButtonPrimaryMedium } from '~/components/buttons';
+import { ButtonPrimaryMedium } from '~/components/buttons';
 import {
   TableColumn,
   TableColumnAmount,
@@ -15,15 +13,11 @@ import {
   TableHeaderSortable,
 } from '~/components/tables';
 import { TableColumnButtons } from '~/components/tables/columns/column-buttons';
-import { TableColumnDropdownLendingApyType } from '~/components/tables/columns/column-dropdown-lending-apy-type';
-import { TableHeaderTooltip } from '~/components/tables/headers/header-normal';
 
-import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
 import { useTableLendingMyBorrowsSortStore } from '~/states/components';
-import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { APYSmall } from '../../components/apy';
 import { myBorrowsData } from '../../data';
@@ -34,8 +28,6 @@ export const useTableMyBorrows = () => {
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
-
-  const { open: openApyChange } = usePopup(POPUP_ID.LENDING_BORROW_CHANGE_APY_TYPE);
 
   const hasNextPage = false;
   const fetchNextPage = () => {};
@@ -78,9 +70,9 @@ export const useTableMyBorrows = () => {
     if (sort?.key === 'apy') {
       return myBorrows.sort((a, b) => {
         if (sort.order === 'desc') {
-          return b.currentApy.apy - a.currentApy.apy;
+          return b.apy - a.apy;
         }
-        return a.currentApy.apy - b.currentApy.apy;
+        return a.apy - b.apy;
       });
     }
 
@@ -89,17 +81,7 @@ export const useTableMyBorrows = () => {
 
   const tableData = useMemo(
     () =>
-      sortedMyBorrows?.map((d, i) => {
-        const handleApyTypeSelect = (address: string, apyType: string, apy: number) => {
-          openApyChange({
-            params: {
-              address,
-              type: apyType,
-              apy: apy,
-            },
-          });
-        };
-
+      sortedMyBorrows?.map(d => {
         return {
           meta: { id: d.id, asset: d.asset },
           asset: (
@@ -109,16 +91,7 @@ export const useTableMyBorrows = () => {
             />
           ),
           debt: <TableColumnAmount balance={d.asset.debt} value={d.asset.value} align="center" />,
-          apy: <TableColumn value={<APYSmall apy={d.currentApy.apy} />} align="center" />,
-          apyType: (
-            <TableColumnDropdownLendingApyType
-              address={d.asset.address}
-              type={d.currentApy}
-              types={d.apy}
-              handleClick={handleApyTypeSelect}
-              style={{ zIndex: 20 + (sortedMyBorrows.length - i) }}
-            />
-          ),
+          apy: <TableColumn value={<APYSmall apy={d.apy} />} align="center" />,
           buttons: (
             <TableColumnButtons align="center">
               <ButtonPrimaryMedium text={t('lending-borrow')} onClick={() => {}} />
@@ -131,7 +104,7 @@ export const useTableMyBorrows = () => {
           ),
         };
       }),
-    [openApyChange, sortedMyBorrows, t]
+    [sortedMyBorrows, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -172,21 +145,6 @@ export const useTableMyBorrows = () => {
         accessorKey: 'apy',
       },
       {
-        header: () => (
-          <TableHeaderTooltip
-            label="lending-apy-type"
-            tooltipIcon={
-              <ButtonIconSmall
-                icon={<IconQuestion />}
-                data-tooltip-id={TOOLTIP_ID.LENDING_BORROW_APY_TYPE}
-              />
-            }
-          />
-        ),
-        cell: row => row.renderValue(),
-        accessorKey: 'apyType',
-      },
-      {
         header: () => <div />,
         cell: row => row.renderValue(),
         accessorKey: 'buttons',
@@ -199,16 +157,6 @@ export const useTableMyBorrows = () => {
   const mobileTableData = useMemo(
     () =>
       sortedMyBorrows.map((d, i) => {
-        const handleApyTypeSelect = (address: string, apyType: string, apy: number) => {
-          openApyChange({
-            params: {
-              address,
-              type: apyType,
-              apy: apy,
-            },
-          });
-        };
-
         return {
           meta: { id: d.id, asset: d.asset },
           rows: [
@@ -235,35 +183,12 @@ export const useTableMyBorrows = () => {
             },
             {
               label: 'lending-apy',
-              value: <TableColumn value={<APYSmall apy={d.currentApy.apy} />} align="flex-end" />,
-            },
-            {
-              label: (
-                <TableHeaderTooltip
-                  label="lending-apy-type"
-                  tooltipIcon={
-                    <IconQuestion
-                      width={16}
-                      height={16}
-                      data-tooltip-id={TOOLTIP_ID.LENDING_BORROW_APY_TYPE}
-                    />
-                  }
-                />
-              ),
-              value: (
-                <TableColumnDropdownLendingApyType
-                  address={d.asset.address}
-                  type={d.currentApy}
-                  types={d.apy}
-                  handleClick={handleApyTypeSelect}
-                  style={{ zIndex: 20 + (sortedMyBorrows.length - i) }}
-                />
-              ),
+              value: <TableColumn value={<APYSmall apy={d.apy} />} align="flex-end" />,
             },
           ],
         };
       }),
-    [openApyChange, sortedMyBorrows, t]
+    [sortedMyBorrows, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
