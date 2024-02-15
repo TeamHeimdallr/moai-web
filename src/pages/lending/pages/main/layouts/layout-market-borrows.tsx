@@ -16,14 +16,11 @@ import { InfoCard } from '~/pages/lending/components/info-card';
 import { useTableAssetsToBorrow } from '~/pages/lending/hooks/table/use-table-assets-to-borrow';
 import { useTableMyBorrows } from '~/pages/lending/hooks/table/use-table-my-borrows';
 
-import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr } from '~/utils';
-import { POPUP_ID, TOOLTIP_ID } from '~/types';
-
-import { PopupApyType } from '../components/popup-apy-type';
+import { TOOLTIP_ID } from '~/types';
 
 export const LayoutMarketBorrows = () => {
   const navigate = useNavigate();
@@ -36,8 +33,6 @@ export const LayoutMarketBorrows = () => {
   const balance = 24000;
   const apy = 0.001;
   const borrowPowerUsed = 0.6;
-
-  const { opened: changeApyTypeOpened } = usePopup(POPUP_ID.LENDING_BORROW_CHANGE_APY_TYPE);
 
   const {
     tableColumns: tableColumnsMyBorrows,
@@ -169,8 +164,6 @@ export const LayoutMarketBorrows = () => {
       <Tooltip id={TOOLTIP_ID.LENDING_BORROW_AVAIABLE} place="bottom">
         <TooltipContent>{t('lending-borrow-available-tooltip')}</TooltipContent>
       </Tooltip>
-
-      {changeApyTypeOpened && <PopupApyType />}
     </Wrapper>
   );
 };

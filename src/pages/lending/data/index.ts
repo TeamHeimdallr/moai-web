@@ -54,11 +54,7 @@ export const myBorrowsData = {
             image: `${ASSET_URL}/tokens/token-xrp.png`,
             debt: 5201.102,
           },
-          apy: [
-            { apy: 5.49, apyType: 'variable' },
-            { apy: 1.49, apyType: 'stable' },
-          ],
-          currentApy: { apy: 5.49, apyType: 'variable' },
+          apy: 5.49,
         },
         {
           id: 2,
@@ -68,11 +64,7 @@ export const myBorrowsData = {
             image: `${ASSET_URL}/tokens/token-usdc.png`,
             debt: 239005.102,
           },
-          apy: [
-            { apy: 0.00249, apyType: 'variable' },
-            { apy: 0.00122, apyType: 'stable' },
-          ],
-          currentApy: { apy: 0.00122, apyType: 'stable' },
+          apy: 0.00249,
           collateral: false,
         },
       ],

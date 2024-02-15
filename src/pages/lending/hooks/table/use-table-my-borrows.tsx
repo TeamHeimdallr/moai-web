@@ -70,9 +70,9 @@ export const useTableMyBorrows = () => {
     if (sort?.key === 'apy') {
       return myBorrows.sort((a, b) => {
         if (sort.order === 'desc') {
-          return b.currentApy.apy - a.currentApy.apy;
+          return b.apy - a.apy;
         }
-        return a.currentApy.apy - b.currentApy.apy;
+        return a.apy - b.apy;
       });
     }
 
@@ -91,7 +91,7 @@ export const useTableMyBorrows = () => {
             />
           ),
           debt: <TableColumnAmount balance={d.asset.debt} value={d.asset.value} align="center" />,
-          apy: <TableColumn value={<APYSmall apy={d.currentApy.apy} />} align="center" />,
+          apy: <TableColumn value={<APYSmall apy={d.apy} />} align="center" />,
           buttons: (
             <TableColumnButtons align="center">
               <ButtonPrimaryMedium text={t('lending-borrow')} onClick={() => {}} />
@@ -183,7 +183,7 @@ export const useTableMyBorrows = () => {
             },
             {
               label: 'lending-apy',
-              value: <TableColumn value={<APYSmall apy={d.currentApy.apy} />} align="flex-end" />,
+              value: <TableColumn value={<APYSmall apy={d.apy} />} align="flex-end" />,
             },
           ],
         };
