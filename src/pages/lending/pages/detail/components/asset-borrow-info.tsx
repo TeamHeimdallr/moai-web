@@ -1,132 +1,141 @@
 import { useTranslation } from 'react-i18next';
-import { css } from '@emotion/react';
-import tw, { styled } from 'twin.macro';
+import tw from 'twin.macro';
 
-import { COLOR } from '~/assets/colors';
-import { IconCancel, IconCheck, IconQuestion } from '~/assets/icons';
+import { IconLink, IconQuestion } from '~/assets/icons';
 
-import { THOUSAND } from '~/constants';
+import { SCANNER_URL, THOUSAND } from '~/constants';
 
-import { ButtonIconSmall } from '~/components/buttons';
+import { ButtonIconMedium, ButtonIconSmall } from '~/components/buttons';
 import { Tooltip } from '~/components/tooltips/base';
 
 import { APYMedium } from '~/pages/lending/components/apy';
 import { InfoCard } from '~/pages/lending/components/info-card';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { formatNumber } from '~/utils';
-import { TOOLTIP_ID } from '~/types';
+import { IToken, NETWORK, TOOLTIP_ID } from '~/types';
 
+import { AssetBorrowInfoChart } from './asset-borrow-info-chart';
 import { AssetSupplyBorrowInfoCard } from './asset-supply-borrow-info-card';
 
-export const AssetSupplyInfo = () => {
+interface Props {
+  token?: IToken;
+}
+export const AssetBorrowInfo = ({ token }: Props) => {
   const { t } = useTranslation();
+  const { selectedNetwork } = useNetwork();
+  const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
 
   // TODO: connect api
-  const totalSupply = 2000000000;
-  const currentSupply = 739845000;
-  const ratio = (currentSupply / totalSupply) * 100;
+  const totalBorrow = 2000000000;
+  const currentBorrow = 739845000;
+  const ratio = (currentBorrow / totalBorrow) * 100;
 
-  const apy = 0.0239;
-  const collateral = true;
+  const apyType: string = 'variable'; // 'stable' | 'variable';
+  const apy = 2.239;
+  const borrowCap = 1410000;
+  const { price } = token || {};
 
-  const maxLTV = 70;
-  const liquidationThreshold = 75;
-  const liquidationPenalty = 12312323;
+  const reserveFactor = 15;
+  const collectorContract = '0x48DBa2D1b6C89Bf8234C2B63554369aDC7Ae3258';
+
+  const handleLinkToContract = () => {
+    if (isRoot)
+      return window.open(`${SCANNER_URL[selectedNetwork]}/addresses/${collectorContract}`);
+    window.open(`${SCANNER_URL[selectedNetwork]}/address/${collectorContract}`);
+  };
 
   return (
-    <Wrapper>
-      <HeaderTitle>{t('Supply info')}</HeaderTitle>
+    <OuterWrapper>
+      <Wrapper>
+        <HeaderTitle>{t('Borrow info')}</HeaderTitle>
 
-      {/* supply info */}
-      <InfoWrapper>
-        <AssetSupplyBorrowInfoCard
-          title={t('Total supplied')}
-          titleIcon={
-            <ButtonIconSmall
-              icon={<IconQuestion />}
-              data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED}
+        <InfoWrapper>
+          <AssetSupplyBorrowInfoCard
+            title={t('Total borrowed')}
+            titleIcon={
+              <ButtonIconSmall
+                icon={<IconQuestion />}
+                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_BORROWED}
+              />
+            }
+            value={
+              <>
+                <InfoText>{formatNumber(currentBorrow, 2, 'floor', THOUSAND, 2)}</InfoText>
+                <InfoTextSmall>of</InfoTextSmall>
+                <InfoText>{formatNumber(totalBorrow, 2, 'floor', THOUSAND, 2)}</InfoText>
+              </>
+            }
+            barChart
+            barChartValue={ratio}
+            barChartLabel={`${formatNumber(ratio, 2, 'floor', THOUSAND, 2)}%`}
+          />
+          <AssetSupplyBorrowInfoCard
+            title={`${t('APY')}, ${t(`${apyType}-small`)}`}
+            titleIcon={
+              <ButtonIconSmall
+                icon={<IconQuestion />}
+                data-tooltip-id={
+                  apyType === 'variable'
+                    ? TOOLTIP_ID.LENDING_DETAIL_BORROW_APY_VARIABLE
+                    : TOOLTIP_ID.LENDING_DETAIL_BORROW_APY_STABLE
+                }
+              />
+            }
+            value={<APYMedium apy={apy} style={{ justifyContent: 'flex-start' }} />}
+          />
+          <AssetSupplyBorrowInfoCard
+            title={t('Borrow cap')}
+            value={formatNumber(borrowCap, 2, 'floor', THOUSAND, 2)}
+            caption={`$${formatNumber(borrowCap * (price || 0), 2, 'floor', THOUSAND, 2)}`}
+          />
+        </InfoWrapper>
+
+        <ChartWrapper>
+          <AssetBorrowInfoChart apyType={apyType} />
+        </ChartWrapper>
+
+        <CollectorWrapper>
+          <ContentTitle>{t('Collector info')}</ContentTitle>
+          <CollectorCards>
+            <InfoCard
+              title={t('Reserve factor')}
+              titleIcon={
+                <ButtonIconSmall
+                  icon={<IconQuestion />}
+                  data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_BORROW_RESERVE_FACTOR}
+                />
+              }
+              value={`${formatNumber(reserveFactor, 2, 'floor', THOUSAND, 2)}%`}
+              light
             />
-          }
-          value={
-            <>
-              <InfoText>{formatNumber(currentSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
-              <InfoTextSmall>of</InfoTextSmall>
-              <InfoText>{formatNumber(totalSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
-            </>
-          }
-          barChart
-          barChartValue={ratio}
-          barChartLabel={`${formatNumber(ratio, 2, 'floor', THOUSAND, 2)}%`}
-        />
-        <AssetSupplyBorrowInfoCard
-          title={t('APY')}
-          value={<APYMedium apy={apy} style={{ justifyContent: 'flex-start' }} />}
-        />
-      </InfoWrapper>
+            <InfoCard
+              title={t('Collector contract')}
+              value={t('View contract')}
+              valueIcon={<ButtonIconMedium icon={<IconLink />} onClick={handleLinkToContract} />}
+              light
+            />
+          </CollectorCards>
+        </CollectorWrapper>
+      </Wrapper>
 
-      <ChartWrapper></ChartWrapper>
-
-      <CollateralWrapper>
-        <ContentTitle>
-          {t('Collateral usage')}
-          <ContentTitleCaptionWrapper collateral={collateral}>
-            {collateral ? <IconCheck /> : <IconCancel />}
-            {collateral ? t('Can be collateral') : t('Can not be collateral')}
-          </ContentTitleCaptionWrapper>
-        </ContentTitle>
-        <CollateralCards>
-          <InfoCard
-            title={t('Max LTV')}
-            titleIcon={
-              <ButtonIconSmall
-                icon={<IconQuestion />}
-                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_MAX_LTV}
-              />
-            }
-            value={`${formatNumber(maxLTV, 2, 'floor', THOUSAND, 2)}%`}
-            light
-          />
-          <InfoCard
-            title={t('Liquidation threshold')}
-            titleIcon={
-              <ButtonIconSmall
-                icon={<IconQuestion />}
-                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD}
-              />
-            }
-            value={`${formatNumber(liquidationThreshold, 2, 'floor', THOUSAND, 2)}%`}
-            light
-          />
-          <InfoCard
-            title={t('Liquidation penalty')}
-            titleIcon={
-              <ButtonIconSmall
-                icon={<IconQuestion />}
-                data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY}
-              />
-            }
-            value={`${formatNumber(liquidationPenalty, 2, 'floor', THOUSAND, 2)}%`}
-            light
-          />
-        </CollateralCards>
-      </CollateralWrapper>
-
-      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED} place="bottom">
-        <TooltipContent>{t('total-supplied-description')}</TooltipContent>
+      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_BORROWED} place="bottom">
+        <TooltipContent>{t('total-borrowed-description')}</TooltipContent>
       </Tooltip>
-      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_MAX_LTV} place="bottom">
-        <TooltipContent>{t('max-ltv-description')}</TooltipContent>
+      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_BORROW_APY_VARIABLE} place="bottom">
+        <TooltipContent>{t('borrow-apy-description-variable')}</TooltipContent>
       </Tooltip>
-      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD} place="bottom">
-        <TooltipContent>{t('liquidity-threshold-description')}</TooltipContent>
+      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_BORROW_APY_STABLE} place="bottom">
+        <TooltipContent>{t('borrow-apy-description-stable')}</TooltipContent>
       </Tooltip>
-      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY} place="bottom">
-        <TooltipContent>{t('liquidity-penalty-description')}</TooltipContent>
+      <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_BORROW_RESERVE_FACTOR} place="bottom">
+        <TooltipContent>{t('reserve-factor-description')}</TooltipContent>
       </Tooltip>
-    </Wrapper>
+    </OuterWrapper>
   );
 };
 
+const OuterWrapper = tw.div``;
 const Wrapper = tw.div`
   flex flex-col bg-neutral-10 rounded-12 px-20 pt-20 pb-24 min-h-808 gap-32
 `;
@@ -141,30 +150,9 @@ const ContentTitle = tw.div`
   md:(font-b-16)
 `;
 
-interface ContentTitleCaptionWrapperProps {
-  collateral?: boolean;
-}
-const ContentTitleCaptionWrapper = styled.div<ContentTitleCaptionWrapperProps>(({ collateral }) => [
-  tw`
-    flex items-center gap-4 font-m-14
-    md:(font-m-16)
-  `,
-  collateral ? tw`text-green-50` : tw`text-orange-50`,
-  collateral
-    ? css`
-        & svg {
-          fill: ${COLOR.GREEN[50]};
-        }
-      `
-    : css`
-        & svg {
-          fill: ${COLOR.ORANGE[50]};
-        }
-      `,
-]);
-
 const InfoWrapper = tw.div`
-  flex gap-16 w-full flex-wrap
+  w-full grid grid-cols-2 gap-16
+  md:(grid grid-cols-3 gap-16)
 `;
 
 const InfoText = tw.div`
@@ -178,12 +166,13 @@ const InfoTextSmall = tw.div`
 
 const ChartWrapper = tw.div``;
 
-const CollateralWrapper = tw.div`
+const CollectorWrapper = tw.div`
   flex flex-col gap-16
 `;
-const CollateralCards = tw.div`
+
+const CollectorCards = tw.div`
   flex gap-16 flex-col
-  md:(flex-row)
+  md:(grid grid-cols-3 gap-16)
 `;
 
 const TooltipContent = tw.div`

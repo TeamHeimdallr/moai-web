@@ -417,6 +417,8 @@
 
   "variable": "변동",
   "stable": "고정",
+  "variable-small": "변동",
+  "stable-small": "고정",
 
   "Select APY type to switch": "APY 방식을 선택하세요.",
   "lending-apy-variable": "APY, 변동",
@@ -494,5 +496,23 @@
   "liquidity-threshold-description": "각 담보에 대해 대출 포지션이 담보 부족으로 간주되어 청산 대상이 되는 임계값을 나타냅니다. 예를 들어 담보의 청산 임계값이 80%인 경우 부채 가치가 담보 가치의 80%일 때 포지션이 청산된다는 뜻입니다.",
   "liquidity-penalty-description": "청산이 발생하면 청산인은 대출자를 대신해 미결제 대출 금액의 최대 50%를 상환합니다. 그 대가로 청산인은 담보를 할인된 가격에 매입하고 차액(청산 위약금)을 보너스로 챙길 수 있습니다.",
 
-  "Avg": "평균"
+  "Avg": "평균",
+  "APY": "APY",
+
+  "Borrow info": "대출 정보",
+  "Total borrowed": "총 대출액",
+  "total-borrowed-description": "유동성 풀 파산을 최소화하기 위해 이 자산의 대출은 일정 금액으로 제한됩니다.",
+
+  "borrow-apy-description-variable": "변동이자율은 시장 상황에 따라 변동될 수 있습니다. 단기 포지션에 추천합니다.",
+  "borrow-apy-description-stable": "고정이자율은 대출기간동안 동일하게 유지됩니다. 장기 포지션에 추천합니다.",
+  "Borrow cap": "대출 한도",
+
+  "Borrow APR": "대출 APR",
+
+  "Collector info": "수수료 정보",
+  "Reserve factor": "프로토콜 수수료",
+  "reserve-factor-description": "프로토콜 수수료는 Moai Finance가 관리하는 수수료 컨트랙트로 보내는 이자의 일정 비율입니다.",
+
+  "Collector contract": "수수료 컨트랙트",
+  "View contract": "컨트랙트 보기"
 }

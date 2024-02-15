@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { css } from '@emotion/react';
-import tw, { styled } from 'twin.macro';
+import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconQuestion } from '~/assets/icons';
@@ -35,11 +34,10 @@ export const AssetSupplyInfo = () => {
   const liquidationPenalty = 12312323;
 
   return (
-    <>
+    <OuterWrapper>
       <Wrapper>
         <HeaderTitle>{t('Supply info')}</HeaderTitle>
 
-        {/* supply info */}
         <InfoWrapper>
           <AssetSupplyBorrowInfoCard
             title={t('Total supplied')}
@@ -128,9 +126,11 @@ export const AssetSupplyInfo = () => {
       <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY} place="bottom">
         <TooltipContent>{t('liquidity-penalty-description')}</TooltipContent>
       </Tooltip>
-    </>
+    </OuterWrapper>
   );
 };
+
+const OuterWrapper = tw.div``;
 
 const Wrapper = tw.div`
   flex flex-col bg-neutral-10 rounded-12 px-20 pt-20 pb-24 min-h-808 gap-32
@@ -169,7 +169,8 @@ const ContentTitleCaptionWrapper = styled.div<ContentTitleCaptionWrapperProps>((
 ]);
 
 const InfoWrapper = tw.div`
-  flex gap-16 w-full flex-wrap
+  w-full grid grid-cols-2 gap-16
+  md:(grid-cols-3)
 `;
 
 const InfoText = tw.div`
@@ -186,9 +187,10 @@ const ChartWrapper = tw.div``;
 const CollateralWrapper = tw.div`
   flex flex-col gap-16
 `;
+
 const CollateralCards = tw.div`
   flex gap-16 flex-col
-  md:(flex-row)
+  md:(grid grid-cols-3 gap-16)
 `;
 
 const TooltipContent = tw.div`

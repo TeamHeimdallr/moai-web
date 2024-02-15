@@ -14,6 +14,7 @@ import { usePrevious } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
+import { AssetBorrowInfo } from './components/asset-borrow-info';
 import { AssetHeader } from './components/asset-header';
 import { AssetInfo } from './components/asset-info';
 import { AssetSupplyInfo } from './components/asset-supply-info';
@@ -22,7 +23,7 @@ export const LendingDetail = () => {
   useGAPage();
 
   const navigate = useNavigate();
-  const { symbol } = useParams();
+  const { address } = useParams();
   const { selectedNetwork } = useNetwork();
   const networkAbbr = getNetworkAbbr(selectedNetwork);
   const previousNetwork = usePrevious<NETWORK>(selectedNetwork);
@@ -38,13 +39,8 @@ export const LendingDetail = () => {
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
 
   const { data: tokenData, isFetched } = useGetTokenQuery(
-    {
-      queries: {
-        networkAbbr,
-        symbol: symbol as string,
-      },
-    },
-    { enabled: !!symbol && !!networkAbbr }
+    { queries: { networkAbbr, address: address } },
+    { enabled: !!address && !!networkAbbr }
   );
   const { token } = tokenData || {};
 
@@ -65,6 +61,7 @@ export const LendingDetail = () => {
               <LeftContentWrapper>
                 <AssetInfo />
                 <AssetSupplyInfo />
+                <AssetBorrowInfo />
               </LeftContentWrapper>
               <RightContentWrapper></RightContentWrapper>
             </ContentWrapper>

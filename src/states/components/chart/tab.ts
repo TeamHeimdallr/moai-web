@@ -42,8 +42,18 @@ export const useLendingAssetSupplyInfoChartSelectedRangeStore = create<State>()(
     logger(set => ({
       name: 'LENDING_ASSET_SUPPLY_INFO_CHART_SELECT_RANGE_STORE',
 
-      // selectedTab: '24h',
-      selectedTab: 'all',
+      selectedTab: '24h',
+      selectTab: (selectedTab: string | undefined) => set({ selectedTab }),
+    }))
+  )
+);
+
+export const useLendingAssetBorrowInfoChartSelectedRangeStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'LENDING_ASSET_BORROW_INFO_CHART_SELECT_RANGE_STORE',
+
+      selectedTab: '24h',
       selectTab: (selectedTab: string | undefined) => set({ selectedTab }),
     }))
   )

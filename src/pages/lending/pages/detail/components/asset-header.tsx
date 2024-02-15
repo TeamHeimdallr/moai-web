@@ -26,7 +26,7 @@ export const AssetHeader = () => {
 
   const { data: walletClient } = useWalletClient();
 
-  const { symbol } = useParams();
+  const { address } = useParams();
   const { selectedNetwork } = useNetwork();
 
   const { t } = useTranslation();
@@ -36,16 +36,11 @@ export const AssetHeader = () => {
   const logoUrl = `${ASSET_URL}/images/network-${networkAbbr}.png`;
 
   const { data: tokenData } = useGetTokenQuery(
-    {
-      queries: {
-        networkAbbr,
-        symbol: symbol as string,
-      },
-    },
-    { enabled: !!symbol && !!networkAbbr }
+    { queries: { networkAbbr, address: address } },
+    { enabled: !!address && !!networkAbbr }
   );
   const { token } = tokenData || {};
-  const { address, image, decimal } = token || {};
+  const { symbol, image, decimal } = token || {};
 
   const handleLink = () => {
     const url = `${SCANNER_URL[selectedNetwork]}/${isRoot ? 'addresses' : 'token'}/${address}`;
