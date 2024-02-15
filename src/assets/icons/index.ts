@@ -16,6 +16,7 @@ import IconDiscord from './icon-discord.svg?react';
 import IconDivision from './icon-division.svg?react';
 import IconDollarWithCircle from './icon-dollar-with-circle.svg?react';
 import IconDollars from './icon-dollars.svg?react';
+import IconDot from './icon-dot.svg?react';
 import IconDown from './icon-down.svg?react';
 import IconDownFill from './icon-down-fill.svg?react';
 import IconDownload from './icon-download.svg?react';
@@ -85,6 +86,7 @@ export {
   IconDivision,
   IconDollars,
   IconDollarWithCircle,
+  IconDot,
   IconDown,
   IconDownFill,
   IconDownload,

@@ -253,14 +253,25 @@ export const PoolInfoChart = () => {
                           locale: isKo ? ko : enUS,
                         })} ${format(date, 'd')}${isKo ? '일' : ''}`;
                       }}
-                      top={height - 16 - 8}
+                      top={height - 16 - 13}
                       left={0}
-                      tickLabelProps={() => ({
-                        fill: COLOR.NEUTRAL[60],
-                        fontFamily: 'Pretendard Variable',
-                        fontSize: '11px',
-                        fontWeight: 400,
-                      })}
+                      tickLabelProps={(_value, i, values) => {
+                        const isFirst = i === 0;
+                        const isLast = i === values[values.length - 1].index;
+
+                        const base = {
+                          fill: COLOR.NEUTRAL[60],
+                          fontFamily: 'Pretendard Variable',
+                          fontSize: '11px',
+                          fontWeight: 400,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          verticalAnchor: 'start' as any,
+                        };
+
+                        if (isFirst) return { ...base, textAnchor: 'start' };
+                        if (isLast) return { ...base, textAnchor: 'end' };
+                        return { ...base, textAnchor: 'middle' };
+                      }}
                     />
                     <AxisLeft
                       numTicks={5}
@@ -269,13 +280,23 @@ export const PoolInfoChart = () => {
                       hideTicks
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       tickFormat={d => `$${formatNumber(d as any, 2, 'floor', THOUSAND, 2)}`}
-                      left={12}
-                      tickLabelProps={{
-                        fill: COLOR.NEUTRAL[60],
-                        fontFamily: 'Pretendard Variable',
-                        fontSize: '11px',
-                        fontWeight: 400,
-                        textAnchor: 'start',
+                      left={8}
+                      tickLabelProps={(_value, i, values) => {
+                        const isFirst = i === 0;
+                        const isLast = i === values[values.length - 1].index;
+
+                        const base = {
+                          fill: COLOR.NEUTRAL[60],
+                          fontFamily: 'Pretendard Variable',
+                          fontSize: '11px',
+                          fontWeight: 400,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          textAnchor: 'start' as any,
+                        };
+
+                        if (isFirst) return { ...base, verticalAnchor: 'end' };
+                        if (isLast) return { ...base, verticalAnchor: 'start' };
+                        return { ...base, verticalAnchor: 'middle' };
                       }}
                       tickClassName="chart-tick-left"
                     />
@@ -320,14 +341,25 @@ export const PoolInfoChart = () => {
                           locale: isKo ? ko : enUS,
                         })} ${format(date, 'd')}${isKo ? '일' : ''}`;
                       }}
-                      top={height - 16 - 8}
+                      top={height - 16 - 13}
                       left={0}
-                      tickLabelProps={() => ({
-                        fill: COLOR.NEUTRAL[60],
-                        fontFamily: 'Pretendard Variable',
-                        fontSize: '11px',
-                        fontWeight: 400,
-                      })}
+                      tickLabelProps={(_value, i, values) => {
+                        const isFirst = i === 0;
+                        const isLast = i === values[values.length - 1].index;
+
+                        const base = {
+                          fill: COLOR.NEUTRAL[60],
+                          fontFamily: 'Pretendard Variable',
+                          fontSize: '11px',
+                          fontWeight: 400,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          verticalAnchor: 'start' as any,
+                        };
+
+                        if (isFirst) return { ...base, textAnchor: 'start' };
+                        if (isLast) return { ...base, textAnchor: 'end' };
+                        return { ...base, textAnchor: 'middle' };
+                      }}
                     />
                     <AxisLeft
                       numTicks={5}
@@ -336,13 +368,23 @@ export const PoolInfoChart = () => {
                       hideTicks
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       tickFormat={d => `$${formatNumber(d as any, 2, 'floor', THOUSAND, 2)}`}
-                      left={12}
-                      tickLabelProps={{
-                        fill: COLOR.NEUTRAL[60],
-                        fontFamily: 'Pretendard Variable',
-                        fontSize: '11px',
-                        fontWeight: 400,
-                        textAnchor: 'start',
+                      left={8}
+                      tickLabelProps={(_value, i, values) => {
+                        const isFirst = i === 0;
+                        const isLast = i === values[values.length - 1].index;
+
+                        const base = {
+                          fill: COLOR.NEUTRAL[60],
+                          fontFamily: 'Pretendard Variable',
+                          fontSize: '11px',
+                          fontWeight: 400,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          textAnchor: 'start' as any,
+                        };
+
+                        if (isFirst) return { ...base, verticalAnchor: 'end' };
+                        if (isLast) return { ...base, verticalAnchor: 'start' };
+                        return { ...base, verticalAnchor: 'middle' };
                       }}
                       tickClassName="chart-tick-left"
                     />

@@ -498,6 +498,8 @@
 
   "Avg": "평균",
   "APY": "APY",
+  "Current": "현재",
+  "Optimal": "최적",
 
   "Borrow info": "대출 정보",
   "Total borrowed": "총 대출액",
@@ -511,8 +513,12 @@
 
   "Collector info": "수수료 정보",
   "Reserve factor": "프로토콜 수수료",
-  "reserve-factor-description": "프로토콜 수수료는 Moai Finance가 관리하는 수수료 컨트랙트로 보내는 이자의 일정 비율입니다.",
+  "reserve-factor-description": "이자의 일정 부분은 프로토콜 수수료로, Moai Finance가 관리하는 수수료 컨트랙트로 보내집니다.",
 
   "Collector contract": "수수료 컨트랙트",
-  "View contract": "컨트랙트 보기"
+  "View contract": "컨트랙트 보기",
+
+  "Interest rate model": "이자율 모델",
+  "Utilization rate": "이용률",
+  "borrow-amount-to-reach-utilization": "{{ rate }}% 이용률에 도달하려면 대출해야하는 금액"
 }

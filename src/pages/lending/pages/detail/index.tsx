@@ -17,6 +17,7 @@ import { NETWORK, POPUP_ID } from '~/types';
 import { AssetBorrowInfo } from './components/asset-borrow-info';
 import { AssetHeader } from './components/asset-header';
 import { AssetInfo } from './components/asset-info';
+import { AsseInterestModel } from './components/asset-interest-rate-model';
 import { AssetSupplyInfo } from './components/asset-supply-info';
 
 export const LendingDetail = () => {
@@ -61,7 +62,8 @@ export const LendingDetail = () => {
               <LeftContentWrapper>
                 <AssetInfo />
                 <AssetSupplyInfo />
-                <AssetBorrowInfo />
+                <AssetBorrowInfo token={token} />
+                <AsseInterestModel />
               </LeftContentWrapper>
               <RightContentWrapper></RightContentWrapper>
             </ContentWrapper>
