@@ -19,6 +19,7 @@ import { AssetHeader } from './components/asset-header';
 import { AssetInfo } from './components/asset-info';
 import { AsseInterestModel } from './components/asset-interest-rate-model';
 import { AssetSupplyInfo } from './components/asset-supply-info';
+import { UserAssetInfo } from './components/user-asset-info';
 
 export const LendingDetail = () => {
   useGAPage();
@@ -65,7 +66,9 @@ export const LendingDetail = () => {
                 <AssetBorrowInfo token={token} />
                 <AsseInterestModel />
               </LeftContentWrapper>
-              <RightContentWrapper></RightContentWrapper>
+              <RightContentWrapper>
+                <UserAssetInfo />
+              </RightContentWrapper>
             </ContentWrapper>
           </ContentOuterWrapper>
         )}

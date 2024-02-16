@@ -378,6 +378,8 @@
   "current-ltv-you": "현재 지수",
   "current-ltv-liquidation-threshold": "청산 임계값",
 
+  "Supply": "공급",
+  "Borrow": "대출",
   "Supplies": "공급",
   "Borrows": "대출",
 
@@ -520,5 +522,11 @@
 
   "Interest rate model": "이자율 모델",
   "Utilization rate": "이용률",
-  "borrow-amount-to-reach-utilization": "{{ rate }}% 이용률에 도달하려면 대출해야하는 금액"
+  "borrow-amount-to-reach-utilization": "{{ rate }}% 이용률에 도달하려면 대출해야하는 금액",
+
+  "My info": "내 정보",
+  "Available to supply": "공급 가능 금액",
+  "Available to borrow": "대출 가능 금액",
+  "available-to-supply-description": "공급할 수 있는 총 금액입니다. 공급 한도에 도달할 때까지 자산을 공급할 수 있습니다.",
+  "available-to-borrow-description": "빌릴 수 있는 총 금액입니다. 담보에 따라 대출 한도에 도달할 때까지 대출할 수 있습니다"
 }
