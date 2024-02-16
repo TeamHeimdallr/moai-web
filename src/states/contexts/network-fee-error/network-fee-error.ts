@@ -77,3 +77,13 @@ export const useBridgeToXrplNetworkFeeErrorStore = create<State>()(
     }))
   )
 );
+
+export const useLendingSupplyNetworkFeeErrorStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'LENDING_SUPPLY_NETWORK_FEE_ERROR_STORE',
+      error: false,
+      setError: error => set({ error }),
+    }))
+  )
+);

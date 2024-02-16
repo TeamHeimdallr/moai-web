@@ -9,6 +9,8 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
   icon: ReactNode;
 
+  buttonType?: 'filled' | 'outlined';
+  hideLottie?: boolean;
   isLoading?: boolean;
 }
 
@@ -16,13 +18,15 @@ export const ButtonPrimaryMediumIconLeading = ({
   text,
   icon,
   isLoading,
+  buttonType = 'filled',
+  hideLottie,
   disabled,
   ...rest
 }: Props) => {
   const warpperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!warpperRef.current || !isLoading || disabled) return;
+    if (!warpperRef.current || !isLoading || disabled || hideLottie) return;
     lottie.loadAnimation({
       container: warpperRef.current,
       renderer: 'svg',
@@ -34,10 +38,15 @@ export const ButtonPrimaryMediumIconLeading = ({
     return () => {
       lottie.destroy();
     };
-  }, [warpperRef, isLoading, disabled]);
+  }, [warpperRef, isLoading, disabled, hideLottie]);
 
   return (
-    <Wrapper disabled={disabled || isLoading} isLoading={isLoading} {...rest}>
+    <Wrapper
+      disabled={disabled || isLoading}
+      isLoading={isLoading}
+      buttonType={buttonType}
+      {...rest}
+    >
       <IconWrapper className="icon">{icon}</IconWrapper>
       {text}
       {isLoading && <LottieWrapper ref={warpperRef} />}
@@ -47,10 +56,11 @@ export const ButtonPrimaryMediumIconLeading = ({
 
 interface WrapperProps {
   isLoading?: boolean;
+  buttonType?: 'filled' | 'outlined';
 }
-const Wrapper = styled.button<WrapperProps>(({ isLoading }) => [
+const Wrapper = styled.button<WrapperProps>(({ isLoading, buttonType }) => [
   tw`
-    gap-6 pr-16 pl-8 py-9 inline-flex-center rounded-10 clickable font-m-14 text-primary-60 relative bg-neutral-10 transition-colors
+    gap-6 pr-16 py-8 inline-flex-center rounded-10 clickable font-m-14 text-primary-60 relative bg-neutral-10 transition-colors
 
     hover:(bg-primary-50 text-neutral-0)
 
@@ -91,6 +101,18 @@ const Wrapper = styled.button<WrapperProps>(({ isLoading }) => [
       &:disabled .icon svg,
       &:disabled:hover .icon svg {
         fill: transparent;
+      }
+    `,
+  buttonType === 'outlined' &&
+    tw`
+      bg-transparent border-solid border-1 border-primary-60 text-primary-60
+      disabled:(border-transparent non-clickable bg-neutral-5 text-neutral-40)
+    `,
+  buttonType === 'outlined' &&
+    isLoading &&
+    css`
+      & svg {
+        fill: ${COLOR.PRIMARY[60]};
       }
     `,
 ]);

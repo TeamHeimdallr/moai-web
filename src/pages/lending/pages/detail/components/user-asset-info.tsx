@@ -16,7 +16,6 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
-import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { TOOLTIP_ID } from '~/types';
@@ -30,15 +29,12 @@ export const UserAssetInfo = () => {
   const { network, address } = useParams();
   const { t } = useTranslation();
 
-  const { selectedNetwork, isFpass } = useNetwork();
+  const { selectedNetwork } = useNetwork();
 
-  const { evm, fpass } = useConnectedWallet();
   const { isMD } = useMediaQuery();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
-
-  const walletAddress = isFpass ? fpass.address : evm.address;
 
   const { data: tokenData } = useGetTokenQuery(
     { queries: { networkAbbr: currentNetworkAbbr, address: address } },
@@ -56,7 +52,7 @@ export const UserAssetInfo = () => {
   const walletBalance = 345345;
 
   const handleSupply = () => {
-    if (!token || !walletAddress || availableSupply <= 0) return;
+    if (!token || availableSupply <= 0) return;
 
     const link = `/lending/${network}/${address}/supply`;
     gaAction({
@@ -67,7 +63,7 @@ export const UserAssetInfo = () => {
   };
 
   const handleBorrow = () => {
-    if (!token || !walletAddress || availableBorrow <= 0) return;
+    if (!token || availableBorrow <= 0) return;
 
     const link = `/lendgin/${network}/${address}/borrow`;
     gaAction({
@@ -101,7 +97,7 @@ export const UserAssetInfo = () => {
             text={t('Supply')}
             onClick={handleSupply}
             style={{ width: isMD ? '105px' : '92px' }}
-            disabled={!walletAddress || availableSupply <= 0}
+            disabled={availableSupply <= 0}
           />
         </InfoContent>
       </InfoWrapper>
@@ -124,7 +120,7 @@ export const UserAssetInfo = () => {
             text={t('Borrow')}
             onClick={handleBorrow}
             style={{ width: isMD ? '105px' : '92px' }}
-            disabled={!walletAddress || availableBorrow <= 0}
+            disabled={availableBorrow <= 0}
           />
         </InfoContent>
       </InfoWrapper>
