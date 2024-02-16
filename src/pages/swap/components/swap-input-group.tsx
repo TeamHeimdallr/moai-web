@@ -413,7 +413,7 @@ const _SwapInputGroupSkeleton = () => {
 
 const Wrapper = tw.div`
    w-full flex flex-col flex-shrink-0 rounded-12 bg-neutral-10 gap-20 p-20
-   md:(w-452 p-24 gap-24)
+   md:(w-455 p-24 gap-24)
 `;
 
 const InputWrapper = tw.div`

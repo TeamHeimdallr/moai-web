@@ -94,7 +94,7 @@ const ContentContainer = styled.div<ContentContainerProps>(({ maxWidth, zIndex }
   tw`
     absolute-center fixed w-full top-0 left-0 z-21 flex justify-center
     xs:(h-full)
-    md:(py-0 h-auto max-w-452)
+    md:(py-0 h-auto max-w-455)
   `,
   zIndex &&
     css`

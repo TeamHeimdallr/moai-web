@@ -530,5 +530,27 @@
   "Available to supply": "Available to supply",
   "Available to borrow": "Available to borrow",
   "available-to-supply-description": "This is the total amount that you are able to supply to in this reserve. You are able to supply your wallet balance up until the supply cap is reached.",
-  "available-to-borrow-description": "This is the total amount available for you to borrow. You can borrow based on your collateral and until the borrow cap is reached."
+  "available-to-borrow-description": "This is the total amount available for you to borrow. You can borrow based on your collateral and until the borrow cap is reached.",
+
+  "supply-token": "Supply {{ token }}",
+  "Enter supply amount": "Enter supply amount",
+  "Supply APY": "Supply APY",
+  "Collateralization": "Collateralization",
+
+  "Return to lending detail page": "Return to lending detail page",
+
+  "approve-lending-supply-token-message": "Approve {{ token }} for supply",
+  "approve-loading": "Confirm approval in wallet",
+
+  "lending-supply-button": "Supply {{ token }}",
+  "lending-supply-button-loading": "Confirm supply in wallet",
+
+  "Supply preview": "Supply preview",
+  "Supply comfirmed!": "Supply comfirmed!",
+  "supply-success-message": "Successfully supplied {{ amount }} {{ token }}",
+  "Supply failed": "Supply failed",
+  "supply-failed-message": "Supply has failed. Please try again.",
+  "supply-add-token": "Add {{ token }} to wallet to track your balance.",
+
+  "Add to wallet": "Add to wallet"
 }

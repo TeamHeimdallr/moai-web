@@ -528,5 +528,10 @@
   "Available to supply": "공급 가능 금액",
   "Available to borrow": "대출 가능 금액",
   "available-to-supply-description": "공급할 수 있는 총 금액입니다. 공급 한도에 도달할 때까지 자산을 공급할 수 있습니다.",
-  "available-to-borrow-description": "빌릴 수 있는 총 금액입니다. 담보에 따라 대출 한도에 도달할 때까지 대출할 수 있습니다"
+  "available-to-borrow-description": "빌릴 수 있는 총 금액입니다. 담보에 따라 대출 한도에 도달할 때까지 대출할 수 있습니다",
+
+  "supply-token": "{{ token }} 공급하기",
+  "Enter supply amount": "공급 금액을 입력하세요.",
+  "Supply APY": "공급 APY",
+  "Collateralization": "담보"
 }
