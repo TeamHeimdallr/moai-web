@@ -380,6 +380,8 @@
   "current-ltv-you": "You",
   "current-ltv-liquidation-threshold": "Liquidtation threshold",
 
+  "Supply": "Supply",
+  "Borrow": "Borrow",
   "Supplies": "Supplies",
   "Borrows": "Borrows",
 
@@ -522,5 +524,11 @@
 
   "Interest rate model": "Interest rate model",
   "Utilization rate": "Utilization rate",
-  "borrow-amount-to-reach-utilization": "Borrow amount to reach {{ rate }}% utilization"
+  "borrow-amount-to-reach-utilization": "Borrow amount to reach {{ rate }}% utilization",
+
+  "My info": "My info",
+  "Available to supply": "Available to supply",
+  "Available to borrow": "Available to borrow",
+  "available-to-supply-description": "This is the total amount that you are able to supply to in this reserve. You are able to supply your wallet balance up until the supply cap is reached.",
+  "available-to-borrow-description": "This is the total amount available for you to borrow. You can borrow based on your collateral and until the borrow cap is reached."
 }
