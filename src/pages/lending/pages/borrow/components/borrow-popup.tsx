@@ -3,15 +3,20 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
-import { Address, parseUnits } from 'viem';
 
-import { useLendingSupply } from '~/api/api-contract/lending/supply';
-import { useApprove } from '~/api/api-contract/token/approve';
+import { useLendingBorrow } from '~/api/api-contract/lending/borrow';
 
 import { COLOR } from '~/assets/colors';
-import { IconAddToken, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
+import {
+  IconAddToken,
+  IconArrowNext,
+  IconCancel,
+  IconCheck,
+  IconLink,
+  IconTime,
+} from '~/assets/icons';
 
-import { SCANNER_URL, THOUSAND, TRILLION } from '~/constants';
+import { SCANNER_URL, TRILLION } from '~/constants';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMediumIconLeading } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -25,42 +30,38 @@ import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
-import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
-import {
-  useApproveNetworkFeeErrorStore,
-  useLendingSupplyNetworkFeeErrorStore,
-} from '~/states/contexts/network-fee-error/network-fee-error';
+import { calculateHealthFactorColor, DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
+import { useLendingBorrowNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { IToken, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
-  tokenIn?: IToken & { balance: number; amount: number };
+  tokenIn?: IToken & { amount: number };
 
   userTokenBalance?: number;
   apy?: number;
-  collateral?: boolean;
-  availableSupply?: number;
+  currentHealthFactor?: number;
+  nextHealthFactor?: number;
+  availableBorrow?: number;
 
-  refetchBalance?: () => void;
   handleSuccess?: () => void;
 }
 
-export const LendingSupplyPopup = ({
+export const LendingBorrowPopup = ({
   tokenIn,
 
   userTokenBalance,
   apy,
-  collateral,
-  availableSupply,
+  currentHealthFactor,
+  nextHealthFactor,
+  availableBorrow,
 
-  refetchBalance,
   handleSuccess,
 }: Props) => {
-  const { ref } = useGAInView({ name: 'lending-supply-popup' });
+  const { ref } = useGAInView({ name: 'lending-borrow-popup' });
   const { gaAction } = useGAAction();
 
-  const { error: lendingGasError, setError: setLendingSupplyGasError } =
-    useLendingSupplyNetworkFeeErrorStore();
-  const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
+  const { error: lendingGasError, setError: setLendingBorrowGasError } =
+    useLendingBorrowNetworkFeeErrorStore();
 
   const { network, address: addressParams } = useParams();
   const currentNetwork = getNetworkFull(network);
@@ -70,55 +71,33 @@ export const LendingSupplyPopup = ({
   const { t } = useTranslation();
 
   const { isEvm, isFpass } = useNetwork();
-  const { close } = usePopup(POPUP_ID.LENDING_SUPPLY);
+  const { close } = usePopup(POPUP_ID.LENDING_BORROW);
 
   const { isMD } = useMediaQuery();
 
-  const [estimatedLendingSupplyFee, setEstimatedLendingSupplyFee] = useState<number | undefined>();
-  const [estimatedTokenApproveFee, setEstimatedTokenApproveFee] = useState<number | undefined>();
+  const [estimatedLendingBorrowFee, setEstimatedLendingBorrowFee] = useState<number | undefined>();
 
   // TODO: connect api
-  const assetAddress = '0x' as Address;
-  const { symbol, address, amount, currency, decimal, balance, price, image } = tokenIn || {};
+  const { symbol, amount, price, image } = tokenIn || {};
+  const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor || 100);
+  const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor || 100);
 
   const {
-    allow,
-    allowance,
-    isLoading: allowLoading,
-    isSuccess: allowSuccess,
-    refetch: refetchAllowance,
-    estimateFee: estimateTokenApproveFee,
-  } = useApprove({
-    amount: parseUnits(`${(amount || 0).toFixed(18)}`, decimal || 18),
-    symbol: symbol || '',
-    address: address || '',
-    issuer: address || '',
-    spender: assetAddress,
-    currency: currency || '',
-    enabled: false,
-  });
-
-  const {
-    isLoading: supplyLoading,
-    isSuccess: supplySuccess,
-    isError: supplyError,
+    isLoading,
+    isSuccess: borrowSuccess,
+    isError,
     txData,
     blockTimestamp,
     writeAsync,
-    estimateFee: estimateLendingSupplyFee,
-  } = useLendingSupply({
+    estimateFee: estimateLendingBorrowFee,
+  } = useLendingBorrow({
     token: tokenIn,
     enabled: false,
   });
 
   const txDate = new Date(blockTimestamp || 0);
-  const isIdle = !txData || !(supplyError || supplySuccess);
-  const isSuccess = supplySuccess && !!txData;
-  const isError = supplyError;
-  const isLoading = supplyLoading || allowLoading;
-
-  const step = allowance ? 2 : 1;
-  const stepLoading = step === 1 ? allowLoading : supplyLoading;
+  const isIdle = !txData || !(isError || borrowSuccess);
+  const isSuccess = borrowSuccess && !!txData;
 
   const buttonText = useMemo(() => {
     if (!isIdle) {
@@ -126,39 +105,23 @@ export const LendingSupplyPopup = ({
       return t('Try again');
     }
 
-    if (!allowance)
-      return allowLoading
-        ? t('approve-loading')
-        : t('approve-lending-supply-token-message', { token: symbol });
+    return isLoading
+      ? t('lending-borrow-button-loading')
+      : t('lending-borrow-button', { token: symbol });
+  }, [isIdle, isLoading, isSuccess, symbol, t]);
 
-    return supplyLoading
-      ? t('lending-supply-button-loading')
-      : t('lending-supply-button', { token: symbol });
-  }, [allowLoading, allowance, isIdle, isSuccess, supplyLoading, symbol, t]);
-
-  const isValid =
-    (amount || 0) > (userTokenBalance || 0) || (amount || 0) <= (availableSupply || 0);
+  const isValid = (amount || 0) <= (availableBorrow || 0);
   const handleButtonClick = async () => {
     if (isLoading || !isValid) return;
 
     if (!isIdle) {
       gaAction({
         action: 'go-to-lending-detail-page',
-        data: { component: 'lending-supply-popup', link: `lending/${network}/${addressParams}` },
+        data: { component: 'lending-borrow-popup', link: `lending/${network}/${addressParams}` },
       });
 
       close();
       navigate(`lending/${network}/${addressParams}`);
-      return;
-    }
-
-    if (!allowance) {
-      gaAction({
-        action: 'approve-token',
-        data: { component: 'lending-supply-popup', token: symbol, amount, balance },
-      });
-
-      await allow();
       return;
     }
 
@@ -173,72 +136,42 @@ export const LendingSupplyPopup = ({
 
     gaAction({
       action: 'go-to-transaction',
-      data: { component: 'lending-supply-popup', txHash: txHash, link: url },
+      data: { component: 'lending-borrow-popup', txHash: txHash, link: url },
     });
 
     window.open(url);
   };
 
   useEffect(() => {
-    if (allowSuccess) refetchAllowance();
-  }, [allowSuccess, refetchAllowance]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      handleSuccess?.();
-      refetchBalance?.();
-    }
+    if (isSuccess) handleSuccess?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, refetchBalance]);
+  }, [isSuccess]);
 
   useEffect(() => {
-    return () => {
-      setLendingSupplyGasError(false);
-      setApproveGasError(false);
-    };
+    return () => setLendingBorrowGasError(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     // TODO connect contract
     return;
-    if (step !== 1 || (amount || 0) <= 0) return;
+    if ((amount || 0) <= 0) return;
 
-    const estimateApproveFeeAsync = async () => {
-      const fee = await estimateTokenApproveFee?.();
-      setEstimatedTokenApproveFee(fee || 1);
+    const estimateLendingBorrowFeeAsync = async () => {
+      const fee = await estimateLendingBorrowFee?.();
+      setEstimatedLendingBorrowFee(fee || 1);
     };
-    estimateApproveFeeAsync();
+    estimateLendingBorrowFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, step]);
+  }, [amount]);
 
-  useEffect(() => {
-    // TODO connect contract
-    return;
-    if (step !== 2 || (amount || 0) <= 0) return;
-
-    const estimateLendingSupplyFeeAsync = async () => {
-      const fee = await estimateLendingSupplyFee?.();
-      setEstimatedLendingSupplyFee(fee || 1);
-    };
-    estimateLendingSupplyFeeAsync();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, step]);
-
-  const estimatedFee = step === 1 ? estimatedTokenApproveFee || 1 : estimatedLendingSupplyFee || 1;
-  const validMaxXrpAmount =
-    symbol === 'XRP' ? (amount || 0) + Number(estimatedFee || 1) < (balance || 0) : true;
-
-  const gasError =
-    (balance || 0) <= Number(estimatedFee || 1) ||
-    lendingGasError ||
-    approveGasError ||
-    !validMaxXrpAmount;
+  const estimatedFee = estimatedLendingBorrowFee || 1;
+  const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 1) || lendingGasError;
 
   return (
     <Popup
-      id={POPUP_ID.LENDING_SUPPLY}
-      title={isIdle ? t('Supply preview') : ''}
+      id={POPUP_ID.LENDING_BORROW}
+      title={isIdle ? t('Borrow preview') : ''}
       button={
         <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
@@ -256,9 +189,9 @@ export const LendingSupplyPopup = ({
             <IconWrapper>
               <IconCheck width={40} height={40} />
             </IconWrapper>
-            <SuccessTitle>{t('Supply confirmed!')}</SuccessTitle>
+            <SuccessTitle>{t('Borrow confirmed!')}</SuccessTitle>
             <SuccessSubTitle>
-              {t('supply-success-message', {
+              {t('borrow-success-message', {
                 token: symbol,
                 amount: formatNumber(amount, 6, 'floor', TRILLION, 0),
               })}
@@ -270,8 +203,8 @@ export const LendingSupplyPopup = ({
             <FailedIconWrapper>
               <IconCancel width={40} height={40} />
             </FailedIconWrapper>
-            <SuccessTitle>{t('Supply failed', { token: symbol })}</SuccessTitle>
-            <SuccessSubTitle>{t('supply-failed-message', { token: symbol })}</SuccessSubTitle>
+            <SuccessTitle>{t('Borrow failed')}</SuccessTitle>
+            <SuccessSubTitle>{t('borrow-failed-message', { token: symbol })}</SuccessSubTitle>
           </FailedWrapper>
         )}
         {isIdle && (
@@ -316,18 +249,19 @@ export const LendingSupplyPopup = ({
             <List title={t(`Summary`)}>
               <ListInnerWrapper>
                 <Summary>
-                  <SummaryTextTitle>{t('Supply APY')}</SummaryTextTitle>
-                  <SummaryText>{`${formatNumber(apy, 2, 'floor', THOUSAND, 2)}%`}</SummaryText>
+                  <SummaryTextTitle>{t('Borrow APY')}</SummaryTextTitle>
+                  <SummaryText>{`${formatNumber(apy)}%`}</SummaryText>
                 </Summary>
                 <Summary>
-                  <SummaryTextTitle>{t('Collateralization')}</SummaryTextTitle>
-                  <SummaryText style={{ color: collateral ? COLOR.GREEN[50] : COLOR.RED[50] }}>
-                    {collateral ? (
-                      <IconCheck width={20} height={20} fill={COLOR.GREEN[50]} />
-                    ) : (
-                      <IconCancel width={20} height={20} fill={COLOR.RED[50]} />
-                    )}
-                    {collateral ? t('Can be collateral') : t('Can not be collateral')}
+                  <SummaryTextTitle>{t('Health factor')}</SummaryTextTitle>
+                  <SummaryText>
+                    <span style={{ fontWeight: 'bold', color: currentHealthFactorColor }}>
+                      {formatNumber(currentHealthFactor)}
+                    </span>
+                    <IconArrowNext width={12} height={12} fill={COLOR.NEUTRAL[60]} />
+                    <span style={{ fontWeight: 'bold', color: nextHealthFactorColor }}>
+                      {formatNumber(nextHealthFactor)}
+                    </span>
                   </SummaryText>
                 </Summary>
                 <Divider />
@@ -349,7 +283,7 @@ export const LendingSupplyPopup = ({
               </ListInnerWrapper>
             </List>
 
-            <LoadingStep totalSteps={2} step={step} isLoading={stepLoading} isDone={isSuccess} />
+            <LoadingStep totalSteps={1} step={1} isLoading={isLoading} isDone={isSuccess} />
           </>
         )}
       </Wrapper>

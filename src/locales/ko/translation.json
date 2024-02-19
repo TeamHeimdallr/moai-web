@@ -165,6 +165,7 @@
   "Price impact": "가격 영향",
   "Optimize": "최적화",
   "Max": "최대",
+  "Maxed": "최대값",
   "accept-high-price-impact-message": "위와 같이 유동성을 공급할 경우, 가격에 큰 영향을 미칠 수 있음에 동의합니다.",
   "Preview": "미리보기",
   "Add liquidity preview": "유동성 공급 미리보기",
@@ -359,6 +360,7 @@
   "Net Worth": "순자산",
   "Net APY": "종합 APY",
   "Health Factor": "건전성 지수",
+  "Health factor": "건전성 지수",
   "Current LTV": "현재 LTV",
 
   "net-apy": "공급 APY는 순 자산 가치에 대한 모든 공급 및 차입 포지션의 통합 효과로, 인센티브를 포함합니다. 부채 APY가 공급 APY보다 높은 경우 Net APY가 음수가 될 수 있습니다.",
@@ -532,6 +534,48 @@
 
   "supply-token": "{{ token }} 공급하기",
   "Enter supply amount": "공급 금액을 입력하세요.",
+  "Exceeds supply limit": "공급 한도를 초과했습니다.",
   "Supply APY": "공급 APY",
-  "Collateralization": "담보"
+  "Collateralization": "담보",
+
+  "Return to lending detail page": "대출 상세 화면으로 돌아가기",
+
+  "approve-lending-supply-token-message": "공급을 위해 {{ token }} 승인하기",
+  "approve-loading": "지갑 서명을 완료해주세요.",
+
+  "lending-supply-button": "{{ token }} 공급하기",
+  "lending-supply-button-loading": "지갑 서명을 완료해주세요.",
+
+  "Supply preview": "공급 미리보기",
+  "Supply comfirmed!": "공급을 완료했습니다!",
+  "supply-success-message": "{{ amount }} {{ token }}을 성공적으로 공급했습니다",
+  "Supply failed": "공급에 실패했습니다.",
+  "supply-failed-message": "{{ token }} 공급에 실패했습니다. 다시 시도해주세요.",
+
+  "add-token": "{{ token }}를 지갑에 추가하여 잔액을 확인하세요.",
+  "Add to wallet": "지갑에 추가하기",
+
+  "borrow-token": "{{ token }} 대출하기",
+  "Enter borrow amount": "대출 금액을 입력하세요.",
+  "Available": "한도",
+  "After transaction": "거래 후",
+  "liquidation-at": "{{ threshold }}미만일 때 청산",
+  "Exceeds borrow limits": "대출 한도를 초과하였습니다.",
+  "health-factor-warning-title": "건전성 지수가 {{ threshold }}에 근접합니다.",
+  "health-factor-warning-description": "이 금액을 빌리면 건전성 지수가 감소하고 청산 위험이 증가합니다.",
+  "health-factor-warning-accept": "관련 위험을 인지했습니다.",
+
+  "You're borrowing": "대출 금액",
+  "Borrow APY": "대출 APY",
+
+  "approve-lending-borrow-token-message": "대출을 위해 {{ token }} 승인하기",
+
+  "lending-borrow-button": "{{ token }} 대출하기",
+  "lending-borrow-button-loading": "지갑 서명을 완료해주세요.",
+
+  "Borrow preview": "대출 미리보기",
+  "Borrow confirmed!": "대출을 완료했습니다!",
+  "borrow-success-message": "{{ amount }} {{ token }}을 성공적으로 대출했습니다.",
+  "Borrow failed": "대출에 실패했습니다.",
+  "borrow-failed-message": "{{ token }} 대출에 실패했습니다. 다시 시도해주세요."
 }
