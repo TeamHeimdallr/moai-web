@@ -12,7 +12,6 @@ import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck } from '~/assets/icons';
 
-import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { InputNumber } from '~/components/inputs';
 import { Token } from '~/components/token';
@@ -52,11 +51,16 @@ export const LendingSupplyInputGroup = () => {
   const collateral = true;
   const availableSupply = 10000;
 
+  const isAvailableSupplyBiggerThanBalance = availableSupply > userTokenBalance;
+
   const schema = yup.object().shape({
     input: yup
       .number()
       .min(0)
-      .max(userTokenBalance || 0, t('Exceeds wallet balance'))
+      .max(
+        Math.min(userTokenBalance || 0, availableSupply || 0),
+        t(isAvailableSupplyBiggerThanBalance ? 'Exceeds wallet balance' : 'Exceeds supply limit')
+      )
       .required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
@@ -70,7 +74,7 @@ export const LendingSupplyInputGroup = () => {
     !isFormError &&
     (inputValue || 0) > 0 &&
     (inputValue || 0) <= userTokenBalance &&
-    (inputValue || 0) < availableSupply;
+    (inputValue || 0) <= availableSupply;
 
   const tokenValue = (inputValue || 0) * (price || 0);
 
@@ -130,10 +134,6 @@ export const LendingSupplyInputGroup = () => {
           </InfoBase>
         </InfoWrapper>
       </InnerWrapper>
-
-      {(inputValue || 0) > availableSupply && (
-        <AlertMessage title={'title'} description={'desc'} type="error" />
-      )}
 
       <ButtonPrimaryLarge
         text={t('Preview')}

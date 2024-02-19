@@ -164,6 +164,7 @@
   "Price impact": "Price impact",
   "Optimize": "Optimize",
   "Max": "Max",
+  "Maxed": "Maxed",
   "accept-high-price-impact-message": "I accept the high price impact from depositing, moving the market price base on the depth of the market.",
   "Preview": "Preview",
   "Add liquidity preview": "Add liquidity preview",
@@ -361,6 +362,7 @@
   "Net Worth": "Net Worth",
   "Net APY": "Net APY",
   "Health Factor": "Health Factor",
+  "Health factor": "Health factor",
   "Current LTV": "Current LTV",
 
   "net-apy": "Net APY is the combined effect of all supply and borrow positions on net worth, including incentives. It is possible to have a negative net APY if debt APY is higher than supply APY.",
@@ -534,6 +536,7 @@
 
   "supply-token": "Supply {{ token }}",
   "Enter supply amount": "Enter supply amount",
+  "Exceeds supply limit": "Exceeds supply limit",
   "Supply APY": "Supply APY",
   "Collateralization": "Collateralization",
 
@@ -550,7 +553,29 @@
   "supply-success-message": "Successfully supplied {{ amount }} {{ token }}",
   "Supply failed": "Supply failed",
   "supply-failed-message": "Supply has failed. Please try again.",
-  "supply-add-token": "Add {{ token }} to wallet to track your balance.",
 
-  "Add to wallet": "Add to wallet"
+  "add-token": "Add {{ token }} to wallet to track your balance.",
+  "Add to wallet": "Add to wallet",
+
+  "borrow-token": "Borrow {{ token }}",
+  "Enter borrow amount": "Enter borrow amount",
+  "Available": "Available",
+  "After transaction": "After transaction",
+  "liquidation-at": "Liquidation at {{ threshold }}",
+  "Exceeds borrow limits": "Exceeds borrow limits",
+  "health-factor-warning-title": "Health factor close to {{ threshold }}",
+  "health-factor-warning-description": "Borrowing this amount will reduce your helath factor and increase risk of liquidation.",
+  "health-factor-warning-accept": "I acknowledge the risks involved.",
+
+  "You're borrowing": "You're borrowing",
+  "Borrow APY": "Borrow APY",
+
+  "lending-borrow-button": "Borrow {{ token }}",
+  "lending-borrow-button-loading": "Confirm borrow in wallet",
+
+  "Borrow preview": "Borrow preview",
+  "Borrow confirmed!": "Borrow confirmed!",
+  "borrow-success-message": "Successfully borrowed {{ amount }} {{ token }}",
+  "Borrow failed": "Borrow failed",
+  "borrow-failed-message": "Borrow has failed. Please try again."
 }

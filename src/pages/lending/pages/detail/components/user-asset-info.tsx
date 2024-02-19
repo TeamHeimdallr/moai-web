@@ -65,7 +65,7 @@ export const UserAssetInfo = () => {
   const handleBorrow = () => {
     if (!token || availableBorrow <= 0) return;
 
-    const link = `/lendgin/${network}/${address}/borrow`;
+    const link = `/lending/${network}/${address}/borrow`;
     gaAction({
       action: 'go-to-lending-borrow',
       data: { page: 'lending-detail', component: 'user-asset-info', asset: token },

@@ -19,6 +19,7 @@ type OmitType = 'type' | 'onChange' | 'onBlur' | 'autoFocus';
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
   balance?: number;
   balanceRaw?: bigint;
+  balanceLabel?: string;
   handleChange?: (value?: number) => void;
   handleChangeRaw?: (value?: bigint) => void;
 
@@ -53,6 +54,7 @@ export const InputNumber = ({
   tokenValue: defaultTokenValue,
   balance,
   balanceRaw,
+  balanceLabel = 'Balance',
   placeholder = '0',
   maxButton,
   slider,
@@ -187,13 +189,13 @@ export const InputNumber = ({
               </TokenInputWrapper>
               <BalanceOuterWrapper>
                 <BalanceWrapper>
-                  <BalanceLabel>{t('Balance')}</BalanceLabel>
+                  <BalanceLabel>{t(balanceLabel)}</BalanceLabel>
                   <BalanceValue>
                     {formatNumber(currentBalance || 0, 4, 'floor', TRILLION, 2)}
                   </BalanceValue>
                   {maxButton && (
                     <ButtonPrimarySmall
-                      text={handledValue === currentBalance ? 'Maxed' : 'Max'}
+                      text={handledValue === currentBalance ? t('Maxed') : t('Max')}
                       onClick={() => {
                         onMaxValue();
                         blurAll?.(false);
