@@ -145,7 +145,7 @@ export const useWithdrawLiquidity = ({ bptIn, enabled }: Props) => {
         CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        '500000', // gas limit estimation todo: can be changed
         feeHistory.baseFeePerGas[0],
         0,
         null,
