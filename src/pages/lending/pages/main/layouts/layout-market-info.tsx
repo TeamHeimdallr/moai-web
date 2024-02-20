@@ -52,7 +52,7 @@ export const LayoutMarketInfo = () => {
   const { netWorth } = useUserAccountLiquidity();
   const { markets: _markets } = useGetAllMarkets();
   const { data: _data } = useUserAccountSnapshot({
-    mTokenAddress: _markets[0].address,
+    mTokenAddress: _markets?.[0].address,
   });
 
   // TODO: connect contract & api

@@ -34,6 +34,7 @@ export const useUserAccountSnapshot = ({ mTokenAddress }: Props) => {
     enabled: !!walletAddress && !!chainId && isEvm && !!mTokenAddress,
   });
 
+  // (possible error, token balance, borrow balance, exchange rate mantissa)
   console.log(data);
 
   return {
