@@ -3,6 +3,7 @@ import tw from 'twin.macro';
 
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountLiquidity } from '~/api/api-contract/lending/user-account-liquidity';
+import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 
 import { IconNext, IconQuestion } from '~/assets/icons';
 
@@ -50,6 +51,9 @@ export const LayoutMarketInfo = () => {
 
   const { netWorth } = useUserAccountLiquidity();
   const { markets: _markets } = useGetAllMarkets();
+  const { data: _data } = useUserAccountSnapshot({
+    mTokenAddress: _markets[0].address,
+  });
 
   // TODO: connect contract & api
   // const netWorth = 104492.5;
