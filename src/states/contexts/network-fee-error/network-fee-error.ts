@@ -97,3 +97,13 @@ export const useLendingBorrowNetworkFeeErrorStore = create<State>()(
     }))
   )
 );
+
+export const useLendingWithdrawNetworkFeeErrorStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'LENDING_WITHDRAW_NETWORK_FEE_ERROR_STORE',
+      error: false,
+      setError: error => set({ error }),
+    }))
+  )
+);

@@ -193,8 +193,8 @@
   "Total withdrawal": "Total",
   "approve-withdraw-liquidity-token-message": "Approve ${{token}} for withdrawal liquidity",
   "Confirm withdraw liquidity in wallet": "Confirm withdraw liquidity in wallet",
-  "Withdrawal comfirmed!": "Withdrawal comfirmed!",
-  "withdraw-success-message": "Successfully withdrawned from {{pool}} Pool",
+  "Withdrawal confirmed!": "Withdrawal confirmed!",
+  "withdraw-success-message": "Successfully withdrawn from {{pool}} Pool",
   "Exceeds wallet balance": "Exceeds wallet balance",
   "Too small amount": "Too small amount",
 
@@ -549,7 +549,7 @@
   "lending-supply-button-loading": "Confirm supply in wallet",
 
   "Supply preview": "Supply preview",
-  "Supply comfirmed!": "Supply comfirmed!",
+  "Supply confirmed!": "Supply confirmed!",
   "supply-success-message": "Successfully supplied {{ amount }} {{ token }}",
   "Supply failed": "Supply failed",
   "supply-failed-message": "Supply has failed. Please try again.",
@@ -561,10 +561,10 @@
   "Enter borrow amount": "Enter borrow amount",
   "Available": "Available",
   "After transaction": "After transaction",
-  "liquidation-at": "Liquidation at {{ threshold }}",
+  "liquidation-at": "Liquidation at < {{ threshold }}",
   "Exceeds borrow limits": "Exceeds borrow limits",
   "health-factor-warning-title": "Health factor close to {{ threshold }}",
-  "health-factor-warning-description": "Borrowing this amount will reduce your helath factor and increase risk of liquidation.",
+  "health-factor-warning-description": "{{ action }} this amount will reduce your helath factor and increase risk of liquidation.",
   "health-factor-warning-accept": "I acknowledge the risks involved.",
 
   "You're borrowing": "You're borrowing",
@@ -577,5 +577,16 @@
   "Borrow confirmed!": "Borrow confirmed!",
   "borrow-success-message": "Successfully borrowed {{ amount }} {{ token }}",
   "Borrow failed": "Borrow failed",
-  "borrow-failed-message": "Borrow has failed. Please try again."
+  "borrow-failed-message": "Borrow has failed. Please try again.",
+
+  "withdraw-token": "Withdraw {{ token }}",
+  "Remaining supply": "Remaining supply",
+  "Exceeds supply balance": "Exceeds supply balance",
+
+  "lending-withdraw-button": "Withdraw {{ token }}",
+  "lending-withdraw-button-loading": "Confirm withdrawal in wallet",
+
+  "lending-withdraw-success-message": "Successfully withdrawn {{ amount }} {{ token }}",
+  "Withdrawal failed": "Withdrawal failed",
+  "withdrawal-failed-message": "Withdrawal has failed. Please try again."
 }

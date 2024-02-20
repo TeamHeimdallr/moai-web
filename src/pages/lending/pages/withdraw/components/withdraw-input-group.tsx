@@ -12,6 +12,8 @@ import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 import { COLOR } from '~/assets/colors';
 import { IconArrowNext } from '~/assets/icons';
 
+import { MILLION } from '~/constants';
+
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { Checkbox, InputNumber } from '~/components/inputs';
@@ -22,13 +24,13 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { calculateHealthFactorColor, formatNumber, getNetworkAbbr } from '~/utils';
 import { IToken, POPUP_ID } from '~/types';
 
-import { LendingBorrowPopup } from './borrow-popup';
+import { LendingWithdrawPopup } from './withdraw-popup';
 
 interface InputFormState {
   input: number;
 }
 
-export const LendingBorrowInputGroup = () => {
+export const LendingWithdrawInputGroup = () => {
   const { address } = useParams();
   const { selectedNetwork } = useNetwork();
 
@@ -49,8 +51,7 @@ export const LendingBorrowInputGroup = () => {
   const [checkedHealthFactor, checkHealthFactor] = useState(false);
 
   // TODO: connect API
-  const apy = 1.8324;
-  const availableBorrow = 10000;
+  const supplied = 4308;
   const currentHealthFactor = 3.8;
   const userTokenBalance = 123123.687598;
   const nextHealthFactor = Math.max(currentHealthFactor - 0.001 * (inputValue || 0), 1);
@@ -63,21 +64,21 @@ export const LendingBorrowInputGroup = () => {
     input: yup
       .number()
       .min(0)
-      .max(availableBorrow || 0, t('Exceeds borrow limits'))
+      .max(supplied || 0, t('Exceeds supply limits'))
       .required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
     resolver: yupResolver(schema),
   });
 
-  const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.LENDING_BORROW);
+  const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.LENDING_WITHDRAW);
 
   const isFormError = !!formState?.errors?.input;
-  const isValidToBorrow = useMemo(() => {
+  const isValidToWithdraw = useMemo(() => {
     if (!inputValue) return false;
     if (nextHealthFactor <= threshold && !checkedHealthFactor) return false;
 
-    if (!isFormError && inputValue > 0 && inputValue <= availableBorrow) return true;
+    if (!isFormError && inputValue > 0 && inputValue <= supplied) return true;
   }, [checkedHealthFactor, inputValue, isFormError, nextHealthFactor]);
 
   const tokenValue = (inputValue || 0) * (price || 0);
@@ -89,7 +90,7 @@ export const LendingBorrowInputGroup = () => {
   return (
     <Wrapper>
       <Header>
-        <Title>{t('Enter borrow amount')}</Title>
+        <Title>{t('Enter withdrawal amount')}</Title>
       </Header>
 
       <InnerWrapper>
@@ -101,8 +102,8 @@ export const LendingBorrowInputGroup = () => {
           tokenName={symbol}
           tokenValue={tokenValue}
           balanceLabel="Available"
-          balance={availableBorrow}
-          balanceRaw={parseEther(availableBorrow.toString())}
+          balance={supplied}
+          balanceRaw={parseEther(supplied.toString())}
           value={inputValue}
           handleChange={val => {
             setInputValue(val);
@@ -120,8 +121,14 @@ export const LendingBorrowInputGroup = () => {
         />
         <InfoWrapper>
           <InfoBase>
-            <InfoText>{t('Borrow APY')}</InfoText>
-            <InfoText>{`${formatNumber(apy)}%`}</InfoText>
+            <InfoText>{t('Remaining supply')}</InfoText>
+            <InfoText>{`${formatNumber(
+              supplied - (inputValue || 0),
+              2,
+              'floor',
+              MILLION,
+              2
+            )} ${symbol}`}</InfoText>
           </InfoBase>
 
           <HealthFactorWrapper>
@@ -145,7 +152,7 @@ export const LendingBorrowInputGroup = () => {
                 </HealthFactorCardValue>
               </HealthFactorCard>
             </HealthFactorInnerWrapper>
-            <HealthFactorCaption>{t('liquidation-at', { threshold })}</HealthFactorCaption>
+            <HealthFactorCaption>{t('liquidation-at', { threshold: '1.0' })}</HealthFactorCaption>
           </HealthFactorWrapper>
         </InfoWrapper>
       </InnerWrapper>
@@ -153,7 +160,7 @@ export const LendingBorrowInputGroup = () => {
       {nextHealthFactor <= threshold && (
         <AlertMessage
           title={t('health-factor-warning-title', { threshold: '1.0' })}
-          description={t('health-factor-warning-description', { action: 'Borrowing' })}
+          description={t('health-factor-warning-description', { action: 'Withdrawing' })}
           type="error"
         />
       )}
@@ -171,16 +178,15 @@ export const LendingBorrowInputGroup = () => {
       <ButtonPrimaryLarge
         text={t('Preview')}
         onClick={() => popupOpen()}
-        disabled={!isValidToBorrow}
+        disabled={!isValidToWithdraw}
       />
 
       {popupOpened && (
-        <LendingBorrowPopup
+        <LendingWithdrawPopup
           tokenIn={tokenIn}
-          apy={apy}
           currentHealthFactor={currentHealthFactor}
           nextHealthFactor={nextHealthFactor}
-          availableBorrow={availableBorrow}
+          supplied={supplied}
           userTokenBalance={userTokenBalance}
           handleSuccess={() => {}}
         />
