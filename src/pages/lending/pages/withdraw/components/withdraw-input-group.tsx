@@ -131,29 +131,29 @@ export const LendingWithdrawInputGroup = () => {
             )} ${symbol}`}</InfoText>
           </InfoBase>
 
-          <HealthFactorWrapper>
+          <InfoCardWrapper>
             <InfoText>{t('Health factor')}</InfoText>
-            <HealthFactorInnerWrapper>
-              <HealthFactorCard>
+            <InfoCardInnerWrapper>
+              <InfoCard>
                 {t('Current')}
-                <HealthFactorCardValue style={{ color: currentHealthFactorColor }}>
+                <InfoCardValueBold style={{ color: currentHealthFactorColor }}>
                   {formatNumber(currentHealthFactor)}
-                </HealthFactorCardValue>
-              </HealthFactorCard>
+                </InfoCardValueBold>
+              </InfoCard>
 
-              <HealthFactorIcon>
+              <ArrowRightIcon>
                 <IconArrowNext width={20} height={20} fill={COLOR.NEUTRAL[60]} />
-              </HealthFactorIcon>
+              </ArrowRightIcon>
 
-              <HealthFactorCard>
+              <InfoCard>
                 {t('After transaction')}
-                <HealthFactorCardValue style={{ color: nextHealthFactorColor }}>
+                <InfoCardValueBold style={{ color: nextHealthFactorColor }}>
                   {formatNumber(nextHealthFactor)}
-                </HealthFactorCardValue>
-              </HealthFactorCard>
-            </HealthFactorInnerWrapper>
-            <HealthFactorCaption>{t('liquidation-at', { threshold: '1.0' })}</HealthFactorCaption>
-          </HealthFactorWrapper>
+                </InfoCardValueBold>
+              </InfoCard>
+            </InfoCardInnerWrapper>
+            <InfoCaption>{t('liquidation-at', { threshold: '1.0' })}</InfoCaption>
+          </InfoCardWrapper>
         </InfoWrapper>
       </InnerWrapper>
 
@@ -224,28 +224,30 @@ const InfoText = tw.div`
   font-r-14 text-neutral-100 flex gap-4
 `;
 
-const HealthFactorWrapper = tw.div`
+const InfoCardWrapper = tw.div`
   flex flex-col gap-8
 `;
 
-const HealthFactorInnerWrapper = tw.div`
+const InfoCardInnerWrapper = tw.div`
   flex gap-8 items-center justify-between
 `;
 
-const HealthFactorCard = tw.div`
+const InfoCard = tw.div`
   px-16 py-8 rounded-10 bg-neutral-20 flex-1 flex flex-col font-r-12 text-neutral-80 leading-18
 `;
-const HealthFactorCardValue = tw.div`
-  font-b-14
+
+const InfoCardValueBold = tw.div`
+  font-b-14 text-neutral-100
 `;
 
-const HealthFactorIcon = tw.div`
+const ArrowRightIcon = tw.div`
   flex-center w-20 h-20 flex-shrink-0
 `;
 
-const HealthFactorCaption = tw.div`
+const InfoCaption = tw.div`
   font-r-12 text-neutral-80 w-full text-right leading-18
 `;
+
 const CheckHealthFactor = tw.div`
   flex gap-16 font-r-14 text-neutral-100
 `;

@@ -26,6 +26,7 @@ import IconFavorites from './icon-favorites.svg?react';
 import IconFilter from './icon-filter.svg?react';
 import IconFuturepass from './icon-futurepass.svg?react';
 import IconHeart from './icon-heart.svg?react';
+import IconInfinity from './icon-infinity.svg?react';
 import IconInfo from './icon-info.svg?react';
 import IconKorean from './icon-korean.svg?react';
 import IconLink from './icon-link.svg?react';
@@ -96,6 +97,7 @@ export {
   IconFilter,
   IconFuturepass,
   IconHeart,
+  IconInfinity,
   IconInfo,
   IconKorean,
   IconLink,

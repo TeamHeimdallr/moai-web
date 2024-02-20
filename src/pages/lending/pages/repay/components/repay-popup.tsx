@@ -4,24 +4,16 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 
-import { useLendingBorrow } from '~/api/api-contract/lending/borrow';
+import { useLendingRepay } from '~/api/api-contract/lending/repay';
 
 import { COLOR } from '~/assets/colors';
-import {
-  IconAddToken,
-  IconArrowNext,
-  IconCancel,
-  IconCheck,
-  IconLink,
-  IconTime,
-} from '~/assets/icons';
+import { IconArrowNext, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL, TRILLION } from '~/constants';
+import { MILLION, SCANNER_URL, TRILLION } from '~/constants';
 
-import { ButtonPrimaryLarge, ButtonPrimaryMediumIconLeading } from '~/components/buttons';
+import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
-import { Token } from '~/components/token';
 import { TokenList } from '~/components/token-list';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
@@ -30,39 +22,37 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { calculateHealthFactorColor, DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
-import { useLendingBorrowNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useLendingRepayNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { IToken, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
   tokenIn?: IToken & { amount: number };
 
   userTokenBalance?: number;
-  apy?: number;
   currentHealthFactor?: number;
   nextHealthFactor?: number;
-  availableBorrow?: number;
+  debt?: number;
 
   handleSuccess?: () => void;
 }
 
-export const LendingBorrowPopup = ({
+export const LendingRepayPopup = ({
   tokenIn,
 
   userTokenBalance,
-  apy,
   currentHealthFactor,
   nextHealthFactor,
-  availableBorrow,
+  debt,
 
   handleSuccess,
 }: Props) => {
-  const { ref } = useGAInView({ name: 'lending-borrow-popup' });
+  const { ref } = useGAInView({ name: 'lending-repay-popup' });
   const { gaAction } = useGAAction();
 
-  const { error: lendingGasError, setError: setLendingBorrowGasError } =
-    useLendingBorrowNetworkFeeErrorStore();
+  const { error: lendingGasError, setError: setLendingRepayGasError } =
+    useLendingRepayNetworkFeeErrorStore();
 
-  const { network, address: addressParams } = useParams();
+  const { network } = useParams();
   const currentNetwork = getNetworkFull(network);
 
   const navigate = useNavigate();
@@ -70,11 +60,11 @@ export const LendingBorrowPopup = ({
   const { t } = useTranslation();
 
   const { isEvm, isFpass } = useNetwork();
-  const { close } = usePopup(POPUP_ID.LENDING_BORROW);
+  const { close } = usePopup(POPUP_ID.LENDING_REPAY);
 
   const { isMD } = useMediaQuery();
 
-  const [estimatedLendingBorrowFee, setEstimatedLendingBorrowFee] = useState<number | undefined>();
+  const [estimatedLendingRepayFee, setEstimatedLendingRepayFee] = useState<number | undefined>();
 
   // TODO: connect api
   const { symbol, amount, price, image } = tokenIn || {};
@@ -83,44 +73,44 @@ export const LendingBorrowPopup = ({
 
   const {
     isLoading,
-    isSuccess: borrowSuccess,
+    isSuccess: repaySuccess,
     isError,
     txData,
     blockTimestamp,
     writeAsync,
-    estimateFee: estimateLendingBorrowFee,
-  } = useLendingBorrow({
+    estimateFee: estimateLendingRepayFee,
+  } = useLendingRepay({
     token: tokenIn,
     enabled: false,
   });
 
   const txDate = new Date(blockTimestamp || 0);
-  const isIdle = !txData || !(isError || borrowSuccess);
-  const isSuccess = borrowSuccess && !!txData;
+  const isIdle = !txData || !(isError || repaySuccess);
+  const isSuccess = repaySuccess && !!txData;
 
   const buttonText = useMemo(() => {
     if (!isIdle) {
-      if (isSuccess) return t('Return to lending detail page');
+      if (isSuccess) return t('Return to lending page');
       return t('Try again');
     }
 
     return isLoading
-      ? t('lending-borrow-button-loading')
-      : t('lending-borrow-button', { token: symbol });
+      ? t('lending-repay-button-loading')
+      : t('lending-repay-button', { token: symbol });
   }, [isIdle, isLoading, isSuccess, symbol, t]);
 
-  const isValid = (amount || 0) <= (availableBorrow || 0);
+  const isValid = (amount || 0) <= (debt || 0);
   const handleButtonClick = async () => {
     if (isLoading || !isValid) return;
 
     if (!isIdle) {
       gaAction({
-        action: 'go-to-lending-detail-page',
-        data: { component: 'lending-borrow-popup', link: `lending/${network}/${addressParams}` },
+        action: 'go-to-lending-page',
+        data: { component: 'lending-repay-popup', link: `lending` },
       });
 
       close();
-      navigate(`lending/${network}/${addressParams}`);
+      navigate(`lending`);
       return;
     }
 
@@ -135,7 +125,7 @@ export const LendingBorrowPopup = ({
 
     gaAction({
       action: 'go-to-transaction',
-      data: { component: 'lending-borrow-popup', txHash: txHash, link: url },
+      data: { component: 'lending-repay-popup', txHash: txHash, link: url },
     });
 
     window.open(url);
@@ -147,7 +137,7 @@ export const LendingBorrowPopup = ({
   }, [isSuccess]);
 
   useEffect(() => {
-    return () => setLendingBorrowGasError(false);
+    return () => setLendingRepayGasError(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -156,21 +146,21 @@ export const LendingBorrowPopup = ({
     return;
     if ((amount || 0) <= 0) return;
 
-    const estimateLendingBorrowFeeAsync = async () => {
-      const fee = await estimateLendingBorrowFee?.();
-      setEstimatedLendingBorrowFee(fee || 1);
+    const estimateLendingRepayFeeAsync = async () => {
+      const fee = await estimateLendingRepayFee?.();
+      setEstimatedLendingRepayFee(fee || 1);
     };
-    estimateLendingBorrowFeeAsync();
+    estimateLendingRepayFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount]);
 
-  const estimatedFee = estimatedLendingBorrowFee || 1;
+  const estimatedFee = estimatedLendingRepayFee || 1;
   const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 1) || lendingGasError;
 
   return (
     <Popup
-      id={POPUP_ID.LENDING_BORROW}
-      title={isIdle ? t('Borrow preview') : ''}
+      id={POPUP_ID.LENDING_REPAY}
+      title={isIdle ? t('Repayment preview') : ''}
       button={
         <ButtonWrapper
           onClick={() => handleButtonClick()}
@@ -191,9 +181,9 @@ export const LendingBorrowPopup = ({
             <IconWrapper>
               <IconCheck width={40} height={40} />
             </IconWrapper>
-            <SuccessTitle>{t('Borrow confirmed!')}</SuccessTitle>
+            <SuccessTitle>{t('Repayment confirmed!')}</SuccessTitle>
             <SuccessSubTitle>
-              {t('borrow-success-message', {
+              {t('repay-success-message', {
                 token: symbol,
                 amount: formatNumber(amount, 6, 'floor', TRILLION, 0),
               })}
@@ -205,12 +195,12 @@ export const LendingBorrowPopup = ({
             <FailedIconWrapper>
               <IconCancel width={40} height={40} />
             </FailedIconWrapper>
-            <SuccessTitle>{t('Borrow failed')}</SuccessTitle>
-            <SuccessSubTitle>{t('borrow-failed-message', { token: symbol })}</SuccessSubTitle>
+            <SuccessTitle>{t('Repayment failed')}</SuccessTitle>
+            <SuccessSubTitle>{t('repay-failed-message', { token: symbol })}</SuccessSubTitle>
           </FailedWrapper>
         )}
         {isIdle && (
-          <List title={t(`You're providing`)}>
+          <List title={t(`You're expected to repay`)}>
             <TokenList
               type="large"
               title={`${formatNumber(amount, 6, 'floor', TRILLION, 0)} ${symbol}`}
@@ -226,19 +216,7 @@ export const LendingBorrowPopup = ({
             />
           </List>
         )}
-        {!isIdle && isSuccess && (
-          <SuccessContentWrapper>
-            <SuccessContentToken>
-              <Token type="large" token={symbol || ''} imageUrl={image} />
-              {t('add-token', { token: symbol })}
-            </SuccessContentToken>
-            <ButtonPrimaryMediumIconLeading
-              icon={<IconAddToken />}
-              text={t('Add to wallet')}
-              buttonType="outlined"
-            />
-          </SuccessContentWrapper>
-        )}
+
         {!isIdle && isSuccess && (
           <Scanner onClick={() => handleLink()}>
             <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
@@ -251,8 +229,24 @@ export const LendingBorrowPopup = ({
             <List title={t(`Summary`)}>
               <ListInnerWrapper>
                 <Summary>
-                  <SummaryTextTitle>{t('Borrow APY')}</SummaryTextTitle>
-                  <SummaryText>{`${formatNumber(apy)}%`}</SummaryText>
+                  <SummaryTextTitle>{t('Remaining debt')}</SummaryTextTitle>
+                  <SummaryText>
+                    <span style={{ fontWeight: 500 }}>{`$${formatNumber(
+                      debt,
+                      2,
+                      'floor',
+                      MILLION,
+                      2
+                    )} ${symbol}`}</span>
+                    <IconArrowNext width={12} height={12} fill={COLOR.NEUTRAL[60]} />
+                    <span style={{ fontWeight: 500 }}>{`$${formatNumber(
+                      (debt || 0) - (amount || 0),
+                      2,
+                      'floor',
+                      MILLION,
+                      2
+                    )} ${symbol}`}</span>
+                  </SummaryText>
                 </Summary>
                 <Summary>
                   <SummaryTextTitle>{t('Health factor')}</SummaryTextTitle>
@@ -378,11 +372,3 @@ const GasFeeCaption = styled.div<GasFeeCaptionProps>(({ error }) => [
   `,
   error && tw`text-red-50`,
 ]);
-
-const SuccessContentWrapper = tw.div`
-  flex-center flex-col gap-12 p-16 bg-neutral-15 rounded-8
-`;
-
-const SuccessContentToken = tw.div`
-  flex-center flex-col gap-8 font-r-16 text-neutral-80
-`;
