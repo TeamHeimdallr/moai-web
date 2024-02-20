@@ -547,7 +547,7 @@
   "lending-supply-button-loading": "지갑 서명을 완료해주세요.",
 
   "Supply preview": "공급 미리보기",
-  "Supply comfirmed!": "공급을 완료했습니다!",
+  "Supply confirmed!": "공급을 완료했습니다!",
   "supply-success-message": "{{ amount }} {{ token }}을 성공적으로 공급했습니다",
   "Supply failed": "공급에 실패했습니다.",
   "supply-failed-message": "{{ token }} 공급에 실패했습니다. 다시 시도해주세요.",
@@ -577,5 +577,16 @@
   "Borrow confirmed!": "대출을 완료했습니다!",
   "borrow-success-message": "{{ amount }} {{ token }}을 성공적으로 대출했습니다.",
   "Borrow failed": "대출에 실패했습니다.",
-  "borrow-failed-message": "{{ token }} 대출에 실패했습니다. 다시 시도해주세요."
+  "borrow-failed-message": "{{ token }} 대출에 실패했습니다. 다시 시도해주세요.",
+
+  "withdraw-token": "{{ token }} 출금하기",
+  "Remaining supply": "남은 공급량",
+  "Exceeds supply balance": "출금 가능한 잔액을 초과하였습니다.",
+
+  "lending-withdraw-button": "{{ token }} 출금하기",
+  "lending-withdraw-button-loading": "지갑 서명을 완료해주세요.",
+
+  "lending-withdraw-success-message": "{{ amount }} {{ token }}를 성공적으로 출금했습니다.",
+  "Withdrawal failed": "출금에 실패했습니다.",
+  "withdrawal-failed-message": "{{ token }} 출금에 실패했습니다. 다시 시도해주세요."
 }
