@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountLiquidity } from '~/api/api-contract/lending/user-account-liquidity';
 
 import { IconNext, IconQuestion } from '~/assets/icons';
@@ -48,6 +49,7 @@ export const LayoutMarketInfo = () => {
   );
 
   const { netWorth } = useUserAccountLiquidity();
+  const { markets: _markets } = useGetAllMarkets();
 
   // TODO: connect contract & api
   // const netWorth = 104492.5;

@@ -1,3 +1,35 @@
+import { Address } from 'viem';
+
+export interface IMarket {
+  address: Address;
+  decimals: number;
+  underlyingAsset: Address;
+  underlyingDecimals: number;
+  symbol: string;
+
+  supplyRatePerBlock: number;
+  borrowRatePerBlock: number;
+  supplyApy: number;
+  borrowApy: number;
+
+  totalReserves: bigint;
+  totalBorrows: bigint;
+  cash: bigint;
+
+  initialExchangeRateMantissa: bigint;
+  reserveFactorMantissa: bigint;
+
+  totalSupply: bigint;
+
+  // interest rate model related fields
+  interestRateModel: Address;
+  blocksPerYear: number;
+  kink: number; // 0~1
+  multiplierPerBlock: number;
+  jumpMultiplierPerBlock: number;
+  utilizationRate: number; // 0~1
+}
+
 export enum LENDING_CHART_TYPE {
   SUPPLY = 'SUPPLY',
   BORROW = 'BORROW',
