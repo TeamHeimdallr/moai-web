@@ -37,7 +37,7 @@ export const useGetAllMarkets = () => {
   const marketAddrs = (marketsData as Array<string>)?.map((m: string) => m);
 
   const { data: underlyingsData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -51,7 +51,7 @@ export const useGetAllMarkets = () => {
   const underlyings = (underlyingsData?.map(d => d.result) || []) as Address[];
 
   const { data: underlyingDecimalsData } = useContractReads({
-    contracts: underlyings.flatMap(address => [
+    contracts: underlyings?.flatMap(address => [
       {
         address: address as Address,
         abi: ERC20_TOKEN_ABI as Abi,
@@ -65,7 +65,7 @@ export const useGetAllMarkets = () => {
   const underlyingDecimals = (underlyingDecimalsData?.map(d => d.result) || []) as number[];
 
   const { data: symbolsData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -79,7 +79,7 @@ export const useGetAllMarkets = () => {
   const symbols = (symbolsData?.map(d => d.result) || []) as string[];
 
   const { data: supplyRatePerBlockData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -94,7 +94,7 @@ export const useGetAllMarkets = () => {
     []) as number[];
 
   const { data: borrowRatePerBlockData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -109,7 +109,7 @@ export const useGetAllMarkets = () => {
     []) as number[];
 
   const { data: totalReservesData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -123,7 +123,7 @@ export const useGetAllMarkets = () => {
   const totalReserves = (totalReservesData?.map(d => d.result) || []) as bigint[];
 
   const { data: totalBorrowsData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -137,7 +137,7 @@ export const useGetAllMarkets = () => {
   const totalBorrows = (totalBorrowsData?.map(d => d.result) || []) as bigint[];
 
   const { data: cashData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -151,7 +151,7 @@ export const useGetAllMarkets = () => {
   const cashes = (cashData?.map(d => d.result) || []) as bigint[];
 
   const { data: reserveFactorMantissaData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -165,7 +165,7 @@ export const useGetAllMarkets = () => {
   const reserveFactorMantissa = (reserveFactorMantissaData?.map(d => d.result) || []) as bigint[];
 
   const { data: totalSupplyData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -179,7 +179,7 @@ export const useGetAllMarkets = () => {
   const totalSupply = (totalSupplyData?.map(d => d.result) || []) as bigint[];
 
   const { data: interestRateModelData } = useContractReads({
-    contracts: marketAddrs.flatMap(address => [
+    contracts: marketAddrs?.flatMap(address => [
       {
         address: address as Address,
         abi: MTOKEN_ABI as Abi,
@@ -196,7 +196,7 @@ export const useGetAllMarkets = () => {
    * Interest rate model related fields
    *********************************************/
   const { data: blocksPerYearData } = useContractReads({
-    contracts: interestRateModels.flatMap(address => [
+    contracts: interestRateModels?.flatMap(address => [
       {
         address: address as Address,
         abi: IRATE_MODEL_ABI as Abi,
@@ -211,7 +211,7 @@ export const useGetAllMarkets = () => {
   const blocksPerYear = (blocksPerYearData?.map(d => Number(d.result)) || []) as number[];
 
   const { data: kinkData } = useContractReads({
-    contracts: interestRateModels.flatMap(address => [
+    contracts: interestRateModels?.flatMap(address => [
       {
         address: address as Address,
         abi: IRATE_MODEL_ABI as Abi,
@@ -226,7 +226,7 @@ export const useGetAllMarkets = () => {
   const kink = (kinkData?.map(d => Number(formatEther(d.result as bigint))) || []) as number[];
 
   const { data: multiplierPerBlockData } = useContractReads({
-    contracts: interestRateModels.flatMap(address => [
+    contracts: interestRateModels?.flatMap(address => [
       {
         address: address as Address,
         abi: IRATE_MODEL_ABI as Abi,
@@ -241,7 +241,7 @@ export const useGetAllMarkets = () => {
   const multiplierPerBlock = (multiplierPerBlockData?.map(d => d.result) || []) as number[];
 
   const { data: jumpMultiplierPerBlockData } = useContractReads({
-    contracts: interestRateModels.flatMap(address => [
+    contracts: interestRateModels?.flatMap(address => [
       {
         address: address as Address,
         abi: IRATE_MODEL_ABI as Abi,
@@ -256,7 +256,7 @@ export const useGetAllMarkets = () => {
   const jumpMultiplierPerBlock = (jumpMultiplierPerBlockData?.map(d => d.result) || []) as number[];
 
   const { data: utilizationRateData } = useContractReads({
-    contracts: interestRateModels.flatMap((address, i) => [
+    contracts: interestRateModels?.flatMap((address, i) => [
       {
         address: address as Address,
         abi: IRATE_MODEL_ABI as Abi,
