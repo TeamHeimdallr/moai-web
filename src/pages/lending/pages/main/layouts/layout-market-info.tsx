@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
+import { useUserAccountLiquidity } from '~/api/api-contract/lending/user-account-liquidity';
+
 import { IconNext, IconQuestion } from '~/assets/icons';
 
 import { ASSET_URL } from '~/constants';
@@ -45,8 +47,10 @@ export const LayoutMarketInfo = () => {
     POPUP_ID.LENDING_CURRENT_LTV
   );
 
+  const { netWorth } = useUserAccountLiquidity();
+
   // TODO: connect contract & api
-  const netWorth = 104492.5;
+  // const netWorth = 104492.5;
   const netAPY = 1.05129392;
   const healthFactor = 100000 / 42000;
   const currentLTV = (42000 / 100000) * 100;
