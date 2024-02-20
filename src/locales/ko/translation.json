@@ -1,4 +1,12 @@
 {
+  "gnb-pool": "유동성풀",
+  "gnb-swap": "스왑",
+  "gnb-lending": "랜딩",
+  "gnb-rewards": "리워드",
+  "gnb-vemoai": "veMOAI",
+  "gnb-launchpad": "런치패드",
+  "gnb-faucet": "퍼셋",
+
   "Liquidity pools": "유동성 풀",
   "All supported chains": "전체 네트워크",
   "Chain": "네트워크",
@@ -588,5 +596,22 @@
 
   "lending-withdraw-success-message": "{{ amount }} {{ token }}를 성공적으로 출금했습니다.",
   "Withdrawal failed": "출금에 실패했습니다.",
-  "withdrawal-failed-message": "{{ token }} 출금에 실패했습니다. 다시 시도해주세요."
+  "withdrawal-failed-message": "{{ token }} 출금에 실패했습니다. 다시 시도해주세요.",
+
+  "repay-token": "{{ token }} 상환하기",
+  "Enter repayment amount": "상환 금액을 입력하세요.",
+  "Borrow balance": "대출 잔액",
+  "Remaining debt": "남은 대출",
+  "Exceeds borrow balance": "대출 잔액을 초과하였습니다.",
+
+  "You're expected to repay": "상환 금액",
+
+  "lending-repay-button": "{{ token }} 상환하기",
+  "lending-repay-button-loading": "지갑 서명을 완료해주세요.",
+
+  "Repayment preview": "상환 미리보기",
+  "Repayment confirmed!": "상환을 완료했습니다!",
+  "repay-success-message": "{{ amount }} {{ token }}을 성공적으로 상환했습니다.",
+  "Repayment failed": "상환에 실패했습니다.",
+  "repay-failed-message": "{{ token }} 상환에 실패했습니다. 다시 시도해주세요."
 }

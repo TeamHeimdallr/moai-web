@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { isFinite } from 'lodash-es';
 import tw from 'twin.macro';
 import { formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
@@ -10,11 +11,12 @@ import * as yup from 'yup';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
-import { IconArrowNext } from '~/assets/icons';
+import { IconArrowNext, IconInfinity } from '~/assets/icons';
 
-import { AlertMessage } from '~/components/alerts';
+import { MILLION } from '~/constants';
+
 import { ButtonPrimaryLarge } from '~/components/buttons';
-import { Checkbox, InputNumber } from '~/components/inputs';
+import { InputNumber } from '~/components/inputs';
 import { Token } from '~/components/token';
 
 import { usePopup } from '~/hooks/components';
@@ -22,13 +24,13 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { calculateHealthFactorColor, formatNumber, getNetworkAbbr } from '~/utils';
 import { IToken, POPUP_ID } from '~/types';
 
-import { LendingBorrowPopup } from './borrow-popup';
+import { LendingRepayPopup } from './repay-popup';
 
 interface InputFormState {
   input: number;
 }
 
-export const LendingBorrowInputGroup = () => {
+export const LendingRepayInputGroup = () => {
   const { address } = useParams();
   const { selectedNetwork } = useNetwork();
 
@@ -46,16 +48,16 @@ export const LendingBorrowInputGroup = () => {
   const [inputValue, setInputValue] = useState<number>();
   const [_inputValueRaw, setInputValueRaw] = useState<bigint>();
 
-  const [checkedHealthFactor, checkHealthFactor] = useState(false);
-
   // TODO: connect API
-  const apy = 1.8324;
-  const availableBorrow = 10000;
+  const totalDebt = 150230;
+  const debt = 150230;
   const currentHealthFactor = 3.8;
   const userTokenBalance = 123123.687598;
-  const nextHealthFactor = Math.max(currentHealthFactor - 0.001 * (inputValue || 0), 1);
-  // TODO: determine health factor warning threshold
-  const threshold = 1.25;
+  const nextHealthFactor =
+    totalDebt - (inputValue || 0) === 0
+      ? Infinity
+      : Math.max(currentHealthFactor + 0.001 * (inputValue || 0), 1);
+
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor);
 
@@ -63,25 +65,22 @@ export const LendingBorrowInputGroup = () => {
     input: yup
       .number()
       .min(0)
-      .max(availableBorrow || 0, t('Exceeds borrow limits'))
+      .max(debt || 0, t('Exceeds borrow balance'))
       .required(),
   });
   const { control, setValue, formState } = useForm<InputFormState>({
     resolver: yupResolver(schema),
   });
 
-  const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.LENDING_BORROW);
+  const { opened: popupOpened, open: popupOpen } = usePopup(POPUP_ID.LENDING_REPAY);
 
   const isFormError = !!formState?.errors?.input;
-  const isValidToBorrow = useMemo(() => {
+  const isValidToRepay = useMemo(() => {
     if (!inputValue) return false;
-    if (nextHealthFactor <= threshold && !checkedHealthFactor) return false;
-
-    if (!isFormError && inputValue > 0 && inputValue <= availableBorrow) return true;
-  }, [checkedHealthFactor, inputValue, isFormError, nextHealthFactor]);
+    if (!isFormError && inputValue > 0 && inputValue <= debt) return true;
+  }, [inputValue, isFormError]);
 
   const tokenValue = (inputValue || 0) * (price || 0);
-
   const tokenIn = { ...token, amount: inputValue } as IToken & { amount: number };
 
   // TODO: prepare
@@ -89,7 +88,7 @@ export const LendingBorrowInputGroup = () => {
   return (
     <Wrapper>
       <Header>
-        <Title>{t('Enter borrow amount')}</Title>
+        <Title>{t('Enter repayment amount')}</Title>
       </Header>
 
       <InnerWrapper>
@@ -100,9 +99,9 @@ export const LendingBorrowInputGroup = () => {
           token={<Token token={symbol || ''} image imageUrl={image} />}
           tokenName={symbol}
           tokenValue={tokenValue}
-          balanceLabel="Available"
-          balance={availableBorrow}
-          balanceRaw={parseEther(availableBorrow.toString())}
+          balanceLabel="Borrow balance"
+          balance={debt}
+          balanceRaw={parseEther(debt.toString())}
           value={inputValue}
           handleChange={val => {
             setInputValue(val);
@@ -119,10 +118,40 @@ export const LendingBorrowInputGroup = () => {
           formState={formState}
         />
         <InfoWrapper>
-          <InfoBase>
-            <InfoText>{t('Borrow APY')}</InfoText>
-            <InfoText>{`${formatNumber(apy)}%`}</InfoText>
-          </InfoBase>
+          <InfoCardWrapper>
+            <InfoText>{t('Remaining debt')}</InfoText>
+            <InfoCardInnerWrapper>
+              <InfoCard>
+                {t('Current')}
+                <InfoCardValueBold>
+                  {`${formatNumber(debt, 2, 'floor', MILLION, 2)} ${symbol}`}
+                </InfoCardValueBold>
+                <InfoCardValue>
+                  {`$${formatNumber(debt * (price || 0), 2, 'floor', MILLION, 2)}`}
+                </InfoCardValue>
+              </InfoCard>
+
+              <ArrowRightIcon>
+                <IconArrowNext width={20} height={20} fill={COLOR.NEUTRAL[60]} />
+              </ArrowRightIcon>
+
+              <InfoCard>
+                {t('After transaction')}
+                <InfoCardValueBold>
+                  {`${formatNumber(debt - (inputValue || 0), 2, 'floor', MILLION, 2)} ${symbol}`}
+                </InfoCardValueBold>
+                <InfoCardValue>
+                  {`$${formatNumber(
+                    (debt - (inputValue || 0)) * (price || 0),
+                    2,
+                    'floor',
+                    MILLION,
+                    2
+                  )}`}
+                </InfoCardValue>
+              </InfoCard>
+            </InfoCardInnerWrapper>
+          </InfoCardWrapper>
 
           <InfoCardWrapper>
             <InfoText>{t('Health factor')}</InfoText>
@@ -141,7 +170,11 @@ export const LendingBorrowInputGroup = () => {
               <InfoCard>
                 {t('After transaction')}
                 <InfoCardValueBold style={{ color: nextHealthFactorColor }}>
-                  {formatNumber(nextHealthFactor)}
+                  {isFinite(nextHealthFactor) ? (
+                    formatNumber(nextHealthFactor)
+                  ) : (
+                    <IconInfinity width={20} height={22} fill={COLOR.GREEN[50]} />
+                  )}
                 </InfoCardValueBold>
               </InfoCard>
             </InfoCardInnerWrapper>
@@ -150,37 +183,18 @@ export const LendingBorrowInputGroup = () => {
         </InfoWrapper>
       </InnerWrapper>
 
-      {nextHealthFactor <= threshold && (
-        <AlertMessage
-          title={t('health-factor-warning-title', { threshold: '1.0' })}
-          description={t('health-factor-warning-description', { action: 'Borrowing' })}
-          type="error"
-        />
-      )}
-
-      {nextHealthFactor <= threshold && (
-        <CheckHealthFactor>
-          <Checkbox
-            onClick={() => checkHealthFactor(prev => !prev)}
-            selected={checkedHealthFactor}
-          />
-          {t('health-factor-warning-accept')}
-        </CheckHealthFactor>
-      )}
-
       <ButtonPrimaryLarge
         text={t('Preview')}
         onClick={() => popupOpen()}
-        disabled={!isValidToBorrow}
+        disabled={!isValidToRepay}
       />
 
       {popupOpened && (
-        <LendingBorrowPopup
+        <LendingRepayPopup
           tokenIn={tokenIn}
-          apy={apy}
           currentHealthFactor={currentHealthFactor}
           nextHealthFactor={nextHealthFactor}
-          availableBorrow={availableBorrow}
+          debt={debt}
           userTokenBalance={userTokenBalance}
           handleSuccess={() => {}}
         />
@@ -210,10 +224,6 @@ const InfoWrapper = tw.div`
   px-20 py-16 bg-neutral-15 rounded-8 flex flex-col gap-12
 `;
 
-const InfoBase = tw.div`
-  flex gap-8 items-center justify-between
-`;
-
 const InfoText = tw.div`
   font-r-14 text-neutral-100 flex gap-4
 `;
@@ -231,7 +241,10 @@ const InfoCard = tw.div`
 `;
 
 const InfoCardValueBold = tw.div`
-  font-b-14
+  font-b-14 text-neutral-100 flex items-center
+`;
+const InfoCardValue = tw.div`
+  font-r-12 flex items-center
 `;
 
 const ArrowRightIcon = tw.div`
@@ -240,8 +253,4 @@ const ArrowRightIcon = tw.div`
 
 const InfoCaption = tw.div`
   font-r-12 text-neutral-80 w-full text-right leading-18
-`;
-
-const CheckHealthFactor = tw.div`
-  flex gap-16 font-r-14 text-neutral-100
 `;

@@ -13,7 +13,6 @@ import { MILLION, SCANNER_URL, TRILLION } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
-import { LoadingStep } from '~/components/loadings/step';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 
@@ -165,7 +164,10 @@ export const LendingWithdrawPopup = ({
       id={POPUP_ID.LENDING_WITHDRAW}
       title={isIdle ? t('Withdraw preview') : ''}
       button={
-        <ButtonWrapper onClick={() => handleButtonClick()}>
+        <ButtonWrapper
+          onClick={() => handleButtonClick()}
+          style={{ marginTop: isIdle || isLoading ? '24px' : '16px' }}
+        >
           <ButtonPrimaryLarge
             text={buttonText}
             isLoading={isLoading}
@@ -267,8 +269,6 @@ export const LendingWithdrawPopup = ({
                 </GasFeeWrapper>
               </ListInnerWrapper>
             </List>
-
-            <LoadingStep totalSteps={1} step={1} isLoading={isLoading} isDone={isSuccess} />
           </>
         )}
       </Wrapper>
@@ -328,7 +328,7 @@ const SummaryText = tw.div`
 `;
 
 const ButtonWrapper = tw.div`
-  mt-16 w-full
+  mt-24 w-full
 `;
 
 const Scanner = tw.div`

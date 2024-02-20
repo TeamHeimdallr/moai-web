@@ -46,8 +46,8 @@ const LendingPage = () => {
         element={getMaintanence('/lending/:network/:address/borrow', <LendingBorrow />)}
       />
       <Route
-        path="/:network/:address/replay"
-        element={getMaintanence('/lending/:network/:address/replay', <LendingRepay />)}
+        path="/:network/:address/repay"
+        element={getMaintanence('/lending/:network/:address/repay', <LendingRepay />)}
       />
 
       <Route path="*" element={<Navigate to="/" replace />} />
