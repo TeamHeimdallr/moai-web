@@ -34,3 +34,10 @@ export interface IMarket {
   jumpMultiplierPerBlock: number;
   utilizationRate: number; // 0~1
 }
+
+export interface ISnapshot {
+  error: bigint;
+  mTokenBalance: bigint;
+  borrowBalance: bigint;
+  exchangeRate: bigint;
+}

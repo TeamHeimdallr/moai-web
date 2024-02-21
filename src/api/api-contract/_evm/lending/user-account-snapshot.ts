@@ -5,6 +5,7 @@ import { useContractRead } from 'wagmi';
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
+import { ISnapshot } from '~/types/lending';
 
 import { MTOKEN_ABI } from '~/abi/mtoken';
 
@@ -23,7 +24,11 @@ export const useUserAccountSnapshot = ({ mTokenAddress }: Props) => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const chainId = useNetworkId(currentNetwork);
 
-  const { data, refetch } = useContractRead({
+  const {
+    data,
+    refetch,
+    isError: isContractReadError,
+  } = useContractRead({
     address: mTokenAddress as Address,
     abi: MTOKEN_ABI as Abi,
     functionName: 'getAccountSnapshot',
@@ -34,11 +39,18 @@ export const useUserAccountSnapshot = ({ mTokenAddress }: Props) => {
     enabled: !!walletAddress && !!chainId && isEvm && !!mTokenAddress,
   });
 
-  // (possible error, token balance, borrow balance, exchange rate mantissa)
-  console.log(data);
+  const noParticipation = !data;
+  const isError = data?.[0] !== 0n || isContractReadError || noParticipation;
+
+  const accountSnapshot = {
+    error: BigInt(data?.[0]),
+    mTokenBalance: isError ? 0n : BigInt(data?.[1]),
+    borrowBalance: isError ? 0n : BigInt(data?.[2]),
+    exchangeRate: isError ? 0n : BigInt(data?.[3]),
+  } as ISnapshot;
 
   return {
-    data,
+    accountSnapshot,
     refetch,
   };
 };

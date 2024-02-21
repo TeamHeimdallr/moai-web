@@ -8,24 +8,12 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const APYLarge = ({ apy, ...rest }: Props) => {
-  if (apy < 0.01)
-    return (
-      <WrapperLarge {...rest}>
-        <IconLarge>{'<'}</IconLarge>
-        0.01%
-      </WrapperLarge>
-    );
-
-  return <WrapperLarge {...rest}>{`${formatNumber(apy)}%`}</WrapperLarge>;
+  const sign = apy < 0 ? '-' : '';
+  return <WrapperLarge {...rest}>{`${sign}${formatNumber(Math.abs(apy), 2)}%`}</WrapperLarge>;
 };
 
 const WrapperLarge = tw.div`
   flex gap-4 flex-center font-m-18 leading-22
-  md:(font-m-20)
-`;
-
-const IconLarge = tw.div`
-  text-neutral-60 font-m-18 leading-22
   md:(font-m-20)
 `;
 

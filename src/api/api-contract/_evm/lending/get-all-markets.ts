@@ -223,7 +223,8 @@ export const useGetAllMarkets = () => {
     enabled:
       !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
   });
-  const kink = (kinkData?.map(d => Number(formatEther(d.result as bigint))) || []) as number[];
+  const kink = (kinkData?.map(d => Number(formatEther((d.result as bigint) || 0n))) ||
+    []) as number[];
 
   const { data: multiplierPerBlockData } = useContractReads({
     contracts: interestRateModels?.flatMap(address => [
@@ -269,8 +270,9 @@ export const useGetAllMarkets = () => {
     enabled:
       !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
   });
-  const utilizationRate = (utilizationRateData?.map(d => Number(formatEther(d.result as bigint))) ||
-    []) as number[];
+  const utilizationRate = (utilizationRateData?.map(d =>
+    Number(formatEther((d.result as bigint) || 0n))
+  ) || []) as number[];
 
   const blocksPerDay = blocksPerYear[0] / 365;
 

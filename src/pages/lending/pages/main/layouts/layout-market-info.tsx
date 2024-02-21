@@ -3,7 +3,7 @@ import tw from 'twin.macro';
 
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountLiquidity } from '~/api/api-contract/lending/user-account-liquidity';
-import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
+import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 
 import { IconNext, IconQuestion } from '~/assets/icons';
 
@@ -26,6 +26,7 @@ import {
   formatNumber,
   getNetworkAbbr,
 } from '~/utils';
+import { calcNetApy } from '~/utils/util-lending';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { MarketInfoCurrentLTVPopup } from '../components/market-info-current-ltv-popup';
@@ -50,14 +51,12 @@ export const LayoutMarketInfo = () => {
   );
 
   const { netWorth } = useUserAccountLiquidity();
-  const { markets: _markets } = useGetAllMarkets();
-  const { data: _data } = useUserAccountSnapshot({
-    mTokenAddress: _markets?.[0].address,
-  });
+  const { markets: markets } = useGetAllMarkets();
+  const { accountSnapshots: snapshots, refetch: _refetchSnapshot } = useUserAccountSnapshotAll();
+
+  const netAPY = calcNetApy({ markets, snapshots });
 
   // TODO: connect contract & api
-  // const netWorth = 104492.5;
-  const netAPY = 1.05129392;
   const healthFactor = 100000 / 42000;
   const currentLTV = (42000 / 100000) * 100;
 
