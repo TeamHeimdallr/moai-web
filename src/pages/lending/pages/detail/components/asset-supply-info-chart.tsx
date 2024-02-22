@@ -1,5 +1,6 @@
 import { MouseEvent, TouchEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { curveMonotoneX } from '@visx/curve';
 import { localPoint } from '@visx/event';
@@ -14,23 +15,26 @@ import { format } from 'date-fns';
 import { enUS, ko } from 'date-fns/locale';
 import tw from 'twin.macro';
 
+import { useGetLendingAPYChartQuery } from '~/api/api-server/lending/get-charts-apy';
+
 import { COLOR } from '~/assets/colors';
 
 import { THOUSAND } from '~/constants';
 
 import { ButtonChipSmall } from '~/components/buttons';
 
-import { supplyAprDataStatic24h, supplyAprDataStaticAll } from '~/pages/lending/data';
-
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { formatNumber } from '~/utils';
 import { useLendingAssetSupplyInfoChartSelectedRangeStore } from '~/states/components/chart/tab';
 import { IChartData } from '~/types';
+import { LENDING_CHART_TYPE } from '~/types/lending';
 
 export const AssetSupplyInfoChart = () => {
   const { ref } = useGAInView({ name: 'lending-asset-supply-info-chart' });
   const { gaAction } = useGAAction();
+
+  const { network, address } = useParams();
 
   const chartRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +57,23 @@ export const AssetSupplyInfoChart = () => {
     { key: 'all', name: t('All') },
   ];
 
-  const chartData = selectedRange === 'all' ? supplyAprDataStaticAll : supplyAprDataStatic24h;
+  const { data } = useGetLendingAPYChartQuery(
+    {
+      params: {
+        networkAbbr: network || 'trn',
+        // TODO: change address
+        marketAddress: '0x6a6a1ccd6af1f9b01E3706f36caa3D254Ae900D7',
+        type: LENDING_CHART_TYPE.SUPPLY,
+      },
+      queries: { range: selectedRange || '24h' },
+    },
+    {
+      staleTime: 1000 * 60,
+      enabled: !!network && !!address,
+    }
+  );
+  const { data: chartData } = data || {};
+
   const avg =
     chartData && chartData.length > 0
       ? (chartData.reduce((acc, cur) => acc + cur.value, 0) || 0) / chartData.length
