@@ -1,5 +1,6 @@
 import { MouseEvent, TouchEvent, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { curveMonotoneX } from '@visx/curve';
 import { localPoint } from '@visx/event';
@@ -12,11 +13,11 @@ import { useTooltip } from '@visx/tooltip';
 import { bisector } from '@visx/vendor/d3-array';
 import tw from 'twin.macro';
 
+import { useGetLendingIRateModelChartQuery } from '~/api/api-server/lending/get-charts-irate-model';
+
 import { COLOR } from '~/assets/colors';
 
 import { THOUSAND } from '~/constants';
-
-import { interestRateModelBorrowData, interestRateModelSupplyData } from '~/pages/lending/data';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { formatNumber } from '~/utils';
@@ -30,9 +31,11 @@ interface WidthData {
 export const AsseInterestModel = () => {
   const { ref } = useGAInView({ name: 'lending-asset-interest-model' });
 
+  const { network, address } = useParams();
+
   // TODO: connect api
-  const utilizationRate = 30.25;
-  const optimalUtilizationRate = 75;
+  const utilizationRate = 10.25;
+  const optimalUtilizationRate = 80;
   const formattedUtilizationRate =
     utilizationRate < 0.01
       ? '< 0.01%'
@@ -54,8 +57,22 @@ export const AsseInterestModel = () => {
 
   const { tooltipData, tooltipLeft, showTooltip, hideTooltip } = useTooltip();
 
-  const chartDataSupply = interestRateModelSupplyData;
-  const chartDataBorrow = interestRateModelBorrowData;
+  // const chartDataSupply = interestRateModelSupplyData;
+  // const chartDataBorrow = interestRateModelBorrowData;
+  const { data } = useGetLendingIRateModelChartQuery(
+    {
+      params: {
+        networkAbbr: network || 'trn',
+        // TODO: change address
+        marketAddress: '0x6a6a1ccd6af1f9b01E3706f36caa3D254Ae900D7',
+      },
+    },
+    {
+      staleTime: 1000 * 60,
+      enabled: !!network && !!address,
+    }
+  );
+  const { SUPPLY: chartDataSupply, BORROW: chartDataBorrow } = data || {};
 
   useEffect(() => {
     const wrapper = chartRef.current;
@@ -93,11 +110,11 @@ export const AsseInterestModel = () => {
             <HeaderValueLabel>{t('Utilization rate')}</HeaderValueLabel>
           </HeaderValueWrapper>
           <HeaderValueWrapper>
-            <HeaderValue id="header-value-borrow-apr">{formattedUtilizationRate}</HeaderValue>
+            <HeaderValue id="header-value-borrow-apr">{`${formatNumber(borrowApr)}%`}</HeaderValue>
             <HeaderValueLabel>{t('Borrow APR')}</HeaderValueLabel>
           </HeaderValueWrapper>
           <HeaderValueWrapper>
-            <HeaderValue id="header-value-supply-apr">{formattedUtilizationRate}</HeaderValue>
+            <HeaderValue id="header-value-supply-apr">{`${formatNumber(supplyApr)}%`}</HeaderValue>
             <HeaderValueLabel>{t('Supply APR')}</HeaderValueLabel>
           </HeaderValueWrapper>
         </HeaderValueOuterWrapper>
@@ -108,6 +125,7 @@ export const AsseInterestModel = () => {
           <ParentSize debounceTime={50}>
             {({ width, height }) => {
               if (!chartDataSupply || !chartDataBorrow) return;
+              if (!chartDataSupply.length || !chartDataBorrow.length) return;
 
               const bisectX = bisector<IChartXYData, number>(d => d.x).left;
               const getX = (d: IChartXYData) => d.x;
@@ -124,7 +142,7 @@ export const AsseInterestModel = () => {
 
               const yScale = scaleLinear<number>({
                 range: [height - 20, 0],
-                domain: [0, Math.max(yMax + 10, yMaxBorrow + 10)],
+                domain: [0, Math.max(yMax, yMaxBorrow)],
               });
 
               const xScaleBorrow = scaleLinear({
@@ -157,17 +175,19 @@ export const AsseInterestModel = () => {
                     d.y < 0.01 ? '< 0.01%' : `${formatNumber(d.x, 2, 'floor', THOUSAND, 2)}%`;
                   headerValueUtilizationDom.innerHTML = formattedValue;
 
-                  const borrowApr = chartDataBorrow?.find(data => data.x === d.x)?.y || 0;
-                  const supplyApr = chartDataSupply?.find(data => data.x === d.x)?.y || 0;
+                  const currentBorrowApr =
+                    chartDataBorrow?.find(data => data.x === d.x)?.y || borrowApr;
+                  const currentSupplyApr =
+                    chartDataSupply?.find(data => data.x === d.x)?.y || supplyApr;
                   headerValueBorowAprDom.innerHTML = `${formatNumber(
-                    borrowApr,
+                    currentBorrowApr,
                     2,
                     'floor',
                     THOUSAND,
                     2
                   )}%`;
                   headerValueSupplyAprDom.innerHTML = `${formatNumber(
-                    supplyApr,
+                    currentSupplyApr,
                     2,
                     'floor',
                     THOUSAND,
@@ -218,7 +238,8 @@ export const AsseInterestModel = () => {
               const currentUtilizationRateIdx = bisectX(
                 chartDataSupply,
                 currentUtilizationRateX,
-                1
+                0,
+                200
               );
               const currentUtilizationRateData = chartDataSupply[currentUtilizationRateIdx];
               const currentUtilizationRateY = yScale(currentUtilizationRateData.y);
@@ -233,7 +254,8 @@ export const AsseInterestModel = () => {
               const optimalUtilizationRateIdx = bisectX(
                 chartDataSupply,
                 optimalUtilizationRateX,
-                1
+                0,
+                200
               );
               const optimalUtilizationRateData = chartDataSupply[optimalUtilizationRateIdx];
               const optimalUtilizationRateY = yScale(optimalUtilizationRateData.y);

@@ -1,0 +1,4 @@
+export enum LENDING_CHART_TYPE {
+  SUPPLY = 'SUPPLY',
+  BORROW = 'BORROW',
+}

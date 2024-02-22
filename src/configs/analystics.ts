@@ -11,6 +11,7 @@ import {
   GTM_DEVNET,
   GTM_MAINNET,
   IS_DEVNET,
+  IS_LOCAL,
   IS_MAINNET,
 } from '~/constants';
 
@@ -21,17 +22,19 @@ export const analytics = Analytics({
     ? 'moai-finance--devnet'
     : 'moai-finance--local',
 
-  plugins: [
-    googleAnalytics({
-      measurementIds: [IS_MAINNET ? GA_MAINNET : GA_DEVNET],
-    }),
-    googleTagManager({
-      containerId: IS_MAINNET ? GTM_MAINNET : GTM_DEVNET,
-    }),
+  plugins: IS_LOCAL
+    ? []
+    : [
+        googleAnalytics({
+          measurementIds: [IS_MAINNET ? GA_MAINNET : GA_DEVNET],
+        }),
+        googleTagManager({
+          containerId: IS_MAINNET ? GTM_MAINNET : GTM_DEVNET,
+        }),
 
-    amplitudePlugin({
-      apiKey: IS_MAINNET ? AMPLITUDE_MAINNET : AMPLITUDE_DEVNET,
-      options: { trackingOptions: { ip_address: false } },
-    }),
-  ],
+        amplitudePlugin({
+          apiKey: IS_MAINNET ? AMPLITUDE_MAINNET : AMPLITUDE_DEVNET,
+          options: { trackingOptions: { ip_address: false } },
+        }),
+      ],
 });
