@@ -14,6 +14,7 @@ import { bisector, extent } from '@visx/vendor/d3-array';
 import { format } from 'date-fns';
 import { enUS, ko } from 'date-fns/locale';
 import tw from 'twin.macro';
+import { Address } from 'viem';
 
 import { useGetLendingAPYChartQuery } from '~/api/api-server/lending/get-charts-apy';
 
@@ -61,8 +62,7 @@ export const AssetSupplyInfoChart = () => {
     {
       params: {
         networkAbbr: network || 'trn',
-        // TODO: change address
-        marketAddress: '0x6a6a1ccd6af1f9b01E3706f36caa3D254Ae900D7',
+        marketAddress: (address || '') as Address,
         type: LENDING_CHART_TYPE.SUPPLY,
       },
       queries: { range: selectedRange || '24h' },
@@ -117,7 +117,7 @@ export const AssetSupplyInfoChart = () => {
     const text = wrapper.querySelector('.chart-avg-text');
 
     const width = text?.getBoundingClientRect().width || 0;
-    const max = Math.max(Math.ceil(width) + 16, 67);
+    const max = Math.max(Math.ceil(width) + 16, 44);
 
     setTextBgWidth(max);
   }, [chartData]);

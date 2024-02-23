@@ -35,7 +35,7 @@ export const useUserAccountSnapshot = ({ mTokenAddress }: Props) => {
   });
 
   // (possible error, token balance, borrow balance, exchange rate mantissa)
-  console.log(data);
+  // console.log(data);
 
   return {
     data,

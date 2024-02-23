@@ -61,8 +61,6 @@ export const LayoutMarketSupplies = () => {
     tableData: tableDataAssetsToSupply,
     mobileTableColumn: mobileTableColumnAssetsToSupply,
     mobileTableData: mobileTableDataAssetsToSupply,
-    hasNextPage: hasNextPageAssetsToSupply,
-    fetchNextPage: fetchNextPageAssetsToSupply,
   } = useTableAssetsToSupply();
 
   const { isMD } = useMediaQuery();
@@ -71,10 +69,10 @@ export const LayoutMarketSupplies = () => {
   const handleRowClick = (meta: any) => {
     if (!meta) return;
 
-    const { asset } = meta;
-    if (!asset || !asset?.address) return;
+    const { address } = meta;
+    if (!address) return;
 
-    navigate(`/lending/${networkAbbr}/${asset.address}`);
+    navigate(`/lending/${networkAbbr}/${address}`);
   };
 
   return (
@@ -153,18 +151,14 @@ export const LayoutMarketSupplies = () => {
             ratio={[1, 1, 1, 1, '94px']}
             type="lighter"
             emptyText={t('lending-assets-to-supply-empty')}
-            hasMore={hasNextPageAssetsToSupply}
             handleRowClick={handleRowClick}
-            handleMoreClick={() => fetchNextPageAssetsToSupply()}
           />
         ) : (
           <TableMobile
             data={mobileTableDataAssetsToSupply}
             columns={mobileTableColumnAssetsToSupply}
             emptyText={t('lending-assets-to-supply-empty')}
-            hasMore={hasNextPageAssetsToSupply}
             handleClick={handleRowClick}
-            handleMoreClick={fetchNextPageAssetsToSupply}
           />
         )}
       </ContentWrapper>
