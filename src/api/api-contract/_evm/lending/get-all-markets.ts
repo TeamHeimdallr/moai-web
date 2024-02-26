@@ -14,10 +14,94 @@ import { COMPTROLLER_ABI } from '~/abi/comptroller';
 import { IRATE_MODEL_ABI } from '~/abi/interest-rate-model';
 import { MTOKEN_ABI } from '~/abi/mtoken';
 
+import { useUserTokenBalances } from '../balance/user-token-balances';
+
 /**
  * @description All registered markets
  */
+type IMarketWithToken = IMarket & {
+  address: string;
+  price?: number;
+
+  underlyingSymbol?: string;
+  underlyingImage?: string;
+  underlyingBalance?: number;
+};
+
 export const useGetAllMarkets = () => {
+  const markets = [
+    {
+      address: '0x930AF8991311BF82736Fe5C1b33949fE79897367',
+      decimals: 8,
+      underlyingAsset: '0xcCcCCCCc00000864000000000000000000000000',
+      underlyingDecimals: 6,
+      symbol: 'mUSDC',
+      supplyRatePerBlock: 0,
+      borrowRatePerBlock: 0,
+      supplyApy: 0,
+      borrowApy: 0,
+      totalReserves: 151275n,
+      totalBorrows: 0n,
+      totalSupply: 22989545730n,
+      cash: 4749251n,
+      initialExchangeRateMantissa: 200000000000000n,
+      reserveFactorMantissa: 100000000000000000n,
+      interestRateModel: '0x5a8Db720FB265B5D3bbD22Aa345a027822754494',
+      blocksPerYear: 7884000,
+      kink: 0.8,
+      multiplierPerBlock: 6341958396,
+      jumpMultiplierPerBlock: 138254693049,
+      utilizationRate: 0,
+    },
+    {
+      address: '0x6a6a1ccd6af1f9b01E3706f36caa3D254Ae900D7',
+      decimals: 8,
+      underlyingAsset: '0xCCCCcCCc00000002000000000000000000000000',
+      underlyingDecimals: 6,
+      symbol: 'mXRP',
+      supplyRatePerBlock: 164468067,
+      borrowRatePerBlock: 2422220928,
+      supplyApy: 0.12975049692178775,
+      borrowApy: 1.9279790589999735,
+      totalReserves: 5n,
+      totalBorrows: 8487464n,
+      totalSupply: 500000005000n,
+      cash: 91512563n,
+      initialExchangeRateMantissa: 200000000000000n,
+      reserveFactorMantissa: 200000000000000000n,
+      interestRateModel: '0xfd0852961469640459BE31bC06b414395F56a629',
+      blocksPerYear: 7884000,
+      kink: 0.8,
+      multiplierPerBlock: 28538812785,
+      jumpMultiplierPerBlock: 507356671740,
+      utilizationRate: 0.0848746213275833,
+    },
+  ];
+  const underlyingAssets = markets.map(market => market.underlyingAsset) || [];
+  const { userTokenBalances } = useUserTokenBalances({ addresses: underlyingAssets });
+
+  const marketWithToken = markets.map(market => {
+    const token = userTokenBalances?.find(t => t.address === market.underlyingAsset);
+    return {
+      ...market,
+      address: market.address,
+      symbol: market.symbol,
+
+      price: token?.price,
+
+      underlyingSymbol: token?.symbol,
+      underlyingImage: token?.image,
+      underlyingBalance: token?.balance,
+    } as IMarketWithToken;
+  });
+
+  return {
+    markets: marketWithToken,
+    refetch: () => {},
+  };
+};
+
+export const useGetAllMarkets_temp = () => {
   const { network } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
 

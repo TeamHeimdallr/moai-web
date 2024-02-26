@@ -1,6 +1,8 @@
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { IToken } from '~/types';
 
+import { useSupply as useSupplyEvm } from '../_evm/lending/supply';
+
 interface Props {
   token?: IToken & { balance: number; amount: number };
   enabled?: boolean;
@@ -63,10 +65,10 @@ const useDummy = ({ debug }: Props) => {
     estimateFee: async () => 1.2394,
   };
 };
-export const useLendingSupply = ({ token, debug }: Props) => {
+export const useLendingSupply = ({ token, enabled, debug }: Props) => {
   const { isFpass } = useNetwork();
 
-  const resEvm = useDummy({ token, debug });
+  const resEvm = useSupplyEvm({ mtoken: token, enabled });
   const resFpass = useDummy({ token, debug });
 
   return isFpass ? resFpass : resEvm;

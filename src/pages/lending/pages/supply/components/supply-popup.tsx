@@ -78,7 +78,7 @@ export const LendingSupplyPopup = ({
   const [estimatedTokenApproveFee, setEstimatedTokenApproveFee] = useState<number | undefined>();
 
   // TODO: connect api
-  const assetAddress = '0x' as Address;
+  const assetAddress = '0x930AF8991311BF82736Fe5C1b33949fE79897367' as Address;
   const { symbol, address, amount, currency, decimal, balance, price, image } = tokenIn || {};
 
   const {
@@ -95,7 +95,7 @@ export const LendingSupplyPopup = ({
     issuer: address || '',
     spender: assetAddress,
     currency: currency || '',
-    enabled: false,
+    enabled: true,
   });
 
   const {
