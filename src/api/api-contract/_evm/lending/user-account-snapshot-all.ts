@@ -51,18 +51,39 @@ export const useUserAccountSnapshotAll = () => {
     enabled: !!marketsData && !!chainId && isEvm && !!marketAddrs && !!walletAddress,
   });
 
-  const accountSnapshots = (accountSnapshotsData?.map(d => {
+  const { data: marketsDetailData, refetch: refetchMarketsDetail } = useContractReads({
+    contracts: marketAddrs?.flatMap(address => [
+      {
+        address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+        abi: COMPTROLLER_ABI as Abi,
+        functionName: 'markets',
+        chainId,
+        args: [address],
+      },
+    ]),
+    staleTime: 1000 * 3,
+    enabled: !!marketsData && !!chainId && isEvm && !!marketAddrs,
+  });
+
+  const collateralFactorsMantissa = (marketsDetailData?.map(d => {
+    const r = d.result;
+    return r?.[1];
+  }) || []) as bigint[];
+
+  const accountSnapshots = (accountSnapshotsData?.map((d, i) => {
     return {
       error: BigInt(d.result?.[0]),
       mTokenBalance: BigInt(d.result?.[1]),
       borrowBalance: BigInt(d.result?.[2]),
       exchangeRate: BigInt(d.result?.[3]),
+      collateralFator: collateralFactorsMantissa[i],
     };
   }) || []) as ISnapshot[];
 
   const refetch = () => {
     refetchMarkets();
     refetchSnapshots();
+    refetchMarketsDetail();
   };
 
   return {

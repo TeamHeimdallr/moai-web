@@ -40,4 +40,14 @@ export interface ISnapshot {
   mTokenBalance: bigint;
   borrowBalance: bigint;
   exchangeRate: bigint;
+  collateralFator: bigint;
 }
+
+export type IMarketWithToken = IMarket & {
+  address: string;
+  price?: number;
+
+  underlyingSymbol?: string;
+  underlyingImage?: string;
+  underlyingBalance?: number;
+};

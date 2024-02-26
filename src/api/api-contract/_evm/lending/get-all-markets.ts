@@ -7,7 +7,7 @@ import { UNITROLLER_ADDRESS } from '~/constants';
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
-import { IMarket } from '~/types/lending';
+import { IMarket, IMarketWithToken } from '~/types/lending';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
 import { COMPTROLLER_ABI } from '~/abi/comptroller';
@@ -19,15 +19,6 @@ import { useUserTokenBalances } from '../balance/user-token-balances';
 /**
  * @description All registered markets
  */
-type IMarketWithToken = IMarket & {
-  address: string;
-  price?: number;
-
-  underlyingSymbol?: string;
-  underlyingImage?: string;
-  underlyingBalance?: number;
-};
-
 export const useGetAllMarkets = () => {
   const markets = [
     {

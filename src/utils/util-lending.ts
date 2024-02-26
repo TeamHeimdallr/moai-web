@@ -1,9 +1,9 @@
-import { formatEther, parseEther } from 'viem';
+import { formatEther, formatUnits, parseEther } from 'viem';
 
-import { IMarket, ISnapshot } from '~/types/lending';
+import { IMarketWithToken, ISnapshot } from '~/types/lending';
 
 interface Props {
-  markets: IMarket[];
+  markets: IMarketWithToken[];
   snapshots: ISnapshot[];
 }
 export const calcNetApy = ({ markets, snapshots }: Props) => {
@@ -30,4 +30,42 @@ export const calcNetApy = ({ markets, snapshots }: Props) => {
         netApyDenom;
   const netAPY = Number(formatEther(nets)) * 100;
   return netAPY;
+};
+
+export const calcHealthFactor = ({ markets, snapshots }: Props) => {
+  const numerator = snapshots.reduce((acc, s, i) => {
+    const underlyingBalance = Number(
+      formatUnits(s.exchangeRate * s.mTokenBalance, 18 + markets[i].underlyingDecimals)
+    );
+    const values = underlyingBalance * (markets[i].price ?? 0);
+    return acc + values * Number(formatEther(s.collateralFator));
+  }, 0);
+
+  const denom = snapshots.reduce((acc, s, i) => {
+    const values =
+      Number(formatUnits(s.borrowBalance, markets[i].underlyingDecimals)) * (markets[i].price ?? 0);
+    return acc + values;
+  }, 0);
+
+  const healthFactor = denom === 0 ? 0 : numerator / denom;
+  return healthFactor;
+};
+
+export const calcLtv = ({ markets, snapshots }: Props) => {
+  const numerator = snapshots.reduce((acc, s, i) => {
+    const values =
+      Number(formatUnits(s.borrowBalance, markets[i].underlyingDecimals)) * (markets[i].price ?? 0);
+    return acc + values;
+  }, 0);
+
+  const denom = snapshots.reduce((acc, s, i) => {
+    const underlyingBalance = Number(
+      formatUnits(s.exchangeRate * s.mTokenBalance, 18 + markets[i].underlyingDecimals)
+    );
+    const values = underlyingBalance * (markets[i].price ?? 0);
+    return acc + values;
+  }, 0);
+
+  const ltv = denom === 0 ? 0 : (100 * numerator) / denom;
+  return { ltv, assets: denom, debts: numerator };
 };

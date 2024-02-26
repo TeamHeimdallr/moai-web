@@ -26,7 +26,7 @@ import {
   formatNumber,
   getNetworkAbbr,
 } from '~/utils';
-import { calcNetApy } from '~/utils/util-lending';
+import { calcHealthFactor, calcLtv, calcNetApy } from '~/utils/util-lending';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { MarketInfoCurrentLTVPopup } from '../components/market-info-current-ltv-popup';
@@ -56,15 +56,15 @@ export const LayoutMarketInfo = () => {
 
   const netAPY = calcNetApy({ markets, snapshots });
 
-  // TODO: connect contract & api
-  const healthFactor = 100000 / 42000;
-  const currentLTV = (42000 / 100000) * 100;
+  const healthFactor = calcHealthFactor({ markets, snapshots });
+  const currentLTV = calcLtv({ markets, snapshots });
 
+  // TODO: connect contract & api
   const healthFactorCriteria = 3;
   const healthFactorColor = calculateHealthFactorColor(healthFactor);
 
   const currentLTVCriteria = 75;
-  const currentLTVColor = calculateCurrentLTVColor(currentLTV);
+  const currentLTVColor = calculateCurrentLTVColor(currentLTV.ltv);
 
   const handleHealthFactorClick = () => openHealthFactorPopup();
   const handleCurrentLTVClick = () => openCurrentLTVPopup();
@@ -102,7 +102,7 @@ export const LayoutMarketInfo = () => {
             <InfoCard
               title={t('Current LTV')}
               iconButton={<ButtonIconMedium icon={<IconNext />} onClick={handleCurrentLTVClick} />}
-              value={`${formatNumber(currentLTV)}%`}
+              value={`${formatNumber(currentLTV.ltv)}%`}
               valueColor={`${currentLTVColor}`}
             />
           </InfoInnerWrapper>
@@ -114,13 +114,16 @@ export const LayoutMarketInfo = () => {
 
         {healthFactorPopupOpened && (
           <MarketInfoHealthFactorPopup
-            assets={100000}
-            debt={42000}
+            healthFactor={healthFactor}
             criteria={healthFactorCriteria}
           />
         )}
         {currentLTVPopupOpened && (
-          <MarketInfoCurrentLTVPopup assets={100000} debt={42000} criteria={currentLTVCriteria} />
+          <MarketInfoCurrentLTVPopup
+            assets={currentLTV.assets}
+            debt={currentLTV.debts}
+            criteria={currentLTVCriteria}
+          />
         )}
       </InfoWrapper>
     </Wrapper>
