@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
-import { useGetTokenQuery } from '~/api/api-server/token/get-token';
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 
 import { IconQuestion } from '~/assets/icons';
 
@@ -14,9 +14,7 @@ import { Tooltip } from '~/components/tooltips/base';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
-import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
-import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { TOOLTIP_ID } from '~/types';
 
@@ -29,46 +27,50 @@ export const UserAssetInfo = () => {
   const { network, address } = useParams();
   const { t } = useTranslation();
 
-  const { selectedNetwork } = useNetwork();
-
   const { isMD } = useMediaQuery();
 
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
-
-  const { data: tokenData } = useGetTokenQuery(
-    { queries: { networkAbbr: currentNetworkAbbr, address: address } },
-    { enabled: !!address && !!currentNetworkAbbr }
-  );
-  const { token } = tokenData || {};
-  const { symbol, price } = token || {};
+  const { markets } = useGetAllMarkets();
+  const market = markets.find(m => m.address === address);
+  const { symbol, price, underlyingAsset, underlyingSymbol, underlyingBalance, totalBorrows } =
+    market || {};
 
   // TODO connect api
-  const availableSupply = 123123;
+  const maxBorrow = 2 * 10 ** 9;
+  const availableSupply = underlyingBalance || 0;
   const availableSupplyValue = availableSupply * (price || 0);
-  const availableBorrow = 234234;
+
+  const totalBorrowNum = Number(totalBorrows || 0);
+  const availableBorrow = maxBorrow - totalBorrowNum;
   const availableBorrowValue = availableBorrow * (price || 0);
 
-  const walletBalance = 345345;
+  const walletBalance = underlyingBalance;
 
   const handleSupply = () => {
-    if (!token || availableSupply <= 0) return;
+    if (!market || availableSupply <= 0) return;
 
     const link = `/lending/${network}/${address}/supply`;
     gaAction({
       action: 'go-to-lending-supply',
-      data: { page: 'lending-detail', component: 'user-asset-info', asset: token },
+      data: {
+        page: 'lending-detail',
+        component: 'user-asset-info',
+        asset: { symbol, address, underlyingAsset, underlyingSymbol },
+      },
     });
     navigate(link);
   };
 
   const handleBorrow = () => {
-    if (!token || availableBorrow <= 0) return;
+    if (!market || availableBorrow <= 0) return;
 
     const link = `/lending/${network}/${address}/borrow`;
     gaAction({
       action: 'go-to-lending-borrow',
-      data: { page: 'lending-detail', component: 'user-asset-info', asset: token },
+      data: {
+        page: 'lending-detail',
+        component: 'user-asset-info',
+        asset: { symbol, address, underlyingAsset, underlyingSymbol },
+      },
     });
     navigate(link);
   };
@@ -132,7 +134,7 @@ export const UserAssetInfo = () => {
           'floor',
           MILLION,
           2
-        )} ${symbol}`}</FooterBalance>
+        )} ${underlyingSymbol}`}</FooterBalance>
       </Footer>
       <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_AVAILABLE_TO_SUPPLY} place="bottom">
         <TooltipContent>{t('available-to-supply-description')}</TooltipContent>

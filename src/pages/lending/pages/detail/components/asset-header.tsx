@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { useWalletClient } from 'wagmi';
 
-import { useGetTokenQuery } from '~/api/api-server/token/get-token';
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 
 import { IconAddToken, IconLink } from '~/assets/icons';
 
@@ -35,12 +35,10 @@ export const AssetHeader = () => {
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
   const logoUrl = `${ASSET_URL}/images/network-${networkAbbr}.png`;
 
-  const { data: tokenData } = useGetTokenQuery(
-    { queries: { networkAbbr, address: address } },
-    { enabled: !!address && !!networkAbbr }
-  );
-  const { token } = tokenData || {};
-  const { symbol, image, decimal } = token || {};
+  const { markets } = useGetAllMarkets();
+  const market = markets.find(m => m.address === address);
+
+  const { symbol, underlyingImage, decimals } = market || {};
 
   const handleLink = () => {
     const url = `${SCANNER_URL[selectedNetwork]}/${isRoot ? 'addresses' : 'token'}/${address}`;
@@ -54,7 +52,7 @@ export const AssetHeader = () => {
   };
 
   const handleAddToken = async () => {
-    if (!address || !symbol || !decimal) return;
+    if (!address || !symbol) return;
 
     const parseSymbol = () => {
       if (IS_MAINNET) return symbol;
@@ -70,13 +68,13 @@ export const AssetHeader = () => {
         options: {
           address: address,
           symbol: parseSymbol(),
-          decimals: decimal,
+          decimals: decimals || 18,
         },
       },
     });
   };
 
-  if (!token) return <></>;
+  if (!market) return <></>;
   return (
     <HeaderOuterWrapper>
       <HeaderWrapper ref={ref}>
@@ -85,7 +83,7 @@ export const AssetHeader = () => {
           {`${titleMap[selectedNetwork]} Market`}
         </SubtitleWrapper>
         <TitleWrapper>
-          <TokenImageWrapper style={{ backgroundImage: `url(${image})` }} />
+          <TokenImageWrapper style={{ backgroundImage: `url(${underlyingImage})` }} />
           <TitleIconWrapper>
             {symbol}
             <IconWrapper>

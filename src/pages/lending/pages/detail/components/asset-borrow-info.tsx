@@ -1,5 +1,9 @@
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
+import { formatUnits } from 'viem';
+
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 
 import { IconQuestion } from '~/assets/icons';
 
@@ -12,27 +16,29 @@ import { APYMedium } from '~/pages/lending/components/apy';
 import { InfoCard } from '~/pages/lending/components/info-card';
 
 import { formatNumber } from '~/utils';
-import { IToken, TOOLTIP_ID } from '~/types';
+import { TOOLTIP_ID } from '~/types';
 
 import { AssetBorrowInfoChart } from './asset-borrow-info-chart';
 import { AssetSupplyBorrowInfoCard } from './asset-supply-borrow-info-card';
 
-interface Props {
-  token?: IToken;
-}
-export const AssetBorrowInfo = ({ token }: Props) => {
+export const AssetBorrowInfo = () => {
   const { t } = useTranslation();
 
+  const { address } = useParams();
+  const { markets } = useGetAllMarkets();
+  const market = markets.find(m => m.address === address);
+
+  const { totalBorrows, borrowApy, decimals, reserveFactorMantissa, price } = market || {};
+
   // TODO: connect api
-  const totalBorrow = 2000000000;
-  const currentBorrow = 739845000;
-  const ratio = (currentBorrow / totalBorrow) * 100;
+  const maxBorrow = 2 * 10 ** 9;
 
-  const apy = 2.239;
-  const borrowCap = 1410000;
-  const { price } = token || {};
+  const totalBorrowNum = Number(formatUnits(totalBorrows || 0n, decimals || 0));
+  const borrowApyNum = Number(borrowApy);
+  const reserveFactorNum = Number(formatUnits(reserveFactorMantissa || 0n, 18)) * 100;
+  const borrowCap = maxBorrow - totalBorrowNum;
 
-  const reserveFactor = 15;
+  const ratio = (totalBorrowNum / maxBorrow) * 100;
 
   return (
     <OuterWrapper>
@@ -50,9 +56,9 @@ export const AssetBorrowInfo = ({ token }: Props) => {
             }
             value={
               <>
-                <InfoText>{formatNumber(currentBorrow, 2, 'floor', THOUSAND, 2)}</InfoText>
+                <InfoText>{formatNumber(totalBorrowNum)}</InfoText>
                 <InfoTextSmall>of</InfoTextSmall>
-                <InfoText>{formatNumber(totalBorrow, 2, 'floor', THOUSAND, 2)}</InfoText>
+                <InfoText>{formatNumber(maxBorrow)}</InfoText>
               </>
             }
             barChart
@@ -61,12 +67,12 @@ export const AssetBorrowInfo = ({ token }: Props) => {
           />
           <AssetSupplyBorrowInfoCard
             title={t('APY')}
-            value={<APYMedium apy={apy} style={{ justifyContent: 'flex-start' }} />}
+            value={<APYMedium apy={borrowApyNum} style={{ justifyContent: 'flex-start' }} />}
           />
           <AssetSupplyBorrowInfoCard
             title={t('Borrow cap')}
-            value={<InfoText>{formatNumber(borrowCap, 2, 'floor', THOUSAND, 2)}</InfoText>}
-            caption={`$${formatNumber(borrowCap * (price || 0), 2, 'floor', THOUSAND, 2)}`}
+            value={<InfoText>{formatNumber(borrowCap)}</InfoText>}
+            caption={`$${formatNumber(borrowCap * (price || 0))}`}
           />
         </InfoWrapper>
 
@@ -85,7 +91,7 @@ export const AssetBorrowInfo = ({ token }: Props) => {
                   data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_BORROW_RESERVE_FACTOR}
                 />
               }
-              value={`${formatNumber(reserveFactor, 2, 'floor', THOUSAND, 2)}%`}
+              value={`${formatNumber(reserveFactorNum)}%`}
               light
             />
           </CollectorCards>
