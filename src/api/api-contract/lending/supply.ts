@@ -1,10 +1,12 @@
+import { Address } from 'viem';
+
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { IToken } from '~/types';
 
 import { useSupply as useSupplyEvm } from '../_evm/lending/supply';
 
 interface Props {
-  token?: IToken & { balance: number; amount: number };
+  token?: IToken & { balance: number; amount: number; mTokenAddress: Address };
   enabled?: boolean;
   debug?: 'idle' | 'loading' | 'success' | 'error';
 }
@@ -68,7 +70,7 @@ const useDummy = ({ debug }: Props) => {
 export const useLendingSupply = ({ token, enabled, debug }: Props) => {
   const { isFpass } = useNetwork();
 
-  const resEvm = useSupplyEvm({ mtoken: token, enabled });
+  const resEvm = useSupplyEvm({ token, enabled });
   const resFpass = useDummy({ token, debug });
 
   return isFpass ? resFpass : resEvm;

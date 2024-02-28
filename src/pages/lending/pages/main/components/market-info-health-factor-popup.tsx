@@ -72,7 +72,7 @@ export const MarketInfoHealthFactorPopup = ({ healthFactor: healthFactorNum, cri
           <ExpressWrapper>
             <NumberBadgeWrapper>
               <BadgeText
-                text={'Max LTV'}
+                text={t('Max LTV')}
                 backgroundColor={COLOR.PRIMARY[20]}
                 color={COLOR.PRIMARY[50]}
               />

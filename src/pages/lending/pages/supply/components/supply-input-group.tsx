@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
-import { formatUnits, parseEther, parseUnits } from 'viem';
+import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
@@ -35,21 +36,25 @@ export const LendingSupplyInputGroup = () => {
 
   const networkAbbr = getNetworkAbbr(selectedNetwork);
 
+  const { markets } = useGetAllMarkets();
+  const market = markets?.find(m => m.address === address);
+  const symbol = market?.underlyingSymbol;
+  const image = market?.underlyingImage;
+  const price = market?.price;
+
   const { data: tokenData } = useGetTokenQuery(
-    { queries: { networkAbbr, address: address } },
+    { queries: { networkAbbr, address: market?.underlyingAsset } },
     { enabled: !!address && !!networkAbbr }
   );
   const { token } = tokenData || {};
-  const { symbol, image, price } = token || {};
 
   const [inputValue, setInputValue] = useState<number>();
   const [_inputValueRaw, setInputValueRaw] = useState<bigint>();
 
-  // TODO: connect API
-  const userTokenBalance = 123123.687598;
-  const apy = 1.8324;
-  const collateral = true;
-  const availableSupply = 10000;
+  const userTokenBalance = market?.underlyingBalance || 0;
+  const apy = market?.supplyApy || 0;
+  const collateral = (market?.collateralFactorsMantissa || 0n) > 0n;
+  const availableSupply = 10000; // TODO: connect API
 
   const isAvailableSupplyBiggerThanBalance = availableSupply > userTokenBalance;
 
@@ -82,7 +87,8 @@ export const LendingSupplyInputGroup = () => {
     ...token,
     balance: userTokenBalance,
     amount: inputValue,
-  } as IToken & { balance: number; amount: number };
+    mTokenAddress: address,
+  } as IToken & { balance: number; amount: number; mTokenAddress: Address };
   // TODO: prepare
 
   return (

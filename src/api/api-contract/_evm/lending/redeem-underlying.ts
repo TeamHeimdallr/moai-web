@@ -18,10 +18,10 @@ import { IToken, NETWORK } from '~/types';
 import { MTOKEN_ABI } from '~/abi/mtoken';
 
 interface Props {
-  token?: IToken & { balance: number; amount: number; mTokenAddress: Address };
+  token?: IToken & { amount: number; mTokenAddress: Address };
   enabled?: boolean;
 }
-export const useSupply = ({ token, enabled }: Props) => {
+export const useRedeemUnderlying = ({ token, enabled }: Props) => {
   const publicClient = usePublicClient();
 
   const { network } = useParams();
@@ -40,7 +40,7 @@ export const useSupply = ({ token, enabled }: Props) => {
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: (token?.mTokenAddress || '0x0') as Address,
     abi: MTOKEN_ABI as Abi,
-    functionName: 'mint',
+    functionName: 'redeemUnderlying',
 
     account: walletAddress as Address,
     chainId,
@@ -95,7 +95,7 @@ export const useSupply = ({ token, enabled }: Props) => {
       address: (token?.mTokenAddress || '') as Address,
       abi: MTOKEN_ABI as Abi,
 
-      functionName: 'mint',
+      functionName: 'redeemUnderlying',
       args: [inputAmount],
       account: walletAddress as Address,
     });

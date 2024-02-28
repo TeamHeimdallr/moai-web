@@ -33,6 +33,8 @@ export interface IMarket {
   multiplierPerBlock: number;
   jumpMultiplierPerBlock: number;
   utilizationRate: number; // 0~1
+
+  collateralFactorsMantissa: bigint;
 }
 
 export interface ISnapshot {

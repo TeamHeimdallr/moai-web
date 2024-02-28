@@ -72,11 +72,11 @@ export const useUserAccountSnapshotAll = () => {
 
   const accountSnapshots = (accountSnapshotsData?.map((d, i) => {
     return {
-      error: BigInt(d.result?.[0]),
-      mTokenBalance: BigInt(d.result?.[1]),
-      borrowBalance: BigInt(d.result?.[2]),
-      exchangeRate: BigInt(d.result?.[3]),
-      collateralFator: collateralFactorsMantissa[i],
+      error: BigInt(d.result?.[0] ?? 1),
+      mTokenBalance: BigInt(d.result?.[1] ?? 0),
+      borrowBalance: BigInt(d.result?.[2] ?? 0),
+      exchangeRate: BigInt(d.result?.[3] ?? 0),
+      collateralFator: collateralFactorsMantissa[i] ?? 0n,
     };
   }) || []) as ISnapshot[];
 

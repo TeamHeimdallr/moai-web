@@ -17,6 +17,7 @@ export const mySuppliesData = {
       mySupplies: [
         {
           id: 1,
+          address: '0x6a6a1ccd6af1f9b01E3706f36caa3D254Ae900D7',
           asset: {
             symbol: 'XRP',
             image: `${ASSET_URL}/tokens/token-xrp.png`,
@@ -28,6 +29,7 @@ export const mySuppliesData = {
         },
         {
           id: 2,
+          address: '0x930AF8991311BF82736Fe5C1b33949fE79897367',
           asset: {
             symbol: 'USDC',
             image: `${ASSET_URL}/tokens/token-usdc.png`,

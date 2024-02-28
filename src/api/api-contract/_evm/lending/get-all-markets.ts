@@ -43,6 +43,7 @@ export const useGetAllMarkets = () => {
       multiplierPerBlock: 6341958396,
       jumpMultiplierPerBlock: 138254693049,
       utilizationRate: 0,
+      collateralFactorsMantissa: 800000000000000000n,
     },
     {
       address: '0x6a6a1ccd6af1f9b01E3706f36caa3D254Ae900D7',
@@ -52,8 +53,8 @@ export const useGetAllMarkets = () => {
       symbol: 'mXRP',
       supplyRatePerBlock: 164468067,
       borrowRatePerBlock: 2422220928,
-      supplyApy: 0.12975049692178775,
-      borrowApy: 1.9279790589999735,
+      supplyApy: 12.975049692178775,
+      borrowApy: 192.79790589999735,
       totalReserves: 5n,
       totalBorrows: 8487464n,
       totalSupply: 500000005000n,
@@ -66,6 +67,7 @@ export const useGetAllMarkets = () => {
       multiplierPerBlock: 28538812785,
       jumpMultiplierPerBlock: 507356671740,
       utilizationRate: 0.0848746213275833,
+      collateralFactorsMantissa: 700000000000000000n,
     },
   ];
   const underlyingAssets = markets.map(market => market.underlyingAsset) || [];
@@ -349,6 +351,25 @@ export const useGetAllMarkets_temp = () => {
     Number(formatEther((d.result as bigint) || 0n))
   ) || []) as number[];
 
+  const { data: marketsDetailData } = useContractReads({
+    contracts: marketAddrs?.flatMap(address => [
+      {
+        address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+        abi: COMPTROLLER_ABI as Abi,
+        functionName: 'markets',
+        chainId,
+        args: [address],
+      },
+    ]),
+    staleTime: 1000 * 3,
+    enabled: !!marketsData && !!chainId && isEvm && !!marketAddrs,
+  });
+
+  const collateralFactorsMantissa = (marketsDetailData?.map(d => {
+    const r = d.result;
+    return r?.[1];
+  }) || []) as bigint[];
+
   const blocksPerDay = blocksPerYear[0] / 365;
 
   const markets: IMarket[] = (marketAddrs as Array<string>)?.map((m: string, i: number) => {
@@ -379,6 +400,7 @@ export const useGetAllMarkets_temp = () => {
       multiplierPerBlock: multiplierPerBlock[i],
       jumpMultiplierPerBlock: jumpMultiplierPerBlock[i],
       utilizationRate: utilizationRate[i], // 0~1
+      collateralFactorsMantissa: collateralFactorsMantissa[i],
     };
   });
 

@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
@@ -29,6 +30,8 @@ import { APYSmall } from '../../components/apy';
 import { mySuppliesData } from '../../data';
 
 export const useTableMySupplies = () => {
+  const navigate = useNavigate();
+
   const { sort, setSort } = useTableLendingMySuppliesSortStore();
   const { selectedNetwork } = useNetwork();
   const { t } = useTranslation();
@@ -88,6 +91,16 @@ export const useTableMySupplies = () => {
     return mySupplies;
   }, [mySupplies, sort]);
 
+  const handleLendingSupply = (address: string) => {
+    const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/supply`;
+    navigate(link);
+  };
+
+  const handleLendingWithdraw = (address: string) => {
+    const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/withdraw`;
+    navigate(link);
+  };
+
   const tableData = useMemo(
     () =>
       sortedMySupplies?.map(d => {
@@ -100,7 +113,7 @@ export const useTableMySupplies = () => {
         };
 
         return {
-          meta: { id: d.id, asset: d.asset },
+          meta: { id: d.id, asset: d.asset, address: d.address },
           asset: (
             <TableColumnToken
               tokens={[{ symbol: d.asset.symbol, image: d.asset.image }]}
@@ -114,16 +127,26 @@ export const useTableMySupplies = () => {
           collateral: <TableColumnToggle selected={d.collateral} handleSelect={handleToggle} />,
           buttons: (
             <TableColumnButtons>
-              <ButtonPrimaryMedium text={t('lending-supply')} onClick={() => {}} />
+              <ButtonPrimaryMedium
+                text={t('lending-supply')}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingSupply(d.address);
+                }}
+              />
               <ButtonPrimaryMedium
                 text={t('lending-withdraw')}
-                onClick={() => {}}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingWithdraw(d.address);
+                }}
                 buttonType="outlined"
               />
             </TableColumnButtons>
           ),
         };
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [openCollateralDisable, openCollateralEnable, sortedMySupplies, t]
   );
 

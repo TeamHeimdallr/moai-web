@@ -1,4 +1,4 @@
-import { formatEther, formatUnits, parseEther } from 'viem';
+import { Address, formatEther, formatUnits, parseEther } from 'viem';
 
 import { IMarketWithToken, ISnapshot } from '~/types/lending';
 
@@ -32,11 +32,27 @@ export const calcNetApy = ({ markets, snapshots }: Props) => {
   return netAPY;
 };
 
-export const calcHealthFactor = ({ markets, snapshots }: Props) => {
+interface HelathFactorProps {
+  markets: IMarketWithToken[];
+  snapshots: ISnapshot[];
+  deltaSupply?: {
+    marketAddress: Address;
+    delta: bigint; // underlying's delta
+    isWithdraw: boolean;
+  };
+}
+export const calcHealthFactor = ({ markets, snapshots, deltaSupply }: HelathFactorProps) => {
+  // TODO: snapshots 의 mTokenBalance 가 collateral enabled 인 자사만 계산하도록 수정
   const numerator = snapshots.reduce((acc, s, i) => {
-    const underlyingBalance = Number(
-      formatUnits(s.exchangeRate * s.mTokenBalance, 18 + markets[i].underlyingDecimals)
-    );
+    const delta =
+      deltaSupply?.marketAddress === markets[i].address
+        ? deltaSupply.isWithdraw
+          ? -deltaSupply.delta
+          : deltaSupply.delta
+        : 0n;
+    const underlyingBalance =
+      Number(formatUnits(s.exchangeRate * s.mTokenBalance, 18 + markets[i].underlyingDecimals)) +
+      Number(formatUnits(delta, markets[i].underlyingDecimals));
     const values = underlyingBalance * (markets[i].price ?? 0);
     return acc + values * Number(formatEther(s.collateralFator));
   }, 0);
