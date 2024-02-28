@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
-import { useGetTokenQuery } from '~/api/api-server/token/get-token';
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
@@ -11,7 +11,6 @@ import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { usePrevious } from '~/hooks/utils';
-import { getNetworkAbbr } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { AssetBorrowInfo } from './components/asset-borrow-info';
@@ -27,10 +26,12 @@ export const LendingDetail = () => {
   const navigate = useNavigate();
   const { address } = useParams();
   const { selectedNetwork } = useNetwork();
-  const networkAbbr = getNetworkAbbr(selectedNetwork);
   const previousNetwork = usePrevious<NETWORK>(selectedNetwork);
 
   const targetNetork = [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN];
+
+  const { markets } = useGetAllMarkets();
+  const market = markets.find(m => m.address === address);
 
   useForceNetwork({
     targetNetwork: [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN],
@@ -40,15 +41,9 @@ export const LendingDetail = () => {
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
 
-  const { data: tokenData, isFetched } = useGetTokenQuery(
-    { queries: { networkAbbr, address: address } },
-    { enabled: !!address && !!networkAbbr }
-  );
-  const { token } = tokenData || {};
-
   useEffect(() => {
-    if (isFetched && !token) navigate('/lending');
-  }, [navigate, token, isFetched]);
+    if (!market) navigate('/lending');
+  }, [navigate, market]);
 
   return (
     <Wrapper>
@@ -63,7 +58,7 @@ export const LendingDetail = () => {
               <LeftContentWrapper>
                 <AssetInfo />
                 <AssetSupplyInfo />
-                <AssetBorrowInfo token={token} />
+                <AssetBorrowInfo />
                 <AsseInterestModel />
               </LeftContentWrapper>
               <RightContentWrapper>
@@ -85,7 +80,7 @@ interface DivProps {
   banner?: boolean;
 }
 const InnerWrapper = styled.div<DivProps>(({ banner }) => [
-  tw`  
+  tw`
     flex flex-col pt-120 pb-120 pt-112
     md:(px-20)
     mlg:(pt-120)
@@ -112,7 +107,7 @@ const ContentOuterWrapper = tw.div`
 
 const ContentWrapper = tw.div`
   flex flex-col gap-20
-  lg:(flex-row) 
+  lg:(flex-row)
   xl:(gap-40)
 `;
 

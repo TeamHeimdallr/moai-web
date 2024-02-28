@@ -13,6 +13,7 @@ import { useTooltip } from '@visx/tooltip';
 import { bisector } from '@visx/vendor/d3-array';
 import tw from 'twin.macro';
 
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useGetLendingIRateModelChartQuery } from '~/api/api-server/lending/get-charts-irate-model';
 
 import { COLOR } from '~/assets/colors';
@@ -32,16 +33,20 @@ export const AsseInterestModel = () => {
   const { ref } = useGAInView({ name: 'lending-asset-interest-model' });
 
   const { network, address } = useParams();
+  const { markets } = useGetAllMarkets();
+  const market = markets.find(m => m.address === address);
+
+  const { supplyApy, borrowApy, utilizationRate, kink } = market || {};
 
   // TODO: connect api
-  const utilizationRate = 10.25;
-  const optimalUtilizationRate = 80;
+  const optimalUtilizationRate = (kink || 0) * 100;
+
+  const borrowApyNum = Number(borrowApy);
+  const supplyApyNum = Number(supplyApy);
+
+  const utilizationRateNum = Number(utilizationRate || 0);
   const formattedUtilizationRate =
-    utilizationRate < 0.01
-      ? '< 0.01%'
-      : `${formatNumber(utilizationRate, 2, 'floor', THOUSAND, 2)}%`;
-  const borrowApr = 1.89;
-  const supplyApr = 1.39;
+    utilizationRateNum < 0.01 ? '< 0.01%' : `${formatNumber(utilizationRateNum)}%`;
 
   const chartRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -110,11 +115,15 @@ export const AsseInterestModel = () => {
             <HeaderValueLabel>{t('Utilization rate')}</HeaderValueLabel>
           </HeaderValueWrapper>
           <HeaderValueWrapper>
-            <HeaderValue id="header-value-borrow-apr">{`${formatNumber(borrowApr)}%`}</HeaderValue>
+            <HeaderValue id="header-value-borrow-apr">{`${formatNumber(
+              borrowApyNum
+            )}%`}</HeaderValue>
             <HeaderValueLabel>{t('Borrow APR')}</HeaderValueLabel>
           </HeaderValueWrapper>
           <HeaderValueWrapper>
-            <HeaderValue id="header-value-supply-apr">{`${formatNumber(supplyApr)}%`}</HeaderValue>
+            <HeaderValue id="header-value-supply-apr">{`${formatNumber(
+              supplyApyNum
+            )}%`}</HeaderValue>
             <HeaderValueLabel>{t('Supply APR')}</HeaderValueLabel>
           </HeaderValueWrapper>
         </HeaderValueOuterWrapper>
@@ -176,39 +185,16 @@ export const AsseInterestModel = () => {
                   headerValueUtilizationDom.innerHTML = formattedValue;
 
                   const currentBorrowApr =
-                    chartDataBorrow?.find(data => data.x === d.x)?.y || borrowApr;
+                    chartDataBorrow?.find(data => data.x === d.x)?.y || borrowApyNum;
                   const currentSupplyApr =
-                    chartDataSupply?.find(data => data.x === d.x)?.y || supplyApr;
-                  headerValueBorowAprDom.innerHTML = `${formatNumber(
-                    currentBorrowApr,
-                    2,
-                    'floor',
-                    THOUSAND,
-                    2
-                  )}%`;
-                  headerValueSupplyAprDom.innerHTML = `${formatNumber(
-                    currentSupplyApr,
-                    2,
-                    'floor',
-                    THOUSAND,
-                    2
-                  )}%`;
+                    chartDataSupply?.find(data => data.x === d.x)?.y || supplyApyNum;
+                  headerValueBorowAprDom.innerHTML = `${formatNumber(currentBorrowApr)}%`;
+                  headerValueSupplyAprDom.innerHTML = `${formatNumber(currentSupplyApr)}%`;
                 } else {
+                  console.log(borrowApyNum, supplyApyNum);
                   headerValueUtilizationDom.innerHTML = formattedUtilizationRate;
-                  headerValueBorowAprDom.innerHTML = `${formatNumber(
-                    borrowApr,
-                    2,
-                    'floor',
-                    THOUSAND,
-                    2
-                  )}%`;
-                  headerValueSupplyAprDom.innerHTML = `${formatNumber(
-                    supplyApr,
-                    2,
-                    'floor',
-                    THOUSAND,
-                    2
-                  )}%`;
+                  headerValueBorowAprDom.innerHTML = `${formatNumber(borrowApyNum)}%`;
+                  headerValueSupplyAprDom.innerHTML = `${formatNumber(supplyApyNum)}%`;
                 }
               };
 
@@ -234,7 +220,7 @@ export const AsseInterestModel = () => {
                 changeHeader(d);
               };
 
-              const currentUtilizationRateX = xScale.invert(xScale(utilizationRate));
+              const currentUtilizationRateX = xScale.invert(xScale(utilizationRateNum));
               const currentUtilizationRateIdx = bisectX(
                 chartDataSupply,
                 currentUtilizationRateX,
@@ -244,9 +230,9 @@ export const AsseInterestModel = () => {
               const currentUtilizationRateData = chartDataSupply[currentUtilizationRateIdx];
               const currentUtilizationRateY = yScale(currentUtilizationRateData.y);
 
-              const currentTextXScale = xScale(utilizationRate);
+              const currentTextXScale = xScale(utilizationRateNum);
               const currentTextX =
-                utilizationRate > 50
+                utilizationRateNum > 50
                   ? currentTextXScale - widthData.currentTextBg - 4
                   : currentTextXScale + 4;
 
@@ -343,11 +329,11 @@ export const AsseInterestModel = () => {
                   <Group>
                     <Line
                       from={{
-                        x: xScale(utilizationRate),
+                        x: xScale(utilizationRateNum),
                         y: 24,
                       }}
                       to={{
-                        x: xScale(utilizationRate),
+                        x: xScale(utilizationRateNum),
                         y: currentUtilizationRateY,
                       }}
                       stroke={COLOR.GREEN[50]}
@@ -411,13 +397,7 @@ export const AsseInterestModel = () => {
                       textAnchor="start"
                       className="chart-avg-text-optimal"
                     >
-                      {`${t('Optimal')} ${formatNumber(
-                        optimalUtilizationRate,
-                        2,
-                        'floor',
-                        THOUSAND,
-                        2
-                      )}%`}
+                      {`${t('Optimal')} ${formatNumber(optimalUtilizationRate)}%`}
                     </Text>
                   </Group>
                   {width && height && (

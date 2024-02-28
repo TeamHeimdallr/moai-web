@@ -109,7 +109,7 @@ export const MarketInfoCurrentLTVPopup = ({ assets, debt, criteria }: Props) => 
               <IconTriangle width={12} height={10} fill={COLOR.NEUTRAL[100]} />
             </UserLableWrapper>
 
-            <HazardLableWrapper>
+            {/* <HazardLableWrapper>
               <HazardIcon>
                 <IconTriangle
                   width={12}
@@ -120,7 +120,7 @@ export const MarketInfoCurrentLTVPopup = ({ assets, debt, criteria }: Props) => 
               </HazardIcon>
               <HazardLabel>75.00%</HazardLabel>
               <HazardSubLabel>{t('current-ltv-liquidation-threshold')}</HazardSubLabel>
-            </HazardLableWrapper>
+            </HazardLableWrapper> */}
           </GraphWrapper>
 
           <ContentDescription>{t('current-ltv-description2')}</ContentDescription>
@@ -165,7 +165,7 @@ const ExpressNumber = styled.div<ExpressNumberProps>(({ highlight }) => [
 ]);
 
 const GraphWrapper = tw.div`
-  flex flex-col gap-4 relative w-full h-90 pt-34
+  flex flex-col gap-4 relative w-full h-60 pt-34
 `;
 
 const Graph = styled.div(() => [

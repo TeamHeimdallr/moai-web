@@ -2,9 +2,9 @@ import { ReactNode, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { IconQuestion } from '~/assets/icons';
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 
-import { ASSET_URL } from '~/constants';
+import { IconQuestion } from '~/assets/icons';
 
 import { ButtonIconSmall, ButtonPrimaryMedium } from '~/components/buttons';
 import {
@@ -37,84 +37,26 @@ export const useTableAssetsToSupply = () => {
   const { selectedNetwork } = useNetwork();
   const { currentAddress } = useConnectedWallet(selectedNetwork);
 
-  // TODO: similar to my pools. get user balance, and call POST with user balances.
-  const assetsToSupplyData = {
-    pages: [
-      {
-        assetsToSupply: [
-          {
-            id: 1,
-            asset: {
-              symbol: 'XRP',
-              image: `${ASSET_URL}/tokens/token-xrp.png`,
-
-              balance: currentAddress ? 123123 : 0,
-              price: 0.5,
-              value: currentAddress ? 123123 * 0.5 : 0,
-
-              address: '0xCCCCcCCc00000002000000000000000000000000',
-            },
-            apy: 5.49,
-            collateral: true,
-          },
-          {
-            id: 2,
-            asset: {
-              symbol: 'USDC',
-              image: `${ASSET_URL}/tokens/token-usdc.png`,
-
-              balance: currentAddress ? 2000 : 0,
-              price: 0.99998,
-              value: currentAddress ? 2000 * 0.99998 : 0,
-
-              address: '0xcCcCCCCc00000864000000000000000000000000',
-            },
-            apy: 0.00249,
-            collateral: false,
-          },
-          {
-            id: 3,
-            asset: {
-              symbol: 'ASTO',
-              image: `${ASSET_URL}/tokens/token-asto.png`,
-
-              balance: 0,
-              price: 0.037040386348962784,
-              value: 0,
-
-              address: '0xcCcCCccC00004464000000000000000000000000',
-            },
-            apy: 0.0081,
-            collateral: false,
-          },
-        ].filter(d => (showZeroBalances || !currentAddress ? true : d.asset.balance > 0)),
-      },
-    ],
-  };
-
-  const hasNextPage = false;
-  const fetchNextPage = () => {};
-
-  const assetsToSupply = useMemo(
-    () => assetsToSupplyData?.pages?.flatMap(page => page.assetsToSupply) || [],
-    [assetsToSupplyData?.pages]
+  const { markets } = useGetAllMarkets();
+  const assetsToSupply = markets.filter(m =>
+    showZeroBalances || !currentAddress ? true : m.balance > 0
   );
 
   const sortedAssetsToSupply = useMemo(() => {
     if (sort?.key === 'balance') {
       return assetsToSupply.sort((a, b) => {
         if (sort.order === 'desc') {
-          return b.asset.value - a.asset.value;
+          return b.balance - a.balance;
         }
-        return a.asset.value - b.asset.value;
+        return a.balance - b.balance;
       });
     }
     if (sort?.key === 'apy') {
       return assetsToSupply.sort((a, b) => {
         if (sort.order === 'desc') {
-          return b.apy - a.apy;
+          return b.supplyApy - a.supplyApy;
         }
-        return a.apy - b.apy;
+        return a.supplyApy - b.supplyApy;
       });
     }
 
@@ -125,23 +67,24 @@ export const useTableAssetsToSupply = () => {
     () =>
       sortedAssetsToSupply?.map(d => {
         return {
-          meta: { id: d.id, asset: d.asset },
+          meta: { address: d.address },
           asset: (
             <TableColumnToken
-              tokens={[{ symbol: d.asset.symbol, image: d.asset.image }]}
+              tokens={[{ symbol: d.symbol, image: d.image }]}
               disableSelectedToken
             />
           ),
           balance: (
             <TableColumnAmount
-              balance={d.asset.balance}
-              value={d.asset.value}
+              balance={d.balance}
+              value={d.balance * (d.price || 0)}
               align="center"
               empty={!currentAddress}
             />
           ),
-          apy: <TableColumn value={<APYSmall apy={d.apy} />} align="center" />,
-          collateral: <TableColumnCheck active={d.collateral} align="center" />,
+          apy: <TableColumn value={<APYSmall apy={d.supplyApy} />} align="center" />,
+          // TODO: can be collateral or not
+          collateral: <TableColumnCheck active={true} align="center" />,
           buttons: (
             <TableColumnButtons align="flex-end">
               <ButtonPrimaryMedium
@@ -222,11 +165,11 @@ export const useTableAssetsToSupply = () => {
     () =>
       sortedAssetsToSupply.map((d, i) => {
         return {
-          meta: { id: d.id, asset: d.asset },
+          meta: { address: d.address },
           rows: [
             <TableColumnToken
               key={i}
-              tokens={[{ symbol: d.asset.symbol, image: d.asset.image }]}
+              tokens={[{ symbol: d.symbol, image: d.image }]}
               disableSelectedToken
             />,
           ],
@@ -243,11 +186,11 @@ export const useTableAssetsToSupply = () => {
           dataRows: [
             {
               label: 'lending-my-balance',
-              value: <TableColumnAmount balance={d.asset.balance} value={d.asset.value} />,
+              value: <TableColumnAmount balance={d.balance} value={d.balance * (d.price || 0)} />,
             },
             {
               label: 'lending-apy',
-              value: <TableColumn value={<APYSmall apy={d.apy} />} align="flex-end" />,
+              value: <TableColumn value={<APYSmall apy={d.supplyApy} />} align="flex-end" />,
             },
             {
               label: (
@@ -262,7 +205,8 @@ export const useTableAssetsToSupply = () => {
                   }
                 />
               ),
-              value: <TableColumnCheck active={d.collateral} />,
+              // TODO: can be collateral or not
+              value: <TableColumnCheck active={true} />,
             },
           ],
         };
@@ -297,8 +241,5 @@ export const useTableAssetsToSupply = () => {
     mobileTableColumn,
 
     assetsToSupply,
-
-    hasNextPage,
-    fetchNextPage,
   };
 };

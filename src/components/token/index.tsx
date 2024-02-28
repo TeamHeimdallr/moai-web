@@ -98,7 +98,7 @@ const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, disabled,
 ]);
 
 const TextWrapper = tw.div`
-  flex gap-4 items-end uppercase
+  flex gap-4 items-end
 `;
 
 interface TokenWrapperProps {

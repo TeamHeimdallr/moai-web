@@ -1,5 +1,9 @@
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
+import { formatUnits } from 'viem';
+
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconQuestion } from '~/assets/icons';
@@ -21,17 +25,24 @@ import { AssetSupplyInfoChart } from './asset-supply-info-chart';
 export const AssetSupplyInfo = () => {
   const { t } = useTranslation();
 
-  // TODO: connect api
-  const totalSupply = 2000000000;
-  const currentSupply = 739845000;
-  const ratio = (currentSupply / totalSupply) * 100;
+  const { address } = useParams();
+  const { markets } = useGetAllMarkets();
+  const market = markets.find(m => m.address === address);
 
-  const apy = 0.0239;
-  const collateral = true;
+  const { totalSupply, supplyApy, decimals } = market || {};
+
+  // TODO: connect api
+  const maxSupply = 2 * 10 ** 9;
 
   const maxLTV = 70;
+  const collateral = true;
   const liquidationThreshold = 75;
-  const liquidationPenalty = 12.123;
+  const liquidationPenalty = 10;
+
+  const totalSupplyNum = Number(formatUnits(totalSupply || 0n, decimals || 0));
+  const supplyApyNum = Number(supplyApy);
+
+  const ratio = (totalSupplyNum / maxSupply) * 100;
 
   return (
     <OuterWrapper>
@@ -49,9 +60,9 @@ export const AssetSupplyInfo = () => {
             }
             value={
               <>
-                <InfoText>{formatNumber(currentSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
+                <InfoText>{formatNumber(totalSupplyNum, 2, 'floor', THOUSAND, 2)}</InfoText>
                 <InfoTextSmall>of</InfoTextSmall>
-                <InfoText>{formatNumber(totalSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
+                <InfoText>{formatNumber(maxSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
               </>
             }
             barChart
@@ -60,7 +71,7 @@ export const AssetSupplyInfo = () => {
           />
           <AssetSupplyBorrowInfoCard
             title={t('APY')}
-            value={<APYMedium apy={apy} style={{ justifyContent: 'flex-start' }} />}
+            value={<APYMedium apy={supplyApyNum} style={{ justifyContent: 'flex-start' }} />}
           />
         </InfoWrapper>
 

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { Address, parseUnits } from 'viem';
+import { useWalletClient } from 'wagmi';
 
 import { useLendingSupply } from '~/api/api-contract/lending/supply';
 import { useApprove } from '~/api/api-contract/token/approve';
@@ -33,7 +34,7 @@ import {
 import { IToken, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
-  tokenIn?: IToken & { balance: number; amount: number };
+  tokenIn?: IToken & { balance: number; amount: number; mTokenAddress: Address };
 
   userTokenBalance?: number;
   apy?: number;
@@ -58,6 +59,8 @@ export const LendingSupplyPopup = ({
   const { ref } = useGAInView({ name: 'lending-supply-popup' });
   const { gaAction } = useGAAction();
 
+  const { data: walletClient } = useWalletClient();
+
   const { error: lendingGasError, setError: setLendingSupplyGasError } =
     useLendingSupplyNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
@@ -77,9 +80,9 @@ export const LendingSupplyPopup = ({
   const [estimatedLendingSupplyFee, setEstimatedLendingSupplyFee] = useState<number | undefined>();
   const [estimatedTokenApproveFee, setEstimatedTokenApproveFee] = useState<number | undefined>();
 
-  // TODO: connect api
-  const assetAddress = '0x' as Address;
-  const { symbol, address, amount, currency, decimal, balance, price, image } = tokenIn || {};
+  const assetAddress = addressParams as Address;
+  const { symbol, mTokenAddress, address, amount, currency, decimal, balance, price, image } =
+    tokenIn || {};
 
   const {
     allow,
@@ -95,7 +98,7 @@ export const LendingSupplyPopup = ({
     issuer: address || '',
     spender: assetAddress,
     currency: currency || '',
-    enabled: false,
+    enabled: !!amount && amount > 0,
   });
 
   const {
@@ -108,7 +111,7 @@ export const LendingSupplyPopup = ({
     estimateFee: estimateLendingSupplyFee,
   } = useLendingSupply({
     token: tokenIn,
-    enabled: false,
+    enabled: !!tokenIn && allowance && !!amount && amount > 0 && !!mTokenAddress,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -144,11 +147,14 @@ export const LendingSupplyPopup = ({
     if (!isIdle) {
       gaAction({
         action: 'go-to-lending-detail-page',
-        data: { component: 'lending-supply-popup', link: `lending/${network}/${addressParams}` },
+        data: {
+          component: 'lending-supply-popup',
+          link: `lending/${network}/${addressParams}`,
+        },
       });
 
       close();
-      navigate(`lending/${network}/${addressParams}`);
+      navigate(`/lending/${network}/${addressParams}`);
       return;
     }
 
@@ -235,6 +241,22 @@ export const LendingSupplyPopup = ({
     approveGasError ||
     !validMaxXrpAmount;
 
+  const handleAddToken = async (address: Address, symbol: string) => {
+    if (!address || !symbol) return;
+
+    await walletClient?.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: {
+          address,
+          symbol,
+          decimals: 8,
+        },
+      },
+    });
+  };
+
   return (
     <Popup
       id={POPUP_ID.LENDING_SUPPLY}
@@ -294,13 +316,14 @@ export const LendingSupplyPopup = ({
         {!isIdle && isSuccess && (
           <SuccessContentWrapper>
             <SuccessContentToken>
-              <Token type="large" token={symbol || ''} imageUrl={image} />
-              {t('add-token', { token: symbol })}
+              <Token type="large" token={`m${symbol}` || ''} imageUrl={image} />
+              {t('add-token', { token: `m${symbol}` })}
             </SuccessContentToken>
             <ButtonPrimaryMediumIconLeading
               icon={<IconAddToken />}
               text={t('Add to wallet')}
               buttonType="outlined"
+              onClick={() => handleAddToken(mTokenAddress ?? '0x', `m${symbol}`)}
             />
           </SuccessContentWrapper>
         )}

@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
+import { Address } from 'viem';
 
-import { useLendingWithdraw } from '~/api/api-contract/lending/withdraw';
+import { useRedeemUnderlying } from '~/api/api-contract/lending/redeem-underlying';
 
 import { COLOR } from '~/assets/colors';
 import { IconArrowNext, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
@@ -26,7 +27,7 @@ import { useLendingWithdrawNetworkFeeErrorStore } from '~/states/contexts/networ
 import { IToken, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
-  tokenIn?: IToken & { amount: number };
+  tokenIn?: IToken & { amount: number; mTokenAddress: Address };
 
   userTokenBalance?: number;
   currentHealthFactor?: number;
@@ -68,8 +69,7 @@ export const LendingWithdrawPopup = ({
     number | undefined
   >();
 
-  // TODO: connect api
-  const { symbol, amount, price, image } = tokenIn || {};
+  const { symbol, mTokenAddress, amount, price, image } = tokenIn || {};
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor || 100);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor || 100);
 
@@ -81,9 +81,9 @@ export const LendingWithdrawPopup = ({
     blockTimestamp,
     writeAsync,
     estimateFee: estimateLendingWithdrawFee,
-  } = useLendingWithdraw({
+  } = useRedeemUnderlying({
     token: tokenIn,
-    enabled: false,
+    enabled: !!tokenIn && !!amount && amount > 0 && !!mTokenAddress,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -112,7 +112,7 @@ export const LendingWithdrawPopup = ({
       });
 
       close();
-      navigate(`lending`);
+      navigate(`/lending`);
       return;
     }
 
