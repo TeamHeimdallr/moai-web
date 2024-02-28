@@ -1,13 +1,16 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
+import { Address } from 'viem';
+
+import { useEnterOrExitMarket } from '~/api/api-contract/lending/enter-exit-market';
 
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { THOUSAND } from '~/constants';
+import { SCANNER_URL, THOUSAND } from '~/constants';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
@@ -18,9 +21,11 @@ import { TokenList } from '~/components/token-list';
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
-import { DATE_FORMATTER, formatNumber } from '~/utils';
-import { POPUP_ID } from '~/types';
+import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
+import { useEnterOrExitMarketNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { NETWORK, POPUP_ID } from '~/types';
 
 interface Params {
   asset: {
@@ -29,20 +34,28 @@ interface Params {
     balance?: number;
     value?: number;
   };
+  address: Address;
 }
 interface Props {
   type: 'enable' | 'disable';
+  handleSuccess?: () => void;
 }
 
-export const PopupCollateral = ({ type }: Props) => {
+export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const { ref } = useGAInView({ name: 'lending-enable-collateral-popup' });
   const { gaAction } = useGAAction();
   const navigate = useNavigate();
+  const { network } = useParams();
+  const { isEvm, isFpass, selectedNetwork } = useNetwork();
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const isEnable = type === 'enable';
   const popupId = isEnable
     ? POPUP_ID.LENDING_SUPPLY_ENABLE_COLLATERAL
     : POPUP_ID.LENDING_SUPPLY_DISABLE_COLLATERAL;
+
+  const { error: enterOrExitGasError, setError: setEnterOrExitGasError } =
+    useEnterOrExitMarketNetworkFeeErrorStore();
 
   const { t } = useTranslation();
   const { isMD } = useMediaQuery();
@@ -50,15 +63,33 @@ export const PopupCollateral = ({ type }: Props) => {
 
   const params = _params as Params;
   const { symbol, image, balance, value } = params?.asset || {};
+  const marketAddress = params?.address || '0x0';
 
-  // TODO: connect to contract
-  const isIdle = true;
-  const isLoading = false;
-  const isSuccess = false;
+  const [estimatedEnterOrExitMarketFee, setEstimatedEnterOrExitMarketFee] = useState<
+    number | undefined
+  >();
 
-  const gasError = false;
-  const estimatedFee = 3.24543;
-  const txDate = new Date();
+  const isExitPossible = true; // TODO: check if exit is possible by using hypothetical liquidity
+  const {
+    isLoading,
+    isSuccess: enterOrExitSuccess,
+    isError: enterOrExitError,
+    txData,
+    blockTimestamp,
+    writeAsync,
+    estimateFee: enterOrExitEstimateFee,
+  } = useEnterOrExitMarket({
+    marketAddress,
+    currentStatus: isEnable ? 'disable' : 'enable',
+    enabled: marketAddress !== '0x0' && ((!isEnable && isExitPossible) || isEnable),
+  });
+
+  const txDate = new Date(blockTimestamp || 0);
+  const isIdle = !txData || !(enterOrExitError || enterOrExitSuccess);
+  const isSuccess = enterOrExitSuccess && !!txData;
+  const isError = enterOrExitError;
+  const estimatedFee = estimatedEnterOrExitMarketFee || 1;
+  const gasError = (balance || 0) <= Number(estimatedFee || 1) || enterOrExitGasError;
 
   const buttonText = useMemo(() => {
     if (isLoading) return t('Confirm in wallet');
@@ -71,7 +102,7 @@ export const PopupCollateral = ({ type }: Props) => {
     });
   }, [isEnable, isIdle, isLoading, isSuccess, symbol, t]);
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     if (isLoading) return;
     if (!isIdle) {
       if (isSuccess) {
@@ -89,13 +120,47 @@ export const PopupCollateral = ({ type }: Props) => {
       return;
     }
 
-    // TODO: call contract
-    if (isEnable) {
-      close();
-      return;
-    }
-    close();
+    await writeAsync?.();
   };
+
+  const handleLink = () => {
+    const txHash = isFpass ? txData?.extrinsicId : txData?.transactionHash;
+    const url = `${SCANNER_URL[currentNetwork || NETWORK.THE_ROOT_NETWORK]}/${
+      isFpass ? 'extrinsics' : isEvm ? 'tx' : 'transactions'
+    }/${txHash}`;
+
+    gaAction({
+      action: 'go-to-transaction',
+      data: { component: `${type}-collateral-popup`, txHash: txHash, link: url },
+    });
+
+    window.open(url);
+  };
+
+  useEffect(() => {
+    if (marketAddress == '0x0') return;
+
+    const enterOrExitEstimateFeeAsync = async () => {
+      const fee = await enterOrExitEstimateFee?.();
+      setEstimatedEnterOrExitMarketFee(fee || 1);
+    };
+    enterOrExitEstimateFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (isSuccess) {
+      handleSuccess?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess]);
+
+  useEffect(() => {
+    return () => {
+      setEnterOrExitGasError(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Popup
@@ -140,7 +205,7 @@ export const PopupCollateral = ({ type }: Props) => {
                 leftAlign
               />
             </List>
-            <Scanner onClick={() => {}}>
+            <Scanner onClick={() => handleLink()}>
               <IconTime width={20} height={20} fill={COLOR.NEUTRAL[40]} />
               <ScannerText> {format(new Date(txDate), DATE_FORMATTER.FULL)}</ScannerText>
               <IconLink width={20} height={20} fill={COLOR.NEUTRAL[40]} />
@@ -148,7 +213,7 @@ export const PopupCollateral = ({ type }: Props) => {
           </InnerWrapper>
         )}
 
-        {!isIdle && !isSuccess && (
+        {!isIdle && isError && (
           <InnerWrapper
             style={{ gap: isIdle ? (isMD ? 24 : 20) : 40, paddingBottom: isMD ? '16px' : '12px' }}
           >

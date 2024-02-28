@@ -35,7 +35,7 @@ export const useGetAssetsIn = () => {
   });
 
   return {
-    enteredMarkets: data?.[0],
+    enteredMarkets: data as Array<string> | undefined,
     refetch,
   };
 };

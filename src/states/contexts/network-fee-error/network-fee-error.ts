@@ -117,3 +117,13 @@ export const useLendingRepayNetworkFeeErrorStore = create<State>()(
     }))
   )
 );
+
+export const useEnterOrExitMarketNetworkFeeErrorStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'ENTER_OR_EXIT_MARKET_NETWORK_FEE_ERROR_STORE',
+      error: false,
+      setError: error => set({ error }),
+    }))
+  )
+);

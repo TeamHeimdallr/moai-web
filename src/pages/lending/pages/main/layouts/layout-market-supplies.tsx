@@ -54,6 +54,7 @@ export const LayoutMarketSupplies = () => {
     mobileTableData: mobileTableDataMySupplies,
     hasNextPage: hasNextPageMySupplies,
     fetchNextPage: fetchNextPageMySupplies,
+    refetchGetAssetsIn,
   } = useTableMySupplies();
 
   const {
@@ -73,6 +74,10 @@ export const LayoutMarketSupplies = () => {
     if (!address) return;
 
     navigate(`/lending/${networkAbbr}/${address}`);
+  };
+
+  const handleSuccess = () => {
+    refetchGetAssetsIn();
   };
 
   return (
@@ -175,8 +180,12 @@ export const LayoutMarketSupplies = () => {
         <TooltipContent>{t('lending-my-supply-collateral-tooltip')}</TooltipContent>
       </Tooltip>
 
-      {enableCollateralPopupOpened && <PopupCollateral type="enable" />}
-      {disableCollateralPopupOpened && <PopupCollateral type="disable" />}
+      {enableCollateralPopupOpened && (
+        <PopupCollateral type="enable" handleSuccess={handleSuccess} />
+      )}
+      {disableCollateralPopupOpened && (
+        <PopupCollateral type="disable" handleSuccess={handleSuccess} />
+      )}
     </Wrapper>
   );
 };

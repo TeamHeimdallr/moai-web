@@ -45,7 +45,7 @@ export const useTableMySupplies = () => {
 
   const { accountSnapshots } = useUserAccountSnapshotAll();
   const { markets } = useGetAllMarkets();
-  const { enteredMarkets } = useGetAssetsIn();
+  const { enteredMarkets, refetch: refetchGetAssetsIn } = useGetAssetsIn();
 
   // TODO: pagenation logic 은 추후 Market 이 많아지면 추가
   const hasNextPage = false;
@@ -115,10 +115,10 @@ export const useTableMySupplies = () => {
       sortedMySupplies?.map(d => {
         const handleToggle = (current: boolean) => {
           if (current) {
-            openCollateralDisable({ params: { asset: d.asset } });
+            openCollateralDisable({ params: { asset: d.asset, address: d.address } });
             return;
           }
-          openCollateralEnable({ params: { asset: d.asset } });
+          openCollateralEnable({ params: { asset: d.asset, address: d.address } });
         };
 
         return {
@@ -226,10 +226,10 @@ export const useTableMySupplies = () => {
       sortedMySupplies.map((d, i) => {
         const handleToggle = (current: boolean) => {
           if (current) {
-            openCollateralDisable({ params: { asset: d.asset } });
+            openCollateralDisable({ params: { asset: d.asset, address: d.address } });
             return;
           }
-          openCollateralEnable({ params: { asset: d.asset } });
+          openCollateralEnable({ params: { asset: d.asset, address: d.address } });
         };
 
         return {
@@ -312,5 +312,7 @@ export const useTableMySupplies = () => {
 
     hasNextPage,
     fetchNextPage,
+
+    refetchGetAssetsIn,
   };
 };
