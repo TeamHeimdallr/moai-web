@@ -2,8 +2,11 @@ import { ReactNode, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
+import { formatUnits } from 'viem';
 
-import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useGetAssetsIn } from '~/api/api-contract/lending/get-markets-in';
+import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 
 import { IconQuestion } from '~/assets/icons';
 
@@ -27,7 +30,6 @@ import { useTableLendingMySuppliesSortStore } from '~/states/components';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { APYSmall } from '../../components/apy';
-import { mySuppliesData } from '../../data';
 
 export const useTableMySupplies = () => {
   const navigate = useNavigate();
@@ -41,35 +43,42 @@ export const useTableMySupplies = () => {
   const { open: openCollateralEnable } = usePopup(POPUP_ID.LENDING_SUPPLY_ENABLE_COLLATERAL);
   const { open: openCollateralDisable } = usePopup(POPUP_ID.LENDING_SUPPLY_DISABLE_COLLATERAL);
 
+  const { accountSnapshots } = useUserAccountSnapshotAll();
+  const { markets } = useGetAllMarkets();
+  const { enteredMarkets } = useGetAssetsIn();
+
+  // TODO: pagenation logic 은 추후 Market 이 많아지면 추가
   const hasNextPage = false;
   const fetchNextPage = () => {};
 
-  const { data: tokenData } = useGetTokensQuery({
-    queries: {
-      filter: `network:eq:${getNetworkAbbr(selectedNetwork)}`,
-    },
-  });
-
-  const { tokens } = tokenData || {};
-
   const mySupplies = useMemo(
     () =>
-      (mySuppliesData?.pages?.flatMap(page => page.mySupplies) || []).map(d => {
-        const { price } = tokens?.find(b => b.symbol === d.asset.symbol) || {
-          price: 0,
-        };
-        const value = (d.asset.balance || 0) * (price || 0);
+      accountSnapshots.map(d => {
+        const makrketIndex = markets.findIndex(m => m.address === d.mTokenAddress);
+        const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
+        const price = market?.price;
+        const underlyingBalance = Number(
+          formatUnits(d.exchangeRate * d.mTokenBalance, 18 + (market?.underlyingDecimals || 18))
+        );
+        const value = underlyingBalance * (price || 0);
+        const isCollateralEnabled = enteredMarkets?.includes(d.mTokenAddress) || false;
 
         return {
-          ...d,
+          id: makrketIndex,
+          address: d.mTokenAddress,
           asset: {
-            ...d.asset,
+            symbol: market?.underlyingSymbol || '',
+            image: market?.underlyingImage || '',
+            balance: underlyingBalance,
             value,
           },
+          apy: market?.supplyApy || 0,
+          collateral: isCollateralEnabled,
         };
       }),
-    [tokens]
+    [accountSnapshots, enteredMarkets, markets]
   );
+
   const sortedMySupplies = useMemo(() => {
     if (sort?.key === 'balance') {
       return mySupplies.sort((a, b) => {

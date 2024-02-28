@@ -40,9 +40,10 @@ export interface IMarket {
 export interface ISnapshot {
   error: bigint;
   mTokenBalance: bigint;
+  mTokenAddress: Address;
   borrowBalance: bigint;
   exchangeRate: bigint;
-  collateralFator: bigint;
+  collateralFator?: bigint;
 }
 
 export type IMarketWithToken = IMarket & {
