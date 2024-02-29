@@ -77,6 +77,7 @@ export const useUserAccountSnapshotAll = () => {
       borrowBalance: BigInt(d.result?.[2] ?? 0),
       exchangeRate: BigInt(d.result?.[3] ?? 0),
       collateralFator: collateralFactorsMantissa[i] ?? 0n,
+      mTokenAddress: marketAddrs[i] ?? '0x0',
     };
   }) || []) as ISnapshot[];
 

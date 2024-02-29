@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
 
-import { useGetTokenQuery } from '~/api/api-server/token/get-token';
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 
 import { IconBack } from '~/assets/icons';
 
@@ -38,12 +38,8 @@ export const LendingRepay = () => {
 
   const networkFull = getNetworkFull(network);
 
-  const { data: tokenData } = useGetTokenQuery(
-    { queries: { networkAbbr: network, address: address } },
-    { enabled: !!address && !!network }
-  );
-  const { token } = tokenData || {};
-  const { symbol } = token || {};
+  const { markets } = useGetAllMarkets();
+  const market = markets?.find(m => m.address === address);
 
   return (
     <Wrapper ref={ref}>
@@ -51,11 +47,11 @@ export const LendingRepay = () => {
         <Gnb />
       </GnbWrapper>
       <InnerWrapper>
-        {networkFull === selectedNetwork && token && (
+        {networkFull === selectedNetwork && market && market?.symbol && (
           <ContentWrapper>
             <Header>
               <ButtonIconLarge icon={<IconBack />} onClick={() => navigate(-1)} />
-              <Title>{t('repay-token', { token: symbol })}</Title>
+              <Title>{t('repay-token', { token: market?.underlyingSymbol })}</Title>
             </Header>
 
             <RepayWrapper>
@@ -94,7 +90,7 @@ const InnerWrapper = tw.div`
 `;
 
 const ContentWrapper = styled.div(() => [
-  tw`flex flex-col items-center gap-20 
+  tw`flex flex-col items-center gap-20
   md:gap-40
   `,
   css`

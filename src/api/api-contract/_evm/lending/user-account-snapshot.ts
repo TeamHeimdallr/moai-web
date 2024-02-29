@@ -47,6 +47,7 @@ export const useUserAccountSnapshot = ({ mTokenAddress }: Props) => {
     mTokenBalance: isError ? 0n : BigInt(data?.[1] ?? 0),
     borrowBalance: isError ? 0n : BigInt(data?.[2] ?? 0),
     exchangeRate: isError ? 0n : BigInt(data?.[3] ?? 0),
+    mTokenAddress,
   } as ISnapshot;
 
   return {

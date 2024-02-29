@@ -77,6 +77,10 @@ export const UNITROLLER_ADDRESS: Record<string, string> = {
   [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET ? '' : '0xCB8e9eDb7DEc4e01eac5F8e669b089ff02EEcf59',
 };
 
+export const MOAILENS_ADDRESS: Record<string, string> = {
+  [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET ? '' : '0xAF6396c1B6603A7f31FC524E9E42c8137aB869eC',
+};
+
 export const POOL_ID = {
   [NETWORK.THE_ROOT_NETWORK]: {
     ROOT_XRP: IS_MAINNET

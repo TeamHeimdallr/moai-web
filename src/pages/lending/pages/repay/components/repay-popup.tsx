@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
+import { Address } from 'viem';
 
 import { useLendingRepay } from '~/api/api-contract/lending/repay';
 
@@ -26,12 +27,14 @@ import { useLendingRepayNetworkFeeErrorStore } from '~/states/contexts/network-f
 import { IToken, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
-  tokenIn?: IToken & { amount: number };
+  tokenIn?: IToken & { amount: number; mTokenAddress: Address };
 
   userTokenBalance?: number;
   currentHealthFactor?: number;
   nextHealthFactor?: number;
   debt?: number;
+
+  isMax?: boolean;
 
   handleSuccess?: () => void;
 }
@@ -44,6 +47,7 @@ export const LendingRepayPopup = ({
   nextHealthFactor,
   debt,
 
+  isMax,
   handleSuccess,
 }: Props) => {
   const { ref } = useGAInView({ name: 'lending-repay-popup' });
@@ -67,7 +71,7 @@ export const LendingRepayPopup = ({
   const [estimatedLendingRepayFee, setEstimatedLendingRepayFee] = useState<number | undefined>();
 
   // TODO: connect api
-  const { symbol, amount, price, image } = tokenIn || {};
+  const { symbol, mTokenAddress, amount, price, image } = tokenIn || {};
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor || 100);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor || 100);
 
@@ -81,7 +85,8 @@ export const LendingRepayPopup = ({
     estimateFee: estimateLendingRepayFee,
   } = useLendingRepay({
     token: tokenIn,
-    enabled: false,
+    isMax,
+    enabled: !!tokenIn && !!amount && amount > 0 && !!mTokenAddress,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -110,7 +115,7 @@ export const LendingRepayPopup = ({
       });
 
       close();
-      navigate(`lending`);
+      navigate(`/lending`);
       return;
     }
 
@@ -142,8 +147,6 @@ export const LendingRepayPopup = ({
   }, []);
 
   useEffect(() => {
-    // TODO connect contract
-    return;
     if ((amount || 0) <= 0) return;
 
     const estimateLendingRepayFeeAsync = async () => {

@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
-import { formatEther, formatUnits } from 'viem';
+import { Address, formatEther, formatUnits } from 'viem';
 
+import { useGetUnderlyingPrice } from '~/api/api-contract/_evm/lending/underlying-price';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 
 import { IconLink } from '~/assets/icons';
@@ -25,7 +26,9 @@ export const AssetInfo = () => {
     market || {};
 
   // TODO: connect to API
-  const oraclePrice = 0.582378;
+  const { price: oraclePrice } = useGetUnderlyingPrice({
+    mTokenAddress: (address as Address) ?? '0x0',
+  });
 
   const totalReservesNum = Number(formatEther(totalReserves || 0n));
   const totalSupplyNum = Number(formatUnits(totalSupply || 0n, decimals || 18));

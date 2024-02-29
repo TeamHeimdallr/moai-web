@@ -43,10 +43,6 @@ export const LayoutMarketSupplies = () => {
     POPUP_ID.LENDING_SUPPLY_DISABLE_COLLATERAL
   );
 
-  const balance = 24000;
-  const apy = 0.001;
-  const collateral = 24000;
-
   const {
     tableColumns: tableColumnsMySupplies,
     tableData: tableDataMySupplies,
@@ -54,7 +50,22 @@ export const LayoutMarketSupplies = () => {
     mobileTableData: mobileTableDataMySupplies,
     hasNextPage: hasNextPageMySupplies,
     fetchNextPage: fetchNextPageMySupplies,
+    refetchGetAssetsIn,
   } = useTableMySupplies();
+
+  const balance = tableDataMySupplies
+    .map(data => data.balance.props.value)
+    .reduce((a, b) => a + b, 0);
+
+  const apySum = tableDataMySupplies
+    .map(data => data.balance.props.value * data.apy.props.value.props.apy)
+    .reduce((a, b) => a + b, 0);
+
+  const apy = apySum / balance;
+
+  const collateral = tableDataMySupplies
+    .map(data => (data.collateral.props.selected ? data.balance.props.value : 0))
+    .reduce((a, b) => a + b, 0);
 
   const {
     tableColumns: tableColumnsAssetsToSupply,
@@ -73,6 +84,10 @@ export const LayoutMarketSupplies = () => {
     if (!address) return;
 
     navigate(`/lending/${networkAbbr}/${address}`);
+  };
+
+  const handleSuccess = () => {
+    refetchGetAssetsIn();
   };
 
   return (
@@ -175,8 +190,12 @@ export const LayoutMarketSupplies = () => {
         <TooltipContent>{t('lending-my-supply-collateral-tooltip')}</TooltipContent>
       </Tooltip>
 
-      {enableCollateralPopupOpened && <PopupCollateral type="enable" />}
-      {disableCollateralPopupOpened && <PopupCollateral type="disable" />}
+      {enableCollateralPopupOpened && (
+        <PopupCollateral type="enable" handleSuccess={handleSuccess} />
+      )}
+      {disableCollateralPopupOpened && (
+        <PopupCollateral type="disable" handleSuccess={handleSuccess} />
+      )}
     </Wrapper>
   );
 };
