@@ -82,7 +82,7 @@ export const calcHealthFactor = ({
     return acc + values;
   }, 0);
 
-  const healthFactor = denom === 0 ? 0 : numerator / denom;
+  const healthFactor = denom === 0 ? Infinity : numerator / denom;
   return healthFactor;
 };
 

@@ -1,8 +1,13 @@
+import { Address } from 'viem';
+
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { IToken } from '~/types';
 
+import { useRepay as useRepayEvm } from '../_evm/lending/repay';
+
 interface Props {
-  token?: IToken & { amount: number };
+  token?: IToken & { amount: number; mTokenAddress: Address };
+  isMax?: boolean;
   enabled?: boolean;
   debug?: 'idle' | 'loading' | 'success' | 'error';
 }
@@ -17,7 +22,7 @@ const useDummy = ({ debug }: Props) => {
       txData: undefined,
       blockTimestamp: undefined,
       writeAsync: async () => {
-        console.log('supply');
+        console.log('repay');
       },
       estimateFee: async () => 1.2394,
     };
@@ -32,7 +37,7 @@ const useDummy = ({ debug }: Props) => {
       },
       blockTimestamp: undefined,
       writeAsync: async () => {
-        console.log('supply');
+        console.log('repay');
       },
       estimateFee: async () => 1.2394,
     };
@@ -47,7 +52,7 @@ const useDummy = ({ debug }: Props) => {
       },
       blockTimestamp: new Date().getTime(),
       writeAsync: async () => {
-        console.log('supply');
+        console.log('repay');
       },
       estimateFee: async () => 1.2394,
     };
@@ -58,15 +63,15 @@ const useDummy = ({ debug }: Props) => {
     txData: undefined,
     blockTimestamp: undefined,
     writeAsync: async () => {
-      console.log('supply');
+      console.log('repay');
     },
     estimateFee: async () => 1.2394,
   };
 };
-export const useLendingRepay = ({ token, debug }: Props) => {
+export const useLendingRepay = ({ token, isMax, enabled, debug }: Props) => {
   const { isFpass } = useNetwork();
 
-  const resEvm = useDummy({ token, debug });
+  const resEvm = useRepayEvm({ token, isMax, enabled });
   const resFpass = useDummy({ token, debug });
 
   return isFpass ? resFpass : resEvm;

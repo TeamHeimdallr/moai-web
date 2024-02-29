@@ -53,29 +53,31 @@ export const useTableMySupplies = () => {
 
   const mySupplies = useMemo(
     () =>
-      accountSnapshots.map(d => {
-        const makrketIndex = markets.findIndex(m => m.address === d.mTokenAddress);
-        const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
-        const price = market?.price;
-        const underlyingBalance = Number(
-          formatUnits(d.exchangeRate * d.mTokenBalance, 18 + (market?.underlyingDecimals || 18))
-        );
-        const value = underlyingBalance * (price || 0);
-        const isCollateralEnabled = enteredMarkets?.includes(d.mTokenAddress) || false;
+      accountSnapshots
+        .map(d => {
+          const makrketIndex = markets.findIndex(m => m.address === d.mTokenAddress);
+          const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
+          const price = market?.price;
+          const underlyingBalance = Number(
+            formatUnits(d.exchangeRate * d.mTokenBalance, 18 + (market?.underlyingDecimals || 18))
+          );
+          const value = underlyingBalance * (price || 0);
+          const isCollateralEnabled = enteredMarkets?.includes(d.mTokenAddress) || false;
 
-        return {
-          id: makrketIndex,
-          address: d.mTokenAddress,
-          asset: {
-            symbol: market?.underlyingSymbol || '',
-            image: market?.underlyingImage || '',
-            balance: underlyingBalance,
-            value,
-          },
-          apy: market?.supplyApy || 0,
-          collateral: isCollateralEnabled,
-        };
-      }),
+          return {
+            id: makrketIndex,
+            address: d.mTokenAddress,
+            asset: {
+              symbol: market?.underlyingSymbol || '',
+              image: market?.underlyingImage || '',
+              balance: underlyingBalance,
+              value,
+            },
+            apy: market?.supplyApy || 0,
+            collateral: isCollateralEnabled,
+          };
+        })
+        .filter(d => d.asset.balance > 0),
     [accountSnapshots, enteredMarkets, markets]
   );
 

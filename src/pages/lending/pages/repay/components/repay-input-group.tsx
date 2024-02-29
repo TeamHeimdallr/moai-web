@@ -5,9 +5,12 @@ import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isFinite } from 'lodash-es';
 import tw from 'twin.macro';
-import { formatUnits, parseEther, parseUnits } from 'viem';
+import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
+import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
@@ -22,6 +25,7 @@ import { Token } from '~/components/token';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { calculateHealthFactorColor, formatNumber, getNetworkAbbr } from '~/utils';
+import { calcHealthFactor } from '~/utils/util-lending';
 import { IToken, POPUP_ID } from '~/types';
 
 import { LendingRepayPopup } from './repay-popup';
@@ -38,25 +42,42 @@ export const LendingRepayInputGroup = () => {
 
   const networkAbbr = getNetworkAbbr(selectedNetwork);
 
+  const { accountSnapshot: snapshot } = useUserAccountSnapshot({
+    mTokenAddress: (address ?? '0x0') as Address,
+  });
+  const { accountSnapshots: snapshotsAll } = useUserAccountSnapshotAll();
+
+  const { markets } = useGetAllMarkets();
+  const market = markets?.find(m => m.address === address);
+  const symbol = market?.underlyingSymbol;
+  const image = market?.underlyingImage;
+  const price = market?.price;
+
   const { data: tokenData } = useGetTokenQuery(
-    { queries: { networkAbbr, address: address } },
+    { queries: { networkAbbr, address: market?.underlyingAsset } },
     { enabled: !!address && !!networkAbbr }
   );
   const { token } = tokenData || {};
-  const { symbol, image, price } = token || {};
 
   const [inputValue, setInputValue] = useState<number>();
   const [_inputValueRaw, setInputValueRaw] = useState<bigint>();
 
   // TODO: connect API
-  const totalDebt = 150230;
-  const debt = 150230;
-  const currentHealthFactor = 3.8;
+  const debt = Number(formatUnits(snapshot?.borrowBalance || 0n, market?.underlyingDecimals || 18));
+  const currentHealthFactor = calcHealthFactor({
+    markets,
+    snapshots: snapshotsAll,
+  });
+  const nextHealthFactor = calcHealthFactor({
+    markets,
+    snapshots: snapshotsAll,
+    deltaBorrow: {
+      marketAddress: address as Address,
+      delta: parseUnits(inputValue?.toString() || '0', market?.underlyingDecimals || 18),
+      isRepay: true,
+    },
+  });
   const userTokenBalance = 123123.687598;
-  const nextHealthFactor =
-    totalDebt - (inputValue || 0) === 0
-      ? Infinity
-      : Math.max(currentHealthFactor + 0.001 * (inputValue || 0), 1);
 
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor);
@@ -78,10 +99,13 @@ export const LendingRepayInputGroup = () => {
   const isValidToRepay = useMemo(() => {
     if (!inputValue) return false;
     if (!isFormError && inputValue > 0 && inputValue <= debt) return true;
-  }, [inputValue, isFormError]);
+  }, [debt, inputValue, isFormError]);
 
   const tokenValue = (inputValue || 0) * (price || 0);
-  const tokenIn = { ...token, amount: inputValue } as IToken & { amount: number };
+  const tokenIn = { ...token, amount: inputValue, mTokenAddress: address } as IToken & {
+    amount: number;
+    mTokenAddress: Address;
+  };
 
   // TODO: prepare
 
@@ -192,6 +216,7 @@ export const LendingRepayInputGroup = () => {
       {popupOpened && (
         <LendingRepayPopup
           tokenIn={tokenIn}
+          isMax={inputValue === debt}
           currentHealthFactor={currentHealthFactor}
           nextHealthFactor={nextHealthFactor}
           debt={debt}

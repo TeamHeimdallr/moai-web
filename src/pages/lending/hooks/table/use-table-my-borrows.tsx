@@ -42,26 +42,28 @@ export const useTableMyBorrows = () => {
 
   const myBorrows = useMemo(
     () =>
-      accountSnapshots.map(d => {
-        const makrketIndex = markets.findIndex(m => m.address === d.mTokenAddress);
-        const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
-        const debt = Number(formatUnits(d.borrowBalance, market?.underlyingDecimals || 18));
-        const price = market?.price;
-        const debtValue = debt * (price || 0);
+      accountSnapshots
+        .map(d => {
+          const makrketIndex = markets.findIndex(m => m.address === d.mTokenAddress);
+          const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
+          const debt = Number(formatUnits(d.borrowBalance, market?.underlyingDecimals || 18));
+          const price = market?.price;
+          const debtValue = debt * (price || 0);
 
-        return {
-          id: makrketIndex,
-          address: d.mTokenAddress,
-          asset: {
-            symbol: market?.underlyingSymbol || '',
-            image: market?.underlyingImage || '',
-            address: market?.underlyingAsset || '',
-            debt,
-            value: debtValue,
-          },
-          apy: market?.borrowApy || 0,
-        };
-      }),
+          return {
+            id: makrketIndex,
+            address: d.mTokenAddress,
+            asset: {
+              symbol: market?.underlyingSymbol || '',
+              image: market?.underlyingImage || '',
+              address: market?.underlyingAsset || '',
+              debt,
+              value: debtValue,
+            },
+            apy: market?.borrowApy || 0,
+          };
+        })
+        .filter(d => d.asset.debt > 0),
     [accountSnapshots, markets]
   );
   const sortedMyBorrows = useMemo(() => {
@@ -90,6 +92,11 @@ export const useTableMyBorrows = () => {
     navigate(link);
   };
 
+  const handleLendingRepay = (address: string) => {
+    const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/repay`;
+    navigate(link);
+  };
+
   const tableData = useMemo(
     () =>
       sortedMyBorrows?.map(d => {
@@ -114,7 +121,10 @@ export const useTableMyBorrows = () => {
               />
               <ButtonPrimaryMedium
                 text={t('lending-repay')}
-                onClick={() => {}}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingRepay(d.address);
+                }}
                 buttonType="outlined"
               />
             </TableColumnButtons>
