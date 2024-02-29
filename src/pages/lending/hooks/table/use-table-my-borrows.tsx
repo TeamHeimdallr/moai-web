@@ -1,8 +1,11 @@
 import { ReactNode, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
+import { formatUnits } from 'viem';
 
-import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 
 import { ButtonPrimaryMedium } from '~/components/buttons';
 import {
@@ -20,43 +23,46 @@ import { getNetworkAbbr } from '~/utils';
 import { useTableLendingMyBorrowsSortStore } from '~/states/components';
 
 import { APYSmall } from '../../components/apy';
-import { myBorrowsData } from '../../data';
 
 export const useTableMyBorrows = () => {
+  const navigate = useNavigate();
+
   const { sort, setSort } = useTableLendingMyBorrowsSortStore();
   const { selectedNetwork } = useNetwork();
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
 
+  const { accountSnapshots } = useUserAccountSnapshotAll();
+  const { markets } = useGetAllMarkets();
+
+  // TODO: pagenation logic 은 추후 Market 이 많아지면 추가
   const hasNextPage = false;
   const fetchNextPage = () => {};
 
-  const { data: tokenData } = useGetTokensQuery({
-    queries: {
-      filter: `network:eq:${getNetworkAbbr(selectedNetwork)}`,
-    },
-  });
-
-  const { tokens } = tokenData || {};
-
   const myBorrows = useMemo(
     () =>
-      (myBorrowsData?.pages?.flatMap(page => page.myBorrows) || []).map(d => {
-        const { price } = tokens?.find(b => b.symbol === d.asset.symbol) || {
-          price: 0,
-        };
-        const value = (d.asset.debt || 0) * (price || 0);
+      accountSnapshots.map(d => {
+        const makrketIndex = markets.findIndex(m => m.address === d.mTokenAddress);
+        const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
+        const debt = Number(formatUnits(d.borrowBalance, market?.underlyingDecimals || 18));
+        const price = market?.price;
+        const debtValue = debt * (price || 0);
 
         return {
-          ...d,
+          id: makrketIndex,
+          address: d.mTokenAddress,
           asset: {
-            ...d.asset,
-            value,
+            symbol: market?.underlyingSymbol || '',
+            image: market?.underlyingImage || '',
+            address: market?.underlyingAsset || '',
+            debt,
+            value: debtValue,
           },
+          apy: market?.borrowApy || 0,
         };
       }),
-    [tokens]
+    [accountSnapshots, markets]
   );
   const sortedMyBorrows = useMemo(() => {
     if (sort?.key === 'debt') {
@@ -79,6 +85,11 @@ export const useTableMyBorrows = () => {
     return myBorrows;
   }, [myBorrows, sort]);
 
+  const handleLendingBorrow = (address: string) => {
+    const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/borrow`;
+    navigate(link);
+  };
+
   const tableData = useMemo(
     () =>
       sortedMyBorrows?.map(d => {
@@ -94,7 +105,13 @@ export const useTableMyBorrows = () => {
           apy: <TableColumn value={<APYSmall apy={d.apy} />} align="center" />,
           buttons: (
             <TableColumnButtons align="center">
-              <ButtonPrimaryMedium text={t('lending-borrow')} onClick={() => {}} />
+              <ButtonPrimaryMedium
+                text={t('lending-borrow')}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingBorrow(d.address);
+                }}
+              />
               <ButtonPrimaryMedium
                 text={t('lending-repay')}
                 onClick={() => {}}
@@ -104,6 +121,7 @@ export const useTableMyBorrows = () => {
           ),
         };
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [sortedMyBorrows, t]
   );
 

@@ -40,8 +40,18 @@ interface HelathFactorProps {
     delta: bigint; // underlying's delta
     isWithdraw: boolean;
   };
+  deltaBorrow?: {
+    marketAddress: Address;
+    delta: bigint; // underlying's delta
+    isRepay: boolean;
+  };
 }
-export const calcHealthFactor = ({ markets, snapshots, deltaSupply }: HelathFactorProps) => {
+export const calcHealthFactor = ({
+  markets,
+  snapshots,
+  deltaSupply,
+  deltaBorrow,
+}: HelathFactorProps) => {
   // TODO: market index 를 먼저 찾는 방식으로 수정. snapshot 과 market 의 순서가 다를 수 있음
   // TODO: snapshots 의 mTokenBalance 가 collateral enabled 인 자사만 계산하도록 수정
   const numerator = snapshots.reduce((acc, s, i) => {
@@ -59,8 +69,16 @@ export const calcHealthFactor = ({ markets, snapshots, deltaSupply }: HelathFact
   }, 0);
 
   const denom = snapshots.reduce((acc, s, i) => {
+    const delta =
+      deltaBorrow?.marketAddress === markets[i].address
+        ? deltaBorrow.isRepay
+          ? -deltaBorrow.delta
+          : deltaBorrow.delta
+        : 0n;
+
     const values =
-      Number(formatUnits(s.borrowBalance, markets[i].underlyingDecimals)) * (markets[i].price ?? 0);
+      Number(formatUnits(s.borrowBalance + delta, markets[i].underlyingDecimals)) *
+      (markets[i].price ?? 0);
     return acc + values;
   }, 0);
 

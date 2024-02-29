@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
+import { Address } from 'viem';
+import { useWalletClient } from 'wagmi';
 
 import { useLendingBorrow } from '~/api/api-contract/lending/borrow';
 
@@ -34,7 +36,7 @@ import { useLendingBorrowNetworkFeeErrorStore } from '~/states/contexts/network-
 import { IToken, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
-  tokenIn?: IToken & { amount: number };
+  tokenIn?: IToken & { amount: number; mTokenAddress: Address };
 
   userTokenBalance?: number;
   apy?: number;
@@ -59,6 +61,8 @@ export const LendingBorrowPopup = ({
   const { ref } = useGAInView({ name: 'lending-borrow-popup' });
   const { gaAction } = useGAAction();
 
+  const { data: walletClient } = useWalletClient();
+
   const { error: lendingGasError, setError: setLendingBorrowGasError } =
     useLendingBorrowNetworkFeeErrorStore();
 
@@ -77,7 +81,7 @@ export const LendingBorrowPopup = ({
   const [estimatedLendingBorrowFee, setEstimatedLendingBorrowFee] = useState<number | undefined>();
 
   // TODO: connect api
-  const { symbol, amount, price, image } = tokenIn || {};
+  const { symbol, mTokenAddress, amount, price, image, address, decimal } = tokenIn || {};
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor || 100);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor || 100);
 
@@ -91,7 +95,7 @@ export const LendingBorrowPopup = ({
     estimateFee: estimateLendingBorrowFee,
   } = useLendingBorrow({
     token: tokenIn,
-    enabled: false,
+    enabled: !!tokenIn && !!amount && amount > 0 && !!mTokenAddress,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -120,7 +124,7 @@ export const LendingBorrowPopup = ({
       });
 
       close();
-      navigate(`lending/${network}/${addressParams}`);
+      navigate(`/lending/${network}/${addressParams}`);
       return;
     }
 
@@ -152,8 +156,6 @@ export const LendingBorrowPopup = ({
   }, []);
 
   useEffect(() => {
-    // TODO connect contract
-    return;
     if ((amount || 0) <= 0) return;
 
     const estimateLendingBorrowFeeAsync = async () => {
@@ -163,6 +165,22 @@ export const LendingBorrowPopup = ({
     estimateLendingBorrowFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount]);
+
+  const handleAddToken = async (address: Address, symbol: string) => {
+    if (!address || !symbol) return;
+
+    await walletClient?.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: {
+          address,
+          symbol,
+          decimals: decimal || 18,
+        },
+      },
+    });
+  };
 
   const estimatedFee = estimatedLendingBorrowFee || 1;
   const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 1) || lendingGasError;
@@ -236,6 +254,7 @@ export const LendingBorrowPopup = ({
               icon={<IconAddToken />}
               text={t('Add to wallet')}
               buttonType="outlined"
+              onClick={() => handleAddToken((address ?? '0x') as Address, `${symbol}`)}
             />
           </SuccessContentWrapper>
         )}

@@ -4,9 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import tw from 'twin.macro';
-import { formatUnits, parseEther, parseUnits } from 'viem';
+import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+// import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
+import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
@@ -20,6 +23,7 @@ import { Token } from '~/components/token';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { calculateHealthFactorColor, formatNumber, getNetworkAbbr } from '~/utils';
+import { calcHealthFactor } from '~/utils/util-lending';
 import { IToken, POPUP_ID } from '~/types';
 
 import { LendingBorrowPopup } from './borrow-popup';
@@ -36,24 +40,46 @@ export const LendingBorrowInputGroup = () => {
 
   const networkAbbr = getNetworkAbbr(selectedNetwork);
 
+  const { markets } = useGetAllMarkets();
+  const market = markets?.find(m => m.address === address);
+  const symbol = market?.underlyingSymbol;
+  const image = market?.underlyingImage;
+  const price = market?.price;
+
+  // const { accountSnapshot } = useUserAccountSnapshot({
+  //   mTokenAddress: (address ?? '0x0') as Address,
+  // });
+  const { accountSnapshots: snapshotsAll } = useUserAccountSnapshotAll();
+
   const { data: tokenData } = useGetTokenQuery(
-    { queries: { networkAbbr, address: address } },
+    { queries: { networkAbbr, address: market?.underlyingAsset } },
     { enabled: !!address && !!networkAbbr }
   );
   const { token } = tokenData || {};
-  const { symbol, image, price } = token || {};
 
   const [inputValue, setInputValue] = useState<number>();
   const [_inputValueRaw, setInputValueRaw] = useState<bigint>();
 
   const [checkedHealthFactor, checkHealthFactor] = useState(false);
 
-  // TODO: connect API
-  const apy = 1.8324;
-  const availableBorrow = 10000;
-  const currentHealthFactor = 3.8;
+  const apy = market?.borrowApy || 0;
+  const availableBorrow = 100; // TODO: connect API
+  const currentHealthFactor = calcHealthFactor({
+    markets,
+    snapshots: snapshotsAll,
+  });
+
+  const nextHealthFactor = calcHealthFactor({
+    markets,
+    snapshots: snapshotsAll,
+    deltaBorrow: {
+      marketAddress: address as Address,
+      delta: parseUnits(inputValue?.toString() || '0', market?.underlyingDecimals || 18),
+      isRepay: false,
+    },
+  });
+
   const userTokenBalance = 123123.687598;
-  const nextHealthFactor = Math.max(currentHealthFactor - 0.001 * (inputValue || 0), 1);
   // TODO: determine health factor warning threshold
   const threshold = 1.25;
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor);
@@ -82,7 +108,10 @@ export const LendingBorrowInputGroup = () => {
 
   const tokenValue = (inputValue || 0) * (price || 0);
 
-  const tokenIn = { ...token, amount: inputValue } as IToken & { amount: number };
+  const tokenIn = { ...token, amount: inputValue, mTokenAddress: address } as IToken & {
+    amount: number;
+    mTokenAddress: Address;
+  };
 
   // TODO: prepare
 
