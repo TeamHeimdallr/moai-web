@@ -5,18 +5,18 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
 import { BigNumber } from 'ethers';
-import { encodeFunctionData, formatUnits, parseUnits } from 'viem';
+import { encodeFunctionData, formatUnits } from 'viem';
 import { Address, usePrepareContractWrite, usePublicClient, useWalletClient } from 'wagmi';
 
-import { IS_MAINNET } from '~/constants';
+import { IS_MAINNET, UNITROLLER_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
-import { useLendingWithdrawNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
-import { IToken } from '~/types';
+import { useEnterOrExitMarketNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { NETWORK } from '~/types';
 
-import { MTOKEN_ABI } from '~/abi/mtoken';
+import { COMPTROLLER_ABI } from '~/abi/comptroller';
 
 import { createExtrinsicPayload } from '../substrate/create-extrinsic-payload';
 import { getTrnApi } from '../substrate/get-trn-api';
@@ -28,13 +28,15 @@ import {
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 interface Props {
-  token?: IToken & { amount: number; mTokenAddress: Address };
+  marketAddress: Address;
+  currentStatus: 'enable' | 'disable';
   enabled?: boolean;
 }
-export const useRedeemUnderlying = ({ token, enabled }: Props) => {
-  const { setError } = useLendingWithdrawNetworkFeeErrorStore();
+export const useEnterOrExitMarket = ({ marketAddress, currentStatus, enabled }: Props) => {
+  const { setError } = useEnterOrExitMarketNetworkFeeErrorStore();
 
   const publicClient = usePublicClient();
+  const isEnterRequest = currentStatus === 'disable';
 
   const { data: walletClient } = useWalletClient();
   const { fpass } = useConnectedWallet();
@@ -48,8 +50,6 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
   const { isEvm, isFpass } = useNetwork();
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
-
-  const inputAmount = parseUnits(`${(token?.amount || 0).toFixed(18)}`, token?.decimal || 18);
 
   const estimateFee = async () => {
     const feeHistory = await publicClient.getFeeHistory({
@@ -65,20 +65,20 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
       ]);
 
       const encodedData =
-        isFpass && !!walletAddress && !!signer && !!token
+        isFpass && !!walletAddress && !!signer && !!marketAddress && !!currentStatus && !!enabled
           ? encodeFunctionData({
-              abi: MTOKEN_ABI,
-              functionName: 'redeemUnderlying',
-              args: [inputAmount],
+              abi: COMPTROLLER_ABI,
+              functionName: isEnterRequest ? 'enterMarkets' : 'exitMarket',
+              args: isEnterRequest ? [[marketAddress]] : [marketAddress],
             })
           : '0x0';
 
       const evmCall = api.tx.evm.call(
         walletAddress,
-        (token?.mTokenAddress || '') as Address,
+        UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed, actual: around 26k
+        '300000', // gas limit estimation todo: can be changed. actual: around 17k
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -91,10 +91,10 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
 
       const evmGas = await publicClient.estimateContractGas({
-        address: (token?.mTokenAddress || '') as Address,
-        abi: MTOKEN_ABI,
-        functionName: 'redeemUnderlying',
-        args: [inputAmount],
+        address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+        abi: COMPTROLLER_ABI,
+        functionName: isEnterRequest ? 'enterMarkets' : 'exitMarket',
+        args: isEnterRequest ? [[marketAddress]] : [marketAddress],
         account: walletAddress as Address,
       });
 
@@ -112,7 +112,7 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
     }
   };
 
-  const redeemUnderlying = async () => {
+  const enterOrExitMarket = async () => {
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
       rewardPercentiles: [25, 75],
@@ -128,20 +128,20 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
       ]);
 
       const encodedData =
-        isFpass && !!walletAddress && !!signer && !!token
+        isFpass && !!walletAddress && !!signer && !!marketAddress && !!currentStatus && !!enabled
           ? encodeFunctionData({
-              abi: MTOKEN_ABI,
-              functionName: 'redeemUnderlying',
-              args: [inputAmount],
+              abi: COMPTROLLER_ABI,
+              functionName: isEnterRequest ? 'enterMarkets' : 'exitMarket',
+              args: isEnterRequest ? [[marketAddress]] : [marketAddress],
             })
           : '0x0';
 
       const evmCall = api.tx.evm.call(
         walletAddress,
-        (token?.mTokenAddress || '') as Address,
+        UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed
+        '300000', // gas limit estimation todo: can be changed. actual: around 17k
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -211,12 +211,12 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
     txData: txData as any,
     blockTimestamp,
 
-    writeAsync: redeemUnderlying,
+    writeAsync: enterOrExitMarket,
     estimateFee,
   };
 };
 
-export const useRedeemUnderlyingPrepare = ({ token, enabled }: Props) => {
+export const useEnterOrExitMarketPrepare = ({ marketAddress, currentStatus, enabled }: Props) => {
   const { fpass } = useConnectedWallet();
   const { address: walletAddress } = fpass;
 
@@ -225,8 +225,7 @@ export const useRedeemUnderlyingPrepare = ({ token, enabled }: Props) => {
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const chainId = useNetworkId(currentNetwork);
-
-  const inputAmount = parseUnits(`${(token?.amount || 0).toFixed(18)}`, token?.decimal || 18);
+  const isEnterRequest = currentStatus === 'disable';
 
   /* call prepare hook for check evm tx success */
   const {
@@ -235,19 +234,21 @@ export const useRedeemUnderlyingPrepare = ({ token, enabled }: Props) => {
     isSuccess: isPrepareSuccess,
     error,
   } = usePrepareContractWrite({
-    address: (token?.mTokenAddress || '') as Address,
-    abi: MTOKEN_ABI,
-    functionName: 'redeemUnderlying',
+    address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+    abi: COMPTROLLER_ABI,
+    functionName: isEnterRequest ? 'enterMarkets' : 'exitMarket',
 
     account: walletAddress as Address,
     chainId,
-    args: [inputAmount],
+    args: isEnterRequest ? [[marketAddress]] : [marketAddress],
 
-    enabled: enabled && isEvm && isFpass && !!walletAddress && !!token && token?.amount > 0,
+    enabled: enabled && isEvm && isFpass && !!walletAddress && !!marketAddress,
   });
 
+  const approveError = error?.message?.includes('Approved');
+
   return {
-    isPrepareError,
+    isPrepareError: isPrepareError && !approveError,
     isPrepareLoading,
     isPrepareSuccess,
     prepareError: error,

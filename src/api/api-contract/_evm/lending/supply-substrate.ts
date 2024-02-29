@@ -243,7 +243,7 @@ export const useSupplyPrepare = ({ token, enabled }: Props) => {
     chainId,
     args: [inputAmount],
 
-    enabled: enabled && isEvm && !isFpass && !!walletAddress && !!token && token?.amount > 0,
+    enabled: enabled && isEvm && isFpass && !!walletAddress && !!token && token?.amount > 0,
   });
 
   const approveError = error?.message?.includes('Approved');
