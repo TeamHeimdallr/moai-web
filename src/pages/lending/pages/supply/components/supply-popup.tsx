@@ -206,8 +206,6 @@ export const LendingSupplyPopup = ({
   }, []);
 
   useEffect(() => {
-    // TODO connect contract
-    return;
     if (step !== 1 || (amount || 0) <= 0) return;
 
     const estimateApproveFeeAsync = async () => {
@@ -219,8 +217,6 @@ export const LendingSupplyPopup = ({
   }, [amount, step]);
 
   useEffect(() => {
-    // TODO connect contract
-    return;
     if (step !== 2 || (amount || 0) <= 0) return;
 
     const estimateLendingSupplyFeeAsync = async () => {
