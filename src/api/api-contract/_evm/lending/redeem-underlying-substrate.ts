@@ -13,7 +13,7 @@ import { IS_MAINNET } from '~/constants';
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
-import { useLendingSupplyNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useLendingWithdrawNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { IToken } from '~/types';
 
 import { MTOKEN_ABI } from '~/abi/mtoken';
@@ -28,11 +28,11 @@ import {
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 interface Props {
-  token?: IToken & { balance: number; amount: number; mTokenAddress: Address };
+  token?: IToken & { amount: number; mTokenAddress: Address };
   enabled?: boolean;
 }
-export const useSupply = ({ token, enabled }: Props) => {
-  const { setError } = useLendingSupplyNetworkFeeErrorStore();
+export const useRedeemUnderlying = ({ token, enabled }: Props) => {
+  const { setError } = useLendingWithdrawNetworkFeeErrorStore();
 
   const publicClient = usePublicClient();
 
@@ -68,7 +68,7 @@ export const useSupply = ({ token, enabled }: Props) => {
         isFpass && !!walletAddress && !!signer && !!token
           ? encodeFunctionData({
               abi: MTOKEN_ABI,
-              functionName: 'mint',
+              functionName: 'redeemUnderlying',
               args: [inputAmount],
             })
           : '0x0';
@@ -78,7 +78,7 @@ export const useSupply = ({ token, enabled }: Props) => {
         (token?.mTokenAddress || '') as Address,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed. actual: around 20k
+        '300000', // gas limit estimation todo: can be changed, actual: around 26k
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -93,7 +93,7 @@ export const useSupply = ({ token, enabled }: Props) => {
       const evmGas = await publicClient.estimateContractGas({
         address: (token?.mTokenAddress || '') as Address,
         abi: MTOKEN_ABI,
-        functionName: 'mint',
+        functionName: 'redeemUnderlying',
         args: [inputAmount],
         account: walletAddress as Address,
       });
@@ -112,7 +112,7 @@ export const useSupply = ({ token, enabled }: Props) => {
     }
   };
 
-  const supply = async () => {
+  const redeemUnderlying = async () => {
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
       rewardPercentiles: [25, 75],
@@ -131,7 +131,7 @@ export const useSupply = ({ token, enabled }: Props) => {
         isFpass && !!walletAddress && !!signer && !!token
           ? encodeFunctionData({
               abi: MTOKEN_ABI,
-              functionName: 'mint',
+              functionName: 'redeemUnderlying',
               args: [inputAmount],
             })
           : '0x0';
@@ -211,12 +211,12 @@ export const useSupply = ({ token, enabled }: Props) => {
     txData: txData as any,
     blockTimestamp,
 
-    writeAsync: supply,
+    writeAsync: redeemUnderlying,
     estimateFee,
   };
 };
 
-export const useSupplyPrepare = ({ token, enabled }: Props) => {
+export const useRedeemUnderlyingPrepare = ({ token, enabled }: Props) => {
   const { fpass } = useConnectedWallet();
   const { address: walletAddress } = fpass;
 
@@ -237,7 +237,7 @@ export const useSupplyPrepare = ({ token, enabled }: Props) => {
   } = usePrepareContractWrite({
     address: (token?.mTokenAddress || '') as Address,
     abi: MTOKEN_ABI,
-    functionName: 'mint',
+    functionName: 'redeemUnderlying',
 
     account: walletAddress as Address,
     chainId,
@@ -246,10 +246,8 @@ export const useSupplyPrepare = ({ token, enabled }: Props) => {
     enabled: enabled && isEvm && !isFpass && !!walletAddress && !!token && token?.amount > 0,
   });
 
-  const approveError = error?.message?.includes('Approved');
-
   return {
-    isPrepareError: isPrepareError && !approveError,
+    isPrepareError,
     isPrepareLoading,
     isPrepareSuccess,
     prepareError: error,

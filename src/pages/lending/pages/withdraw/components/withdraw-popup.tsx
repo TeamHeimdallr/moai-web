@@ -144,8 +144,6 @@ export const LendingWithdrawPopup = ({
   }, []);
 
   useEffect(() => {
-    // TODO connect contract
-    return;
     if ((amount || 0) <= 0) return;
 
     const estimateLendingWithdrawFeeAsync = async () => {
