@@ -12,7 +12,6 @@ interface Props {
   debug?: 'idle' | 'loading' | 'success' | 'error';
 }
 
-// TODO: connect contract
 // const useDummy = ({ debug }: Props) => {
 //   if (debug === 'loading')
 //     return {
