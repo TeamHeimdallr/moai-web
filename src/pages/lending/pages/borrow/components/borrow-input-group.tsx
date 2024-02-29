@@ -7,6 +7,7 @@ import tw from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useUserAvailableBorrow } from '~/api/api-contract/_evm/lending/user-available-borrow';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 // import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -51,6 +52,10 @@ export const LendingBorrowInputGroup = () => {
   // });
   const { accountSnapshots: snapshotsAll } = useUserAccountSnapshotAll();
 
+  const { availableAmount } = useUserAvailableBorrow({
+    mTokenAddress: address as Address,
+  });
+
   const { data: tokenData } = useGetTokenQuery(
     { queries: { networkAbbr, address: market?.underlyingAsset } },
     { enabled: !!address && !!networkAbbr }
@@ -63,7 +68,7 @@ export const LendingBorrowInputGroup = () => {
   const [checkedHealthFactor, checkHealthFactor] = useState(false);
 
   const apy = market?.borrowApy || 0;
-  const availableBorrow = 100; // TODO: connect API
+  const availableBorrow = availableAmount;
   const currentHealthFactor = calcHealthFactor({
     markets,
     snapshots: snapshotsAll,
@@ -104,7 +109,7 @@ export const LendingBorrowInputGroup = () => {
     if (nextHealthFactor <= threshold && !checkedHealthFactor) return false;
 
     if (!isFormError && inputValue > 0 && inputValue <= availableBorrow) return true;
-  }, [checkedHealthFactor, inputValue, isFormError, nextHealthFactor]);
+  }, [checkedHealthFactor, inputValue, isFormError, nextHealthFactor, availableBorrow]);
 
   const tokenValue = (inputValue || 0) * (price || 0);
 
