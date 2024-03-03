@@ -1,8 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
+import { Address } from 'viem';
 
-import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
+import { useUserAvailableBorrow } from '~/api/api-contract/_evm/lending/user-available-borrow';
 
 import { IconQuestion } from '~/assets/icons';
 
@@ -29,18 +31,19 @@ export const UserAssetInfo = () => {
 
   const { isMD } = useMediaQuery();
 
-  const { markets } = useGetAllMarkets();
-  const market = markets.find(m => m.address === address);
-  const { symbol, price, underlyingAsset, underlyingSymbol, underlyingBalance, totalBorrows } =
-    market || {};
+  const { market } = useGetMarket({
+    marketAddress: address as Address,
+  });
+  const { symbol, price, underlyingAsset, underlyingSymbol, underlyingBalance } = market || {};
 
-  // TODO connect api
-  const maxBorrow = 2 * 10 ** 9;
+  const { availableAmount: availableBorrowAmount } = useUserAvailableBorrow({
+    mTokenAddress: address as Address,
+  });
+
   const availableSupply = underlyingBalance || 0;
   const availableSupplyValue = availableSupply * (price || 0);
 
-  const totalBorrowNum = Number(totalBorrows || 0);
-  const availableBorrow = maxBorrow - totalBorrowNum;
+  const availableBorrow = availableBorrowAmount;
   const availableBorrowValue = availableBorrow * (price || 0);
 
   const walletBalance = underlyingBalance;
@@ -90,7 +93,7 @@ export const UserAssetInfo = () => {
         </InfoHeader>
         <InfoContent>
           <InfoAmountWrapper>
-            {formatNumber(availableSupply, 2, 'floor', MILLION, 2)} {symbol}
+            {formatNumber(availableSupply, 2, 'floor', MILLION, 2)} {market?.underlyingSymbol}
             <InfoAmountValue>
               {`$${formatNumber(availableSupplyValue, 2, 'floor', MILLION, 2)}`}
             </InfoAmountValue>
@@ -113,7 +116,7 @@ export const UserAssetInfo = () => {
         </InfoHeader>
         <InfoContent>
           <InfoAmountWrapper>
-            {formatNumber(availableBorrow, 2, 'floor', MILLION, 2)} {symbol}
+            {formatNumber(availableBorrow, 2, 'floor', MILLION, 2)} {market?.underlyingSymbol}
             <InfoAmountValue>
               {`$${formatNumber(availableBorrowValue, 2, 'floor', MILLION, 2)}`}
             </InfoAmountValue>

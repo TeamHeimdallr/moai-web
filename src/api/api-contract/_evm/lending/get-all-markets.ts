@@ -1,17 +1,16 @@
 import { useParams } from 'react-router-dom';
-import { Abi, Address, formatEther } from 'viem';
+import { Abi, Address } from 'viem';
 import { useContractRead, useContractReads } from 'wagmi';
 
-import { UNITROLLER_ADDRESS } from '~/constants';
+import { MOAILENS_ADDRESS, UNITROLLER_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
-import { IMarket, IMarketWithToken } from '~/types/lending';
+import { IMarket, IMarketWithToken, IMTokenMetadata } from '~/types/lending';
 
-import { ERC20_TOKEN_ABI } from '~/abi';
 import { COMPTROLLER_ABI } from '~/abi/comptroller';
-import { IRATE_MODEL_ABI } from '~/abi/interest-rate-model';
+import { MOAI_LENS_ABI } from '~/abi/moai-lens';
 import { MTOKEN_ABI } from '~/abi/mtoken';
 
 import { useUserTokenBalances } from '../balance/user-token-balances';
@@ -19,7 +18,7 @@ import { useUserTokenBalances } from '../balance/user-token-balances';
 /**
  * @description All registered markets
  */
-export const useGetAllMarkets = () => {
+export const useGetAllMarkets_dummy = () => {
   const markets = [
     {
       address: '0x930AF8991311BF82736Fe5C1b33949fE79897367',
@@ -94,7 +93,7 @@ export const useGetAllMarkets = () => {
   };
 };
 
-export const useGetAllMarkets_temp = () => {
+export const useGetAllMarkets = () => {
   const { network } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
 
@@ -112,34 +111,7 @@ export const useGetAllMarkets_temp = () => {
   });
 
   const marketAddrs = (marketsData as Array<string>)?.map((m: string) => m);
-
-  const { data: underlyingsData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'underlying',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
-  });
-  const underlyings = (underlyingsData?.map(d => d.result) || []) as Address[];
-
-  const { data: underlyingDecimalsData } = useContractReads({
-    contracts: underlyings?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: ERC20_TOKEN_ABI as Abi,
-        functionName: 'decimals',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm && underlyings && underlyings.length > 0,
-  });
-  const underlyingDecimals = (underlyingDecimalsData?.map(d => d.result) || []) as number[];
+  // console.log(marketAddrs);
 
   const { data: symbolsData } = useContractReads({
     contracts: marketAddrs?.flatMap(address => [
@@ -151,262 +123,195 @@ export const useGetAllMarkets_temp = () => {
       },
     ]),
     staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
+    enabled: !!marketsData && !!chainId && isEvm && !!marketAddrs,
   });
   const symbols = (symbolsData?.map(d => d.result) || []) as string[];
 
-  const { data: supplyRatePerBlockData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'supplyRatePerBlock',
-        chainId,
-      },
-    ]),
+  const { data: metadataAll } = useContractRead({
+    address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+    abi: MOAI_LENS_ABI as Abi,
+    functionName: 'cTokenMetadataAll',
+    chainId,
+    args: [marketAddrs],
     staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
+    enabled: !!chainId && isEvm,
   });
-  const supplyRatePerBlocks = (supplyRatePerBlockData?.map(d => Number(d.result)) ||
+  const metadataList = (metadataAll as Array<IMTokenMetadata>)?.map((m: IMTokenMetadata) => m);
+
+  // console.log('metadataAll', metadataAll);
+
+  const underlyings = (metadataList?.map(d => d.underlyingAssetAddress) || []) as Address[];
+  const underlyingDecimals = (metadataList?.map(d => Number(d.underlyingDecimals)) ||
     []) as number[];
 
-  const { data: borrowRatePerBlockData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'borrowRatePerBlock',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
-  });
-  const borrowRatePerBlocks = (borrowRatePerBlockData?.map(d => Number(d.result)) ||
+  const supplyRatePerBlocks = (metadataList?.map(d => Number(d.supplyRatePerBlock)) ||
     []) as number[];
 
-  const { data: totalReservesData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'totalReserves',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
-  });
-  const totalReserves = (totalReservesData?.map(d => d.result) || []) as bigint[];
-
-  const { data: totalBorrowsData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'totalBorrows',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
-  });
-  const totalBorrows = (totalBorrowsData?.map(d => d.result) || []) as bigint[];
-
-  const { data: cashData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'getCash',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
-  });
-  const cashes = (cashData?.map(d => d.result) || []) as bigint[];
-
-  const { data: reserveFactorMantissaData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'reserveFactorMantissa',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
-  });
-  const reserveFactorMantissa = (reserveFactorMantissaData?.map(d => d.result) || []) as bigint[];
-
-  const { data: totalSupplyData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'totalSupply',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
-  });
-  const totalSupply = (totalSupplyData?.map(d => d.result) || []) as bigint[];
-
-  const { data: interestRateModelData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'interestRateModel',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm,
-  });
-  const interestRateModels = (interestRateModelData?.map(d => d.result) || []) as Address[];
-
-  /********************************************
-   * Interest rate model related fields
-   *********************************************/
-  const { data: blocksPerYearData } = useContractReads({
-    contracts: interestRateModels?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: IRATE_MODEL_ABI as Abi,
-        functionName: 'blocksPerYear',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled:
-      !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  });
-  const blocksPerYear = (blocksPerYearData?.map(d => Number(d.result)) || []) as number[];
-
-  const { data: kinkData } = useContractReads({
-    contracts: interestRateModels?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: IRATE_MODEL_ABI as Abi,
-        functionName: 'kink',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled:
-      !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  });
-  const kink = (kinkData?.map(d => Number(formatEther((d.result as bigint) || 0n))) ||
+  const borrowRatePerBlocks = (metadataList?.map(d => Number(d.borrowRatePerBlock)) ||
     []) as number[];
 
-  const { data: multiplierPerBlockData } = useContractReads({
-    contracts: interestRateModels?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: IRATE_MODEL_ABI as Abi,
-        functionName: 'multiplierPerBlock',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled:
-      !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  });
-  const multiplierPerBlock = (multiplierPerBlockData?.map(d => d.result) || []) as number[];
+  const totalReserves = (metadataList?.map(d => d.totalReserves) || []) as bigint[];
+  const totalBorrows = (metadataList?.map(d => d.totalBorrows) || []) as bigint[];
+  const cashes = (metadataList?.map(d => d.totalCash) || []) as bigint[];
+  const reserveFactorMantissa = (metadataList?.map(d => d.reserveFactorMantissa) || []) as bigint[];
+  const totalSupply = (metadataList?.map(d => d.totalSupply) || []) as bigint[];
+  const collateralFactorsMantissa = (metadataList?.map(d => d.collateralFactorMantissa) ||
+    []) as bigint[];
 
-  const { data: jumpMultiplierPerBlockData } = useContractReads({
-    contracts: interestRateModels?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: IRATE_MODEL_ABI as Abi,
-        functionName: 'jumpMultiplierPerBlock',
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled:
-      !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  });
-  const jumpMultiplierPerBlock = (jumpMultiplierPerBlockData?.map(d => d.result) || []) as number[];
+  // const { data: interestRateModelData } = useContractReads({
+  //   contracts: marketAddrs?.flatMap(address => [
+  //     {
+  //       address: address as Address,
+  //       abi: MTOKEN_ABI as Abi,
+  //       functionName: 'interestRateModel',
+  //       chainId,
+  //     },
+  //   ]),
+  //   staleTime: 1000 * 3,
+  //   watch: true,
+  //   enabled:   !!marketsData && !!chainId && isEvm,
+  // });
+  // const interestRateModels = (interestRateModelData?.map(d => d.result) || []) as Address[];
 
-  const { data: utilizationRateData } = useContractReads({
-    contracts: interestRateModels?.flatMap((address, i) => [
-      {
-        address: address as Address,
-        abi: IRATE_MODEL_ABI as Abi,
-        functionName: 'utilizationRate',
-        args: [cashes[i], totalBorrows[i], totalReserves[i]] as [bigint, bigint, bigint],
-        chainId,
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled:
-      !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  });
-  const utilizationRate = (utilizationRateData?.map(d =>
-    Number(formatEther((d.result as bigint) || 0n))
-  ) || []) as number[];
+  // /********************************************
+  //  * Interest rate model related fields
+  //  *********************************************/
+  // const { data: blocksPerYearData } = useContractReads({
+  //   contracts: interestRateModels?.flatMap(address => [
+  //     {
+  //       address: address as Address,
+  //       abi: IRATE_MODEL_ABI as Abi,
+  //       functionName: 'blocksPerYear',
+  //       chainId,
+  //     },
+  //   ]),
+  //   staleTime: 1000 * 3,
+  //   enabled:
+  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
+  // });
+  // const blocksPerYear = (blocksPerYearData?.map(d => Number(d.result)) || []) as number[];
 
-  const { data: marketsDetailData } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
-        abi: COMPTROLLER_ABI as Abi,
-        functionName: 'markets',
-        chainId,
-        args: [address],
-      },
-    ]),
-    staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm && !!marketAddrs,
-  });
+  // const { data: kinkData } = useContractReads({
+  //   contracts: interestRateModels?.flatMap(address => [
+  //     {
+  //       address: address as Address,
+  //       abi: IRATE_MODEL_ABI as Abi,
+  //       functionName: 'kink',
+  //       chainId,
+  //     },
+  //   ]),
+  //   staleTime: 1000 * 3,
+  //   enabled:
+  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
+  // });
+  // const kink = (kinkData?.map(d => Number(formatEther((d.result as bigint) || 0n))) ||
+  //   []) as number[];
 
-  const collateralFactorsMantissa = (marketsDetailData?.map(d => {
-    const r = d.result;
-    return r?.[1];
-  }) || []) as bigint[];
+  // const { data: multiplierPerBlockData } = useContractReads({
+  //   contracts: interestRateModels?.flatMap(address => [
+  //     {
+  //       address: address as Address,
+  //       abi: IRATE_MODEL_ABI as Abi,
+  //       functionName: 'multiplierPerBlock',
+  //       chainId,
+  //     },
+  //   ]),
+  //   staleTime: 1000 * 3,
+  //   watch: true,
+  //   enabled:
+  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
+  // });
+  // const multiplierPerBlock = (multiplierPerBlockData?.map(d => d.result) || []) as number[];
 
-  const blocksPerDay = blocksPerYear[0] / 365;
+  // const { data: jumpMultiplierPerBlockData } = useContractReads({
+  //   contracts: interestRateModels?.flatMap(address => [
+  //     {
+  //       address: address as Address,
+  //       abi: IRATE_MODEL_ABI as Abi,
+  //       functionName: 'jumpMultiplierPerBlock',
+  //       chainId,
+  //     },
+  //   ]),
+  //   staleTime: 1000 * 3,
+  //   watch: true,
+  //   enabled:
+  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
+  // });
+  // const jumpMultiplierPerBlock = (jumpMultiplierPerBlockData?.map(d => d.result) || []) as number[];
+
+  // const { data: utilizationRateData } = useContractReads({
+  //   contracts: interestRateModels?.flatMap((address, i) => [
+  //     {
+  //       address: address as Address,
+  //       abi: IRATE_MODEL_ABI as Abi,
+  //       functionName: 'utilizationRate',
+  //       args: [cashes[i], totalBorrows[i], totalReserves[i]] as [bigint, bigint, bigint],
+  //       chainId,
+  //     },
+  //   ]),
+  //   staleTime: 1000 * 3,
+  //   watch: true,
+  //   enabled:
+  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
+  // });
+  // const utilizationRate = (utilizationRateData?.map(d =>
+  //   Number(formatEther((d.result as bigint) || 0n))
+  // ) || []) as number[];
+
+  const blocksPerYear = 7884000;
+  const blocksPerDay = blocksPerYear / 365;
 
   const markets: IMarket[] = (marketAddrs as Array<string>)?.map((m: string, i: number) => {
     return {
       address: m as Address,
       decimals: 8,
       underlyingAsset: underlyings[i],
-      underlyingDecimals: underlyingDecimals[i],
+      underlyingDecimals: underlyingDecimals[i] ?? 18,
       symbol: symbols[i],
-      supplyRatePerBlock: supplyRatePerBlocks[i],
-      borrowRatePerBlock: borrowRatePerBlocks[i],
+      supplyRatePerBlock: supplyRatePerBlocks[i] ?? 0,
+      borrowRatePerBlock: borrowRatePerBlocks[i] ?? 0,
 
-      supplyApy: (Math.pow((supplyRatePerBlocks[i] * blocksPerDay) / 1e18 + 1, 365) - 1) * 100,
-      borrowApy: (Math.pow((borrowRatePerBlocks[i] * blocksPerDay) / 1e18 + 1, 365) - 1) * 100,
+      supplyApy:
+        (Math.pow(((supplyRatePerBlocks[i] ?? 0) * blocksPerDay) / 1e18 + 1, 365) - 1) * 100,
+      borrowApy:
+        (Math.pow(((borrowRatePerBlocks[i] ?? 0) * blocksPerDay) / 1e18 + 1, 365) - 1) * 100,
 
-      totalReserves: totalReserves[i],
-      totalBorrows: totalBorrows[i],
-      cash: cashes[i],
+      totalReserves: totalReserves[i] ?? 0n,
+      totalBorrows: totalBorrows[i] ?? 0n,
+      cash: cashes[i] ?? 0n,
 
       initialExchangeRateMantissa: 200000000000000n,
-      reserveFactorMantissa: reserveFactorMantissa[i],
+      reserveFactorMantissa: reserveFactorMantissa[i] ?? 0n,
 
-      totalSupply: totalSupply[i],
+      totalSupply: totalSupply[i] ?? 0,
 
-      interestRateModel: interestRateModels[i],
-      blocksPerYear: blocksPerYear[i],
-      kink: kink[i], // 0~1
-      multiplierPerBlock: multiplierPerBlock[i],
-      jumpMultiplierPerBlock: jumpMultiplierPerBlock[i],
-      utilizationRate: utilizationRate[i], // 0~1
-      collateralFactorsMantissa: collateralFactorsMantissa[i],
+      blocksPerYear,
+      collateralFactorsMantissa: collateralFactorsMantissa[i] ?? 0n,
     };
+  });
+
+  // console.log(markets);
+  const underlyingAssets = markets.map(market => market.underlyingAsset) || [];
+  const { userTokenBalances } = useUserTokenBalances({ addresses: underlyingAssets });
+
+  const marketWithToken = markets.map(market => {
+    const token = userTokenBalances?.find(t => t.address === market.underlyingAsset);
+    return {
+      ...market,
+      address: market.address,
+      symbol: market.symbol,
+
+      price: token?.price,
+
+      underlyingSymbol: token?.symbol,
+      underlyingImage: token?.image,
+      underlyingBalance: token?.balance,
+    } as IMarketWithToken;
   });
 
   // TODO: refetchAll
   return {
-    markets,
+    markets: marketWithToken,
     refetch,
   };
 };

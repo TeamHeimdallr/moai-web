@@ -59,7 +59,7 @@ export const useTableMySupplies = () => {
           const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
           const price = market?.price;
           const underlyingBalance = Number(
-            formatUnits(d.exchangeRate * d.mTokenBalance, 18 + (market?.underlyingDecimals || 18))
+            formatUnits(d.exchangeRate * d.mTokenBalance, 16 + (market?.decimals || 18))
           );
           const value = underlyingBalance * (price || 0);
           const isCollateralEnabled = enteredMarkets?.includes(d.mTokenAddress) || false;
@@ -235,7 +235,7 @@ export const useTableMySupplies = () => {
         };
 
         return {
-          meta: { id: d.id, asset: d.asset },
+          meta: { id: d.id, asset: d.asset, address: d.address },
           rows: [
             <TableColumnToken
               key={i}

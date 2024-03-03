@@ -101,7 +101,7 @@ export const useTableMyBorrows = () => {
     () =>
       sortedMyBorrows?.map(d => {
         return {
-          meta: { id: d.id, asset: d.asset },
+          meta: { id: d.id, asset: d.asset, address: d.address },
           asset: (
             <TableColumnToken
               tokens={[{ symbol: d.asset.symbol, image: d.asset.image }]}
@@ -186,7 +186,7 @@ export const useTableMyBorrows = () => {
     () =>
       sortedMyBorrows.map((d, i) => {
         return {
-          meta: { id: d.id, asset: d.asset },
+          meta: { id: d.id, asset: d.asset, address: d.address },
           rows: [
             <TableColumnToken
               key={i}

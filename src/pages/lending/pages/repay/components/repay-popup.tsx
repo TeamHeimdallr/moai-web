@@ -70,7 +70,6 @@ export const LendingRepayPopup = ({
 
   const [estimatedLendingRepayFee, setEstimatedLendingRepayFee] = useState<number | undefined>();
 
-  // TODO: connect api
   const { symbol, mTokenAddress, amount, price, image } = tokenIn || {};
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor || 100);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor || 100);
