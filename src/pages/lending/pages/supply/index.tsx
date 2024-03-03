@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
+import { Address } from 'viem';
 
-import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
 
 import { IconBack } from '~/assets/icons';
 
@@ -38,8 +39,9 @@ export const LendingSupply = () => {
 
   const networkFull = getNetworkFull(network);
 
-  const { markets } = useGetAllMarkets();
-  const market = markets?.find(m => m.address === address);
+  const { market } = useGetMarket({
+    marketAddress: address as Address,
+  });
 
   return (
     <Wrapper ref={ref}>

@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
-import { useWalletClient } from 'wagmi';
+import { Address, useWalletClient } from 'wagmi';
 
-import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
 
 import { IconAddToken, IconLink } from '~/assets/icons';
 
@@ -35,10 +35,11 @@ export const AssetHeader = () => {
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
   const logoUrl = `${ASSET_URL}/images/network-${networkAbbr}.png`;
 
-  const { markets } = useGetAllMarkets();
-  const market = markets.find(m => m.address === address);
+  const { market } = useGetMarket({
+    marketAddress: address as Address,
+  });
 
-  const { symbol, underlyingImage, decimals } = market || {};
+  const { symbol, underlyingSymbol, underlyingImage, decimals } = market || {};
 
   const handleLink = () => {
     const url = `${SCANNER_URL[selectedNetwork]}/${isRoot ? 'addresses' : 'token'}/${address}`;
@@ -85,7 +86,7 @@ export const AssetHeader = () => {
         <TitleWrapper>
           <TokenImageWrapper style={{ backgroundImage: `url(${underlyingImage})` }} />
           <TitleIconWrapper>
-            {symbol}
+            {underlyingSymbol}
             <IconWrapper>
               <ButtonIconMedium
                 icon={<IconLink />}

@@ -7,7 +7,8 @@ import tw from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
-import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
+import { useGetSupplyCap } from '~/api/api-contract/_evm/lending/get-supply-cap';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
@@ -36,11 +37,20 @@ export const LendingSupplyInputGroup = () => {
 
   const networkAbbr = getNetworkAbbr(selectedNetwork);
 
-  const { markets } = useGetAllMarkets();
-  const market = markets?.find(m => m.address === address);
+  const { market } = useGetMarket({
+    marketAddress: address as Address,
+  });
   const symbol = market?.underlyingSymbol;
   const image = market?.underlyingImage;
   const price = market?.price;
+  const underlyingDecimals = market?.underlyingDecimals;
+
+  const { supplyCap } = useGetSupplyCap({
+    marketAddress: address as Address,
+    underlyingDecimals: underlyingDecimals,
+  });
+
+  const maxSupply = Number(supplyCap);
 
   const { data: tokenData } = useGetTokenQuery(
     { queries: { networkAbbr, address: market?.underlyingAsset } },
@@ -54,7 +64,7 @@ export const LendingSupplyInputGroup = () => {
   const userTokenBalance = market?.underlyingBalance || 0;
   const apy = market?.supplyApy || 0;
   const collateral = (market?.collateralFactorsMantissa || 0n) > 0n;
-  const availableSupply = 10000; // TODO: connect API
+  const availableSupply = maxSupply;
 
   const isAvailableSupplyBiggerThanBalance = availableSupply > userTokenBalance;
 

@@ -43,7 +43,7 @@ export const LendingWithdrawInputGroup = () => {
   const networkAbbr = getNetworkAbbr(selectedNetwork);
 
   const { markets } = useGetAllMarkets();
-  const market = markets?.find(m => m.address === address);
+  const market = markets.find(m => m.address === address);
   const symbol = market?.underlyingSymbol;
   const image = market?.underlyingImage;
   const price = market?.price;
@@ -81,10 +81,7 @@ export const LendingWithdrawInputGroup = () => {
   });
 
   const supplied = Number(
-    formatUnits(
-      accountSnapshot.mTokenBalance * accountSnapshot.exchangeRate,
-      18 + (token?.decimal || 18)
-    )
+    formatUnits(accountSnapshot.mTokenBalance * accountSnapshot.exchangeRate, 16 + 8)
   );
   // TODO: determine health factor warning threshold
   const threshold = 1.25;

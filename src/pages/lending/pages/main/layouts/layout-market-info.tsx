@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
-import { useUserAccountLiquidity } from '~/api/api-contract/lending/user-account-liquidity';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 
 import { IconNext, IconQuestion } from '~/assets/icons';
@@ -26,7 +25,7 @@ import {
   formatNumber,
   getNetworkAbbr,
 } from '~/utils';
-import { calcHealthFactor, calcLtv, calcNetApy } from '~/utils/util-lending';
+import { calcHealthFactor, calcLtv, calcNetApy, calcNetworth } from '~/utils/util-lending';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { MarketInfoCurrentLTVPopup } from '../components/market-info-current-ltv-popup';
@@ -50,7 +49,6 @@ export const LayoutMarketInfo = () => {
     POPUP_ID.LENDING_CURRENT_LTV
   );
 
-  const { netWorth } = useUserAccountLiquidity();
   const { markets: markets } = useGetAllMarkets();
   const { accountSnapshots: snapshots, refetch: _refetchSnapshot } = useUserAccountSnapshotAll();
 
@@ -58,8 +56,8 @@ export const LayoutMarketInfo = () => {
 
   const healthFactor = calcHealthFactor({ markets, snapshots });
   const currentLTV = calcLtv({ markets, snapshots });
+  const netWorth = calcNetworth({ markets, snapshots });
 
-  // TODO: connect contract & api
   const healthFactorCriteria = 3;
   const healthFactorColor = calculateHealthFactorColor(healthFactor);
 

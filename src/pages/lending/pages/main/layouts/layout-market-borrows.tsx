@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
+import { useGetMaxBorrowPower } from '~/api/api-contract/_evm/lending/get-max-borrow-power';
+
 import { IconQuestion } from '~/assets/icons';
 
 import { MILLION, THOUSAND } from '~/constants';
@@ -29,10 +31,7 @@ export const LayoutMarketBorrows = () => {
   const { selectedNetwork } = useNetwork();
   const { currentAddress } = useConnectedWallet(selectedNetwork);
   const networkAbbr = getNetworkAbbr(selectedNetwork);
-
-  const balance = 24000;
-  const apy = 0.001;
-  const borrowPowerUsed = 0.6;
+  const { maximumBorrowPower } = useGetMaxBorrowPower();
 
   const {
     tableColumns: tableColumnsMyBorrows,
@@ -52,16 +51,25 @@ export const LayoutMarketBorrows = () => {
     fetchNextPage: fetchNextPageAssetsToBorrow,
   } = useTableAssetsToBorrow();
 
+  const balance = tableDataMyBorrows.map(data => data.debt.props.value).reduce((a, b) => a + b, 0);
+
+  const borrowPowerUsed = (100 * balance) / maximumBorrowPower;
+  const apySum = tableDataMyBorrows
+    .map(data => data.debt.props.value * data.apy.props.value.props.apy)
+    .reduce((a, b) => a + b, 0);
+
+  const apy = apySum / balance;
+
   const { isMD } = useMediaQuery();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleRowClick = (meta: any) => {
     if (!meta) return;
 
-    const { asset } = meta;
-    if (!asset || !asset?.address) return;
+    const { address } = meta;
+    if (!address) return;
 
-    navigate(`/lending/${networkAbbr}/${asset.address}`);
+    navigate(`/lending/${networkAbbr}/${address}`);
   };
 
   return (

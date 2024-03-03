@@ -1,17 +1,17 @@
 import { useParams } from 'react-router-dom';
 import { Abi, Address } from 'viem';
-import { useContractRead, useContractReads } from 'wagmi';
+import { useContractRead } from 'wagmi';
 
-import { UNITROLLER_ADDRESS } from '~/constants';
+import { MOAILENS_ADDRESS, UNITROLLER_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
-import { ISnapshot } from '~/types/lending';
+import { IMTokenMetadata, ISnapshot } from '~/types/lending';
 
 import { COMPTROLLER_ABI } from '~/abi/comptroller';
-import { MTOKEN_ABI } from '~/abi/mtoken';
+import { MOAI_LENS_ABI } from '~/abi/moai-lens';
 
 /**
  * @description Get a snapshot of the account's balances, and the cached exchange rate for all markets
@@ -37,47 +37,51 @@ export const useUserAccountSnapshotAll = () => {
 
   const marketAddrs = (marketsData as Array<string>)?.map((m: string) => m);
 
-  const { data: accountSnapshotsData, refetch: refetchSnapshots } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: address as Address,
-        abi: MTOKEN_ABI as Abi,
-        functionName: 'getAccountSnapshot',
-        chainId,
-        args: [walletAddress],
-      },
-    ]),
+  const { data: assetsInData } = useContractRead({
+    address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+    abi: COMPTROLLER_ABI as Abi,
+    functionName: 'getAssetsIn',
+    chainId,
+
+    args: [walletAddress],
     staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm && !!marketAddrs && !!walletAddress,
+    enabled: !!chainId && isEvm && !!walletAddress,
   });
 
-  const { data: marketsDetailData, refetch: refetchMarketsDetail } = useContractReads({
-    contracts: marketAddrs?.flatMap(address => [
-      {
-        address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
-        abi: COMPTROLLER_ABI as Abi,
-        functionName: 'markets',
-        chainId,
-        args: [address],
-      },
-    ]),
+  const assetsIn = (assetsInData as Array<string>)?.map((m: string) => m);
+
+  const { data: balanceData, refetch: refetchSnapshots } = useContractRead({
+    address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+    abi: MOAI_LENS_ABI as Abi,
+    functionName: 'cTokenBalancesAll',
+    chainId,
+
+    args: [marketAddrs, walletAddress],
     staleTime: 1000 * 3,
-    enabled: !!marketsData && !!chainId && isEvm && !!marketAddrs,
+    enabled: !!chainId && isEvm && !!marketAddrs && !!walletAddress,
   });
+  const balances = balanceData as Array<bigint>;
 
-  const collateralFactorsMantissa = (marketsDetailData?.map(d => {
-    const r = d.result;
-    return r?.[1];
-  }) || []) as bigint[];
+  const { data: metadataAll, refetch: refetchMarketsDetail } = useContractRead({
+    address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+    abi: MOAI_LENS_ABI as Abi,
+    functionName: 'cTokenMetadataAll',
+    chainId,
+    args: [marketAddrs],
+    staleTime: 1000 * 3,
+    enabled: !!chainId && isEvm,
+  });
+  const metadataList = (metadataAll as Array<IMTokenMetadata>)?.map((m: IMTokenMetadata) => m);
 
-  const accountSnapshots = (accountSnapshotsData?.map((d, i) => {
+  const accountSnapshots = (balances?.map((d, i) => {
     return {
-      error: BigInt(d.result?.[0] ?? 1),
-      mTokenBalance: BigInt(d.result?.[1] ?? 0),
-      borrowBalance: BigInt(d.result?.[2] ?? 0),
-      exchangeRate: BigInt(d.result?.[3] ?? 0),
-      collateralFator: collateralFactorsMantissa[i] ?? 0n,
+      error: BigInt(d === undefined),
+      mTokenBalance: BigInt(d?.['balanceOf'] ?? 0),
+      borrowBalance: BigInt(d?.['borrowBalanceCurrent'] ?? 0),
+      exchangeRate: BigInt(metadataList[i]?.['exchangeRateCurrent'] ?? 200000000000000n),
+      collateralFator: BigInt(metadataList[i]?.['collateralFactorMantissa'] ?? 0),
       mTokenAddress: marketAddrs[i] ?? '0x0',
+      isCollateral: assetsIn?.includes(marketAddrs[i]),
     };
   }) || []) as ISnapshot[];
 

@@ -26,13 +26,13 @@ export interface IMarket {
 
   totalSupply: bigint;
 
-  // interest rate model related fields
-  interestRateModel: Address;
   blocksPerYear: number;
-  kink: number; // 0~1
-  multiplierPerBlock: number;
-  jumpMultiplierPerBlock: number;
-  utilizationRate: number; // 0~1
+  // interest rate model related fields
+  // interestRateModel: Address;
+  // kink: number; // 0~1
+  // multiplierPerBlock: number;
+  // jumpMultiplierPerBlock: number;
+  // utilizationRate: number; // 0~1
 
   collateralFactorsMantissa: bigint;
 }
@@ -44,6 +44,7 @@ export interface ISnapshot {
   borrowBalance: bigint;
   exchangeRate: bigint;
   collateralFator?: bigint;
+  isCollateral?: boolean;
 }
 
 export type IMarketWithToken = IMarket & {
@@ -53,4 +54,24 @@ export type IMarketWithToken = IMarket & {
   underlyingSymbol?: string;
   underlyingImage?: string;
   underlyingBalance?: number;
+};
+
+export type IMTokenMetadata = {
+  mToken: Address;
+  exchangeRateCurrent: bigint;
+  supplyRatePerBlock: bigint;
+  borrowRatePerBlock: bigint;
+  reserveFactorMantissa: bigint;
+  totalBorrows: bigint;
+  totalReserves: bigint;
+  totalSupply: bigint;
+  totalCash: bigint;
+  isListed: boolean;
+  collateralFactorMantissa: bigint;
+  underlyingAssetAddress: Address;
+  cTokenDecimals: bigint;
+  underlyingDecimals: bigint;
+  compSupplySpeed: bigint;
+  compBorrowSpeed: bigint;
+  borrowCap: bigint;
 };

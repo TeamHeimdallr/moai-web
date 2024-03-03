@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Abi, Address, formatEther } from 'viem';
+import { Abi, Address } from 'viem';
 import { useContractRead } from 'wagmi';
 
 import { UNITROLLER_ADDRESS } from '~/constants';
@@ -24,11 +24,7 @@ export const useUserAccountLiquidity = () => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const chainId = useNetworkId(currentNetwork);
 
-  const {
-    data,
-    refetch: liquidityRefetch,
-    isError: isContractReadError,
-  } = useContractRead({
+  const { data, refetch: liquidityRefetch } = useContractRead({
     address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
     abi: COMPTROLLER_ABI as Abi,
     functionName: 'getAccountLiquidity',
@@ -39,18 +35,13 @@ export const useUserAccountLiquidity = () => {
     enabled: !!walletAddress && !!chainId && isEvm,
   });
 
-  const noParticipation = !data;
-  const isError = data?.[0] !== 0n || isContractReadError;
-
-  const netWorthRaw = noParticipation || isError ? 0 : data?.[1] > 0 ? data?.[1] : -data?.[2];
-  const netWorth = formatEther(netWorthRaw);
-
   const refetch = () => {
     liquidityRefetch();
   };
   return {
-    netWorthRaw,
-    netWorth,
+    liquidityError: data?.[0],
+    liquidity: data?.[1] || 0n,
+    shortfall: data?.[2] || 0n,
     refetch,
   };
 };

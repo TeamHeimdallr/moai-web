@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw, { css, styled } from 'twin.macro';
-import { formatUnits } from 'viem';
+import { Address, formatEther, formatUnits } from 'viem';
 
-import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useGetLiquidationIncentive } from '~/api/api-contract/_evm/lending/get-liquidation-incentive';
+import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
+import { useGetSupplyCap } from '~/api/api-contract/_evm/lending/get-supply-cap';
 
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconQuestion } from '~/assets/icons';
@@ -26,20 +28,34 @@ export const AssetSupplyInfo = () => {
   const { t } = useTranslation();
 
   const { address } = useParams();
-  const { markets } = useGetAllMarkets();
-  const market = markets.find(m => m.address === address);
+  const { market } = useGetMarket({
+    marketAddress: address as Address,
+  });
 
-  const { totalSupply, supplyApy, decimals } = market || {};
+  const {
+    cash,
+    totalBorrows,
+    totalReserves,
+    supplyApy,
+    collateralFactorsMantissa,
+    underlyingDecimals,
+  } = market || {};
+  const { liquidationIncentiveRaw } = useGetLiquidationIncentive();
 
-  // TODO: connect api
-  const maxSupply = 2 * 10 ** 9;
+  const { supplyCap } = useGetSupplyCap({
+    marketAddress: address as Address,
+    underlyingDecimals: underlyingDecimals,
+  });
 
-  const maxLTV = 70;
-  const collateral = true;
-  const liquidationThreshold = 75;
-  const liquidationPenalty = 10;
+  const maxSupply = Number(supplyCap);
+  const maxLTV = 100 * Number(formatEther(collateralFactorsMantissa || 0n));
+  const collateral = maxLTV > 0;
+  const liquidationThreshold = maxLTV;
+  const liquidationPenalty = 100 * (Number(formatEther(liquidationIncentiveRaw || 0n)) - 1);
 
-  const totalSupplyNum = Number(formatUnits(totalSupply || 0n, decimals || 0));
+  const totalSupplyNum = Number(
+    formatUnits(cash + totalBorrows + totalReserves || 0n, underlyingDecimals || 0)
+  );
   const supplyApyNum = Number(supplyApy);
 
   const ratio = (totalSupplyNum / maxSupply) * 100;
@@ -87,41 +103,43 @@ export const AssetSupplyInfo = () => {
               {collateral ? t('Can be collateral') : t('Can not be collateral')}
             </ContentTitleCaptionWrapper>
           </ContentTitle>
-          <CollateralCards>
-            <InfoCard
-              title={t('Max LTV')}
-              titleIcon={
-                <ButtonIconSmall
-                  icon={<IconQuestion />}
-                  data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_MAX_LTV}
-                />
-              }
-              value={`${formatNumber(maxLTV, 2, 'floor', THOUSAND, 2)}%`}
-              light
-            />
-            <InfoCard
-              title={t('Liquidation threshold')}
-              titleIcon={
-                <ButtonIconSmall
-                  icon={<IconQuestion />}
-                  data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD}
-                />
-              }
-              value={`${formatNumber(liquidationThreshold, 2, 'floor', THOUSAND, 2)}%`}
-              light
-            />
-            <InfoCard
-              title={t('Liquidation penalty')}
-              titleIcon={
-                <ButtonIconSmall
-                  icon={<IconQuestion />}
-                  data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY}
-                />
-              }
-              value={`${formatNumber(liquidationPenalty, 2, 'floor', THOUSAND, 2)}%`}
-              light
-            />
-          </CollateralCards>
+          {collateral && (
+            <CollateralCards>
+              <InfoCard
+                title={t('Max LTV')}
+                titleIcon={
+                  <ButtonIconSmall
+                    icon={<IconQuestion />}
+                    data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_MAX_LTV}
+                  />
+                }
+                value={`${formatNumber(maxLTV, 2, 'floor', THOUSAND, 2)}%`}
+                light
+              />
+              <InfoCard
+                title={t('Liquidation threshold')}
+                titleIcon={
+                  <ButtonIconSmall
+                    icon={<IconQuestion />}
+                    data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD}
+                  />
+                }
+                value={`${formatNumber(liquidationThreshold, 2, 'floor', THOUSAND, 2)}%`}
+                light
+              />
+              <InfoCard
+                title={t('Liquidation penalty')}
+                titleIcon={
+                  <ButtonIconSmall
+                    icon={<IconQuestion />}
+                    data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY}
+                  />
+                }
+                value={`${formatNumber(liquidationPenalty, 2, 'floor', THOUSAND, 2)}%`}
+                light
+              />
+            </CollateralCards>
+          )}
         </CollateralWrapper>
       </Wrapper>
 

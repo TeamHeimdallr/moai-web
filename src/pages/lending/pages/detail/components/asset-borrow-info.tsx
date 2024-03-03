@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
-import { formatUnits } from 'viem';
+import { Address, formatUnits } from 'viem';
 
-import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
+import { useGetMTokenMetadata } from '~/api/api-contract/_evm/lending/mtoken-metadata';
 
 import { IconQuestion } from '~/assets/icons';
 
@@ -25,20 +26,28 @@ export const AssetBorrowInfo = () => {
   const { t } = useTranslation();
 
   const { address } = useParams();
-  const { markets } = useGetAllMarkets();
-  const market = markets.find(m => m.address === address);
+  const { market } = useGetMarket({
+    marketAddress: address as Address,
+  });
+  const { mTokenMetadata } = useGetMTokenMetadata({
+    mTokenAddress: address as Address,
+    enabled: address !== undefined,
+  });
 
-  const { totalBorrows, borrowApy, decimals, reserveFactorMantissa, price } = market || {};
+  const { borrowApy, price } = market || {};
+  const {
+    totalBorrows,
+    underlyingDecimals,
+    borrowCap: borrowCapRaw,
+    reserveFactorMantissa,
+  } = mTokenMetadata || {};
 
-  // TODO: connect api
-  const maxBorrow = 2 * 10 ** 9;
-
-  const totalBorrowNum = Number(formatUnits(totalBorrows || 0n, decimals || 0));
+  const borrowCap = Number(formatUnits(borrowCapRaw || 0n, Number(underlyingDecimals) || 18));
+  const totalBorrowNum = Number(formatUnits(totalBorrows || 0n, Number(underlyingDecimals) || 18));
   const borrowApyNum = Number(borrowApy);
   const reserveFactorNum = Number(formatUnits(reserveFactorMantissa || 0n, 18)) * 100;
-  const borrowCap = maxBorrow - totalBorrowNum;
 
-  const ratio = (totalBorrowNum / maxBorrow) * 100;
+  const ratio = (totalBorrowNum / borrowCap) * 100;
 
   return (
     <OuterWrapper>
@@ -58,7 +67,7 @@ export const AssetBorrowInfo = () => {
               <>
                 <InfoText>{formatNumber(totalBorrowNum)}</InfoText>
                 <InfoTextSmall>of</InfoTextSmall>
-                <InfoText>{formatNumber(maxBorrow)}</InfoText>
+                <InfoText>{formatNumber(borrowCap)}</InfoText>
               </>
             }
             barChart
@@ -69,11 +78,13 @@ export const AssetBorrowInfo = () => {
             title={t('APY')}
             value={<APYMedium apy={borrowApyNum} style={{ justifyContent: 'flex-start' }} />}
           />
-          <AssetSupplyBorrowInfoCard
-            title={t('Borrow cap')}
-            value={<InfoText>{formatNumber(borrowCap)}</InfoText>}
-            caption={`$${formatNumber(borrowCap * (price || 0))}`}
-          />
+          {borrowCap !== 0 && (
+            <AssetSupplyBorrowInfoCard
+              title={t('Borrow cap')}
+              value={<InfoText>{formatNumber(borrowCap)}</InfoText>}
+              caption={`$${formatNumber(borrowCap * (price || 0))}`}
+            />
+          )}
         </InfoWrapper>
 
         <ChartWrapper>

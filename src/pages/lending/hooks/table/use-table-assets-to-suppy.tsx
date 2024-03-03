@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
@@ -21,6 +22,7 @@ import { TableHeaderTooltip } from '~/components/tables/headers/header-normal';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkAbbr } from '~/utils';
 import { useTableLendingAssetsToSupplySortStore } from '~/states/components';
 import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
 import { TOOLTIP_ID } from '~/types';
@@ -28,6 +30,8 @@ import { TOOLTIP_ID } from '~/types';
 import { APYSmall } from '../../components/apy';
 
 export const useTableAssetsToSupply = () => {
+  const navigate = useNavigate();
+
   const { sort, setSort } = useTableLendingAssetsToSupplySortStore();
   const { showZeroBalances } = useShowZeroBalanceAssetsStore();
 
@@ -39,16 +43,16 @@ export const useTableAssetsToSupply = () => {
 
   const { markets } = useGetAllMarkets();
   const assetsToSupply = markets.filter(m =>
-    showZeroBalances || !currentAddress ? true : m.balance > 0
+    showZeroBalances || !currentAddress ? true : (m.underlyingBalance ?? 0) > 0
   );
 
   const sortedAssetsToSupply = useMemo(() => {
     if (sort?.key === 'balance') {
       return assetsToSupply.sort((a, b) => {
         if (sort.order === 'desc') {
-          return b.balance - a.balance;
+          return (b.underlyingBalance ?? 0) - (a.underlyingBalance ?? 0);
         }
-        return a.balance - b.balance;
+        return (a.underlyingBalance ?? 0) - (b.underlyingBalance ?? 0);
       });
     }
     if (sort?.key === 'apy') {
@@ -63,6 +67,11 @@ export const useTableAssetsToSupply = () => {
     return assetsToSupply;
   }, [assetsToSupply, sort]);
 
+  const handleLendingSupply = (address: string) => {
+    const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/supply`;
+    navigate(link);
+  };
+
   const tableData = useMemo(
     () =>
       sortedAssetsToSupply?.map(d => {
@@ -70,32 +79,37 @@ export const useTableAssetsToSupply = () => {
           meta: { address: d.address },
           asset: (
             <TableColumnToken
-              tokens={[{ symbol: d.symbol, image: d.image }]}
+              tokens={[{ symbol: d.underlyingSymbol ?? '', image: d.underlyingImage }]}
               disableSelectedToken
             />
           ),
           balance: (
             <TableColumnAmount
-              balance={d.balance}
-              value={d.balance * (d.price || 0)}
+              balance={d.underlyingBalance ?? 0}
+              value={(d.underlyingBalance ?? 0) * (d.price || 0)}
               align="center"
               empty={!currentAddress}
             />
           ),
           apy: <TableColumn value={<APYSmall apy={d.supplyApy} />} align="center" />,
-          // TODO: can be collateral or not
-          collateral: <TableColumnCheck active={true} align="center" />,
+          collateral: (
+            <TableColumnCheck active={d.collateralFactorsMantissa !== 0n} align="center" />
+          ),
           buttons: (
             <TableColumnButtons align="flex-end">
               <ButtonPrimaryMedium
                 text={t('lending-supply')}
-                onClick={() => {}}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingSupply(d.address);
+                }}
                 style={{ width: '94px' }}
               />
             </TableColumnButtons>
           ),
         };
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentAddress, sortedAssetsToSupply, t]
   );
 
@@ -169,24 +183,30 @@ export const useTableAssetsToSupply = () => {
           rows: [
             <TableColumnToken
               key={i}
-              tokens={[{ symbol: d.symbol, image: d.image }]}
+              tokens={[{ symbol: d.underlyingSymbol ?? '', image: d.underlyingImage }]}
               disableSelectedToken
             />,
           ],
           bottomRows: [
             <TableColumnButtons key={i} style={{ width: '100%' }}>
-              <ButtonPrimaryMedium text={t('lending-supply')} onClick={() => {}} />
               <ButtonPrimaryMedium
-                text={t('lending-withdraw')}
-                onClick={() => {}}
-                buttonType="outlined"
+                text={t('lending-supply')}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingSupply(d.address);
+                }}
               />
             </TableColumnButtons>,
           ],
           dataRows: [
             {
               label: 'lending-my-balance',
-              value: <TableColumnAmount balance={d.balance} value={d.balance * (d.price || 0)} />,
+              value: (
+                <TableColumnAmount
+                  balance={d.underlyingBalance ?? 0}
+                  value={d.underlyingBalance ?? 0 * (d.price || 0)}
+                />
+              ),
             },
             {
               label: 'lending-apy',
@@ -205,12 +225,12 @@ export const useTableAssetsToSupply = () => {
                   }
                 />
               ),
-              // TODO: can be collateral or not
-              value: <TableColumnCheck active={true} />,
+              value: <TableColumnCheck active={d.collateralFactorsMantissa !== 0n} />,
             },
           ],
         };
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [sortedAssetsToSupply, t]
   );
 

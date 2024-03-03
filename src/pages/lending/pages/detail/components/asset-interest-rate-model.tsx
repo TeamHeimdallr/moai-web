@@ -12,8 +12,10 @@ import { Text } from '@visx/text';
 import { useTooltip } from '@visx/tooltip';
 import { bisector } from '@visx/vendor/d3-array';
 import tw from 'twin.macro';
+import { Address } from 'viem';
 
-import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useGetInterestRateModel } from '~/api/api-contract/_evm/lending/get-interest-rate-model';
+import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
 import { useGetLendingIRateModelChartQuery } from '~/api/api-server/lending/get-charts-irate-model';
 
 import { COLOR } from '~/assets/colors';
@@ -33,12 +35,19 @@ export const AsseInterestModel = () => {
   const { ref } = useGAInView({ name: 'lending-asset-interest-model' });
 
   const { network, address } = useParams();
-  const { markets } = useGetAllMarkets();
-  const market = markets.find(m => m.address === address);
+  const { market } = useGetMarket({
+    marketAddress: address as Address,
+  });
 
-  const { supplyApy, borrowApy, utilizationRate, kink } = market || {};
+  const { supplyApy, borrowApy } = market || {};
 
-  // TODO: connect api
+  const { utilizationRate: utilizationRateData, params } = useGetInterestRateModel({
+    marketAddress: address as Address,
+  });
+
+  const utilizationRate = 100 * utilizationRateData;
+  const kink = params.kink;
+
   const optimalUtilizationRate = (kink || 0) * 100;
 
   const borrowApyNum = Number(borrowApy);
@@ -68,8 +77,7 @@ export const AsseInterestModel = () => {
     {
       params: {
         networkAbbr: network || 'trn',
-        // TODO: change address
-        marketAddress: '0x6a6a1ccd6af1f9b01E3706f36caa3D254Ae900D7',
+        marketAddress: address ?? '0x0',
       },
     },
     {

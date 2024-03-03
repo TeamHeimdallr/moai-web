@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
+import { Address } from 'viem';
 
-import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
 
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
@@ -30,8 +31,7 @@ export const LendingDetail = () => {
 
   const targetNetork = [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN];
 
-  const { markets } = useGetAllMarkets();
-  const market = markets.find(m => m.address === address);
+  const { market } = useGetMarket({ marketAddress: address as Address });
 
   useForceNetwork({
     targetNetwork: [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN],

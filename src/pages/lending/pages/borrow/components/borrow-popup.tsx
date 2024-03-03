@@ -80,7 +80,6 @@ export const LendingBorrowPopup = ({
 
   const [estimatedLendingBorrowFee, setEstimatedLendingBorrowFee] = useState<number | undefined>();
 
-  // TODO: connect api
   const { symbol, mTokenAddress, amount, price, image, address, decimal } = tokenIn || {};
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor || 100);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor || 100);
