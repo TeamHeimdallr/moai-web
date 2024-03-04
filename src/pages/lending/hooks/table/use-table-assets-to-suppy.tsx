@@ -19,13 +19,14 @@ import { TableColumnButtons } from '~/components/tables/columns/column-buttons';
 import { TableColumnCheck } from '~/components/tables/columns/column-check';
 import { TableHeaderTooltip } from '~/components/tables/headers/header-normal';
 
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
 import { useTableLendingAssetsToSupplySortStore } from '~/states/components';
 import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
-import { TOOLTIP_ID } from '~/types';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { APYSmall } from '../../components/apy';
 
@@ -38,17 +39,19 @@ export const useTableAssetsToSupply = () => {
   const { t } = useTranslation();
 
   const { isMD } = useMediaQuery();
-  const { selectedNetwork } = useNetwork();
-  const { currentAddress } = useConnectedWallet(selectedNetwork);
+  const { selectedNetwork, isFpass } = useNetwork();
+  const { currentAddress, evm, fpass } = useConnectedWallet(selectedNetwork);
+
+  const { open } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { markets } = useGetAllMarkets();
-  const assetsToSupply = markets.filter(m =>
+  const assetsToSupply = markets?.filter(m =>
     showZeroBalances || !currentAddress ? true : (m.underlyingBalance ?? 0) > 0
   );
 
   const sortedAssetsToSupply = useMemo(() => {
     if (sort?.key === 'balance') {
-      return assetsToSupply.sort((a, b) => {
+      return assetsToSupply?.sort((a, b) => {
         if (sort.order === 'desc') {
           return (b.underlyingBalance ?? 0) - (a.underlyingBalance ?? 0);
         }
@@ -56,7 +59,7 @@ export const useTableAssetsToSupply = () => {
       });
     }
     if (sort?.key === 'apy') {
-      return assetsToSupply.sort((a, b) => {
+      return assetsToSupply?.sort((a, b) => {
         if (sort.order === 'desc') {
           return b.supplyApy - a.supplyApy;
         }
@@ -68,8 +71,12 @@ export const useTableAssetsToSupply = () => {
   }, [assetsToSupply, sort]);
 
   const handleLendingSupply = (address: string) => {
-    const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/supply`;
-    navigate(link);
+    if ((isFpass && fpass.isConnected) || evm.isConnected) {
+      const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/supply`;
+      navigate(link);
+    } else {
+      open();
+    }
   };
 
   const tableData = useMemo(
@@ -177,7 +184,7 @@ export const useTableAssetsToSupply = () => {
 
   const mobileTableData = useMemo(
     () =>
-      sortedAssetsToSupply.map((d, i) => {
+      sortedAssetsToSupply?.map((d, i) => {
         return {
           meta: { address: d.address },
           rows: [

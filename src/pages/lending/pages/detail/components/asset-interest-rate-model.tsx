@@ -199,7 +199,6 @@ export const AsseInterestModel = () => {
                   headerValueBorowAprDom.innerHTML = `${formatNumber(currentBorrowApr)}%`;
                   headerValueSupplyAprDom.innerHTML = `${formatNumber(currentSupplyApr)}%`;
                 } else {
-                  console.log(borrowApyNum, supplyApyNum);
                   headerValueUtilizationDom.innerHTML = formattedUtilizationRate;
                   headerValueBorowAprDom.innerHTML = `${formatNumber(borrowApyNum)}%`;
                   headerValueSupplyAprDom.innerHTML = `${formatNumber(supplyApyNum)}%`;

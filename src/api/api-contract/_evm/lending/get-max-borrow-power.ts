@@ -77,12 +77,12 @@ export const useGetMaxBorrowPower = () => {
 
   const underlyingPriceAll = underlyingPriceAllData as Array<bigint>;
 
-  const maximumBorrowPower = balances.reduce((acc, b, i) => {
-    const decimals = Number(metadataAll[i].underlyingDecimals);
+  const maximumBorrowPower = balances?.reduce((acc, b, i) => {
+    const decimals = Number(metadataAll[i]?.underlyingDecimals);
     const balanceOfUnderlying = b['balanceOfUnderlying'];
-    const price = Number(formatUnits(underlyingPriceAll[i]['underlyingPrice'], 36 - decimals));
+    const price = Number(formatUnits(underlyingPriceAll[i]?.['underlyingPrice'], 36 - decimals));
     const collateralValue = Number(formatUnits(balanceOfUnderlying, decimals)) * price;
-    const collateralFactor = Number(formatUnits(metadataAll[i].collateralFactorMantissa, 18));
+    const collateralFactor = Number(formatUnits(metadataAll[i]?.collateralFactorMantissa, 18));
 
     const borrowPower = collateralValue * collateralFactor;
     return acc + borrowPower;
