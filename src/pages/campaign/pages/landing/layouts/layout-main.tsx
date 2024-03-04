@@ -8,7 +8,7 @@ import { useCampaignLpBalance } from '~/api/api-contract/_evm/campaign/lp-balanc
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 import { useGetPoolsQuery } from '~/api/api-server/pools/get-pools';
 
-import { IconTokenMoai, IconTokenRoot } from '~/assets/icons';
+import { IconTokenRoot } from '~/assets/icons';
 import Logo1 from '~/assets/logos/logo-campaign-1.svg?react';
 import Logo2 from '~/assets/logos/logo-campaign-2.svg?react';
 
@@ -33,7 +33,7 @@ const _LayoutMain = () => {
   const { ref } = useGAInView({ name: 'campaign-layout-main' });
   const { gaAction } = useGAAction();
 
-  const { apr, moaiApr } = useCampaignLpBalance();
+  const { apr } = useCampaignLpBalance();
 
   const { data: poolData } = useGetPoolsQuery(
     { queries: { filter: 'network:eq:trn' } },
@@ -84,10 +84,6 @@ const _LayoutMain = () => {
               <TextInfoWrapper>
                 <Text>{apr ? formatNumber(apr, 2, 'floor', THOUSAND, 2) : '0'}%</Text>
                 <AprInfoWrapper>
-                  <AprInfo>
-                    {moaiApr ? `+${formatNumber(moaiApr, 2, 'floor', THOUSAND, 2)}%` : '0%'}
-                    <IconTokenMoai width={16} height={16} />
-                  </AprInfo>
                   <AprInfo>
                     {`+${formatNumber(10, 2, 'floor', THOUSAND, 2)}%`}
                     <IconTokenRoot width={16} height={16} />
