@@ -241,6 +241,8 @@
   "Switch to The Root Network": "The Root Network로 변경하기",
   "rewards-network-alert-message": "현재 The Root Network에서 리워드를 확인할 수 있습니다. 리워드를 확인하기 위해 네트워크를 변경할까요?",
 
+  "Start at": "시작일",
+  "End at": "종료일",
   "Ends at": "종료일",
   "Total Reward": "총 리워드",
   "My Volume": "나의 유동량",

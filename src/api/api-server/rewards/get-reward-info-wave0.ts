@@ -3,7 +3,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { api } from '~/api/axios';
 
 import { encodeQuery } from '~/utils';
-import { IRewardsInfo } from '~/types/rewards';
+import { IRewardsWave0Info } from '~/types/rewards';
 
 interface Queries {
   walletAddress?: string;
@@ -18,15 +18,16 @@ interface Request {
   params: Params;
   queries: Queries;
 }
-type Response = IRewardsInfo;
+
+type Response = IRewardsWave0Info;
 
 const axios = async (params: Params, queries?: Queries) =>
   (await api.get<Response>(`/reward/${params.networkAbbr}/info${encodeQuery(queries)}`)).data;
 
-export const useGetRewardsInfoQuery = (request: Request, options?: QueryOption) => {
+export const useGetRewardsWave0InfoQuery = (request: Request, options?: QueryOption) => {
   const { params, queries } = request;
 
-  const queryKey = ['GET', 'REWARD', 'INFO', params, queries];
+  const queryKey = ['GET', 'REWARD', 'INFO', 'WAVE0', params, queries];
   const data = useQuery<Response>(queryKey, () => axios(params, queries), options);
 
   return {

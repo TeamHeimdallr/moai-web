@@ -3,19 +3,16 @@ import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw from 'twin.macro';
 
-import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
-
-import { MILLION, THOUSAND, TRILLION } from '~/constants';
+import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { DATE_FORMATTER, formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
+import { DATE_FORMATTER, getNetworkAbbr, getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
 
 export const RewardInfo = () => {
   const { ref } = useGAInView({ name: 'reward-info' });
-  const { ref: refMy } = useGAInView({ name: 'reward-my-info' });
 
   const { t } = useTranslation();
 
@@ -25,43 +22,30 @@ export const RewardInfo = () => {
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const { currentAddress } = useConnectedWallet(currentNetwork);
-  const { data: waveInfo } = useGetRewardsInfoQuery(
+  const { data: waveInfo } = useGetRewardsWaveNInfoQuery(
     {
-      params: {
-        networkAbbr: currentNetworkAbbr,
-      },
-      queries: {
-        walletAddress: currentAddress,
-      },
+      params: { networkAbbr: currentNetworkAbbr },
+      queries: { walletAddress: currentAddress },
     },
     {
       enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK,
       staleTime: 20 * 1000,
     }
   );
-  const { endsAt, myReward, myVolume, totalReward } = waveInfo || {};
+  const { startAt, endAt } = waveInfo || {};
 
-  const formattedEndsAt = endsAt ? `${format(new Date(endsAt), DATE_FORMATTER.MMM_d_yyyy)}` : '';
-  const formattedEndsAtTime = endsAt ? `${format(new Date(endsAt), DATE_FORMATTER.HH_A_0)}` : '';
-  const formattedTotalReward = totalReward
-    ? `${formatNumber(totalReward, 2, 'floor', TRILLION, 2)}`
-    : '0';
+  const formattedStartAt = startAt ? `${format(new Date(startAt), DATE_FORMATTER.MMM_d_yyyy)}` : '';
+  const formattedStartAtTime = startAt ? `${format(new Date(startAt), DATE_FORMATTER.HH_A_0)}` : '';
 
-  const formattedMyVolume = myVolume ? `$${formatNumber(myVolume, 4, 'floor', THOUSAND, 0)}` : '$0';
-  const formattedMyReward = myReward ? `${formatNumber(myReward, 4, 'floor', MILLION, 4)}` : '0';
+  const formattedEndAt = endAt ? `${format(new Date(endAt), DATE_FORMATTER.MMM_d_yyyy)}` : '';
+  const formattedEndAtTime = endAt ? `${format(new Date(endAt), DATE_FORMATTER.HH_A_0)}` : '';
 
   return (
     <Wrapper ref={ref}>
       <InnerWrapper>
-        <InfoCard name={t('Ends at')} value={formattedEndsAt} subValue={formattedEndsAtTime} />
-        <InfoCard name={t('Total Reward')} value={formattedTotalReward} subValue="veMOAI" />
+        <InfoCard name={t('Start at')} value={formattedStartAt} subValue={formattedStartAtTime} />
+        <InfoCard name={t('End at')} value={formattedEndAt} subValue={formattedEndAtTime} />
       </InnerWrapper>
-      {currentAddress && (
-        <InnerWrapper ref={refMy}>
-          <InfoCard name={t('My Volume')} value={formattedMyVolume} />
-          <InfoCard name={t('My Reward')} value={formattedMyReward} subValue="veMOAI" />
-        </InnerWrapper>
-      )}
     </Wrapper>
   );
 };
@@ -71,7 +55,8 @@ const Wrapper = tw.div`
   md:(flex-row)
 `;
 const InnerWrapper = tw.div`
-  flex flex-1 gap-16
+  flex flex-1 gap-16 min-h-126
+  md:(min-h-140)
 `;
 
 interface InfoCardProps {
@@ -93,17 +78,17 @@ const InfoCard = ({ name, value, subValue }: InfoCardProps) => {
 };
 const PoolInfoCardWrapper = tw.div`
   w-full flex flex-1 flex-col items-start bg-neutral-10 rounded-12
-  py-16 px-20 gap-12
+  py-16 pl-20 pr-12 gap-12
   md:(py-20 px-24 gap-16)
 `;
 
 const Name = tw.div`
-  font-m-14 text-neutral-80
+  flex items-center h-32 font-m-14 text-neutral-80
   md:(font-m-16)
 `;
 
 const ValueWrapper = tw.div`
-  flex flex-wrap gap-x-4 items-end
+  flex flex-col gap-x-4 gap-2
 `;
 
 const Value = tw.div`
