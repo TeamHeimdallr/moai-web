@@ -7,6 +7,9 @@ interface Props {
   snapshots: ISnapshot[];
 }
 export const calcNetApy = ({ markets, snapshots }: Props) => {
+  if (!markets) {
+    return 0;
+  }
   const denomList = markets.map((m, i) => {
     const borrowValues =
       Number(formatUnits(snapshots[i]?.borrowBalance || 0n, m.underlyingDecimals)) * (m.price ?? 0);

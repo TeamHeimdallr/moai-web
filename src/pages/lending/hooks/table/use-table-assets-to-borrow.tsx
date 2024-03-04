@@ -20,18 +20,22 @@ import {
 } from '~/components/tables';
 import { TableColumnButtons } from '~/components/tables/columns/column-buttons';
 
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
 import { useTableLendingAssetsToBorrowSortStore } from '~/states/components';
-import { TOOLTIP_ID } from '~/types';
+import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { APYSmall } from '../../components/apy';
 
 export const useTableAssetsToBorrow = () => {
   const navigate = useNavigate();
 
-  const { selectedNetwork } = useNetwork();
+  const { selectedNetwork, isFpass } = useNetwork();
+  const { open } = usePopup(POPUP_ID.CONNECT_WALLET);
+  const { evm, fpass } = useConnectedWallet();
 
   const { sort, setSort } = useTableLendingAssetsToBorrowSortStore();
 
@@ -51,35 +55,59 @@ export const useTableAssetsToBorrow = () => {
 
   const assetsToBorrow = useMemo(
     () =>
-      accountSnapshots
-        .map(d => {
-          const makrketIndex = markets.findIndex(m => m.address === d.mTokenAddress);
-          const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
-          const price = market?.price;
-          const underlyingBalance = Number(
-            formatUnits(d.exchangeRate * d.mTokenBalance, 16 + (market?.decimals || 18))
-          );
-          const availables = availableAmountList[makrketIndex] || 0;
-          const value = availables * (price || 0);
-          const debt = Number(formatUnits(d.borrowBalance, market?.underlyingDecimals || 18));
-          const debtValue = debt * (price || 0);
+      markets.map((m, i) => {
+        const remain = Number(formatUnits(m.cash - m.totalReserves, m.underlyingDecimals || 18));
+        const remainValue = remain * (m.price || 0);
 
+        if (!accountSnapshots || accountSnapshots.length === 0) {
           return {
-            id: makrketIndex,
-            address: d.mTokenAddress,
+            id: i,
+            address: m.address,
             asset: {
-              symbol: market?.underlyingSymbol || '',
-              image: market?.underlyingImage || '',
+              symbol: m.underlyingSymbol || '',
+              image: m.underlyingImage || '',
+              balance: 0,
+              availables: remain,
+              value: remainValue,
+              debt: 0,
+              debtValue: 0,
+            },
+            apy: m.borrowApy || 0,
+          };
+        } else {
+          const accountSnapshotIndex = accountSnapshots.findIndex(
+            s => s.mTokenAddress === m.address
+          );
+          const accountSnapshot =
+            accountSnapshotIndex === -1 ? undefined : accountSnapshots[accountSnapshotIndex];
+          const underlyingBalance = Number(
+            formatUnits(
+              (accountSnapshot?.exchangeRate || 0n) * (accountSnapshot?.mTokenBalance || 0n),
+              16 + (m.decimals || 18)
+            )
+          );
+          const availables = availableAmountList[i] || 0;
+          const value = availables * (m.price || 0);
+          const debt = Number(
+            formatUnits(accountSnapshot?.borrowBalance || 0n, m.underlyingDecimals || 18)
+          );
+          const debtValue = debt * (m.price || 0);
+          return {
+            id: i,
+            address: accountSnapshot?.mTokenAddress || '',
+            asset: {
+              symbol: m.underlyingSymbol || '',
+              image: m.underlyingImage || '',
               balance: underlyingBalance,
               availables: availables,
               value,
               debt,
               debtValue,
             },
-            apy: market?.borrowApy || 0,
+            apy: m.borrowApy || 0,
           };
-        })
-        .filter(d => d.asset.balance > 0),
+        }
+      }),
     [accountSnapshots, availableAmountList, markets]
   );
 
@@ -105,8 +133,12 @@ export const useTableAssetsToBorrow = () => {
   }, [assetsToBorrow, sort]);
 
   const handleLendingBorrow = (address: string) => {
-    const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/borrow`;
-    navigate(link);
+    if ((isFpass && fpass.isConnected) || evm.isConnected) {
+      const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/borrow`;
+      navigate(link);
+    } else {
+      open();
+    }
   };
 
   const tableData = useMemo(

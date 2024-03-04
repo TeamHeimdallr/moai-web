@@ -77,7 +77,7 @@ export const useGetMaxBorrowPower = () => {
 
   const underlyingPriceAll = underlyingPriceAllData as Array<bigint>;
 
-  const maximumBorrowPower = balances.reduce((acc, b, i) => {
+  const maximumBorrowPower = balances?.reduce((acc, b, i) => {
     const decimals = Number(metadataAll[i].underlyingDecimals);
     const balanceOfUnderlying = b['balanceOfUnderlying'];
     const price = Number(formatUnits(underlyingPriceAll[i]['underlyingPrice'], 36 - decimals));

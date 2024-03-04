@@ -290,16 +290,15 @@ export const useGetAllMarkets = () => {
     };
   });
 
-  // console.log(markets);
-  const underlyingAssets = markets.map(market => market.underlyingAsset) || [];
+  const underlyingAssets = markets?.map(market => market?.underlyingAsset) || [];
   const { userTokenBalances } = useUserTokenBalances({ addresses: underlyingAssets });
 
-  const marketWithToken = markets.map(market => {
-    const token = userTokenBalances?.find(t => t.address === market.underlyingAsset);
+  const marketWithToken = markets?.map(market => {
+    const token = userTokenBalances?.find(t => t.address === market?.underlyingAsset);
     return {
       ...market,
-      address: market.address,
-      symbol: market.symbol,
+      address: market?.address,
+      symbol: market?.symbol,
 
       price: token?.price,
 

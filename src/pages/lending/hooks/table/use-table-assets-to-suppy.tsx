@@ -42,13 +42,13 @@ export const useTableAssetsToSupply = () => {
   const { currentAddress } = useConnectedWallet(selectedNetwork);
 
   const { markets } = useGetAllMarkets();
-  const assetsToSupply = markets.filter(m =>
+  const assetsToSupply = markets?.filter(m =>
     showZeroBalances || !currentAddress ? true : (m.underlyingBalance ?? 0) > 0
   );
 
   const sortedAssetsToSupply = useMemo(() => {
     if (sort?.key === 'balance') {
-      return assetsToSupply.sort((a, b) => {
+      return assetsToSupply?.sort((a, b) => {
         if (sort.order === 'desc') {
           return (b.underlyingBalance ?? 0) - (a.underlyingBalance ?? 0);
         }
@@ -56,7 +56,7 @@ export const useTableAssetsToSupply = () => {
       });
     }
     if (sort?.key === 'apy') {
-      return assetsToSupply.sort((a, b) => {
+      return assetsToSupply?.sort((a, b) => {
         if (sort.order === 'desc') {
           return b.supplyApy - a.supplyApy;
         }
@@ -177,7 +177,7 @@ export const useTableAssetsToSupply = () => {
 
   const mobileTableData = useMemo(
     () =>
-      sortedAssetsToSupply.map((d, i) => {
+      sortedAssetsToSupply?.map((d, i) => {
         return {
           meta: { address: d.address },
           rows: [
