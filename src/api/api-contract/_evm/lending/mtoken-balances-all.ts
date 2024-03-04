@@ -38,8 +38,6 @@ export const useGetMTokenBalancesAll = ({ mTokenAddresses, enabled }: Props) => 
     enabled: !!chainId && isEvm && !!mTokenAddresses && !!walletAddress && enabled,
   });
 
-  console.log(data);
-
   return {
     data,
     refetch,
