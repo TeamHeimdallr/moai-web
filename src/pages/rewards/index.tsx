@@ -127,7 +127,7 @@ interface TitleProps {
 }
 const Title = styled.div<TitleProps>(({ selected }) => [
   tw`
-    font-b-20 h-40 flex items-center text-neutral-60
+    font-b-20 h-40 flex items-center text-neutral-60 clickable
     md:(font-b-24)
   `,
   selected && tw`text-neutral-100`,

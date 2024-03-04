@@ -59,7 +59,7 @@ export const RewardMyInfo = () => {
         <InnerInfoWrapper>
           <InfoCardWrapper>
             {/* TODO: 추후 받아오는 데이터를 contract로 수정 */}
-            {veMOAI && veMOAI > 0 && (
+            {!!veMOAI && veMOAI > 0 && (
               <InfoCard
                 name={t('Wave 0')}
                 value={formatNumber(veMOAI, 2, 'floor', MILLION, 2)}
