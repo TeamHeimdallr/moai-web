@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
-import { Address } from 'viem';
+import { Address, parseUnits } from 'viem';
 
 import { useLendingRepay } from '~/api/api-contract/lending/repay';
+import { useApprove } from '~/api/api-contract/token/approve';
 
 import { COLOR } from '~/assets/colors';
 import { IconArrowNext, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
@@ -14,6 +15,7 @@ import { MILLION, SCANNER_URL, TRILLION } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
+import { LoadingStep } from '~/components/loadings/step';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
 
@@ -23,7 +25,10 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { calculateHealthFactorColor, DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
-import { useLendingRepayNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import {
+  useApproveNetworkFeeErrorStore,
+  useLendingRepayNetworkFeeErrorStore,
+} from '~/states/contexts/network-fee-error/network-fee-error';
 import { IToken, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -36,6 +41,7 @@ interface Props {
 
   isMax?: boolean;
 
+  refetchBalance?: () => void;
   handleSuccess?: () => void;
 }
 
@@ -48,6 +54,7 @@ export const LendingRepayPopup = ({
   debt,
 
   isMax,
+  refetchBalance,
   handleSuccess,
 }: Props) => {
   const { ref } = useGAInView({ name: 'lending-repay-popup' });
@@ -55,6 +62,7 @@ export const LendingRepayPopup = ({
 
   const { error: lendingGasError, setError: setLendingRepayGasError } =
     useLendingRepayNetworkFeeErrorStore();
+  const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
   const { network } = useParams();
   const currentNetwork = getNetworkFull(network);
@@ -69,13 +77,31 @@ export const LendingRepayPopup = ({
   const { isMD } = useMediaQuery();
 
   const [estimatedLendingRepayFee, setEstimatedLendingRepayFee] = useState<number | undefined>();
+  const [estimatedTokenApproveFee, setEstimatedTokenApproveFee] = useState<number | undefined>();
 
-  const { symbol, mTokenAddress, amount, price, image } = tokenIn || {};
+  const { symbol, mTokenAddress, amount, price, image, decimal, address, currency } = tokenIn || {};
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor || 100);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor || 100);
 
   const {
-    isLoading,
+    allow,
+    allowance,
+    isLoading: allowLoading,
+    isSuccess: allowSuccess,
+    refetch: refetchAllowance,
+    estimateFee: estimateTokenApproveFee,
+  } = useApprove({
+    amount: parseUnits(`${(amount || 0).toFixed(18)}`, decimal || 18),
+    symbol: symbol || '',
+    address: address || '',
+    issuer: address || '',
+    spender: mTokenAddress,
+    currency: currency || '',
+    enabled: !!amount && amount > 0,
+  });
+
+  const {
+    isLoading: repayLoading,
     isSuccess: repaySuccess,
     isError,
     txData,
@@ -91,6 +117,10 @@ export const LendingRepayPopup = ({
   const txDate = new Date(blockTimestamp || 0);
   const isIdle = !txData || !(isError || repaySuccess);
   const isSuccess = repaySuccess && !!txData;
+  const isLoading = repayLoading || allowLoading;
+
+  const step = allowance ? 2 : 1;
+  const stepLoading = step === 1 ? allowLoading : repayLoading;
 
   const buttonText = useMemo(() => {
     if (!isIdle) {
@@ -98,10 +128,15 @@ export const LendingRepayPopup = ({
       return t('Try again');
     }
 
-    return isLoading
+    if (!allowance)
+      return allowLoading
+        ? t('approve-loading')
+        : t('approve-lending-repay-token-message', { token: symbol });
+
+    return repayLoading
       ? t('lending-repay-button-loading')
       : t('lending-repay-button', { token: symbol });
-  }, [isIdle, isLoading, isSuccess, symbol, t]);
+  }, [allowLoading, allowance, isIdle, isSuccess, repayLoading, symbol, t]);
 
   const isValid = (amount || 0) <= (debt || 0);
   const handleButtonClick = async () => {
@@ -115,6 +150,16 @@ export const LendingRepayPopup = ({
 
       close();
       navigate(`/lending`);
+      return;
+    }
+
+    if (!allowance) {
+      gaAction({
+        action: 'approve-token',
+        data: { component: 'lending-repay-popup', token: symbol, amount },
+      });
+
+      await allow();
       return;
     }
 
@@ -136,28 +181,48 @@ export const LendingRepayPopup = ({
   };
 
   useEffect(() => {
-    if (isSuccess) handleSuccess?.();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess]);
+    if (allowSuccess) refetchAllowance();
+  }, [allowSuccess, refetchAllowance]);
 
   useEffect(() => {
-    return () => setLendingRepayGasError(false);
+    if (isSuccess) {
+      handleSuccess?.();
+      refetchBalance?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, refetchBalance]);
+
+  useEffect(() => {
+    return () => {
+      setLendingRepayGasError(false);
+      setApproveGasError(false);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if ((amount || 0) <= 0) return;
+    if (step !== 1 || (amount || 0) <= 0) return;
+    const estimateApproveFeeAsync = async () => {
+      const fee = await estimateTokenApproveFee?.();
+      setEstimatedTokenApproveFee(fee || 1);
+    };
+    estimateApproveFeeAsync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, step]);
 
+  useEffect(() => {
+    if (step !== 2 || (amount || 0) <= 0) return;
     const estimateLendingRepayFeeAsync = async () => {
       const fee = await estimateLendingRepayFee?.();
       setEstimatedLendingRepayFee(fee || 1);
     };
     estimateLendingRepayFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount]);
+  }, [amount, step]);
 
-  const estimatedFee = estimatedLendingRepayFee || 1;
-  const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 1) || lendingGasError;
+  const estimatedFee = step === 1 ? estimatedTokenApproveFee || 1 : estimatedLendingRepayFee || 1;
+  const gasError =
+    (userTokenBalance || 0) <= Number(estimatedFee || 1) || lendingGasError || approveGasError;
 
   return (
     <Popup
@@ -280,6 +345,8 @@ export const LendingRepayPopup = ({
                 </GasFeeWrapper>
               </ListInnerWrapper>
             </List>
+
+            <LoadingStep totalSteps={2} step={step} isLoading={stepLoading} isDone={isSuccess} />
           </>
         )}
       </Wrapper>

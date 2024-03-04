@@ -7,6 +7,7 @@ import tw from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -64,7 +65,11 @@ export const LendingWithdrawInputGroup = () => {
 
   const [checkedHealthFactor, checkHealthFactor] = useState(false);
 
-  const userTokenBalance = market?.underlyingBalance || 0;
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const xrpBalance = xrp?.balance || 0;
+
+  const userTokenBalance = xrpBalance || 0;
   const currentHealthFactor = calcHealthFactor({
     markets,
     snapshots: snapshotsAll,

@@ -553,6 +553,7 @@
   "Return to lending detail page": "Return to lending detail page",
 
   "approve-lending-supply-token-message": "Approve {{ token }} for supply",
+  "approve-lending-repay-token-message": "Approve {{ token }} for repay",
   "approve-loading": "Confirm approval in wallet",
 
   "lending-supply-button": "Supply {{ token }}",

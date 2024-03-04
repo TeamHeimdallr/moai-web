@@ -8,6 +8,7 @@ import tw from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -77,7 +78,12 @@ export const LendingRepayInputGroup = () => {
       isRepay: true,
     },
   });
-  const userTokenBalance = 123123.687598;
+
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const xrpBalance = xrp?.balance || 0;
+
+  const userTokenBalance = xrpBalance || 0;
 
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor);
@@ -221,6 +227,7 @@ export const LendingRepayInputGroup = () => {
           nextHealthFactor={nextHealthFactor}
           debt={debt}
           userTokenBalance={userTokenBalance}
+          refetchBalance={() => {}}
           handleSuccess={() => {}}
         />
       )}
