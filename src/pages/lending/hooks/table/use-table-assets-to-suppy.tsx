@@ -105,12 +105,15 @@ export const useTableAssetsToSupply = () => {
           buttons: (
             <TableColumnButtons align="flex-end">
               <ButtonPrimaryMedium
-                text={t('lending-supply')}
+                text={
+                  (isFpass && fpass.isConnected) || evm.isConnected
+                    ? t('lending-supply')
+                    : t('Connect wallet')
+                }
                 onClick={e => {
                   e.stopPropagation();
                   handleLendingSupply(d.address);
                 }}
-                style={{ width: '94px' }}
               />
             </TableColumnButtons>
           ),
@@ -197,7 +200,11 @@ export const useTableAssetsToSupply = () => {
           bottomRows: [
             <TableColumnButtons key={i} style={{ width: '100%' }}>
               <ButtonPrimaryMedium
-                text={t('lending-supply')}
+                text={
+                  (isFpass && fpass.isConnected) || evm.isConnected
+                    ? t('lending-supply')
+                    : t('Connect wallet')
+                }
                 onClick={e => {
                   e.stopPropagation();
                   handleLendingSupply(d.address);
