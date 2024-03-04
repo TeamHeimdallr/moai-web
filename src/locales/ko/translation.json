@@ -551,6 +551,7 @@
   "Return to lending detail page": "대출 상세 화면으로 돌아가기",
 
   "approve-lending-supply-token-message": "공급을 위해 {{ token }} 승인하기",
+  "approve-lending-repay-token-message": "상환을 위해 {{ token }} 승인하기",
   "approve-loading": "지갑 서명을 완료해주세요.",
 
   "lending-supply-button": "{{ token }} 공급하기",

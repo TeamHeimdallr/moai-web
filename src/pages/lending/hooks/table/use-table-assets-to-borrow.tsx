@@ -159,7 +159,11 @@ export const useTableAssetsToBorrow = () => {
           buttons: (
             <TableColumnButtons align="center">
               <ButtonPrimaryMedium
-                text={t('lending-borrow')}
+                text={
+                  (isFpass && fpass.isConnected) || evm.isConnected
+                    ? t('lending-borrow')
+                    : t('Connect wallet')
+                }
                 onClick={e => {
                   e.stopPropagation();
                   handleLendingBorrow(d.address);
@@ -241,7 +245,11 @@ export const useTableAssetsToBorrow = () => {
           bottomRows: [
             <TableColumnButtons key={i} style={{ width: '100%' }}>
               <ButtonPrimaryMedium
-                text={t('lending-borrow')}
+                text={
+                  (isFpass && fpass.isConnected) || evm.isConnected
+                    ? t('lending-borrow')
+                    : t('Connect wallet')
+                }
                 onClick={e => {
                   e.stopPropagation();
                   handleLendingBorrow(d.address);

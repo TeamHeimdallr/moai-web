@@ -87,7 +87,7 @@ export const LayoutMarketInfo = () => {
             }
           />
         </InfoInnerWrapper>
-        {evmAddress && (
+        {evmAddress && netWorth !== 0 && (
           <InfoInnerWrapper>
             <InfoCard
               title={t('Health Factor')}

@@ -7,6 +7,7 @@ import tw from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -47,6 +48,9 @@ export const LendingWithdrawInputGroup = () => {
   const symbol = market?.underlyingSymbol;
   const image = market?.underlyingImage;
   const price = market?.price;
+  const cash = market?.cash || 0n;
+  const reserve = market?.totalReserves || 0n;
+  const remain = Number(formatUnits(cash - reserve, market?.underlyingDecimals || 18));
 
   const { accountSnapshot } = useUserAccountSnapshot({
     mTokenAddress: (address ?? '0x0') as Address,
@@ -64,7 +68,11 @@ export const LendingWithdrawInputGroup = () => {
 
   const [checkedHealthFactor, checkHealthFactor] = useState(false);
 
-  const userTokenBalance = market?.underlyingBalance || 0;
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const xrpBalance = xrp?.balance || 0;
+
+  const userTokenBalance = xrpBalance || 0;
   const currentHealthFactor = calcHealthFactor({
     markets,
     snapshots: snapshotsAll,
@@ -106,8 +114,9 @@ export const LendingWithdrawInputGroup = () => {
     if (!inputValue) return false;
     if (nextHealthFactor <= threshold && !checkedHealthFactor) return false;
 
-    if (!isFormError && inputValue > 0 && inputValue <= supplied) return true;
-  }, [checkedHealthFactor, inputValue, isFormError, nextHealthFactor, supplied]);
+    if (!isFormError && inputValue > 0 && inputValue <= supplied && inputValue <= remain)
+      return true;
+  }, [checkedHealthFactor, inputValue, isFormError, nextHealthFactor, supplied, remain]);
 
   const tokenValue = (inputValue || 0) * (price || 0);
 

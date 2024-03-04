@@ -163,7 +163,7 @@ export const LayoutMarketSupplies = () => {
           <Table
             data={tableDataAssetsToSupply}
             columns={tableColumnsAssetsToSupply}
-            ratio={[1, 1, 1, 1, '94px']}
+            ratio={currentAddress ? [1, 1, 1, 1, '94px'] : [1, 1, 1, 1, '130px']}
             type="lighter"
             emptyText={t('lending-assets-to-supply-empty')}
             handleRowClick={handleRowClick}
