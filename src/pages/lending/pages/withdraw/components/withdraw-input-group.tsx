@@ -48,6 +48,9 @@ export const LendingWithdrawInputGroup = () => {
   const symbol = market?.underlyingSymbol;
   const image = market?.underlyingImage;
   const price = market?.price;
+  const cash = market?.cash || 0n;
+  const reserve = market?.totalReserves || 0n;
+  const remain = Number(formatUnits(cash - reserve, market?.underlyingDecimals || 18));
 
   const { accountSnapshot } = useUserAccountSnapshot({
     mTokenAddress: (address ?? '0x0') as Address,
@@ -111,8 +114,9 @@ export const LendingWithdrawInputGroup = () => {
     if (!inputValue) return false;
     if (nextHealthFactor <= threshold && !checkedHealthFactor) return false;
 
-    if (!isFormError && inputValue > 0 && inputValue <= supplied) return true;
-  }, [checkedHealthFactor, inputValue, isFormError, nextHealthFactor, supplied]);
+    if (!isFormError && inputValue > 0 && inputValue <= supplied && inputValue <= remain)
+      return true;
+  }, [checkedHealthFactor, inputValue, isFormError, nextHealthFactor, supplied, remain]);
 
   const tokenValue = (inputValue || 0) * (price || 0);
 
