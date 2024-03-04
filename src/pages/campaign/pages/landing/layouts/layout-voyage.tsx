@@ -16,7 +16,7 @@ import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campa
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
-import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
+import { useGetRewardsWave0InfoQuery } from '~/api/api-server/rewards/get-reward-info-wave0';
 
 import { IconNext, IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 
@@ -83,7 +83,7 @@ const _LayoutVoyage = () => {
   const userXrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
   const userXrpBalance = userXrp?.balance || 0;
 
-  const { data: rewardInfoData } = useGetRewardsInfoQuery(
+  const { data: rewardInfoData } = useGetRewardsWave0InfoQuery(
     {
       params: { networkAbbr: 'trn' },
       queries: { walletAddress },

@@ -18,7 +18,7 @@ import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-tok
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
-import { useGetRewardsInfoQuery } from '~/api/api-server/rewards/get-reward-info';
+import { useGetRewardsWave0InfoQuery } from '~/api/api-server/rewards/get-reward-info-wave0';
 
 import { IconNext, IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 
@@ -84,7 +84,7 @@ export const CampaignTool = () => {
 
   const started = differenceInSeconds(campaignStartDate, now) <= 0;
 
-  const { data: rewardInfoData } = useGetRewardsInfoQuery(
+  const { data: rewardInfoData } = useGetRewardsWave0InfoQuery(
     {
       params: { networkAbbr: 'trn' },
       queries: { walletAddress: evmWalletAddress },

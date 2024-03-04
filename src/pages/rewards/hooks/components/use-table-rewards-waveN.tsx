@@ -5,11 +5,12 @@ import { ColumnDef } from '@tanstack/react-table';
 import tw from 'twin.macro';
 import { toHex } from 'viem';
 
-import { useGetRewardsListInfinityQuery } from '~/api/api-server/rewards/get-reward-list';
+import { useGetRewardsListInfinityQuery } from '~/api/api-server/rewards/get-reward-list-waveN';
+import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
 
 import { COLOR } from '~/assets/colors';
 
-import { MILLION, SCANNER_URL } from '~/constants';
+import { MILLION, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { TableColumn, TableHeader } from '~/components/tables';
 import { TableColumnIconTextLink } from '~/components/tables/columns/column-icon-text-link';
@@ -26,8 +27,20 @@ export const useTableRewards = () => {
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
-  const { currentAddress } = useConnectedWallet(currentNetwork);
+
+  const { evm, fpass } = useConnectedWallet();
+  const evmAddress = evm?.address || fpass?.address;
+
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
+
+  const { data: wave } = useGetWaveQuery(
+    { params: { networkAbbr: currentNetworkAbbr } },
+    {
+      enabled: selectedNetwork === NETWORK.THE_ROOT_NETWORK,
+      staleTime: 20 * 1000,
+    }
+  );
+  const { currentWave } = wave || {};
 
   const {
     data: rewardListData,
@@ -40,11 +53,12 @@ export const useTableRewards = () => {
       },
       queries: {
         take: 20,
-        walletAddress: currentAddress,
+        walletAddress: evmAddress,
+        wave: currentWave?.waveId,
       },
     },
     {
-      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK,
+      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!currentWave?.waveId && !!evmAddress,
       staleTime: 20 * 1000,
     }
   );
@@ -69,9 +83,8 @@ export const useTableRewards = () => {
 
         return {
           meta: {
-            isMy: currentAddress && currentAddress === d?.address,
-            className:
-              i === 0 && currentAddress && currentAddress === d?.address ? 'row-my-reward' : '',
+            isMy: evmAddress && evmAddress === d?.address,
+            className: i === 0 && evmAddress && evmAddress === d?.address ? 'row-my-reward' : '',
           },
           rank: (
             <TableColumn
@@ -99,16 +112,36 @@ export const useTableRewards = () => {
               link={getLink()}
             />
           ),
-          volume: <TableColumn value={`$${formatNumber(d?.volume)}`} align="flex-end" />,
-          preminedToken: (
+          lpSupply: (
             <TableColumn
-              value={`${formatNumber(d?.premined, 3, 'floor', MILLION, 3)}`}
+              value={formatNumber(d?.lpSupply, 2, 'floor', MILLION, 2)}
               align="flex-end"
             />
           ),
+          lending: (
+            <TableColumn
+              value={formatNumber(d?.lendingSupply, 2, 'floor', MILLION, 2)}
+              align="flex-end"
+            />
+          ),
+          borrowing: (
+            <TableColumn
+              value={formatNumber(d?.lendingBorrow, 2, 'floor', MILLION, 2)}
+              align="flex-end"
+            />
+          ),
+          boost: (
+            <TableColumn
+              value={`${formatNumber(d?.boost, 1, 'floor', THOUSAND, 1)}x`}
+              align="flex-end"
+            />
+          ),
+          total: (
+            <TableColumn value={formatNumber(d?.total, 2, 'floor', MILLION, 2)} align="flex-end" />
+          ),
         };
       }),
-    [currentAddress, currentNetwork, isRoot, isXrp, rewardLists]
+    [evmAddress, currentNetwork, isRoot, isXrp, rewardLists]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,14 +160,29 @@ export const useTableRewards = () => {
       },
 
       {
-        header: () => <TableHeader label="Current LP volume" align="flex-end" />,
+        header: () => <TableHeader label="LP Supplying" align="flex-end" />,
         cell: row => row.renderValue(),
-        accessorKey: 'volume',
+        accessorKey: 'lpSupply',
       },
       {
-        header: () => <TableHeader label="Pre-mined $veMOAI" align="flex-end" />,
+        header: () => <TableHeader label="Lending" align="flex-end" />,
         cell: row => row.renderValue(),
-        accessorKey: 'preminedToken',
+        accessorKey: 'lending',
+      },
+      {
+        header: () => <TableHeader label="Borrowing" align="flex-end" />,
+        cell: row => row.renderValue(),
+        accessorKey: 'borrowing',
+      },
+      {
+        header: () => <TableHeader label="Boost" align="flex-end" />,
+        cell: row => row.renderValue(),
+        accessorKey: 'boost',
+      },
+      {
+        header: () => <TableHeader label="Total Points" align="flex-end" />,
+        cell: row => row.renderValue(),
+        accessorKey: 'total',
       },
     ],
     []
@@ -152,8 +200,7 @@ export const useTableRewards = () => {
 
         return {
           meta: {
-            className:
-              i === 0 && currentAddress && currentAddress === d?.address ? 'row-my-reward' : '',
+            className: i === 0 && evmAddress && evmAddress === d?.address ? 'row-my-reward' : '',
           },
           rows: [
             <RowWrapper key={i}>
@@ -182,19 +229,46 @@ export const useTableRewards = () => {
           ],
           dataRows: [
             {
-              label: 'Current LP volume',
+              label: 'LP Supplying',
               value: (
                 <TableColumn
-                  value={`$${formatNumber(d?.volume, 4, 'floor', 10 ** 6)}`}
+                  value={formatNumber(d?.lpSupply, 2, 'floor', MILLION, 2)}
                   align="flex-end"
                 />
               ),
             },
             {
-              label: 'Pre-mined $veMOAI',
+              label: 'Lending',
               value: (
                 <TableColumn
-                  value={`${formatNumber(d?.premined, 4, 'floor', 10 ** 6)}`}
+                  value={formatNumber(d?.lendingSupply, 2, 'floor', MILLION, 2)}
+                  align="flex-end"
+                />
+              ),
+            },
+            {
+              label: 'Borrowing',
+              value: (
+                <TableColumn
+                  value={formatNumber(d?.lendingBorrow, 2, 'floor', MILLION, 2)}
+                  align="flex-end"
+                />
+              ),
+            },
+            {
+              label: 'Boost',
+              value: (
+                <TableColumn
+                  value={`${formatNumber(d?.boost, 1, 'floor', THOUSAND, 1)}x`}
+                  align="flex-end"
+                />
+              ),
+            },
+            {
+              label: 'Total Points',
+              value: (
+                <TableColumn
+                  value={formatNumber(d?.total, 2, 'floor', MILLION, 2)}
                   align="flex-end"
                 />
               ),
@@ -203,7 +277,7 @@ export const useTableRewards = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentAddress, currentNetwork, isRoot, isXrp, rewardLists]
+    [rewardLists, evmAddress, isXrp, currentNetwork, isRoot]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
