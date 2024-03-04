@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 
-import { IconNext, IconQuestion } from '~/assets/icons';
+import { IconInfinity, IconNext, IconQuestion } from '~/assets/icons';
 
 import { ASSET_URL } from '~/constants';
 
@@ -94,7 +94,12 @@ export const LayoutMarketInfo = () => {
               iconButton={
                 <ButtonIconMedium icon={<IconNext />} onClick={handleHealthFactorClick} />
               }
-              value={`${formatNumber(healthFactor)}`}
+              value={`${healthFactor === Infinity ? '' : formatNumber(healthFactor)}`}
+              valueIcon={
+                healthFactor === Infinity ? (
+                  <IconInfinity width={30} height={30} fill={healthFactorColor} />
+                ) : undefined
+              }
               valueColor={`${healthFactorColor}`}
             />
             <InfoCard
