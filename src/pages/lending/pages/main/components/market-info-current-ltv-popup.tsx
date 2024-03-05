@@ -24,7 +24,7 @@ export const MarketInfoCurrentLTVPopup = ({ assets, debt, criteria }: Props) => 
   const graphRef = useRef<HTMLDivElement>(null);
   const { t, i18n } = useTranslation();
 
-  const ltvRaw = debt / assets;
+  const ltvRaw = assets ? debt / assets : 0;
   const ltvPercent = (debt / assets) * 100;
 
   const ltv = ltvPercent.toFixed(2);
