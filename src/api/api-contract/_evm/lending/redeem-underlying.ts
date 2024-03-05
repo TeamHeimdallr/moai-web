@@ -4,6 +4,7 @@ import { BigNumber } from 'ethers';
 import { Abi, formatUnits, parseUnits } from 'viem';
 import {
   Address,
+  useContractRead,
   useContractWrite,
   usePrepareContractWrite,
   usePublicClient,
@@ -15,13 +16,15 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull } from '~/utils';
 import { IToken, NETWORK } from '~/types';
 
+import { ERC20_TOKEN_ABI } from '~/abi';
 import { MTOKEN_ABI } from '~/abi/mtoken';
 
 interface Props {
   token?: IToken & { amount: number; mTokenAddress: Address };
+  isMax?: boolean;
   enabled?: boolean;
 }
-export const useRedeemUnderlying = ({ token, enabled }: Props) => {
+export const useRedeemUnderlying = ({ token, enabled, isMax }: Props) => {
   const publicClient = usePublicClient();
 
   const { network } = useParams();
@@ -37,14 +40,23 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
 
   const inputAmount = parseUnits(`${(token?.amount || 0).toFixed(18)}`, token?.decimal || 18);
 
+  const { data: mTokenAmount } = useContractRead({
+    address: token?.mTokenAddress as Address,
+    abi: ERC20_TOKEN_ABI,
+    functionName: 'balanceOf',
+    args: [walletAddress],
+    staleTime: 1000 * 3,
+    enabled: enabled && isConnected && isEvm && !isFpass && !!walletAddress && !!token && isMax,
+  });
+
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: (token?.mTokenAddress || '0x0') as Address,
     abi: MTOKEN_ABI as Abi,
-    functionName: 'redeemUnderlying',
+    functionName: isMax ? 'redeem' : 'redeemUnderlying',
 
     account: walletAddress as Address,
     chainId,
-    args: [inputAmount],
+    args: [isMax ? mTokenAmount : inputAmount],
     enabled:
       enabled &&
       isConnected &&
@@ -95,8 +107,9 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
       address: (token?.mTokenAddress || '') as Address,
       abi: MTOKEN_ABI as Abi,
 
-      functionName: 'redeemUnderlying',
-      args: [inputAmount],
+      functionName: isMax ? 'redeem' : 'redeemUnderlying',
+      args: [isMax ? mTokenAmount : inputAmount],
+
       account: walletAddress as Address,
     });
 

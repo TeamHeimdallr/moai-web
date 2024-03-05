@@ -237,6 +237,7 @@ export const LendingWithdrawInputGroup = () => {
       {popupOpened && (
         <LendingWithdrawPopup
           tokenIn={tokenIn}
+          isMax={inputValue?.toFixed(18) === supplied.toFixed(18)}
           currentHealthFactor={currentHealthFactor}
           nextHealthFactor={nextHealthFactor}
           supplied={supplied}
