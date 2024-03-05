@@ -24,6 +24,7 @@ import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
 import { useEnterOrExitMarketNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { NETWORK, POPUP_ID } from '~/types';
@@ -48,7 +49,9 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const navigate = useNavigate();
   const { network } = useParams();
   const { isEvm, isFpass, selectedNetwork } = useNetwork();
+  const { evm, fpass } = useConnectedWallet();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const walletAddress = isFpass ? fpass.address : evm.address;
 
   const isEnable = type === 'enable';
   const popupId = isEnable
@@ -127,6 +130,18 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
       return;
     }
 
+    gaAction({
+      action: 'lending-set-collateral',
+      data: {
+        component: 'collateral-popup',
+        marketAddress,
+        isExitPossible,
+        isEnable,
+        currentStatus: isEnable ? 'disable' : 'enable',
+        estimatedFee,
+        walletAddress,
+      },
+    });
     await writeAsync?.();
   };
 
