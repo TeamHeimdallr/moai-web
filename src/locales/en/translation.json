@@ -616,5 +616,19 @@
   "Repayment confirmed!": "Repayment confirmed!",
   "repay-success-message": "Successfully repaid {{ amount }} {{ token }}",
   "Repayment failed": "Repayment failed",
-  "repay-failed-message": "Repayment has failed. Please try again."
+  "repay-failed-message": "Repayment has failed. Please try again.",
+
+  "My rewards": "My rewards",
+  "Total points": "Total points",
+  "Total Points": "Total Points",
+  "LP Supply": "LP Supply",
+  "LP Supplying": "LP Supplying",
+  "reward-lending-supply": "Lending",
+  "reward-lending-supplying": "Lending",
+  "reward-lending-borrow": "Borrowing",
+  "reward-lending-borrowing": "Borrowing",
+  "Boost": "Boost",
+  "boost": "boost",
+
+  "points": "points"
 }

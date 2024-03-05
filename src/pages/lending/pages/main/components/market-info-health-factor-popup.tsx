@@ -4,7 +4,7 @@ import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
-import { IconCancel, IconDivision, IconEquals, IconTriangle } from '~/assets/icons';
+import { IconCancel, IconDivision, IconEquals, IconInfinity, IconTriangle } from '~/assets/icons';
 
 import { THOUSAND } from '~/constants';
 
@@ -107,9 +107,13 @@ export const MarketInfoHealthFactorPopup = ({ healthFactor: healthFactorNum, cri
             </ExpressIcon>
 
             <NumberBadgeWrapper>
-              <ExpressNumber highlight style={{ color: healthFactorColor }}>
-                {healthFactor}
-              </ExpressNumber>
+              {isFinite(healthFactorNum) ? (
+                <ExpressNumber highlight style={{ color: healthFactorColor }}>
+                  {healthFactor}
+                </ExpressNumber>
+              ) : (
+                <IconInfinity width={24} height={24} fill={healthFactorColor} />
+              )}
             </NumberBadgeWrapper>
           </ExpressWrapper>
 

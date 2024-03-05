@@ -69,19 +69,19 @@ export const RewardMyInfo = () => {
             <InfoCard
               name={t('LP Supply')}
               value={formatNumber(lpSupply, 2, 'floor', MILLION, 2)}
-              subValue={'points'}
+              subValue={t('points')}
             />
           </InfoCardWrapper>
           <InfoCardWrapper>
             <InfoCard
-              name={t('Lending')}
+              name={t('reward-lending-supply')}
               value={formatNumber(lendingSupply, 2, 'floor', MILLION, 2)}
-              subValue={'points'}
+              subValue={t('points')}
             />
             <InfoCard
-              name={t('Borrow')}
+              name={t('reward-lending-borrow')}
               value={formatNumber(lendingBorrow, 2, 'floor', MILLION, 2)}
-              subValue={'points'}
+              subValue={t('points')}
             />
           </InfoCardWrapper>
         </InnerInfoWrapper>

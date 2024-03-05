@@ -9,17 +9,22 @@ import { useGetUnderlyingPrice } from '~/api/api-contract/_evm/lending/underlyin
 
 import { IconLink } from '~/assets/icons';
 
-import { MILLION } from '~/constants';
+import { LENDING_ORACLE_ADDRESS, MILLION, SCANNER_URL } from '~/constants';
 
 import { ButtonIconMedium } from '~/components/buttons';
 
 import { InfoCard } from '~/pages/lending/components/info-card';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { formatNumber } from '~/utils';
+import { NETWORK } from '~/types';
 
 export const AssetInfo = () => {
   const { t } = useTranslation();
   const { address } = useParams();
+
+  const { selectedNetwork } = useNetwork();
+  const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const { market } = useGetMarket({
     marketAddress: address as Address,
@@ -40,7 +45,13 @@ export const AssetInfo = () => {
   const totalCashValue = totalCashNum * (price || 0);
   const utilizationRateNum = 100 * utilizationRate;
 
-  const handleOracleLink = () => {};
+  const handleOracleLink = () => {
+    window.open(
+      `${SCANNER_URL[NETWORK.THE_ROOT_NETWORK]}/${isRoot ? 'addresses' : 'address'}/${
+        LENDING_ORACLE_ADDRESS[NETWORK.THE_ROOT_NETWORK]
+      }`
+    );
+  };
 
   return (
     <Wrapper>

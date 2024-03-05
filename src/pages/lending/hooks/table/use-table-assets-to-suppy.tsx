@@ -252,7 +252,7 @@ export const useTableAssetsToSupply = () => {
     () => (
       <TableHeaderSortable
         sortKey="balance"
-        label="My balance"
+        label="lending-wallet-balance"
         sort={sort}
         setSort={setSort}
         tableKey="lending-supplies-my-balance"

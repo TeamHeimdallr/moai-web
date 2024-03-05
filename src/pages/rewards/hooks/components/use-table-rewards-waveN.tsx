@@ -165,12 +165,12 @@ export const useTableRewards = () => {
         accessorKey: 'lpSupply',
       },
       {
-        header: () => <TableHeader label="Lending" align="flex-end" />,
+        header: () => <TableHeader label="reward-lending-supplying" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'lending',
       },
       {
-        header: () => <TableHeader label="Borrowing" align="flex-end" />,
+        header: () => <TableHeader label="reward-lending-borrowing" align="flex-end" />,
         cell: row => row.renderValue(),
         accessorKey: 'borrowing',
       },
@@ -238,7 +238,7 @@ export const useTableRewards = () => {
               ),
             },
             {
-              label: 'Lending',
+              label: 'reward-lending-supplying',
               value: (
                 <TableColumn
                   value={formatNumber(d?.lendingSupply, 2, 'floor', MILLION, 2)}
@@ -247,7 +247,7 @@ export const useTableRewards = () => {
               ),
             },
             {
-              label: 'Borrowing',
+              label: 'reward-lending-borrowing',
               value: (
                 <TableColumn
                   value={formatNumber(d?.lendingBorrow, 2, 'floor', MILLION, 2)}

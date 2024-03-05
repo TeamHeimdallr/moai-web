@@ -111,7 +111,6 @@ export const useGetAllMarkets = () => {
   });
 
   const marketAddrs = (marketsData as Array<string>)?.map((m: string) => m);
-  // console.log(marketAddrs);
 
   const { data: symbolsData } = useContractReads({
     contracts: marketAddrs?.flatMap(address => [
@@ -137,8 +136,6 @@ export const useGetAllMarkets = () => {
     enabled: !!chainId && isEvm,
   });
   const metadataList = (metadataAll as Array<IMTokenMetadata>)?.map((m: IMTokenMetadata) => m);
-
-  // console.log('metadataAll', metadataAll);
 
   const underlyings = (metadataList?.map(d => d.underlyingAssetAddress) || []) as Address[];
   const underlyingDecimals = (metadataList?.map(d => Number(d.underlyingDecimals)) ||
