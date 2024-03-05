@@ -78,8 +78,8 @@ export const useUserAccountSnapshotAll = () => {
       error: BigInt(d === undefined),
       mTokenBalance: BigInt(d?.['balanceOf'] ?? 0),
       borrowBalance: BigInt(d?.['borrowBalanceCurrent'] ?? 0),
-      exchangeRate: BigInt(metadataList[i]?.['exchangeRateCurrent'] ?? 200000000000000n),
-      collateralFator: BigInt(metadataList[i]?.['collateralFactorMantissa'] ?? 0),
+      exchangeRate: BigInt(metadataList?.[i]?.['exchangeRateCurrent'] ?? 200000000000000n),
+      collateralFator: BigInt(metadataList?.[i]?.['collateralFactorMantissa'] ?? 0),
       mTokenAddress: marketAddrs[i] ?? '0x0',
       isCollateral: assetsIn?.includes(marketAddrs[i]),
     };

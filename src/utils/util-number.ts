@@ -11,6 +11,7 @@ export const formatNumber = (
 
   const number = Number(data);
   if (isNaN(number) || !number) return '0';
+  if (!isFinite(number)) return '∞';
 
   // 단위 설정
   const units = ['', 'K', 'M', 'B', 'T', 'P', 'E'];

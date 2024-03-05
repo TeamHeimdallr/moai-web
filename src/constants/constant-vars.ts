@@ -22,8 +22,6 @@ export const GNB_MENU: IGnbMenu[] = [
     text: 'Lending',
     path: '/lending',
     show: true,
-    disabled: !IS_LOCAL,
-    commingSoon: !IS_LOCAL,
     network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK],
   },
   {
