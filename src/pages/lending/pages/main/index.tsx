@@ -8,6 +8,7 @@ import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { usePrevious } from '~/hooks/utils';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { useSupplyBorrowTabStore } from '~/states/pages/lending';
 import { NETWORK, POPUP_ID } from '~/types';
 
@@ -19,6 +20,9 @@ export const LendingMain = () => {
   useGAPage();
 
   const { t } = useTranslation();
+
+  const { evm, fpass } = useConnectedWallet();
+  const evmAddress = evm?.address || fpass?.address;
 
   const targetNetork = [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN];
   const { selectedNetwork } = useNetwork();
@@ -41,7 +45,7 @@ export const LendingMain = () => {
       <InnerWrapper banner={!!opened}>
         {targetNetork.includes(selectedNetwork) && (
           <ContentOuterWrapper>
-            <ContentWrapper>
+            <ContentWrapper evmAddress={evmAddress}>
               {/* market header, info */}
               <ContentInnerWrapper>
                 <LayoutMarketInfo />
@@ -76,7 +80,7 @@ interface DivProps {
   banner?: boolean;
 }
 const InnerWrapper = styled.div<DivProps>(({ banner }) => [
-  tw`  
+  tw`
     flex flex-col pb-120 px-0 pt-112
     md:(px-20 items-center)
     mlg:(pt-120)
@@ -100,10 +104,15 @@ const ContentOuterWrapper = tw.div`
   w-full max-w-840
 `;
 
-const ContentWrapper = tw.div`
+interface WalletProps {
+  evmAddress?: string;
+}
+const ContentWrapper = styled.div<WalletProps>(({ evmAddress }) => [
+  tw`
   flex flex-col gap-40
-  md:(gap-80)
-`;
+  `,
+  evmAddress ? tw`md:(gap-80)` : tw`md:(gap-40)`,
+]);
 
 const ContentInnerWrapper = tw.div`
   flex flex-col gap-24

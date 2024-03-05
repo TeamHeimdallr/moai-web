@@ -73,62 +73,64 @@ export const LayoutMarketInfo = () => {
         <LogoWrapper style={{ backgroundImage: `url(${backgroundUrl})` }} />
         <Title>{`${titleMap[selectedNetwork]} Market`}</Title>
       </HeaderWrapper>
-      <InfoWrapper>
-        <InfoInnerWrapper>
-          <InfoCard title={t('Net Worth')} value={`$${formatNumber(netWorth)}`} />
-          <InfoCard
-            title={t('Net APY')}
-            value={<APYLarge apy={netAPY} />}
-            titleIcon={
-              <ButtonIconSmall
-                icon={<IconQuestion />}
-                data-tooltip-id={TOOLTIP_ID.LENDING_NET_APY}
-              />
-            }
-          />
-        </InfoInnerWrapper>
-        {evmAddress && netWorth !== 0 && (
+      {evmAddress && (
+        <InfoWrapper>
           <InfoInnerWrapper>
+            <InfoCard title={t('Net Worth')} value={`$${formatNumber(netWorth)}`} />
             <InfoCard
-              title={t('Health Factor')}
-              iconButton={
-                <ButtonIconMedium icon={<IconNext />} onClick={handleHealthFactorClick} />
+              title={t('Net APY')}
+              value={<APYLarge apy={netAPY} />}
+              titleIcon={
+                <ButtonIconSmall
+                  icon={<IconQuestion />}
+                  data-tooltip-id={TOOLTIP_ID.LENDING_NET_APY}
+                />
               }
-              value={`${healthFactor === Infinity ? '' : formatNumber(healthFactor)}`}
-              valueIcon={
-                healthFactor === Infinity ? (
-                  <IconInfinity width={30} height={30} fill={healthFactorColor} />
-                ) : undefined
-              }
-              valueColor={`${healthFactorColor}`}
-            />
-            <InfoCard
-              title={t('Current LTV')}
-              iconButton={<ButtonIconMedium icon={<IconNext />} onClick={handleCurrentLTVClick} />}
-              value={`${formatNumber(currentLTV.ltv)}%`}
-              valueColor={`${currentLTVColor}`}
             />
           </InfoInnerWrapper>
-        )}
-
-        <Tooltip id={TOOLTIP_ID.LENDING_NET_APY} place="bottom">
-          <TooltipContent>{t('net-apy')}</TooltipContent>
-        </Tooltip>
-
-        {healthFactorPopupOpened && (
-          <MarketInfoHealthFactorPopup
-            healthFactor={healthFactor}
-            criteria={healthFactorCriteria}
-          />
-        )}
-        {currentLTVPopupOpened && (
-          <MarketInfoCurrentLTVPopup
-            assets={currentLTV.assets}
-            debt={currentLTV.debts}
-            criteria={currentLTVCriteria}
-          />
-        )}
-      </InfoWrapper>
+          {currentLTV.ltv !== 0 && (
+            <InfoInnerWrapper>
+              <InfoCard
+                title={t('Health Factor')}
+                iconButton={
+                  <ButtonIconMedium icon={<IconNext />} onClick={handleHealthFactorClick} />
+                }
+                value={`${healthFactor === Infinity ? '' : formatNumber(healthFactor)}`}
+                valueIcon={
+                  healthFactor === Infinity ? (
+                    <IconInfinity width={30} height={30} fill={healthFactorColor} />
+                  ) : undefined
+                }
+                valueColor={`${healthFactorColor}`}
+              />
+              <InfoCard
+                title={t('Current LTV')}
+                iconButton={
+                  <ButtonIconMedium icon={<IconNext />} onClick={handleCurrentLTVClick} />
+                }
+                value={`${formatNumber(currentLTV.ltv)}%`}
+                valueColor={`${currentLTVColor}`}
+              />
+            </InfoInnerWrapper>
+          )}
+          <Tooltip id={TOOLTIP_ID.LENDING_NET_APY} place="bottom">
+            <TooltipContent>{t('net-apy')}</TooltipContent>
+          </Tooltip>
+          {healthFactorPopupOpened && (
+            <MarketInfoHealthFactorPopup
+              healthFactor={healthFactor}
+              criteria={healthFactorCriteria}
+            />
+          )}
+          {currentLTVPopupOpened && (
+            <MarketInfoCurrentLTVPopup
+              assets={currentLTV.assets}
+              debt={currentLTV.debts}
+              criteria={currentLTVCriteria}
+            />
+          )}
+        </InfoWrapper>
+      )}
     </Wrapper>
   );
 };
