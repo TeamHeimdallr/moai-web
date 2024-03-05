@@ -33,7 +33,7 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
         filter: `address:in:${addresses.join(',')}`,
       },
     },
-    { enabled: addresses.length > 0, staleTime: 60 * 1000 }
+    { enabled: !!addresses && addresses.length > 0 && !!addresses.join(','), staleTime: 60 * 1000 }
   );
   const { tokens } = tokensData || {};
 

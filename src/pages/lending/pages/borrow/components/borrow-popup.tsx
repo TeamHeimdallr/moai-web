@@ -14,6 +14,7 @@ import {
   IconArrowNext,
   IconCancel,
   IconCheck,
+  IconInfinity,
   IconLink,
   IconTime,
 } from '~/assets/icons';
@@ -276,11 +277,19 @@ export const LendingBorrowPopup = ({
                   <SummaryTextTitle>{t('Health factor')}</SummaryTextTitle>
                   <SummaryText>
                     <span style={{ fontWeight: 'bold', color: currentHealthFactorColor }}>
-                      {formatNumber(currentHealthFactor)}
+                      {isFinite(currentHealthFactor || 0) ? (
+                        formatNumber(currentHealthFactor)
+                      ) : (
+                        <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
+                      )}
                     </span>
                     <IconArrowNext width={12} height={12} fill={COLOR.NEUTRAL[60]} />
                     <span style={{ fontWeight: 'bold', color: nextHealthFactorColor }}>
-                      {formatNumber(nextHealthFactor)}
+                      {isFinite(nextHealthFactor || 0) ? (
+                        formatNumber(nextHealthFactor)
+                      ) : (
+                        <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
+                      )}
                     </span>
                   </SummaryText>
                 </Summary>

@@ -14,7 +14,7 @@ import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-accou
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
-import { IconArrowNext } from '~/assets/icons';
+import { IconArrowNext, IconInfinity } from '~/assets/icons';
 
 import { MILLION } from '~/constants';
 
@@ -181,7 +181,11 @@ export const LendingWithdrawInputGroup = () => {
               <InfoCard>
                 {t('Current')}
                 <InfoCardValueBold style={{ color: currentHealthFactorColor }}>
-                  {formatNumber(currentHealthFactor)}
+                  {isFinite(currentHealthFactor) ? (
+                    formatNumber(currentHealthFactor)
+                  ) : (
+                    <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
+                  )}
                 </InfoCardValueBold>
               </InfoCard>
 
@@ -192,7 +196,12 @@ export const LendingWithdrawInputGroup = () => {
               <InfoCard>
                 {t('After transaction')}
                 <InfoCardValueBold style={{ color: nextHealthFactorColor }}>
-                  {formatNumber(nextHealthFactor)}
+                  {!!inputValue &&
+                    (isFinite(nextHealthFactor) ? (
+                      formatNumber(nextHealthFactor)
+                    ) : (
+                      <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
+                    ))}
                 </InfoCardValueBold>
               </InfoCard>
             </InfoCardInnerWrapper>
@@ -281,7 +290,7 @@ const InfoCard = tw.div`
 `;
 
 const InfoCardValueBold = tw.div`
-  font-b-14 text-neutral-100
+  font-b-14 text-neutral-100 h-22
 `;
 
 const ArrowRightIcon = tw.div`

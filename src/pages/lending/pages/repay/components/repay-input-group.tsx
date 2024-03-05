@@ -189,7 +189,11 @@ export const LendingRepayInputGroup = () => {
               <InfoCard>
                 {t('Current')}
                 <InfoCardValueBold style={{ color: currentHealthFactorColor }}>
-                  {formatNumber(currentHealthFactor)}
+                  {isFinite(currentHealthFactor) ? (
+                    formatNumber(currentHealthFactor)
+                  ) : (
+                    <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
+                  )}
                 </InfoCardValueBold>
               </InfoCard>
 
@@ -203,7 +207,7 @@ export const LendingRepayInputGroup = () => {
                   {isFinite(nextHealthFactor) ? (
                     formatNumber(nextHealthFactor)
                   ) : (
-                    <IconInfinity width={20} height={22} fill={COLOR.GREEN[50]} />
+                    <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
                   )}
                 </InfoCardValueBold>
               </InfoCard>

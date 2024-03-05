@@ -15,7 +15,7 @@
   "Pool Value": "유동량",
   "Volume (24h)": "거래량 (24시간)",
   "APR": "APR",
-  "My APR": "나의 APR",
+  "My APR": "내 APR",
   "My Balance": "예치 금액",
 
   "Connect wallet": "지갑 연결",
@@ -34,16 +34,16 @@
   "wallet-alert-message": "{{network}} 지갑과 연결해 주세요.",
   "wallet-alert-message-switch": "지갑의 네트워크를 {{network}}로 전환해 주세요.",
 
-  "My liquidity in Moai pools": "나의 유동성",
-  "My Liquidity Value": "나의 유동성 가치",
+  "My liquidity in Moai pools": "내 유동성",
+  "My Liquidity Value": "내 유동성 가치",
   "My wallet balance": "지갑 잔액",
 
   "24h": "24시간",
   "Trading Fee": "거래 수수료",
 
   "Pool composition": "풀 구성",
-  "My liquidity": "나의 유동량",
-  "My liquidities": "나의 유동성",
+  "My liquidity": "내 유동량",
+  "My liquidities": "내 유동성",
   "Add liquidity": "유동성 공급하기",
 
   "Confirm add liquidity in wallet": "지갑 서명을 완료해주세요.",
@@ -245,8 +245,8 @@
   "End at": "종료일",
   "Ends at": "종료일",
   "Total Reward": "총 리워드",
-  "My Volume": "나의 유동량",
-  "My Reward": "나의 리워드",
+  "My Volume": "내 유동량",
+  "My Reward": " 리워드",
 
   "Rank": "순위",
   "Current LP volume": "현재 LP 유동량",
@@ -260,7 +260,7 @@
   "Activate $XRP": "$XRP로 리워드 받기",
   "campaign-landing-main-text": "The Root Network의 메인넷 DEX 런칭을 기념하기 위해 Moai Finance에서 $XRP 홀더를 위한\n캠페인 “Voyage to the Future”에 초대합니다. 캠페인을 통해 Futureverse의 The Root\nNetwork에 초기 유동성을 제공하고 $MOAI 프리마이닝과 특별한 $ROOT 리워드를 받아가세요!",
   "Expected APR": "예상 APR",
-  "My Voyage": "나의 Voyage",
+  "My Voyage": "내 Voyage",
   "Bridge to XRPL": "XRPL로 브릿지하기",
   "Rewards": "리워드",
   "Pending": "Pending",
@@ -395,7 +395,7 @@
   "Supplies": "공급",
   "Borrows": "대출",
 
-  "My Supplies": "나의 공급",
+  "My Supplies": "내 공급",
 
   "lending-balance": "잔액",
   "lending-apy": "APY",
@@ -408,7 +408,7 @@
   "lending-assets-supply-collateral-tooltip": "제공된 자산을 담보로 사용할지 여부를 결정할 수 있게 해줍니다. 담보로 사용된 자산은 차입력과 건전성 지수에 영향을 미칩니다.",
 
   "lending-asset": "자산",
-  "lending-my-balance": "나의 잔액",
+  "lending-my-balance": "내 잔액",
 
   "lending-supply": "공급하기",
   "lending-withdraw": "출금하기",
@@ -422,10 +422,10 @@
 
   "lending-borrow": "빌리기",
   "lending-repay": "상환하기",
-  "lending-my-debt": "나의 대출",
+  "lending-my-debt": "내 대출",
   "lending-apy-type": "APY 방식",
 
-  "My Borrows": "나의 대출",
+  "My Borrows": "내 대출",
   "lending-borrow-power-used": "사용 중인 차입 능력",
   "lending-my-borrows-empty": "대출 자산이 없습니다.",
 
@@ -616,5 +616,20 @@
   "Repayment confirmed!": "상환을 완료했습니다!",
   "repay-success-message": "{{ amount }} {{ token }}을 성공적으로 상환했습니다.",
   "Repayment failed": "상환에 실패했습니다.",
-  "repay-failed-message": "{{ token }} 상환에 실패했습니다. 다시 시도해주세요."
+  "repay-failed-message": "{{ token }} 상환에 실패했습니다. 다시 시도해주세요.",
+
+  "My rewards": "내 리워드",
+  "Total points": "합계 포인트",
+  "Total Points": "합계 포인트",
+  "LP Supply": "LP 공급",
+  "LP Supplying": "LP 공급",
+  "reward-lending-supply": "Lending",
+  "reward-lending-supplying": "Lending",
+  "reward-lending-borrow": "Borrowing",
+  "reward-lending-borrowing": "Borrowing",
+
+  "Boost": "부스트",
+  "boost": "부스트",
+
+  "points": "포인트"
 }
