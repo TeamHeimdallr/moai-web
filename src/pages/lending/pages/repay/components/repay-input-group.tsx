@@ -190,7 +190,7 @@ export const LendingRepayInputGroup = () => {
                 {t('Current')}
                 <InfoCardValueBold style={{ color: currentHealthFactorColor }}>
                   {isFinite(currentHealthFactor) ? (
-                    formatNumber(currentHealthFactor)
+                    formatNumber(currentHealthFactor, 2, 'floor', MILLION, 2)
                   ) : (
                     <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
                   )}
@@ -205,7 +205,7 @@ export const LendingRepayInputGroup = () => {
                 {t('After transaction')}
                 <InfoCardValueBold style={{ color: nextHealthFactorColor }}>
                   {isFinite(nextHealthFactor) ? (
-                    formatNumber(nextHealthFactor)
+                    formatNumber(nextHealthFactor, 2, 'floor', MILLION, 2)
                   ) : (
                     <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
                   )}
@@ -277,7 +277,7 @@ const InfoCard = tw.div`
 `;
 
 const InfoCardValueBold = tw.div`
-  font-b-14 text-neutral-100 flex items-center
+  font-b-14 text-neutral-100 h-22 flex items-center
 `;
 const InfoCardValue = tw.div`
   font-r-12 flex items-center

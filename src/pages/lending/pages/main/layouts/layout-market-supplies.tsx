@@ -140,6 +140,7 @@ export const LayoutMarketSupplies = () => {
             <TableMobile
               data={mobileTableDataMySupplies}
               columns={mobileTableColumnMySupplies}
+              type="lighter"
               emptyText={t('lending-my-supplies-empty')}
               hasMore={hasNextPageMySupplies}
               handleClick={handleRowClick}
@@ -172,6 +173,7 @@ export const LayoutMarketSupplies = () => {
           <TableMobile
             data={mobileTableDataAssetsToSupply}
             columns={mobileTableColumnAssetsToSupply}
+            type="lighter"
             emptyText={t('lending-assets-to-supply-empty')}
             handleClick={handleRowClick}
           />

@@ -24,7 +24,7 @@ export const MarketInfoCurrentLTVPopup = ({ assets, debt, criteria }: Props) => 
   const graphRef = useRef<HTMLDivElement>(null);
   const { t, i18n } = useTranslation();
 
-  const ltvRaw = debt / assets;
+  const ltvRaw = assets ? debt / assets : 0;
   const ltvPercent = (debt / assets) * 100;
 
   const ltv = ltvPercent.toFixed(2);
@@ -68,37 +68,41 @@ export const MarketInfoCurrentLTVPopup = ({ assets, debt, criteria }: Props) => 
         <Description>{t('current-ltv-description')}</Description>
         <ContentWrapper>
           <ExpressWrapper>
-            <NumberBadgeWrapper>
-              <ExpressNumber>{`$${formatNumber(debt, 2, 'floor', THOUSAND, 2)}`}</ExpressNumber>
-              <BadgeText
-                text={t('current-ltv-debt')}
-                backgroundColor={COLOR.PRIMARY[20]}
-                color={COLOR.PRIMARY[50]}
-              />
-            </NumberBadgeWrapper>
+            <ExpressInnerWrapper>
+              <NumberBadgeWrapper>
+                <ExpressNumber>{`$${formatNumber(debt, 2, 'floor', THOUSAND, 2)}`}</ExpressNumber>
+                <BadgeText
+                  text={t('current-ltv-debt')}
+                  backgroundColor={COLOR.PRIMARY[20]}
+                  color={COLOR.PRIMARY[50]}
+                />
+              </NumberBadgeWrapper>
 
-            <ExpressIcon>
-              <IconDivision width={20} height={20} fill={COLOR.PRIMARY[50]} />
-            </ExpressIcon>
+              <ExpressIcon>
+                <IconDivision width={20} height={20} fill={COLOR.PRIMARY[50]} />
+              </ExpressIcon>
 
-            <NumberBadgeWrapper>
-              <ExpressNumber>{`$${formatNumber(assets, 2, 'floor', THOUSAND, 2)}`}</ExpressNumber>
-              <BadgeText
-                text={t('current-ltv-assets')}
-                backgroundColor={COLOR.PRIMARY[20]}
-                color={COLOR.PRIMARY[50]}
-              />
-            </NumberBadgeWrapper>
+              <NumberBadgeWrapper>
+                <ExpressNumber>{`$${formatNumber(assets, 2, 'floor', THOUSAND, 2)}`}</ExpressNumber>
+                <BadgeText
+                  text={t('current-ltv-assets')}
+                  backgroundColor={COLOR.PRIMARY[20]}
+                  color={COLOR.PRIMARY[50]}
+                />
+              </NumberBadgeWrapper>
+            </ExpressInnerWrapper>
 
-            <ExpressIcon>
-              <IconEquals width={20} height={20} fill={COLOR.NEUTRAL[100]} />
-            </ExpressIcon>
+            <ExpressInnerWrapper>
+              <ExpressIcon>
+                <IconEquals width={20} height={20} fill={COLOR.NEUTRAL[100]} />
+              </ExpressIcon>
 
-            <NumberBadgeWrapper>
-              <ExpressNumber highlight style={{ color: ltvColor }}>
-                {`${formatNumber(ltv)}%`}
-              </ExpressNumber>
-            </NumberBadgeWrapper>
+              <NumberBadgeWrapper>
+                <ExpressNumber highlight style={{ color: ltvColor, lineHeight: '24px' }}>
+                  {`${formatNumber(ltv)}%`}
+                </ExpressNumber>
+              </NumberBadgeWrapper>
+            </ExpressInnerWrapper>
           </ExpressWrapper>
 
           <GraphWrapper ref={graphRef}>
@@ -108,19 +112,6 @@ export const MarketInfoCurrentLTVPopup = ({ assets, debt, criteria }: Props) => 
               {t('current-ltv-you')}
               <IconTriangle width={12} height={10} fill={COLOR.NEUTRAL[100]} />
             </UserLableWrapper>
-
-            {/* <HazardLableWrapper>
-              <HazardIcon>
-                <IconTriangle
-                  width={12}
-                  height={10}
-                  fill={COLOR.RED[50]}
-                  style={{ transform: 'rotate(180deg)' }}
-                />
-              </HazardIcon>
-              <HazardLabel>75.00%</HazardLabel>
-              <HazardSubLabel>{t('current-ltv-liquidation-threshold')}</HazardSubLabel>
-            </HazardLableWrapper> */}
           </GraphWrapper>
 
           <ContentDescription>{t('current-ltv-description2')}</ContentDescription>
@@ -143,7 +134,7 @@ const ContentWrapper = tw.div`
 `;
 
 const ExpressWrapper = tw.div`
-  flex gap-8 items-start justify-center
+  flex gap-8 items-start justify-center flex-wrap
 `;
 
 const ExpressIcon = tw.div`
@@ -164,6 +155,10 @@ const ExpressNumber = styled.div<ExpressNumberProps>(({ highlight }) => [
   highlight && tw`font-b-20`,
 ]);
 
+const ExpressInnerWrapper = tw.div`
+  flex gap-8 items-start justify-center
+`;
+
 const GraphWrapper = tw.div`
   flex flex-col gap-4 relative w-full h-60 pt-34
 `;
@@ -179,19 +174,6 @@ const Graph = styled.div(() => [
 
 const UserLableWrapper = tw.div`
   absolute top-0 flex-center flex-col gap-2 font-b-12 text-neutral-100 leading-18
-`;
-
-const HazardLableWrapper = tw.div`
-  absolute right-0 bottom-0 flex flex-col items-center gap-2 overflow-hidden h-44 w-117
-`;
-const HazardIcon = tw.div`
-  flex-shrink-0 flex-center
-`;
-const HazardLabel = tw.div`
-  font-b-12 text-red-50 leading-18 flex-shrink-0
-`;
-const HazardSubLabel = tw.div`
-  absolute top-26 font-r-12 text-red-50 leading-18 flex-shrink-0
 `;
 
 const ContentDescription = tw.div`

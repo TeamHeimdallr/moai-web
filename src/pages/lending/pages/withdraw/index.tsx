@@ -84,7 +84,7 @@ const GnbWrapper = styled.div<DivProps>(({ banner }) => [
 const Header = tw.div`
   flex items-center gap-4 font-b-24 text-neutral-100 px-20
   md:(gap-12 px-0)
-  `;
+`;
 
 const InnerWrapper = tw.div`
   flex flex-col gap-40 pt-20 pb-120

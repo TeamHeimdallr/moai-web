@@ -6,7 +6,7 @@ import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-accou
 
 import { IconInfinity, IconNext, IconQuestion } from '~/assets/icons';
 
-import { ASSET_URL } from '~/constants';
+import { ASSET_URL, MILLION } from '~/constants';
 
 import { ButtonIconMedium, ButtonIconSmall } from '~/components/buttons';
 import { Tooltip } from '~/components/tooltips/base';
@@ -95,11 +95,11 @@ export const LayoutMarketInfo = () => {
                 iconButton={
                   <ButtonIconMedium icon={<IconNext />} onClick={handleHealthFactorClick} />
                 }
-                value={`${healthFactor === Infinity ? '' : formatNumber(healthFactor)}`}
+                value={`${isFinite(healthFactor) ? formatNumber(healthFactor) : ''}`}
                 valueIcon={
-                  healthFactor === Infinity ? (
+                  isFinite(healthFactor) ? undefined : (
                     <IconInfinity width={30} height={30} fill={healthFactorColor} />
-                  ) : undefined
+                  )
                 }
                 valueColor={`${healthFactorColor}`}
               />
