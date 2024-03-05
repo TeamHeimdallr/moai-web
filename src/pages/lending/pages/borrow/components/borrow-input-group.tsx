@@ -16,6 +16,8 @@ import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 import { COLOR } from '~/assets/colors';
 import { IconArrowNext, IconInfinity } from '~/assets/icons';
 
+import { MILLION } from '~/constants';
+
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { Checkbox, InputNumber } from '~/components/inputs';
@@ -165,7 +167,7 @@ export const LendingBorrowInputGroup = () => {
                 {t('Current')}
                 <InfoCardValueBold style={{ color: currentHealthFactorColor }}>
                   {isFinite(currentHealthFactor) ? (
-                    formatNumber(currentHealthFactor)
+                    formatNumber(currentHealthFactor, 2, 'floor', MILLION, 2)
                   ) : (
                     <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
                   )}
@@ -180,7 +182,7 @@ export const LendingBorrowInputGroup = () => {
                 {t('After transaction')}
                 <InfoCardValueBold style={{ color: nextHealthFactorColor }}>
                   {isFinite(nextHealthFactor) ? (
-                    formatNumber(nextHealthFactor)
+                    formatNumber(nextHealthFactor, 2, 'floor', MILLION, 2)
                   ) : (
                     <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
                   )}
@@ -273,7 +275,7 @@ const InfoCard = tw.div`
 `;
 
 const InfoCardValueBold = tw.div`
-  font-b-14
+  font-b-14 text-neutral-100 h-22 flex items-center
 `;
 
 const ArrowRightIcon = tw.div`

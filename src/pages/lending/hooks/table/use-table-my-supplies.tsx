@@ -245,10 +245,19 @@ export const useTableMySupplies = () => {
           ],
           bottomRows: [
             <TableColumnButtons key={i} style={{ width: '100%' }}>
-              <ButtonPrimaryMedium text={t('lending-supply')} onClick={() => {}} />
+              <ButtonPrimaryMedium
+                text={t('lending-supply')}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingSupply(d.address);
+                }}
+              />
               <ButtonPrimaryMedium
                 text={t('lending-withdraw')}
-                onClick={() => {}}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingWithdraw(d.address);
+                }}
                 buttonType="outlined"
               />
             </TableColumnButtons>,
@@ -280,6 +289,7 @@ export const useTableMySupplies = () => {
           ],
         };
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [openCollateralDisable, openCollateralEnable, sortedMySupplies, t]
   );
 

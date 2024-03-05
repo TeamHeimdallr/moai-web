@@ -122,6 +122,7 @@ export const LayoutMarketBorrows = () => {
             <TableMobile
               data={mobileTableDataMyBorrows}
               columns={mobileTableColumnMyBorrows}
+              type="lighter"
               emptyText={t('lending-my-borrows-empty')}
               hasMore={hasNextPageMyBorrows}
               handleMoreClick={fetchNextPageMyBorrows}
@@ -149,6 +150,7 @@ export const LayoutMarketBorrows = () => {
           <TableMobile
             data={mobileTableDataAssetsToBorrow}
             columns={mobileTableColumnAssetsToBorrow}
+            type="lighter"
             emptyText={t('lending-assets-to-borrow-empty')}
             hasMore={hasNextPageAssetsToBorrow}
             handleMoreClick={fetchNextPageAssetsToBorrow}

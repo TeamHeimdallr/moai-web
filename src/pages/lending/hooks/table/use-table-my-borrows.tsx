@@ -196,10 +196,19 @@ export const useTableMyBorrows = () => {
           ],
           bottomRows: [
             <TableColumnButtons key={i} style={{ width: '100%' }}>
-              <ButtonPrimaryMedium text={t('lending-borrow')} onClick={() => {}} />
+              <ButtonPrimaryMedium
+                text={t('lending-borrow')}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingBorrow(d.address);
+                }}
+              />
               <ButtonPrimaryMedium
                 text={t('lending-repay')}
-                onClick={() => {}}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleLendingRepay(d.address);
+                }}
                 buttonType="outlined"
               />
             </TableColumnButtons>,
@@ -216,6 +225,7 @@ export const useTableMyBorrows = () => {
           ],
         };
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [sortedMyBorrows, t]
   );
 

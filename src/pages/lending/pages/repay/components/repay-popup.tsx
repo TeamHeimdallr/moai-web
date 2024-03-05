@@ -325,17 +325,31 @@ export const LendingRepayPopup = ({
                 <Summary>
                   <SummaryTextTitle>{t('Health factor')}</SummaryTextTitle>
                   <SummaryText>
-                    <span style={{ fontWeight: 'bold', color: currentHealthFactorColor }}>
+                    <span
+                      style={{
+                        fontWeight: 'bold',
+                        color: currentHealthFactorColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
                       {isFinite(currentHealthFactor || 0) ? (
-                        formatNumber(currentHealthFactor)
+                        formatNumber(currentHealthFactor, 2, 'floor', MILLION, 2)
                       ) : (
                         <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
                       )}
                     </span>
                     <IconArrowNext width={12} height={12} fill={COLOR.NEUTRAL[60]} />
-                    <span style={{ fontWeight: 'bold', color: nextHealthFactorColor }}>
+                    <span
+                      style={{
+                        fontWeight: 'bold',
+                        color: nextHealthFactorColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
                       {isFinite(nextHealthFactor || 0) ? (
-                        formatNumber(nextHealthFactor)
+                        formatNumber(nextHealthFactor, 2, 'floor', MILLION, 2)
                       ) : (
                         <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
                       )}

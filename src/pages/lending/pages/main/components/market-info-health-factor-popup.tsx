@@ -6,7 +6,7 @@ import tw, { styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconDivision, IconEquals, IconInfinity, IconTriangle } from '~/assets/icons';
 
-import { THOUSAND } from '~/constants';
+import { MILLION } from '~/constants';
 
 import { BadgeText } from '~/components/badges';
 import { Popup } from '~/components/popup';
@@ -26,7 +26,7 @@ export const MarketInfoHealthFactorPopup = ({ healthFactor: healthFactorNum, cri
   const healthFactorRaw = healthFactorNum;
   const healthFactorRatio = Math.max(Math.min(healthFactorRaw / criteria, 1), 0);
 
-  const healthFactor = formatNumber(healthFactorNum, 2, 'floor', THOUSAND, 2);
+  const healthFactor = formatNumber(healthFactorNum, 2, 'floor', MILLION, 2);
   const healthFactorColor = calculateHealthFactorColor(healthFactorRaw);
 
   const [position, setPosition] = useState(0);
@@ -70,51 +70,55 @@ export const MarketInfoHealthFactorPopup = ({ healthFactor: healthFactorNum, cri
         <Description>{t('liquidation-health-factor-description')}</Description>
         <ContentWrapper>
           <ExpressWrapper>
-            <NumberBadgeWrapper>
-              <BadgeText
-                text={t('Max LTV')}
-                backgroundColor={COLOR.PRIMARY[20]}
-                color={COLOR.PRIMARY[50]}
-              />
-            </NumberBadgeWrapper>
+            <ExpressInnerWrapper>
+              <NumberBadgeWrapper>
+                <BadgeText
+                  text={t('Max LTV')}
+                  backgroundColor={COLOR.PRIMARY[20]}
+                  color={COLOR.PRIMARY[50]}
+                />
+              </NumberBadgeWrapper>
 
-            <ExpressIcon>
-              <IconCancel width={20} height={20} fill={COLOR.PRIMARY[50]} />
-            </ExpressIcon>
+              <ExpressIcon>
+                <IconCancel width={20} height={20} fill={COLOR.PRIMARY[50]} />
+              </ExpressIcon>
 
-            <NumberBadgeWrapper>
-              <BadgeText
-                text={t('health-factor-assets')}
-                backgroundColor={COLOR.PRIMARY[20]}
-                color={COLOR.PRIMARY[50]}
-              />
-            </NumberBadgeWrapper>
+              <NumberBadgeWrapper>
+                <BadgeText
+                  text={t('health-factor-assets')}
+                  backgroundColor={COLOR.PRIMARY[20]}
+                  color={COLOR.PRIMARY[50]}
+                />
+              </NumberBadgeWrapper>
 
-            <ExpressIcon>
-              <IconDivision width={20} height={20} fill={COLOR.PRIMARY[50]} />
-            </ExpressIcon>
+              <ExpressIcon>
+                <IconDivision width={20} height={20} fill={COLOR.PRIMARY[50]} />
+              </ExpressIcon>
 
-            <NumberBadgeWrapper>
-              <BadgeText
-                text={t('health-factor-debt')}
-                backgroundColor={COLOR.PRIMARY[20]}
-                color={COLOR.PRIMARY[50]}
-              />
-            </NumberBadgeWrapper>
+              <NumberBadgeWrapper>
+                <BadgeText
+                  text={t('health-factor-debt')}
+                  backgroundColor={COLOR.PRIMARY[20]}
+                  color={COLOR.PRIMARY[50]}
+                />
+              </NumberBadgeWrapper>
+            </ExpressInnerWrapper>
 
-            <ExpressIcon>
-              <IconEquals width={20} height={20} fill={COLOR.NEUTRAL[100]} />
-            </ExpressIcon>
+            <ExpressInnerWrapper>
+              <ExpressIcon>
+                <IconEquals width={20} height={20} fill={COLOR.NEUTRAL[100]} />
+              </ExpressIcon>
 
-            <NumberBadgeWrapper>
-              {isFinite(healthFactorNum) ? (
-                <ExpressNumber highlight style={{ color: healthFactorColor }}>
-                  {healthFactor}
-                </ExpressNumber>
-              ) : (
-                <IconInfinity width={24} height={24} fill={healthFactorColor} />
-              )}
-            </NumberBadgeWrapper>
+              <NumberBadgeWrapper>
+                {isFinite(healthFactorNum) ? (
+                  <ExpressNumber highlight style={{ color: healthFactorColor, lineHeight: '24px' }}>
+                    {healthFactor}
+                  </ExpressNumber>
+                ) : (
+                  <IconInfinity width={24} height={24} fill={healthFactorColor} />
+                )}
+              </NumberBadgeWrapper>
+            </ExpressInnerWrapper>
           </ExpressWrapper>
 
           <GraphWrapper ref={graphRef}>
@@ -159,7 +163,7 @@ const ContentWrapper = tw.div`
 `;
 
 const ExpressWrapper = tw.div`
-  flex gap-8 items-start justify-center
+  flex gap-8 items-start justify-center flex-wrap
 `;
 
 const ExpressIcon = tw.div`
@@ -179,6 +183,10 @@ const ExpressNumber = styled.div<ExpressNumberProps>(({ highlight }) => [
   `,
   highlight && tw`font-b-20`,
 ]);
+
+const ExpressInnerWrapper = tw.div`
+  flex gap-8 items-start justify-center
+`;
 
 const GraphWrapper = tw.div`
   flex flex-col gap-4 relative w-full h-90 pt-34
