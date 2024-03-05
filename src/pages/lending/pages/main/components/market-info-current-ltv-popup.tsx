@@ -181,19 +181,6 @@ const UserLableWrapper = tw.div`
   absolute top-0 flex-center flex-col gap-2 font-b-12 text-neutral-100 leading-18
 `;
 
-const HazardLableWrapper = tw.div`
-  absolute right-0 bottom-0 flex flex-col items-center gap-2 overflow-hidden h-44 w-117
-`;
-const HazardIcon = tw.div`
-  flex-shrink-0 flex-center
-`;
-const HazardLabel = tw.div`
-  font-b-12 text-red-50 leading-18 flex-shrink-0
-`;
-const HazardSubLabel = tw.div`
-  absolute top-26 font-r-12 text-red-50 leading-18 flex-shrink-0
-`;
-
 const ContentDescription = tw.div`
   font-r-14 text-neutral-80
 `;
