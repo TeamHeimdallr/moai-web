@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
+import { useUserAccountLiquidity } from '~/api/api-contract/lending/user-account-liquidity';
+
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
@@ -23,6 +25,7 @@ export const LendingMain = () => {
 
   const { evm, fpass } = useConnectedWallet();
   const evmAddress = evm?.address || fpass?.address;
+  const { liquidity, shortfall } = useUserAccountLiquidity();
 
   const targetNetork = [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN];
   const { selectedNetwork } = useNetwork();
@@ -37,6 +40,8 @@ export const LendingMain = () => {
     callCallbackUnmounted: true,
   });
 
+  const showMarketInfo = !!evmAddress && (liquidity > 0 || shortfall > 0);
+
   return (
     <Wrapper>
       <GnbWrapper banner={!!opened}>
@@ -45,7 +50,7 @@ export const LendingMain = () => {
       <InnerWrapper banner={!!opened}>
         {targetNetork.includes(selectedNetwork) && (
           <ContentOuterWrapper>
-            <ContentWrapper evmAddress={evmAddress}>
+            <ContentWrapper showMarketInfo={showMarketInfo}>
               {/* market header, info */}
               <ContentInnerWrapper>
                 <LayoutMarketInfo />
@@ -105,13 +110,13 @@ const ContentOuterWrapper = tw.div`
 `;
 
 interface WalletProps {
-  evmAddress?: string;
+  showMarketInfo?: boolean;
 }
-const ContentWrapper = styled.div<WalletProps>(({ evmAddress }) => [
+const ContentWrapper = styled.div<WalletProps>(({ showMarketInfo }) => [
   tw`
   flex flex-col gap-40
   `,
-  evmAddress ? tw`md:(gap-80)` : tw`md:(gap-40)`,
+  showMarketInfo ? tw`md:(gap-80)` : tw`md:(gap-40)`,
 ]);
 
 const ContentInnerWrapper = tw.div`

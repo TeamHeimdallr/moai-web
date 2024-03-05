@@ -73,7 +73,7 @@ export const LayoutMarketInfo = () => {
         <LogoWrapper style={{ backgroundImage: `url(${backgroundUrl})` }} />
         <Title>{`${titleMap[selectedNetwork]} Market`}</Title>
       </HeaderWrapper>
-      {evmAddress && (
+      {evmAddress && netWorth > 0 && (
         <InfoWrapper>
           <InfoInnerWrapper>
             <InfoCard title={t('Net Worth')} value={`$${formatNumber(netWorth)}`} />
