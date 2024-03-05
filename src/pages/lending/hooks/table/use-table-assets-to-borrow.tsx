@@ -168,6 +168,7 @@ export const useTableAssetsToBorrow = () => {
                   e.stopPropagation();
                   handleLendingBorrow(d.address);
                 }}
+                disabled={d.asset.availables === 0}
               />
             </TableColumnButtons>
           ),
@@ -254,6 +255,7 @@ export const useTableAssetsToBorrow = () => {
                   e.stopPropagation();
                   handleLendingBorrow(d.address);
                 }}
+                disabled={d.asset.availables === 0}
               />
             </TableColumnButtons>,
           ],
