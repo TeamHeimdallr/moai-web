@@ -17,6 +17,10 @@ import { MOAI_LENS_ABI } from '~/abi/moai-lens';
  * @description Get Maximum borrow power in USD
  */
 
+interface IPriceData {
+  cToken: Address;
+  underlyingPrice: bigint;
+}
 export const useGetMaxBorrowPower = () => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
@@ -75,10 +79,10 @@ export const useGetMaxBorrowPower = () => {
     enabled: !!chainId && isEvm && !!marketAddrs,
   });
 
-  const underlyingPriceAll = underlyingPriceAllData as Array<bigint>;
+  const underlyingPriceAll = underlyingPriceAllData as Array<IPriceData>;
 
   const maximumBorrowPower = balances?.reduce((acc, b, i) => {
-    const decimals = Number(metadataAll?.[i]?.underlyingDecimals || 0);
+    const decimals = Number(metadataAll?.[i]?.underlyingDecimals || 18);
     const balanceOfUnderlying = b?.['balanceOfUnderlying'] || 0n;
     const price = Number(
       formatUnits(underlyingPriceAll?.[i]?.['underlyingPrice'] || 0n, 36 - decimals)

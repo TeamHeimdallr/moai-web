@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Abi, Address, formatUnits, parseUnits } from 'viem';
-import { useContractRead, useContractReads } from 'wagmi';
+import { useContractRead } from 'wagmi';
 
 import { MOAILENS_ADDRESS, UNITROLLER_ADDRESS } from '~/constants';
 
@@ -16,6 +16,10 @@ import { MOAI_LENS_ABI } from '~/abi/moai-lens';
 /**
  * @description User's Available Borrow
  */
+interface IPriceData {
+  cToken: Address;
+  underlyingPrice: bigint;
+}
 interface Props {
   mTokenAddresses: Address[];
 }
@@ -69,7 +73,7 @@ export const useUserAvailableBorrowAll = ({ mTokenAddresses }: Props) => {
   //   return r as IMetaData;
   // }) || []) as IMetaData[];
 
-  const { data: metadataAll } = useContractRead({
+  const { data: metadataAll, refetch: metaDataRefetch } = useContractRead({
     address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
     abi: MOAI_LENS_ABI as Abi,
     functionName: 'cTokenMetadataAll',
@@ -80,25 +84,18 @@ export const useUserAvailableBorrowAll = ({ mTokenAddresses }: Props) => {
   });
   const metaDataList = (metadataAll as Array<IMTokenMetadata>)?.map((m: IMTokenMetadata) => m);
 
-  const { data: underlyingPriceData, refetch: underlyingPriceRefetch } = useContractReads({
-    contracts: mTokenAddresses?.flatMap(address => [
-      {
-        address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
-        abi: MOAI_LENS_ABI as Abi,
-        functionName: 'cTokenUnderlyingPrice',
-        chainId,
+  const { data: pricesData, refetch: underlyingPriceRefetch } = useContractRead({
+    address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+    abi: MOAI_LENS_ABI as Abi,
+    functionName: 'cTokenUnderlyingPriceAll',
+    chainId,
 
-        args: [address],
-      },
-    ]),
+    args: [mTokenAddresses],
     staleTime: 1000 * 3,
     enabled: !!chainId && isEvm && !!mTokenAddresses,
   });
-
-  const undrlyingPriceList = (underlyingPriceData?.map(d => {
-    const r = d.result;
-    return r?.['underlyingPrice'] as bigint;
-  }) || []) as bigint[];
+  const prices = pricesData as Array<IPriceData>;
+  const undrlyingPriceList = prices?.map(d => d['underlyingPrice'] as bigint) || [];
 
   const availableAmountRawList = metaDataList?.map((metaData, i) => {
     const decimals = Number(metaData?.['underlyingDecimals']) as number;

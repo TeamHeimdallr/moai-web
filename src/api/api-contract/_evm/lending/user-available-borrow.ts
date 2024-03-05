@@ -90,13 +90,6 @@ export const useUserAvailableBorrow = ({ mTokenAddress }: Props) => {
   availableAmountRaw = availableAmountRaw > liquidity ? liquidity : availableAmountRaw;
   availableAmountRaw = availableAmountRaw > 10n ? availableAmountRaw - 10n : 0n; // safe buffer
 
-  //   console.log(
-  //     cashMinusReserve,
-  //     liquidity,
-  //     borrowCap === 0n ? '' : borrowCap - totalBorrows,
-  //     availableAmountRaw
-  //   );
-
   const refetch = () => {
     liquidityRefetch();
     metaDataRefetch();

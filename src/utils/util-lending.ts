@@ -84,7 +84,7 @@ export const calcHealthFactor = ({
           : deltaSupply.delta
         : 0n;
     const underlyingBalance =
-      Number(formatUnits(s.exchangeRate * s.mTokenBalance, 16 + market.underlyingDecimals)) +
+      Number(formatUnits(s.exchangeRate * s.mTokenBalance, 16 + 8)) +
       Number(formatUnits(delta, market.underlyingDecimals));
     const values = underlyingBalance * (market.price ?? 0);
     return acc + values * Number(formatEther(s.collateralFator ?? 0n));
@@ -104,6 +104,7 @@ export const calcHealthFactor = ({
 
     const values =
       Number(formatUnits(s.borrowBalance + delta, market.underlyingDecimals)) * (market.price ?? 0);
+
     return acc + values;
   }, 0);
 
