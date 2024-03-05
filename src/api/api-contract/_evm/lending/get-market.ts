@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Abi, Address } from 'viem';
+import { Abi, Address, formatUnits } from 'viem';
 import { useContractRead } from 'wagmi';
 
 import { MOAILENS_ADDRESS } from '~/constants';
@@ -14,6 +14,10 @@ import { MTOKEN_ABI } from '~/abi/mtoken';
 
 import { useUserTokenBalances } from '../balance/user-token-balances';
 
+interface IPriceData {
+  cToken: Address;
+  underlyingPrice: bigint;
+}
 interface Props {
   marketAddress: Address;
 }
@@ -32,6 +36,18 @@ export const useGetMarket = ({ marketAddress }: Props) => {
     staleTime: 1000 * 3,
     enabled: !!chainId && isEvm && !!marketAddress,
   });
+
+  const { data: priceData } = useContractRead({
+    address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+    abi: MOAI_LENS_ABI as Abi,
+    functionName: 'cTokenUnderlyingPrice',
+    chainId,
+
+    args: [marketAddress],
+    staleTime: 1000 * 3,
+    enabled: !!chainId && isEvm && !!marketAddress,
+  });
+  const price = priceData as IPriceData;
 
   const { data: metadataData, refetch } = useContractRead({
     address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
@@ -82,6 +98,8 @@ export const useGetMarket = ({ marketAddress }: Props) => {
 
     blocksPerYear,
     collateralFactorsMantissa: collateralFactorsMantissa,
+
+    price: Number(formatUnits(price?.['underlyingPrice'] || 0n, 36 - underlyingDecimals)),
   };
 
   const { userTokenBalances } = useUserTokenBalances({ addresses: [underlyingAddress] });

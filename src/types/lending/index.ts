@@ -27,13 +27,8 @@ export interface IMarket {
   totalSupply: bigint;
 
   blocksPerYear: number;
-  // interest rate model related fields
-  // interestRateModel: Address;
-  // kink: number; // 0~1
-  // multiplierPerBlock: number;
-  // jumpMultiplierPerBlock: number;
-  // utilizationRate: number; // 0~1
 
+  price: number;
   collateralFactorsMantissa: bigint;
 }
 
@@ -49,7 +44,6 @@ export interface ISnapshot {
 
 export type IMarketWithToken = IMarket & {
   address: string;
-  price?: number;
 
   underlyingSymbol?: string;
   underlyingImage?: string;

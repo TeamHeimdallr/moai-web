@@ -138,7 +138,7 @@ export const LayoutMarketBorrows = () => {
           <Table
             data={tableDataAssetsToBorrow}
             columns={tableColumnsAssetsToBorrow}
-            ratio={currentAddress ? [1, 1, 1, '94px'] : [1, 1, 1, '130px']}
+            ratio={currentAddress ? [1, 1, 1, '94px'] : [1, 1, 1, '128px']}
             type="lighter"
             emptyText={t('lending-assets-to-borrow-empty')}
             hasMore={hasNextPageAssetsToBorrow}

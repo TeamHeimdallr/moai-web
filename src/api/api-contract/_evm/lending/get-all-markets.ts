@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Abi, Address } from 'viem';
+import { Abi, Address, formatUnits } from 'viem';
 import { useContractRead, useContractReads } from 'wagmi';
 
 import { MOAILENS_ADDRESS, UNITROLLER_ADDRESS } from '~/constants';
@@ -93,6 +93,10 @@ export const useGetAllMarkets_dummy = () => {
   };
 };
 
+interface IPriceData {
+  cToken: Address;
+  underlyingPrice: bigint;
+}
 export const useGetAllMarkets = () => {
   const { network } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
@@ -126,6 +130,18 @@ export const useGetAllMarkets = () => {
   });
   const symbols = (symbolsData?.map(d => d.result) || []) as string[];
 
+  const { data: pricesData } = useContractRead({
+    address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+    abi: MOAI_LENS_ABI as Abi,
+    functionName: 'cTokenUnderlyingPriceAll',
+    chainId,
+
+    args: [marketAddrs],
+    staleTime: 1000 * 3,
+    enabled: !!chainId && isEvm && !!marketAddrs,
+  });
+  const prices = pricesData as Array<IPriceData>;
+
   const { data: metadataAll } = useContractRead({
     address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
     abi: MOAI_LENS_ABI as Abi,
@@ -154,108 +170,7 @@ export const useGetAllMarkets = () => {
   const totalSupply = (metadataList?.map(d => d.totalSupply) || []) as bigint[];
   const collateralFactorsMantissa = (metadataList?.map(d => d.collateralFactorMantissa) ||
     []) as bigint[];
-
-  // const { data: interestRateModelData } = useContractReads({
-  //   contracts: marketAddrs?.flatMap(address => [
-  //     {
-  //       address: address as Address,
-  //       abi: MTOKEN_ABI as Abi,
-  //       functionName: 'interestRateModel',
-  //       chainId,
-  //     },
-  //   ]),
-  //   staleTime: 1000 * 3,
-  //   watch: true,
-  //   enabled:   !!marketsData && !!chainId && isEvm,
-  // });
-  // const interestRateModels = (interestRateModelData?.map(d => d.result) || []) as Address[];
-
-  // /********************************************
-  //  * Interest rate model related fields
-  //  *********************************************/
-  // const { data: blocksPerYearData } = useContractReads({
-  //   contracts: interestRateModels?.flatMap(address => [
-  //     {
-  //       address: address as Address,
-  //       abi: IRATE_MODEL_ABI as Abi,
-  //       functionName: 'blocksPerYear',
-  //       chainId,
-  //     },
-  //   ]),
-  //   staleTime: 1000 * 3,
-  //   enabled:
-  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  // });
-  // const blocksPerYear = (blocksPerYearData?.map(d => Number(d.result)) || []) as number[];
-
-  // const { data: kinkData } = useContractReads({
-  //   contracts: interestRateModels?.flatMap(address => [
-  //     {
-  //       address: address as Address,
-  //       abi: IRATE_MODEL_ABI as Abi,
-  //       functionName: 'kink',
-  //       chainId,
-  //     },
-  //   ]),
-  //   staleTime: 1000 * 3,
-  //   enabled:
-  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  // });
-  // const kink = (kinkData?.map(d => Number(formatEther((d.result as bigint) || 0n))) ||
-  //   []) as number[];
-
-  // const { data: multiplierPerBlockData } = useContractReads({
-  //   contracts: interestRateModels?.flatMap(address => [
-  //     {
-  //       address: address as Address,
-  //       abi: IRATE_MODEL_ABI as Abi,
-  //       functionName: 'multiplierPerBlock',
-  //       chainId,
-  //     },
-  //   ]),
-  //   staleTime: 1000 * 3,
-  //   watch: true,
-  //   enabled:
-  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  // });
-  // const multiplierPerBlock = (multiplierPerBlockData?.map(d => d.result) || []) as number[];
-
-  // const { data: jumpMultiplierPerBlockData } = useContractReads({
-  //   contracts: interestRateModels?.flatMap(address => [
-  //     {
-  //       address: address as Address,
-  //       abi: IRATE_MODEL_ABI as Abi,
-  //       functionName: 'jumpMultiplierPerBlock',
-  //       chainId,
-  //     },
-  //   ]),
-  //   staleTime: 1000 * 3,
-  //   watch: true,
-  //   enabled:
-  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  // });
-  // const jumpMultiplierPerBlock = (jumpMultiplierPerBlockData?.map(d => d.result) || []) as number[];
-
-  // const { data: utilizationRateData } = useContractReads({
-  //   contracts: interestRateModels?.flatMap((address, i) => [
-  //     {
-  //       address: address as Address,
-  //       abi: IRATE_MODEL_ABI as Abi,
-  //       functionName: 'utilizationRate',
-  //       args: [cashes[i], totalBorrows[i], totalReserves[i]] as [bigint, bigint, bigint],
-  //       chainId,
-  //     },
-  //   ]),
-  //   staleTime: 1000 * 3,
-  //   watch: true,
-  //   enabled:
-  //     !!marketsData && !!chainId && isEvm && interestRateModels && interestRateModels.length > 0,
-  // });
-  // const utilizationRate = (utilizationRateData?.map(d =>
-  //   Number(formatEther((d.result as bigint) || 0n))
-  // ) || []) as number[];
-
-  const blocksPerYear = 7884000;
+  const blocksPerYear = 7884000; // TODO: Futureverse only
   const blocksPerDay = blocksPerYear / 365;
 
   const markets: IMarket[] = (marketAddrs as Array<string>)?.map((m: string, i: number) => {
@@ -284,6 +199,10 @@ export const useGetAllMarkets = () => {
 
       blocksPerYear,
       collateralFactorsMantissa: collateralFactorsMantissa[i] ?? 0n,
+
+      price: Number(
+        formatUnits(prices?.[i]['underlyingPrice'] || 0n, 36 - (underlyingDecimals[i] ?? 18))
+      ),
     };
   });
 
@@ -296,8 +215,6 @@ export const useGetAllMarkets = () => {
       ...market,
       address: market?.address,
       symbol: market?.symbol,
-
-      price: token?.price,
 
       underlyingSymbol: token?.symbol,
       underlyingImage: token?.image,
