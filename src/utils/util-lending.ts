@@ -135,7 +135,7 @@ export const calcLtv = ({ markets, snapshots }: Props) => {
     return acc + values;
   }, 0);
 
-  const ltv = denom === 0 ? 0 : (100 * numerator) / denom;
+  const ltv = denom === 0 ? 0 : Number((100 * (numerator / denom)).toFixed(2));
   return { ltv, assets: denom, debts: numerator };
 };
 

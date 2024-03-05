@@ -6,7 +6,13 @@ import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
 import { BigNumber } from 'ethers';
 import { encodeFunctionData, formatUnits, parseUnits } from 'viem';
-import { Address, usePrepareContractWrite, usePublicClient, useWalletClient } from 'wagmi';
+import {
+  Address,
+  useContractRead,
+  usePrepareContractWrite,
+  usePublicClient,
+  useWalletClient,
+} from 'wagmi';
 
 import { IS_MAINNET } from '~/constants';
 
@@ -16,6 +22,7 @@ import { getNetworkFull } from '~/utils';
 import { useLendingWithdrawNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { IToken } from '~/types';
 
+import { ERC20_TOKEN_ABI } from '~/abi';
 import { MTOKEN_ABI } from '~/abi/mtoken';
 
 import { createExtrinsicPayload } from '../substrate/create-extrinsic-payload';
@@ -29,9 +36,10 @@ type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 interface Props {
   token?: IToken & { amount: number; mTokenAddress: Address };
+  isMax?: boolean;
   enabled?: boolean;
 }
-export const useRedeemUnderlying = ({ token, enabled }: Props) => {
+export const useRedeemUnderlying = ({ token, enabled, isMax }: Props) => {
   const { setError } = useLendingWithdrawNetworkFeeErrorStore();
 
   const publicClient = usePublicClient();
@@ -51,6 +59,15 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
 
   const inputAmount = parseUnits(`${(token?.amount || 0).toFixed(18)}`, token?.decimal || 18);
 
+  const { data: mTokenAmount } = useContractRead({
+    address: token?.mTokenAddress as Address,
+    abi: ERC20_TOKEN_ABI,
+    functionName: 'balanceOf',
+    args: [walletAddress],
+    staleTime: 1000 * 3,
+    enabled: enabled && isFpass && !!walletAddress && !!token && isMax,
+  });
+
   const estimateFee = async () => {
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
@@ -68,8 +85,8 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
         isFpass && !!walletAddress && !!signer && !!token
           ? encodeFunctionData({
               abi: MTOKEN_ABI,
-              functionName: 'redeemUnderlying',
-              args: [inputAmount],
+              functionName: isMax ? 'redeem' : 'redeemUnderlying',
+              args: [isMax ? mTokenAmount : inputAmount],
             })
           : '0x0';
 
@@ -93,8 +110,8 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
       const evmGas = await publicClient.estimateContractGas({
         address: (token?.mTokenAddress || '') as Address,
         abi: MTOKEN_ABI,
-        functionName: 'redeemUnderlying',
-        args: [inputAmount],
+        functionName: isMax ? 'redeem' : 'redeemUnderlying',
+        args: [isMax ? mTokenAmount : inputAmount],
         account: walletAddress as Address,
       });
 
@@ -131,8 +148,8 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
         isFpass && !!walletAddress && !!signer && !!token
           ? encodeFunctionData({
               abi: MTOKEN_ABI,
-              functionName: 'redeemUnderlying',
-              args: [inputAmount],
+              functionName: isMax ? 'redeem' : 'redeemUnderlying',
+              args: [isMax ? mTokenAmount : inputAmount],
             })
           : '0x0';
 
@@ -216,7 +233,7 @@ export const useRedeemUnderlying = ({ token, enabled }: Props) => {
   };
 };
 
-export const useRedeemUnderlyingPrepare = ({ token, enabled }: Props) => {
+export const useRedeemUnderlyingPrepare = ({ token, enabled, isMax }: Props) => {
   const { fpass } = useConnectedWallet();
   const { address: walletAddress } = fpass;
 
@@ -228,6 +245,15 @@ export const useRedeemUnderlyingPrepare = ({ token, enabled }: Props) => {
 
   const inputAmount = parseUnits(`${(token?.amount || 0).toFixed(18)}`, token?.decimal || 18);
 
+  const { data: mTokenAmount } = useContractRead({
+    address: token?.mTokenAddress as Address,
+    abi: ERC20_TOKEN_ABI,
+    functionName: 'balanceOf',
+    args: [walletAddress],
+    staleTime: 1000 * 3,
+    enabled: enabled && isFpass && !!walletAddress && !!token && isMax,
+  });
+
   /* call prepare hook for check evm tx success */
   const {
     isFetching: isPrepareLoading,
@@ -237,11 +263,11 @@ export const useRedeemUnderlyingPrepare = ({ token, enabled }: Props) => {
   } = usePrepareContractWrite({
     address: (token?.mTokenAddress || '') as Address,
     abi: MTOKEN_ABI,
-    functionName: 'redeemUnderlying',
+    functionName: isMax ? 'redeem' : 'redeemUnderlying',
+    args: [isMax ? mTokenAmount : inputAmount],
 
     account: walletAddress as Address,
     chainId,
-    args: [inputAmount],
 
     enabled: enabled && isEvm && isFpass && !!walletAddress && !!token && token?.amount > 0,
   });

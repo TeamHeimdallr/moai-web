@@ -40,6 +40,7 @@ interface Props {
   currentHealthFactor?: number;
   nextHealthFactor?: number;
   supplied?: number;
+  isMax?: boolean;
 
   handleSuccess?: () => void;
 }
@@ -51,6 +52,7 @@ export const LendingWithdrawPopup = ({
   currentHealthFactor,
   nextHealthFactor,
   supplied,
+  isMax,
 
   handleSuccess,
 }: Props) => {
@@ -90,6 +92,7 @@ export const LendingWithdrawPopup = ({
     estimateFee: estimateLendingWithdrawFee,
   } = useRedeemUnderlying({
     token: tokenIn,
+    isMax,
     enabled: !!tokenIn && !!amount && amount > 0 && !!mTokenAddress,
   });
 

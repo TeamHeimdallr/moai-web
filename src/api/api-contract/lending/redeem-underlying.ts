@@ -8,6 +8,7 @@ import { useRedeemUnderlying as useRedeemUnderlyingFpass } from '../_evm/lending
 
 interface Props {
   token?: IToken & { amount: number; mTokenAddress: Address };
+  isMax?: boolean;
   enabled?: boolean;
   debug?: 'idle' | 'loading' | 'success' | 'error';
 }
@@ -68,11 +69,11 @@ interface Props {
 //   };
 // };
 
-export const useRedeemUnderlying = ({ token, enabled, debug: _debug }: Props) => {
+export const useRedeemUnderlying = ({ token, enabled, isMax, debug: _debug }: Props) => {
   const { isFpass } = useNetwork();
 
-  const resEvm = useRedeemUnderlyingEvm({ token, enabled });
-  const resFpass = useRedeemUnderlyingFpass({ token, enabled });
+  const resEvm = useRedeemUnderlyingEvm({ token, enabled, isMax });
+  const resFpass = useRedeemUnderlyingFpass({ token, enabled, isMax });
 
   return isFpass ? resFpass : resEvm;
 };
