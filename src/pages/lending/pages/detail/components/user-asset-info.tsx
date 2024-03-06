@@ -15,6 +15,8 @@ import { ButtonIconSmall } from '~/components/buttons';
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Tooltip } from '~/components/tooltips/base';
 
+import { useTableMySupplies } from '~/pages/lending/hooks/table/use-table-my-supplies';
+
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useMediaQuery } from '~/hooks/utils';
@@ -40,6 +42,7 @@ export const UserAssetInfo = () => {
   const { availableAmount: availableBorrowAmount } = useUserAvailableBorrow({
     mTokenAddress: address as Address,
   });
+  const { collateral } = useTableMySupplies();
 
   const availableSupply = underlyingBalance || 0;
   const availableSupplyValue = availableSupply * (price || 0);
@@ -129,11 +132,11 @@ export const UserAssetInfo = () => {
               text={t('Borrow')}
               onClick={handleBorrow}
               style={{ width: isMD ? '105px' : '92px', height: '48px' }}
-              disabled={availableBorrow <= 0}
+              disabled={collateral <= 0 || availableBorrow <= 0}
             />
           </InfoContent>
         </InfoInnerWrapper>
-        <AlertMessage title={t('lending-borrow-warning')} type="error" />
+        {collateral <= 0 && <AlertMessage title={t('lending-borrow-warning')} type="error" />}
       </InfoWrapper>
       <Footer>
         {t('Wallet balance')}

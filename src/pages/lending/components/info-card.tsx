@@ -1,10 +1,11 @@
-import { ReactNode } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
-interface MarketInfoCardProps {
+interface MarketInfoCardProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
   titleIcon?: ReactNode;
+  titleIconNarrow?: boolean;
 
   iconButton?: ReactNode;
 
@@ -13,27 +14,34 @@ interface MarketInfoCardProps {
   valueIcon?: ReactNode;
 
   light?: boolean;
+
+  tooltipId?: string;
 }
 export const InfoCard = ({
   title,
   titleIcon,
+  titleIconNarrow = true,
   iconButton,
   value,
   valueColor,
   valueIcon,
   light,
+
+  tooltipId,
+
+  ...rest
 }: MarketInfoCardProps) => {
   return (
-    <Wrapper light={light}>
+    <Wrapper light={light} {...rest}>
       <TitleOuterWrapper>
-        <TitleWrapper>
+        <TitleWrapper style={{ justifyContent: titleIconNarrow ? 'flex-start' : 'space-between' }}>
           {title}
           {titleIcon}
         </TitleWrapper>
         {iconButton && <IconButtonWrapper>{iconButton}</IconButtonWrapper>}
       </TitleOuterWrapper>
       <ValueWrapper color={valueColor}>
-        {value}
+        <span data-tooltip-id={tooltipId}>{value}</span>
         {valueIcon}
       </ValueWrapper>
     </Wrapper>
@@ -56,7 +64,7 @@ const TitleOuterWrapper = tw.div`
   w-full flex items-center gap-2
 `;
 const TitleWrapper = tw.div`
-  flex h-24 items-center font-m-14 text-neutral-80 gap-2 flex-1
+  flex h-24 items-center justify-between font-m-14 text-neutral-80 gap-2 flex-1
   md:(h-32 font-m-16)
 `;
 
