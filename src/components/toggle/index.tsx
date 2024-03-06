@@ -36,5 +36,5 @@ const Wrapper = styled.div<DivProps>(({ selected, disabled }) => [
 const Circle = styled.div<DivProps>(({ selected, disabled }) => [
   tw`absolute rounded-full  drop-shadow-default transition-toggle transition-color`,
   selected ? tw`top-3 w-19 h-19 bg-neutral-100 left-18` : tw`w-16 h-16 top-4 bg-neutral-80 left-4`,
-  disabled && tw`bg-neutral-30 non-clickable`,
+  disabled && tw`bg-neutral-30 non-clickable left-4`,
 ]);
