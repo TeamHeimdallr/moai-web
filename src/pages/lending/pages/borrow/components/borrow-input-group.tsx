@@ -110,6 +110,7 @@ export const LendingBorrowInputGroup = () => {
   const isValidToBorrow = useMemo(() => {
     if (!inputValue) return false;
     if (nextHealthFactor <= threshold && !checkedHealthFactor) return false;
+    if (nextHealthFactor <= 1.001) return false;
 
     if (!isFormError && inputValue > 0 && inputValue <= availableBorrow) return true;
   }, [checkedHealthFactor, inputValue, isFormError, nextHealthFactor, availableBorrow]);
@@ -201,23 +202,24 @@ export const LendingBorrowInputGroup = () => {
         </InfoWrapper>
       </InnerWrapper>
 
-      {nextHealthFactor <= threshold && (
-        <AlertMessage
-          title={t('health-factor-warning-title', { threshold: '1.0' })}
-          description={t('health-factor-warning-description', { action: 'Borrowing' })}
-          type="error"
-        />
+      {nextHealthFactor <= threshold && nextHealthFactor > 1.001 && (
+        <>
+          <AlertMessage
+            title={t('health-factor-warning-title', { threshold: '1.0' })}
+            description={t('health-factor-warning-description', { action: 'Borrowing' })}
+            type="error"
+          />
+          <CheckHealthFactor>
+            <Checkbox
+              onClick={() => checkHealthFactor(prev => !prev)}
+              selected={checkedHealthFactor}
+            />
+            {t('health-factor-warning-accept')}
+          </CheckHealthFactor>
+        </>
       )}
 
-      {nextHealthFactor <= threshold && (
-        <CheckHealthFactor>
-          <Checkbox
-            onClick={() => checkHealthFactor(prev => !prev)}
-            selected={checkedHealthFactor}
-          />
-          {t('health-factor-warning-accept')}
-        </CheckHealthFactor>
-      )}
+      {nextHealthFactor <= 1.001 && <AlertMessage title={t('health-factor-below-warning-title')} />}
 
       <ButtonPrimaryLarge
         text={t('Preview')}

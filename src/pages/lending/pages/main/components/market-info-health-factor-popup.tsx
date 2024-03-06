@@ -40,7 +40,7 @@ export const MarketInfoHealthFactorPopup = ({ healthFactor: healthFactorNum, cri
     const userLabelWidth = i18n.language === 'en' ? 22 : 45;
     const offset = 91 / 2 - userLabelWidth / 2; // (liquidity value width / 2) + (user label width / 2)
 
-    if (healthFactorRaw > 1) {
+    if (healthFactorRaw > 1.001) {
       const width = graphRect.width;
       const position = healthFactorRatio * width;
       const maxPosition = width - userLabelWidth;
@@ -49,9 +49,9 @@ export const MarketInfoHealthFactorPopup = ({ healthFactor: healthFactorNum, cri
 
       return;
     }
-    if (healthFactorRaw < 1) {
+    if (healthFactorRaw <= 1.001) {
       const width = 91 / 2;
-      const position = healthFactorRatio * width;
+      const position = width - userLabelWidth / 2;
       const minPosition = 0;
 
       setPosition(position < minPosition ? minPosition : position);

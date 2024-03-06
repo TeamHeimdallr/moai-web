@@ -631,5 +631,8 @@
   "Boost": "부스트",
   "boost": "부스트",
 
-  "points": "포인트"
+  "points": "포인트",
+
+  "lending-borrow-warning": "대출을 받으려면 담보로 사용할 자산을 공급해야 합니다.",
+  "health-factor-below-warning-title": "건전성 지수는 1.0 이하가 되도록 대출을 할 수 없습니다."
 }
