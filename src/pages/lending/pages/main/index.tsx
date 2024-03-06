@@ -23,12 +23,12 @@ export const LendingMain = () => {
 
   const { t } = useTranslation();
 
+  const { isFpass, selectedNetwork } = useNetwork();
   const { evm, fpass } = useConnectedWallet();
-  const evmAddress = evm?.address || fpass?.address;
+  const evmAddress = isFpass ? fpass.address : evm?.address || '';
   const { liquidity, shortfall } = useUserAccountLiquidity();
 
   const targetNetork = [NETWORK.THE_ROOT_NETWORK, NETWORK.EVM_SIDECHAIN];
-  const { selectedNetwork } = useNetwork();
   const previousNetwork = usePrevious<NETWORK>(selectedNetwork);
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);

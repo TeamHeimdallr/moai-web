@@ -30,14 +30,14 @@ const RewardsPage = () => {
 
   const { t } = useTranslation();
 
-  const { selectedNetwork } = useNetwork();
+  const { isFpass, selectedNetwork } = useNetwork();
   const currentNetworkAbbr = getNetworkAbbr(selectedNetwork);
 
   const { opened } = usePopup(POPUP_ID.REWARD_NETWORK_ALERT);
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
 
   const { evm, fpass } = useConnectedWallet();
-  const evmAddress = evm?.address || fpass?.address;
+  const evmAddress = isFpass ? fpass.address : evm?.address || '';
 
   const { data } = useGetWaveQuery(
     { params: { networkAbbr: currentNetworkAbbr } },

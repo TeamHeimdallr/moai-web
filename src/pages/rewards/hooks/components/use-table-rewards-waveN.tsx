@@ -23,13 +23,13 @@ import { NETWORK } from '~/types';
 
 export const useTableRewards = () => {
   const { network } = useParams();
-  const { selectedNetwork, isXrp } = useNetwork();
+  const { selectedNetwork, isFpass, isXrp } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const { evm, fpass } = useConnectedWallet();
-  const evmAddress = evm?.address || fpass?.address;
+  const evmAddress = isFpass ? fpass.address : evm?.address || '';
 
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
