@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { Address } from 'viem';
+import { useBalance } from 'wagmi';
 
 import { useEnterOrExitMarketPrepare } from '~/api/api-contract/_evm/lending/enter-exit-market-substrate';
 import { useEnterOrExitMarket } from '~/api/api-contract/lending/enter-exit-market';
@@ -52,6 +53,8 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const { evm, fpass } = useConnectedWallet();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const walletAddress = isFpass ? fpass.address : evm.address;
+
+  const { data: nativeBalance } = useBalance({ address: walletAddress as Address });
 
   const isEnable = type === 'enable';
   const popupId = isEnable
@@ -140,6 +143,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
         currentStatus: isEnable ? 'disable' : 'enable',
         estimatedFee,
         walletAddress,
+        xrpBalance: nativeBalance,
       },
     });
     await writeAsync?.();

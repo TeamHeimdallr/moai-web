@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { Address, parseUnits } from 'viem';
-import { useWalletClient } from 'wagmi';
+import { useBalance, useWalletClient } from 'wagmi';
 
 import { useLendingSupply } from '~/api/api-contract/lending/supply';
 import { useApprove } from '~/api/api-contract/token/approve';
@@ -26,6 +26,7 @@ import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
 import {
   useApproveNetworkFeeErrorStore,
@@ -73,6 +74,10 @@ export const LendingSupplyPopup = ({
   const { t } = useTranslation();
 
   const { isEvm, isFpass } = useNetwork();
+  const { evm, fpass } = useConnectedWallet();
+  const walletAddress = isFpass ? fpass.address : evm.address;
+  const { data: nativeBalance } = useBalance({ address: walletAddress as Address });
+
   const { close } = usePopup(POPUP_ID.LENDING_SUPPLY);
 
   const { isMD } = useMediaQuery();
@@ -168,6 +173,18 @@ export const LendingSupplyPopup = ({
       return;
     }
 
+    gaAction({
+      action: 'lending-supply',
+      data: {
+        component: 'lending-supply-popup',
+        tokenIn,
+        amount,
+        mTokenAddress,
+        estimatedFee,
+        walletAddress,
+        xrpBalance: nativeBalance,
+      },
+    });
     await writeAsync?.();
   };
 

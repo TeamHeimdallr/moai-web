@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { Address } from 'viem';
+import { useBalance } from 'wagmi';
 
 import { useRedeemUnderlying } from '~/api/api-contract/lending/redeem-underlying';
 
@@ -29,6 +30,7 @@ import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { calculateHealthFactorColor, DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
 import { useLendingWithdrawNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { IToken, NETWORK, POPUP_ID } from '~/types';
@@ -70,6 +72,11 @@ export const LendingWithdrawPopup = ({
   const { t } = useTranslation();
 
   const { isEvm, isFpass } = useNetwork();
+  const { evm, fpass } = useConnectedWallet();
+  const walletAddress = isFpass ? fpass.address : evm.address;
+
+  const { data: nativeBalance } = useBalance({ address: walletAddress as Address });
+
   const { close } = usePopup(POPUP_ID.LENDING_WITHDRAW);
 
   const { isMD } = useMediaQuery();
@@ -126,6 +133,18 @@ export const LendingWithdrawPopup = ({
       return;
     }
 
+    gaAction({
+      action: 'lending-withdraw',
+      data: {
+        component: 'lending-withdraw-popup',
+        tokenIn,
+        amount,
+        mTokenAddress,
+        estimatedFee,
+        walletAddress,
+        xrpBalance: nativeBalance,
+      },
+    });
     await writeAsync?.();
   };
 

@@ -8,6 +8,7 @@ import tw from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useRepayPrepare } from '~/api/api-contract/_evm/lending/repay-substrate';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
@@ -63,7 +64,6 @@ export const LendingRepayInputGroup = () => {
   const [inputValue, setInputValue] = useState<number>();
   const [_inputValueRaw, setInputValueRaw] = useState<bigint>();
 
-  // TODO: connect API
   const debt = Number(formatUnits(snapshot?.borrowBalance || 0n, market?.underlyingDecimals || 18));
   const currentHealthFactor = calcHealthFactor({
     markets,
@@ -113,7 +113,12 @@ export const LendingRepayInputGroup = () => {
     mTokenAddress: Address;
   };
 
-  // TODO: prepare
+  const isMax = inputValue === debt;
+  const { isPrepareLoading, isPrepareError } = useRepayPrepare({
+    token: tokenIn,
+    isMax,
+    enabled: !isFormError && !!tokenIn && !!inputValue && inputValue > 0 && !!address,
+  });
 
   return (
     <Wrapper>
@@ -204,11 +209,12 @@ export const LendingRepayInputGroup = () => {
               <InfoCard>
                 {t('After transaction')}
                 <InfoCardValueBold style={{ color: nextHealthFactorColor }}>
-                  {isFinite(nextHealthFactor) ? (
-                    formatNumber(nextHealthFactor, 2, 'floor', MILLION, 2)
-                  ) : (
-                    <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
-                  )}
+                  {!!inputValue &&
+                    (isFinite(nextHealthFactor) ? (
+                      formatNumber(nextHealthFactor, 2, 'floor', MILLION, 2)
+                    ) : (
+                      <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
+                    ))}
                 </InfoCardValueBold>
               </InfoCard>
             </InfoCardInnerWrapper>
@@ -220,13 +226,13 @@ export const LendingRepayInputGroup = () => {
       <ButtonPrimaryLarge
         text={t('Preview')}
         onClick={() => popupOpen()}
-        disabled={!isValidToRepay}
+        disabled={!isValidToRepay || isPrepareLoading || isPrepareError}
       />
 
       {popupOpened && (
         <LendingRepayPopup
           tokenIn={tokenIn}
-          isMax={inputValue === debt}
+          isMax={isMax}
           currentHealthFactor={currentHealthFactor}
           nextHealthFactor={nextHealthFactor}
           debt={debt}

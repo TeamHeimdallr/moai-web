@@ -9,6 +9,7 @@ import * as yup from 'yup';
 
 import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
 import { useGetSupplyCap } from '~/api/api-contract/_evm/lending/get-supply-cap';
+import { useSupplyPrepare } from '~/api/api-contract/_evm/lending/supply-substrate';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
@@ -99,7 +100,11 @@ export const LendingSupplyInputGroup = () => {
     amount: inputValue,
     mTokenAddress: address,
   } as IToken & { balance: number; amount: number; mTokenAddress: Address };
-  // TODO: prepare
+
+  const { isPrepareLoading, isPrepareError } = useSupplyPrepare({
+    token: tokenIn,
+    enabled: !isFormError && !!tokenIn && !!inputValue && inputValue > 0 && !!address,
+  });
 
   return (
     <Wrapper>
@@ -154,7 +159,7 @@ export const LendingSupplyInputGroup = () => {
       <ButtonPrimaryLarge
         text={t('Preview')}
         onClick={() => popupOpen()}
-        disabled={!isValidToSupply}
+        disabled={!isValidToSupply || isPrepareLoading || isPrepareError}
       />
 
       {popupOpened && (
