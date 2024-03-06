@@ -1,7 +1,7 @@
 import { HTMLAttributes, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
 import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
 import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
@@ -10,7 +10,6 @@ import { MILLION, TRILLION } from '~/constants';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
 import { NETWORK } from '~/types';
@@ -19,7 +18,6 @@ export const RewardMyInfo = () => {
   const { ref } = useGAInView({ name: 'reward-my-info' });
 
   const { t } = useTranslation();
-  const { isMD } = useMediaQuery();
 
   const { network } = useParams();
   const { isFpass, selectedNetwork } = useNetwork();
@@ -49,6 +47,7 @@ export const RewardMyInfo = () => {
     }
   );
   const { totalPoint, lendingBorrow, lendingSupply, lpSupply, veMOAI } = waveInfo || {};
+  const hasToken = !!veMOAI && veMOAI > 0;
 
   return (
     <Wrapper ref={ref}>
@@ -58,71 +57,32 @@ export const RewardMyInfo = () => {
           <div>{t('Total points')}</div>
           <div>{formatNumber(totalPoint, 2, 'floor', TRILLION, 2)}</div>
         </InnerTitleWrapper>
-        <InnerInfoWrapper>
+        <InnerInfoWrapper hasToken={hasToken}>
           {/* TODO: 추후 받아오는 데이터를 contract로 수정 */}
-          {!!veMOAI && veMOAI > 0 ? (
-            <>
-              <InfoCardWrapper>
-                <InfoCard
-                  name={t('Wave 0')}
-                  value={formatNumber(veMOAI, 2, 'floor', MILLION, 2)}
-                  subValue={'veMOAI'}
-                />
-                <InfoCard
-                  name={t('LP Supply')}
-                  value={formatNumber(lpSupply, 2, 'floor', MILLION, 2)}
-                  subValue={t('points')}
-                />
-              </InfoCardWrapper>
-              <InfoCardWrapper>
-                <InfoCard
-                  name={t('reward-lending-supply')}
-                  value={formatNumber(lendingSupply, 2, 'floor', MILLION, 2)}
-                  subValue={t('points')}
-                />
-                <InfoCard
-                  name={t('reward-lending-borrow')}
-                  value={formatNumber(lendingBorrow, 2, 'floor', MILLION, 2)}
-                  subValue={t('points')}
-                />
-              </InfoCardWrapper>
-            </>
-          ) : (
-            <>
-              <InfoCard
-                name={t('LP Supply')}
-                value={formatNumber(lpSupply, 2, 'floor', MILLION, 2)}
-                subValue={t('points')}
-              />
-              {isMD ? (
-                <>
-                  <InfoCard
-                    name={t('reward-lending-supply')}
-                    value={formatNumber(lendingSupply, 2, 'floor', MILLION, 2)}
-                    subValue={t('points')}
-                  />
-                  <InfoCard
-                    name={t('reward-lending-borrow')}
-                    value={formatNumber(lendingBorrow, 2, 'floor', MILLION, 2)}
-                    subValue={t('points')}
-                  />
-                </>
-              ) : (
-                <InfoCardWrapper>
-                  <InfoCard
-                    name={t('reward-lending-supply')}
-                    value={formatNumber(lendingSupply, 2, 'floor', MILLION, 2)}
-                    subValue={t('points')}
-                  />
-                  <InfoCard
-                    name={t('reward-lending-borrow')}
-                    value={formatNumber(lendingBorrow, 2, 'floor', MILLION, 2)}
-                    subValue={t('points')}
-                  />
-                </InfoCardWrapper>
-              )}
-            </>
+          {hasToken && (
+            <InfoCard
+              name={t('Wave 0')}
+              value={formatNumber(veMOAI, 2, 'floor', MILLION, 2)}
+              subValue={'veMOAI'}
+            />
           )}
+          <InfoCardWrapper full={!hasToken}>
+            <InfoCard
+              name={t('LP Supply')}
+              value={formatNumber(lpSupply, 2, 'floor', MILLION, 2)}
+              subValue={t('points')}
+            />
+          </InfoCardWrapper>
+          <InfoCard
+            name={t('reward-lending-supply')}
+            value={formatNumber(lendingSupply, 2, 'floor', MILLION, 2)}
+            subValue={t('points')}
+          />
+          <InfoCard
+            name={t('reward-lending-borrow')}
+            value={formatNumber(lendingBorrow, 2, 'floor', MILLION, 2)}
+            subValue={t('points')}
+          />
         </InnerInfoWrapper>
       </InnerWrapper>
     </Wrapper>
@@ -148,14 +108,21 @@ const InnerTitleWrapper = tw.div`
   md:(font-b-20)
 `;
 
-const InnerInfoWrapper = tw.div`
-  flex flex-col w-full gap-16 min-h-140 
-  md:(flex-row)
-`;
-const InfoCardWrapper = tw.div`
-  flex w-full h-full gap-16
-`;
+interface InnerInfoWrapperProps {
+  hasToken?: boolean;
+}
+const InnerInfoWrapper = styled.div<InnerInfoWrapperProps>(({ hasToken }) => [
+  tw`grid w-full gap-16 min-h-140`,
+  hasToken ? tw`grid-cols-2 md:(grid-cols-4)` : tw`grid-cols-2 md:(grid-cols-3)`,
+]);
 
+interface InfoCardWrapperProps {
+  full?: boolean;
+}
+const InfoCardWrapper = styled.div<InfoCardWrapperProps>(({ full }) => [
+  tw`w-full h-full`,
+  full && tw`col-span-2 md:(col-span-1)`,
+]);
 interface InfoCardProps extends HTMLAttributes<HTMLDivElement> {
   name: string;
 
