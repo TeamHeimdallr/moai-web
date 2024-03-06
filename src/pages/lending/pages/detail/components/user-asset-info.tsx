@@ -101,7 +101,7 @@ export const UserAssetInfo = () => {
           <ButtonPrimary
             text={t('Supply')}
             onClick={handleSupply}
-            style={{ width: isMD ? '105px' : '92px' }}
+            style={{ width: isMD ? '105px' : '92px', height: '48px' }}
             disabled={availableSupply <= 0}
           />
         </InfoContent>
@@ -124,7 +124,7 @@ export const UserAssetInfo = () => {
           <ButtonPrimary
             text={t('Borrow')}
             onClick={handleBorrow}
-            style={{ width: isMD ? '105px' : '92px' }}
+            style={{ width: isMD ? '105px' : '92px', height: '48px' }}
             disabled={availableBorrow <= 0}
           />
         </InfoContent>
@@ -169,7 +169,7 @@ const InfoHeader = tw.div`
 `;
 
 const InfoContent = tw.div`
-  flex gap-4
+  flex items-center gap-4
 `;
 
 const InfoAmountWrapper = tw.div`
