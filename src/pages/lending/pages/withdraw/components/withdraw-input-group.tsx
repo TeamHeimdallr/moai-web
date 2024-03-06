@@ -153,7 +153,7 @@ export const LendingWithdrawInputGroup = () => {
           tokenName={symbol}
           tokenValue={tokenValue}
           balanceLabel="Available"
-          balance={supplied + 1}
+          balance={supplied}
           balanceRaw={parseEther(supplied.toString())}
           value={inputValue}
           handleChange={val => {

@@ -20,6 +20,7 @@ import { TableColumnButtons } from '~/components/tables/columns/column-buttons';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
+import { calcHealthFactor } from '~/utils/util-lending';
 import { useTableLendingMyBorrowsSortStore } from '~/states/components';
 
 import { APYSmall } from '../../components/apy';
@@ -35,6 +36,12 @@ export const useTableMyBorrows = () => {
 
   const { accountSnapshots } = useUserAccountSnapshotAll();
   const { markets } = useGetAllMarkets();
+
+  const hf = calcHealthFactor({
+    markets,
+    snapshots: accountSnapshots,
+  });
+  const isInLiquidation = hf <= 1.0;
 
   // TODO: pagenation logic 은 추후 Market 이 많아지면 추가
   const hasNextPage = false;
@@ -118,6 +125,7 @@ export const useTableMyBorrows = () => {
                   e.stopPropagation();
                   handleLendingBorrow(d.address);
                 }}
+                disabled={isInLiquidation}
               />
               <ButtonPrimaryMedium
                 text={t('lending-repay')}
@@ -202,6 +210,7 @@ export const useTableMyBorrows = () => {
                   e.stopPropagation();
                   handleLendingBorrow(d.address);
                 }}
+                disabled={isInLiquidation}
               />
               <ButtonPrimaryMedium
                 text={t('lending-repay')}

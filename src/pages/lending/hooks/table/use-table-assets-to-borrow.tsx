@@ -25,6 +25,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
+import { calcHealthFactor } from '~/utils/util-lending';
 import { useTableLendingAssetsToBorrowSortStore } from '~/states/components';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
@@ -44,6 +45,12 @@ export const useTableAssetsToBorrow = () => {
 
   const { markets } = useGetAllMarkets();
   const { accountSnapshots } = useUserAccountSnapshotAll();
+
+  const hf = calcHealthFactor({
+    markets,
+    snapshots: accountSnapshots,
+  });
+  const isInLiquidation = hf <= 1.0;
 
   // TODO: pagination later
   const hasNextPage = false;
@@ -168,7 +175,7 @@ export const useTableAssetsToBorrow = () => {
                   e.stopPropagation();
                   handleLendingBorrow(d.address);
                 }}
-                disabled={d.asset.availables === 0}
+                disabled={d.asset.availables === 0 || isInLiquidation}
               />
             </TableColumnButtons>
           ),
@@ -255,7 +262,7 @@ export const useTableAssetsToBorrow = () => {
                   e.stopPropagation();
                   handleLendingBorrow(d.address);
                 }}
-                disabled={d.asset.availables === 0}
+                disabled={d.asset.availables === 0 || isInLiquidation}
               />
             </TableColumnButtons>,
           ],
