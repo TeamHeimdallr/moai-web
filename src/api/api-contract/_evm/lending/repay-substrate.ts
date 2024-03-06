@@ -81,7 +81,7 @@ export const useRepay = ({ token, enabled, isMax }: Props) => {
         (token?.mTokenAddress || '0x0') as Address,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed. actual: around 18k
+        '1000000', // gas limit estimation todo: can be changed. actual: around 18k
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -144,7 +144,7 @@ export const useRepay = ({ token, enabled, isMax }: Props) => {
         (token?.mTokenAddress || '0x0') as Address,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed
+        '1000000', // gas limit estimation todo: can be changed
         feeHistory.baseFeePerGas[0],
         0,
         null,

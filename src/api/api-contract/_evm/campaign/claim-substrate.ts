@@ -79,7 +79,7 @@ export const useClaim = () => {
         CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed
+        '400000', // gas limit estimation todo: can be changed
         feeHistory.baseFeePerGas[0],
         0,
         null,
