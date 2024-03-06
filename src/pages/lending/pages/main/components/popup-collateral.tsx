@@ -4,7 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { Address } from 'viem';
+import { useBalance } from 'wagmi';
 
+import { useEnterOrExitMarketPrepare } from '~/api/api-contract/_evm/lending/enter-exit-market-substrate';
 import { useEnterOrExitMarket } from '~/api/api-contract/lending/enter-exit-market';
 
 import { COLOR } from '~/assets/colors';
@@ -23,6 +25,7 @@ import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
 import { useEnterOrExitMarketNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { NETWORK, POPUP_ID } from '~/types';
@@ -47,7 +50,11 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const navigate = useNavigate();
   const { network } = useParams();
   const { isEvm, isFpass, selectedNetwork } = useNetwork();
+  const { evm, fpass } = useConnectedWallet();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const walletAddress = isFpass ? fpass.address : evm.address;
+
+  const { data: nativeBalance } = useBalance({ address: walletAddress as Address });
 
   const isEnable = type === 'enable';
   const popupId = isEnable
@@ -84,12 +91,18 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
     enabled: marketAddress !== '0x0' && ((!isEnable && isExitPossible) || isEnable),
   });
 
+  const { isPrepareLoading, isPrepareError } = useEnterOrExitMarketPrepare({
+    marketAddress,
+    currentStatus: isEnable ? 'disable' : 'enable',
+    enabled: marketAddress !== '0x0' && ((!isEnable && isExitPossible) || isEnable),
+  });
+
   const txDate = new Date(blockTimestamp || 0);
   const isIdle = !txData || !(enterOrExitError || enterOrExitSuccess);
   const isSuccess = enterOrExitSuccess && !!txData;
   const isError = enterOrExitError;
-  const estimatedFee = estimatedEnterOrExitMarketFee || 1;
-  const gasError = (balance || 0) <= Number(estimatedFee || 1) || enterOrExitGasError;
+  const estimatedFee = estimatedEnterOrExitMarketFee;
+  const gasError = (balance || 0) <= Number(estimatedFee || 1.5) || enterOrExitGasError;
 
   const buttonText = useMemo(() => {
     if (isLoading) return t('Confirm in wallet');
@@ -120,6 +133,19 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
       return;
     }
 
+    gaAction({
+      action: 'lending-set-collateral',
+      data: {
+        component: 'collateral-popup',
+        marketAddress,
+        isExitPossible,
+        isEnable,
+        currentStatus: isEnable ? 'disable' : 'enable',
+        estimatedFee,
+        walletAddress,
+        xrpBalance: nativeBalance,
+      },
+    });
     await writeAsync?.();
   };
 
@@ -172,7 +198,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={!isIdle && !isSuccess ? 'outlined' : 'filled'}
-            disabled={(isIdle && gasError) || !estimatedFee}
+            disabled={(isIdle && gasError) || !estimatedFee || isPrepareLoading || isPrepareError}
           />
         </ButtonWrapper>
       }

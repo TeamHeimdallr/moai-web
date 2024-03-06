@@ -7,6 +7,7 @@ import tw from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useBorrowPrepare } from '~/api/api-contract/_evm/lending/borrow-substrate';
 import { useUserAvailableBorrow } from '~/api/api-contract/_evm/lending/user-available-borrow';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 // import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
@@ -122,6 +123,11 @@ export const LendingBorrowInputGroup = () => {
 
   // TODO: prepare
 
+  const { isPrepareLoading, isPrepareError } = useBorrowPrepare({
+    token: tokenIn,
+    enabled: !isFormError && !!tokenIn && !!inputValue && inputValue > 0 && !!address,
+  });
+
   return (
     <Wrapper>
       <Header>
@@ -181,11 +187,12 @@ export const LendingBorrowInputGroup = () => {
               <InfoCard>
                 {t('After transaction')}
                 <InfoCardValueBold style={{ color: nextHealthFactorColor }}>
-                  {isFinite(nextHealthFactor) ? (
-                    formatNumber(nextHealthFactor, 2, 'floor', MILLION, 2)
-                  ) : (
-                    <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
-                  )}
+                  {!!inputValue &&
+                    (isFinite(nextHealthFactor) ? (
+                      formatNumber(nextHealthFactor, 2, 'floor', MILLION, 2)
+                    ) : (
+                      <IconInfinity width={22} height={22} fill={COLOR.GREEN[50]} />
+                    ))}
                 </InfoCardValueBold>
               </InfoCard>
             </InfoCardInnerWrapper>
@@ -215,7 +222,7 @@ export const LendingBorrowInputGroup = () => {
       <ButtonPrimaryLarge
         text={t('Preview')}
         onClick={() => popupOpen()}
-        disabled={!isValidToBorrow}
+        disabled={!isValidToBorrow || isPrepareLoading || isPrepareError}
       />
 
       {popupOpened && (

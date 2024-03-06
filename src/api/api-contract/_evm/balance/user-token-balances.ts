@@ -30,7 +30,7 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
   const { data: tokensData } = useGetTokensQuery(
     {
       queries: {
-        filter: `address:in:${addresses.join(',')}`,
+        filter: !!addresses && addresses.length > 0 ? `address:in:${addresses.join(',')}` : '',
       },
     },
     { enabled: !!addresses && addresses.length > 0 && !!addresses.join(','), staleTime: 60 * 1000 }
@@ -39,7 +39,7 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
 
   const { data: nativeBalance } = useBalance({ address: walletAddress as Address, chainId });
 
-  const { data: tokenTotalSupplyData, refetch: lpTokenRefetch } = useContractReads({
+  const { data: tokenTotalSupplyData, refetch: totalSupplyRefetch } = useContractReads({
     contracts: addresses.flatMap(address => [
       {
         address: address as Address,
@@ -113,7 +113,7 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
   )?.sort((a, b) => a?.symbol?.localeCompare(b?.symbol));
 
   const refetch = () => {
-    lpTokenRefetch();
+    totalSupplyRefetch();
     tokenBalanceRefetch();
   };
 

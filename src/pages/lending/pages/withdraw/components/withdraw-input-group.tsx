@@ -7,6 +7,7 @@ import tw from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
+import { useRedeemUnderlyingPrepare } from '~/api/api-contract/_evm/lending/redeem-underlying-substrate';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
@@ -129,7 +130,12 @@ export const LendingWithdrawInputGroup = () => {
     mTokenAddress: Address;
   };
 
-  // TODO: prepare
+  const isMax = inputValue?.toFixed(18) === supplied.toFixed(18);
+  const { isPrepareLoading, isPrepareError } = useRedeemUnderlyingPrepare({
+    token: tokenIn,
+    isMax,
+    enabled: !isFormError && !!tokenIn && !!inputValue && inputValue > 0 && !!address,
+  });
 
   return (
     <Wrapper>
@@ -231,13 +237,13 @@ export const LendingWithdrawInputGroup = () => {
       <ButtonPrimaryLarge
         text={t('Preview')}
         onClick={() => popupOpen()}
-        disabled={!isValidToWithdraw}
+        disabled={!isValidToWithdraw || isPrepareLoading || isPrepareError}
       />
 
       {popupOpened && (
         <LendingWithdrawPopup
           tokenIn={tokenIn}
-          isMax={inputValue?.toFixed(18) === supplied.toFixed(18)}
+          isMax={isMax}
           currentHealthFactor={currentHealthFactor}
           nextHealthFactor={nextHealthFactor}
           supplied={supplied}

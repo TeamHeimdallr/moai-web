@@ -343,7 +343,7 @@
   "Pre-mining $veMOAI": "Pre-mining $veMOAI",
   "$ROOT reward (APR 10%)": "$ROOT reward (APR 10%)",
 
-  "calculating...": "calculating...",
+  "calculating...": "Calculating gas price",
 
   "Lack of reserve": "Lack of reserve",
   "lack-of-reserve-description": "Campaign Reserve is currently refilling. Please wait for Discord announcement.",

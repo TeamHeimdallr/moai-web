@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { Address, parseUnits } from 'viem';
+import { useBalance } from 'wagmi';
 
 import { useLendingRepay } from '~/api/api-contract/lending/repay';
 import { useApprove } from '~/api/api-contract/token/approve';
@@ -31,6 +32,7 @@ import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
+import { useConnectedWallet } from '~/hooks/wallets';
 import { calculateHealthFactorColor, DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
 import {
   useApproveNetworkFeeErrorStore,
@@ -79,6 +81,10 @@ export const LendingRepayPopup = ({
   const { t } = useTranslation();
 
   const { isEvm, isFpass } = useNetwork();
+  const { evm, fpass } = useConnectedWallet();
+  const walletAddress = isFpass ? fpass.address : evm.address;
+  const { data: nativeBalance } = useBalance({ address: walletAddress as Address });
+
   const { close } = usePopup(POPUP_ID.LENDING_REPAY);
 
   const { isMD } = useMediaQuery();
@@ -170,6 +176,18 @@ export const LendingRepayPopup = ({
       return;
     }
 
+    gaAction({
+      action: 'lending-repay',
+      data: {
+        component: 'lending-repay-popup',
+        tokenIn,
+        amount,
+        mTokenAddress,
+        estimatedFee,
+        walletAddress,
+        xrpBalance: nativeBalance,
+      },
+    });
     await writeAsync?.();
   };
 

@@ -341,7 +341,7 @@
   "Pre-mining $veMOAI": "사전 채굴 $MOAI",
   "$ROOT reward (APR 10%)": "$ROOT 리워드 (APR 10%)",
 
-  "calculating...": "계산 중...",
+  "calculating...": "가스비 계산 중",
 
   "Lack of reserve": "준비금이 부족합니다.",
   "lack-of-reserve-description": "캠페인 준비금을 충전 중입니다. 디스코드 공지를 기다려주세요.",

@@ -6,7 +6,7 @@ import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-accou
 
 import { IconInfinity, IconNext, IconQuestion } from '~/assets/icons';
 
-import { ASSET_URL, MILLION } from '~/constants';
+import { ASSET_URL } from '~/constants';
 
 import { ButtonIconMedium, ButtonIconSmall } from '~/components/buttons';
 import { Tooltip } from '~/components/tooltips/base';
