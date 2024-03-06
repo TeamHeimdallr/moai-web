@@ -573,7 +573,8 @@
   "liquidation-at": "{{ threshold }}미만일 때 청산",
   "Exceeds borrow limits": "대출 한도를 초과하였습니다.",
   "health-factor-warning-title": "건전성 지수가 {{ threshold }}에 근접합니다.",
-  "health-factor-warning-description": "이 금액을 빌리면 건전성 지수가 감소하고 청산 위험이 증가합니다.",
+  "health-factor-warning-description-borrow": "이 금액을 빌리면 건전성 지수가 감소하고 청산 위험이 증가합니다.",
+  "health-factor-warning-description-withdraw": "이 금액을 출금하면 건전성 지수가 감소하고 청산 위험이 증가합니다.",
   "health-factor-warning-accept": "관련 위험을 인지했습니다.",
 
   "You're borrowing": "대출 금액",
@@ -634,5 +635,6 @@
   "points": "포인트",
 
   "lending-borrow-warning": "대출을 받으려면 담보로 사용할 자산을 공급해야 합니다.",
-  "health-factor-below-warning-title": "건전성 지수는 1.0 이하가 되도록 대출을 할 수 없습니다."
+  "health-factor-below-warning-title-borrow": "건전성 지수가 1.0 이하가 되도록 대출을 받을 수 없습니다.",
+  "health-factor-below-warning-title-withdraw": "건전성 지수가 1.0 이하가 되도록 출금 할 수 없습니다."
 }

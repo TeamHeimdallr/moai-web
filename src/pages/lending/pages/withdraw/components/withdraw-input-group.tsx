@@ -221,7 +221,7 @@ export const LendingWithdrawInputGroup = () => {
         <>
           <AlertMessage
             title={t('health-factor-warning-title', { threshold: '1.0' })}
-            description={t('health-factor-warning-description', { action: 'Withdrawing' })}
+            description={t('health-factor-warning-description-withdraw')}
             type="error"
           />
           <CheckHealthFactor>
@@ -234,7 +234,9 @@ export const LendingWithdrawInputGroup = () => {
         </>
       )}
 
-      {nextHealthFactor <= 1.001 && <AlertMessage title={t('health-factor-below-warning-title')} />}
+      {nextHealthFactor <= 1.001 && (
+        <AlertMessage title={t('health-factor-below-warning-title-withdraw')} />
+      )}
 
       <ButtonPrimaryLarge
         text={t('Preview')}

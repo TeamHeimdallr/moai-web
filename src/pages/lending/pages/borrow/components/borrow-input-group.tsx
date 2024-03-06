@@ -206,7 +206,7 @@ export const LendingBorrowInputGroup = () => {
         <>
           <AlertMessage
             title={t('health-factor-warning-title', { threshold: '1.0' })}
-            description={t('health-factor-warning-description', { action: 'Borrowing' })}
+            description={t('health-factor-warning-description-borrow')}
             type="error"
           />
           <CheckHealthFactor>
@@ -219,7 +219,9 @@ export const LendingBorrowInputGroup = () => {
         </>
       )}
 
-      {nextHealthFactor <= 1.001 && <AlertMessage title={t('health-factor-below-warning-title')} />}
+      {nextHealthFactor <= 1.001 && (
+        <AlertMessage title={t('health-factor-below-warning-title-borrow')} />
+      )}
 
       <ButtonPrimaryLarge
         text={t('Preview')}
