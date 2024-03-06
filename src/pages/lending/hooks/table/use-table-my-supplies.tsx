@@ -26,6 +26,7 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
+import { calcHealthFactor } from '~/utils/util-lending';
 import { useTableLendingMySuppliesSortStore } from '~/states/components';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
@@ -46,6 +47,12 @@ export const useTableMySupplies = () => {
   const { accountSnapshots } = useUserAccountSnapshotAll();
   const { markets } = useGetAllMarkets();
   const { enteredMarkets, refetch: refetchGetAssetsIn } = useGetAssetsIn();
+
+  const hf = calcHealthFactor({
+    markets,
+    snapshots: accountSnapshots,
+  });
+  const isInLiquidation = hf <= 1.0;
 
   // TODO: pagenation logic 은 추후 Market 이 많아지면 추가
   const hasNextPage = false;
@@ -162,6 +169,7 @@ export const useTableMySupplies = () => {
                   handleLendingWithdraw(d.address);
                 }}
                 buttonType="outlined"
+                disabled={isInLiquidation}
               />
             </TableColumnButtons>
           ),
@@ -269,6 +277,7 @@ export const useTableMySupplies = () => {
                   handleLendingWithdraw(d.address);
                 }}
                 buttonType="outlined"
+                disabled={isInLiquidation}
               />
             </TableColumnButtons>,
           ],
