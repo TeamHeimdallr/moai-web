@@ -18,7 +18,8 @@ type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 export const useCreateFuturepass = () => {
   const { evm } = useConnectedWallet();
-  const address = evm.address ?? '';
+  const address = evm?.address ?? '';
+
   const { selectedNetwork } = useNetwork();
   const [isError, setIsError] = useState(false);
   const [errorCode, setErrorCode] = useState<number | string>(0);

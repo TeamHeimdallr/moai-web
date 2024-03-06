@@ -32,7 +32,7 @@ const ParticipatePage = () => {
   const { step } = useStep();
   const navigate = useNavigate();
 
-  const { selectedNetwork } = useNetwork();
+  const { selectedNetwork, isFpass } = useNetwork();
   const { switchNetwork } = useSwitchAndAddNetwork();
   const { evm, fpass } = useConnectedWallet();
   const { chain } = useNetworkWagmi();
@@ -54,7 +54,7 @@ const ParticipatePage = () => {
   }, [active]);
 
   const chainId = chain?.id || 0;
-  const evmAddress = evm?.address || fpass?.address;
+  const evmAddress = isFpass ? fpass.address : evm?.address || '';
   const showAlertBanner =
     selectedNetwork === NETWORK.THE_ROOT_NETWORK && chainId !== theRootNetwork.id && !!evmAddress;
 

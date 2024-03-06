@@ -99,6 +99,8 @@ export interface IGnbMenu {
   commingSoon?: boolean; // if true, show comming soon tooltip
 
   show?: boolean;
+  showNew?: boolean;
+
   network: NETWORK[];
 }
 

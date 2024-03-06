@@ -35,10 +35,10 @@ export const LayoutMarketInfo = () => {
   const { ref } = useGAInView({ name: 'lending-main-info' });
   const { t } = useTranslation();
 
+  const { isFpass, selectedNetwork } = useNetwork();
   const { evm, fpass } = useConnectedWallet();
-  const evmAddress = evm?.address || fpass?.address;
+  const evmAddress = isFpass ? fpass.address : evm?.address || '';
 
-  const { selectedNetwork } = useNetwork();
   const networkAbbr = getNetworkAbbr(selectedNetwork);
   const backgroundUrl = `${ASSET_URL}/images/network-${networkAbbr}.png`;
 

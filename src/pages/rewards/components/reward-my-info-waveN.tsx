@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
 import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
 import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
@@ -20,12 +20,12 @@ export const RewardMyInfo = () => {
   const { t } = useTranslation();
 
   const { network } = useParams();
-  const { selectedNetwork } = useNetwork();
+  const { isFpass, selectedNetwork } = useNetwork();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const { evm, fpass } = useConnectedWallet();
-  const evmAddress = evm?.address || fpass?.address;
+  const evmAddress = isFpass ? fpass.address : evm?.address || '';
 
   const { data: wave } = useGetWaveQuery(
     { params: { networkAbbr: currentNetworkAbbr } },
@@ -47,6 +47,7 @@ export const RewardMyInfo = () => {
     }
   );
   const { totalPoint, lendingBorrow, lendingSupply, lpSupply, veMOAI } = waveInfo || {};
+  const hasToken = !!veMOAI && veMOAI > 0;
 
   return (
     <Wrapper ref={ref}>
@@ -56,34 +57,32 @@ export const RewardMyInfo = () => {
           <div>{t('Total points')}</div>
           <div>{formatNumber(totalPoint, 2, 'floor', TRILLION, 2)}</div>
         </InnerTitleWrapper>
-        <InnerInfoWrapper>
-          <InfoCardWrapper>
-            {/* TODO: 추후 받아오는 데이터를 contract로 수정 */}
-            {!!veMOAI && veMOAI > 0 && (
-              <InfoCard
-                name={t('Wave 0')}
-                value={formatNumber(veMOAI, 2, 'floor', MILLION, 2)}
-                subValue={'veMOAI'}
-              />
-            )}
+        <InnerInfoWrapper hasToken={hasToken}>
+          {/* TODO: 추후 받아오는 데이터를 contract로 수정 */}
+          {hasToken && (
+            <InfoCard
+              name={t('Wave 0')}
+              value={formatNumber(veMOAI, 2, 'floor', MILLION, 2)}
+              subValue={'veMOAI'}
+            />
+          )}
+          <InfoCardWrapper full={!hasToken}>
             <InfoCard
               name={t('LP Supply')}
               value={formatNumber(lpSupply, 2, 'floor', MILLION, 2)}
               subValue={t('points')}
             />
           </InfoCardWrapper>
-          <InfoCardWrapper>
-            <InfoCard
-              name={t('reward-lending-supply')}
-              value={formatNumber(lendingSupply, 2, 'floor', MILLION, 2)}
-              subValue={t('points')}
-            />
-            <InfoCard
-              name={t('reward-lending-borrow')}
-              value={formatNumber(lendingBorrow, 2, 'floor', MILLION, 2)}
-              subValue={t('points')}
-            />
-          </InfoCardWrapper>
+          <InfoCard
+            name={t('reward-lending-supply')}
+            value={formatNumber(lendingSupply, 2, 'floor', MILLION, 2)}
+            subValue={t('points')}
+          />
+          <InfoCard
+            name={t('reward-lending-borrow')}
+            value={formatNumber(lendingBorrow, 2, 'floor', MILLION, 2)}
+            subValue={t('points')}
+          />
         </InnerInfoWrapper>
       </InnerWrapper>
     </Wrapper>
@@ -109,15 +108,22 @@ const InnerTitleWrapper = tw.div`
   md:(font-b-20)
 `;
 
-const InnerInfoWrapper = tw.div`
-  flex flex-col w-full gap-16 min-h-140 
-  md:(flex-row)
-`;
-const InfoCardWrapper = tw.div`
-  flex w-full h-full gap-16
-`;
+interface InnerInfoWrapperProps {
+  hasToken?: boolean;
+}
+const InnerInfoWrapper = styled.div<InnerInfoWrapperProps>(({ hasToken }) => [
+  tw`grid w-full gap-16 min-h-140`,
+  hasToken ? tw`grid-cols-2 md:(grid-cols-4)` : tw`grid-cols-2 md:(grid-cols-3)`,
+]);
 
-interface InfoCardProps {
+interface InfoCardWrapperProps {
+  full?: boolean;
+}
+const InfoCardWrapper = styled.div<InfoCardWrapperProps>(({ full }) => [
+  tw`w-full h-full`,
+  full && tw`col-span-2 md:(col-span-1)`,
+]);
+interface InfoCardProps extends HTMLAttributes<HTMLDivElement> {
   name: string;
 
   value: string;
@@ -125,9 +131,9 @@ interface InfoCardProps {
 
   button?: ReactNode;
 }
-const InfoCard = ({ name, value, subValue, button }: InfoCardProps) => {
+const InfoCard = ({ name, value, subValue, button, ...rest }: InfoCardProps) => {
   return (
-    <PoolInfoCardWrapper>
+    <PoolInfoCardWrapper {...rest}>
       <Name>{name}</Name>
       <ValueWrapper>
         <Value>{value}</Value>

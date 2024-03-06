@@ -10,6 +10,7 @@ import { IconQuestion } from '~/assets/icons';
 
 import { MILLION } from '~/constants';
 
+import { AlertMessage } from '~/components/alerts';
 import { ButtonIconSmall } from '~/components/buttons';
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons/primary';
 import { Tooltip } from '~/components/tooltips/base';
@@ -84,50 +85,55 @@ export const UserAssetInfo = () => {
       <Header>{t('My info')}</Header>
       <Divider />
       <InfoWrapper>
-        <InfoHeader>
-          {t('Available to supply')}
-          <ButtonIconSmall
-            icon={<IconQuestion />}
-            data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_AVAILABLE_TO_SUPPLY}
-          />
-        </InfoHeader>
-        <InfoContent>
-          <InfoAmountWrapper>
-            {formatNumber(availableSupply, 2, 'floor', MILLION, 2)} {market?.underlyingSymbol}
-            <InfoAmountValue>
-              {`$${formatNumber(availableSupplyValue, 2, 'floor', MILLION, 2)}`}
-            </InfoAmountValue>
-          </InfoAmountWrapper>
-          <ButtonPrimary
-            text={t('Supply')}
-            onClick={handleSupply}
-            style={{ width: isMD ? '105px' : '92px' }}
-            disabled={availableSupply <= 0}
-          />
-        </InfoContent>
+        <InfoInnerWrapper>
+          <InfoHeader>
+            {t('Available to supply')}
+            <ButtonIconSmall
+              icon={<IconQuestion />}
+              data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_AVAILABLE_TO_SUPPLY}
+            />
+          </InfoHeader>
+          <InfoContent>
+            <InfoAmountWrapper>
+              {formatNumber(availableSupply, 2, 'floor', MILLION, 2)} {market?.underlyingSymbol}
+              <InfoAmountValue>
+                {`$${formatNumber(availableSupplyValue, 2, 'floor', MILLION, 2)}`}
+              </InfoAmountValue>
+            </InfoAmountWrapper>
+            <ButtonPrimary
+              text={t('Supply')}
+              onClick={handleSupply}
+              style={{ width: isMD ? '105px' : '92px', height: '48px' }}
+              disabled={availableSupply <= 0}
+            />
+          </InfoContent>
+        </InfoInnerWrapper>
       </InfoWrapper>
       <InfoWrapper>
-        <InfoHeader>
-          {t('Available to borrow')}
-          <ButtonIconSmall
-            icon={<IconQuestion />}
-            data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_AVAILABLE_TO_BORROW}
-          />
-        </InfoHeader>
-        <InfoContent>
-          <InfoAmountWrapper>
-            {formatNumber(availableBorrow, 2, 'floor', MILLION, 2)} {market?.underlyingSymbol}
-            <InfoAmountValue>
-              {`$${formatNumber(availableBorrowValue, 2, 'floor', MILLION, 2)}`}
-            </InfoAmountValue>
-          </InfoAmountWrapper>
-          <ButtonPrimary
-            text={t('Borrow')}
-            onClick={handleBorrow}
-            style={{ width: isMD ? '105px' : '92px' }}
-            disabled={availableBorrow <= 0}
-          />
-        </InfoContent>
+        <InfoInnerWrapper>
+          <InfoHeader>
+            {t('Available to borrow')}
+            <ButtonIconSmall
+              icon={<IconQuestion />}
+              data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_AVAILABLE_TO_BORROW}
+            />
+          </InfoHeader>
+          <InfoContent>
+            <InfoAmountWrapper>
+              {formatNumber(availableBorrow, 2, 'floor', MILLION, 2)} {market?.underlyingSymbol}
+              <InfoAmountValue>
+                {`$${formatNumber(availableBorrowValue, 2, 'floor', MILLION, 2)}`}
+              </InfoAmountValue>
+            </InfoAmountWrapper>
+            <ButtonPrimary
+              text={t('Borrow')}
+              onClick={handleBorrow}
+              style={{ width: isMD ? '105px' : '92px', height: '48px' }}
+              disabled={availableBorrow <= 0}
+            />
+          </InfoContent>
+        </InfoInnerWrapper>
+        <AlertMessage title={t('lending-borrow-warning')} type="error" />
       </InfoWrapper>
       <Footer>
         {t('Wallet balance')}
@@ -159,8 +165,12 @@ const Header = tw.div`
 `;
 
 const InfoWrapper = tw.div`
-  flex flex-col gap-8 px-20 py-12
+  flex flex-col gap-16 px-20 py-12
   md:(px-24 py-16)
+`;
+
+const InfoInnerWrapper = tw.div`
+  flex flex-col gap-8
 `;
 
 const InfoHeader = tw.div`
@@ -169,7 +179,7 @@ const InfoHeader = tw.div`
 `;
 
 const InfoContent = tw.div`
-  flex gap-4
+  flex items-center gap-4
 `;
 
 const InfoAmountWrapper = tw.div`

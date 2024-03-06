@@ -575,7 +575,8 @@
   "liquidation-at": "Liquidation at < {{ threshold }}",
   "Exceeds borrow limits": "Exceeds borrow limits",
   "health-factor-warning-title": "Health factor close to {{ threshold }}",
-  "health-factor-warning-description": "{{ action }} this amount will reduce your helath factor and increase risk of liquidation.",
+  "health-factor-warning-description-borrow": "Borrowing this amount will reduce your helath factor and increase risk of liquidation.",
+  "health-factor-warning-description-withdraw": "Withdarwing this amount will reduce your helath factor and increase risk of liquidation.",
   "health-factor-warning-accept": "I acknowledge the risks involved.",
 
   "You're borrowing": "You're borrowing",
@@ -630,5 +631,9 @@
   "Boost": "Boost",
   "boost": "boost",
 
-  "points": "points"
+  "points": "points",
+
+  "lending-borrow-warning": "To borrow you need to supply and asset to be used as collateral.",
+  "health-factor-below-warning-title-borrow": "Borrowing is not permitted with the health factor of 1.0 or less.",
+  "health-factor-below-warning-title-withdraw": "Withdrawal is not permitted with the health factor of 1.0 or less."
 }

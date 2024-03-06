@@ -23,6 +23,7 @@ import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { Account } from '../account';
 import { AlertBanner } from '../alerts/banner';
+import { BadgeGnbNew } from '../badges/new-gnb';
 import { LanguageChange } from '../language-change';
 import { MobileMenu } from '../menu-mobile';
 import { NetworkSelection } from '../network-selection';
@@ -109,7 +110,7 @@ export const Gnb = () => {
           </LogoWrapper>
           <ContentWrapper>
             {isMLG &&
-              currentGnbMenu.map(({ id, text, path, disabled, commingSoon }) => (
+              currentGnbMenu.map(({ id, text, path, showNew, disabled, commingSoon }) => (
                 <MenuWrapper
                   key={id}
                   onClick={() => {
@@ -130,6 +131,11 @@ export const Gnb = () => {
                   data-tooltip-id={commingSoon ? TOOLTIP_ID.COMMING_SOON : undefined}
                 >
                   {text}
+                  {showNew && (
+                    <BadgeWrapper>
+                      <BadgeGnbNew />
+                    </BadgeWrapper>
+                  )}
                 </MenuWrapper>
               ))}
             <ButtonWrapper>
@@ -197,7 +203,7 @@ interface MenuProps {
   disabled: boolean;
 }
 const MenuWrapper = styled.div(({ selected, disabled }: MenuProps) => [
-  tw`text-white clickable font-b-16`,
+  tw`text-white clickable font-b-16 relative`,
   disabled ? tw`non-clickable text-neutral-60` : tw`hover:text-primary-80`,
   !disabled && selected && tw`text-primary-60 hover:text-primary-60`,
 ]);
@@ -212,3 +218,5 @@ const HamburgerWrapper = tw.div`
   flex-center p-8 rounded-10 bg-neutral-10 clickable
   hover:(bg-neutral-20)
 `;
+
+const BadgeWrapper = styled.div(() => [tw`absolute -top-3 -right-18`]);

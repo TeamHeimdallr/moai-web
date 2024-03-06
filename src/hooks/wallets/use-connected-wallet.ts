@@ -59,7 +59,7 @@ export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
   const { evm, fpass } = useConnectedEvmWallet();
   const xrp = useConnectedXrplWallet();
 
-  const anyAddress = xrp?.address || evm?.address || fpass?.address;
+  const anyAddress = xrp?.address || fpass?.address || evm?.address;
   const currentAddress =
     network === NETWORK.THE_ROOT_NETWORK
       ? selectedWalletTRN === 'fpass'

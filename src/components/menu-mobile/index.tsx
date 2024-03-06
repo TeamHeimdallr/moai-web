@@ -12,6 +12,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { getNetworkFull } from '~/utils';
 import { TOOLTIP_ID } from '~/types';
 
+import { BadgeGnbNew } from '../badges/new-gnb';
 import { ButtonIconLarge } from '../buttons';
 import { Footer } from '../footer';
 import { LanguageChange } from '../language-change';
@@ -73,7 +74,7 @@ export const MobileMenu = ({ closeMenu }: MobileMenuProps) => {
             </ButtonWrapper>
           </HeaderWrapper>
           <MenuWrapper>
-            {currentGnbMenu.map(({ id, text, path, disabled, commingSoon }) => (
+            {currentGnbMenu.map(({ id, text, path, showNew, disabled, commingSoon }) => (
               <Menu
                 key={id}
                 onClick={() => handleMenuClick(path, text, disabled, commingSoon)}
@@ -82,6 +83,11 @@ export const MobileMenu = ({ closeMenu }: MobileMenuProps) => {
                 data-tooltip-id={commingSoon ? TOOLTIP_ID.COMMING_SOON : undefined}
               >
                 {text}
+                {showNew && (
+                  <BadgeWrapper>
+                    <BadgeGnbNew />
+                  </BadgeWrapper>
+                )}
               </Menu>
             ))}
           </MenuWrapper>
@@ -116,7 +122,7 @@ interface MenuProps {
   disabled: boolean;
 }
 const Menu = styled.div(({ selected, disabled }: MenuProps) => [
-  tw`w-fit text-white clickable font-b-16`,
+  tw`w-fit text-white clickable font-b-16 relative`,
   disabled ? tw`non-clickable text-neutral-60` : tw`hover:text-primary-60`,
   !disabled && selected && tw`text-primary-60`,
 ]);
@@ -130,3 +136,5 @@ const Dim = styled.div(() => [
     backdrop-filter: blur(4px);
   `,
 ]);
+
+const BadgeWrapper = styled.div(() => [tw`absolute -top-3 -right-18`]);

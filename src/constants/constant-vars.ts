@@ -1,3 +1,5 @@
+import { differenceInMinutes } from 'date-fns';
+
 import { IS_DEVNET, IS_LOCAL } from '~/constants';
 
 import { IGnbMenu, NETWORK } from '~/types';
@@ -22,6 +24,7 @@ export const GNB_MENU: IGnbMenu[] = [
     text: 'Lending',
     path: '/lending',
     show: true,
+    showNew: differenceInMinutes(new Date('2024-03-22T00:00:00Z'), new Date()) >= 0,
     network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK],
   },
   {
@@ -47,6 +50,7 @@ export const GNB_MENU: IGnbMenu[] = [
     text: 'Rewards',
     path: '/rewards',
     show: true,
+    showNew: differenceInMinutes(new Date('2024-03-22T00:00:00Z'), new Date()) >= 0,
     network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK],
   },
   {
