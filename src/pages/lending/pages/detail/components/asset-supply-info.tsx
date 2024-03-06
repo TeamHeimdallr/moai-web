@@ -5,7 +5,6 @@ import { Address, formatEther, formatUnits } from 'viem';
 
 import { useGetLiquidationIncentive } from '~/api/api-contract/_evm/lending/get-liquidation-incentive';
 import { useGetMarket } from '~/api/api-contract/_evm/lending/get-market';
-import { useGetSupplyCap } from '~/api/api-contract/_evm/lending/get-supply-cap';
 
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconQuestion } from '~/assets/icons';
@@ -42,12 +41,6 @@ export const AssetSupplyInfo = () => {
   } = market || {};
   const { liquidationIncentiveRaw } = useGetLiquidationIncentive();
 
-  const { supplyCap } = useGetSupplyCap({
-    marketAddress: address as Address,
-    underlyingDecimals: underlyingDecimals,
-  });
-
-  const maxSupply = Number(supplyCap);
   const maxLTV = 100 * Number(formatEther(collateralFactorsMantissa || 0n));
   const collateral = maxLTV > 0;
   const liquidationThreshold = maxLTV;
@@ -57,8 +50,6 @@ export const AssetSupplyInfo = () => {
     formatUnits(cash + totalBorrows + totalReserves || 0n, underlyingDecimals || 0)
   );
   const supplyApyNum = Number(supplyApy);
-
-  const ratio = (totalSupplyNum / maxSupply) * 100;
 
   return (
     <OuterWrapper>
@@ -74,16 +65,7 @@ export const AssetSupplyInfo = () => {
                 data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED}
               />
             }
-            value={
-              <>
-                <InfoText>{formatNumber(totalSupplyNum, 2, 'floor', THOUSAND, 2)}</InfoText>
-                <InfoTextSmall>of</InfoTextSmall>
-                <InfoText>{formatNumber(maxSupply, 2, 'floor', THOUSAND, 2)}</InfoText>
-              </>
-            }
-            barChart
-            barChartValue={ratio}
-            barChartLabel={`${formatNumber(ratio, 2, 'floor', THOUSAND, 2)}%`}
+            value={<InfoText>{formatNumber(totalSupplyNum, 2, 'floor', THOUSAND, 2)}</InfoText>}
           />
           <AssetSupplyBorrowInfoCard
             title={t('APY')}
@@ -150,7 +132,11 @@ export const AssetSupplyInfo = () => {
         <TooltipContent>{t('max-ltv-description')}</TooltipContent>
       </Tooltip>
       <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_THRESHOLD} place="bottom">
-        <TooltipContent>{t('liquidity-threshold-description')}</TooltipContent>
+        <TooltipContent>
+          {t('liquidity-threshold-description', {
+            value: formatNumber(liquidationThreshold, 2, 'floor', THOUSAND, 0),
+          })}
+        </TooltipContent>
       </Tooltip>
       <Tooltip id={TOOLTIP_ID.LENDING_DETAIL_LIQUIDATION_PENALTY} place="bottom">
         <TooltipContent>{t('liquidity-penalty-description')}</TooltipContent>
@@ -162,7 +148,7 @@ export const AssetSupplyInfo = () => {
 const OuterWrapper = tw.div``;
 
 const Wrapper = tw.div`
-  flex flex-col bg-neutral-10 rounded-12 px-24 pt-20 pb-24 min-h-808 gap-32
+  flex flex-col bg-neutral-10 rounded-12 px-24 pt-20 pb-24 min-h-636 gap-32
 `;
 
 const HeaderTitle = tw.div`
@@ -205,10 +191,6 @@ const InfoWrapper = tw.div`
 const InfoText = tw.div`
   font-m-16
   md:(font-m-18)
-`;
-const InfoTextSmall = tw.div`
-  font-r-14
-  md:(font-r-16)
 `;
 
 const ChartWrapper = tw.div``;

@@ -161,7 +161,7 @@ export const AssetBorrowInfoChart = () => {
                 const headerCaptionDom = header.querySelector('#header-caption');
 
                 if (d) {
-                  const formattedValue = `$${formatNumber(d.value)}`;
+                  const formattedValue = `${formatNumber(d.value)}%`;
                   const date = new Date(d.date);
                   const formattedDate = `${format(date, 'MMM', {
                     locale: isKo ? ko : enUS,
@@ -179,7 +179,7 @@ export const AssetBorrowInfoChart = () => {
                   }
                 } else {
                   if (headerValueDom && headerCaptionDom) {
-                    headerValueDom.innerHTML = `$${formatNumber(chartValue)}`;
+                    headerValueDom.innerHTML = `${formatNumber(chartValue)}%`;
                     headerCaptionDom.innerHTML = chartCaption;
                   }
                 }

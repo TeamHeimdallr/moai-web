@@ -8,6 +8,8 @@ import { useBalance } from 'wagmi';
 
 import { useEnterOrExitMarketPrepare } from '~/api/api-contract/_evm/lending/enter-exit-market-substrate';
 import { useEnterOrExitMarket } from '~/api/api-contract/lending/enter-exit-market';
+import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
+import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
@@ -27,6 +29,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
+import { calcHealthFactor } from '~/utils/util-lending';
 import { useEnterOrExitMarketNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { NETWORK, POPUP_ID } from '~/types';
 
@@ -72,6 +75,10 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const { symbol, image, balance, value } = params?.asset || {};
   const marketAddress = params?.address || '0x0';
 
+  const { markets: markets } = useGetAllMarkets();
+  const { accountSnapshots: snapshots } = useUserAccountSnapshotAll();
+  const healthFactor = calcHealthFactor({ markets, snapshots });
+
   const [estimatedEnterOrExitMarketFee, setEstimatedEnterOrExitMarketFee] = useState<
     number | undefined
   >();
@@ -88,13 +95,19 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   } = useEnterOrExitMarket({
     marketAddress,
     currentStatus: isEnable ? 'disable' : 'enable',
-    enabled: marketAddress !== '0x0' && ((!isEnable && isExitPossible) || isEnable),
+    enabled:
+      marketAddress !== '0x0' &&
+      ((!isEnable && isExitPossible) || isEnable) &&
+      (healthFactor || 0) > 1.001,
   });
 
   const { isPrepareLoading, isPrepareError } = useEnterOrExitMarketPrepare({
     marketAddress,
     currentStatus: isEnable ? 'disable' : 'enable',
-    enabled: marketAddress !== '0x0' && ((!isEnable && isExitPossible) || isEnable),
+    enabled:
+      marketAddress !== '0x0' &&
+      ((!isEnable && isExitPossible) || isEnable) &&
+      (healthFactor || 0) > 1.001,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -198,7 +211,13 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={!isIdle && !isSuccess ? 'outlined' : 'filled'}
-            disabled={(isIdle && gasError) || !estimatedFee || isPrepareLoading || isPrepareError}
+            disabled={
+              (isIdle && gasError) ||
+              !estimatedFee ||
+              isPrepareLoading ||
+              isPrepareError ||
+              healthFactor <= 1.001
+            }
           />
         </ButtonWrapper>
       }
@@ -263,10 +282,17 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
 
         {isIdle && (
           <InnerWrapper style={{ gap: isIdle ? (isMD ? 24 : 20) : 40 }}>
-            <AlertMessage
-              type="error"
-              title={t(isEnable ? 'enable-collateral-alert' : 'disable-collateral-alert')}
-            />
+            {healthFactor <= 1.001 ? (
+              <AlertMessage
+                type="error"
+                title={t('health-factor-below-warning-title-collateral')}
+              />
+            ) : (
+              <AlertMessage
+                type="error"
+                title={t(isEnable ? 'enable-collateral-alert' : 'disable-collateral-alert')}
+              />
+            )}
             <List title={'Supply balance'}>
               <TokenList
                 type="large"

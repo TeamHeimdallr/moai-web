@@ -66,22 +66,25 @@ const RewardsPage = () => {
             {legacy && <RewardWave0 />}
 
             {!legacy && (
-              <>
+              <ContentInnerWrapper>
                 {evmAddress && <RewardMyInfo />}
-                <TitleWrapper>
-                  {waves?.map(({ waveId }) => (
-                    <Title
-                      key={waveId}
-                      selected={waveId === selectedWaveId}
-                      onClick={() => selectWaveId(waveId)}
-                    >
-                      {t('Wave', { phase: waveId })}
-                    </Title>
-                  ))}
-                </TitleWrapper>
-                {selectedWaveId === 0 && <RewardWave0 />}
-                {selectedWaveId !== 0 && <RewardWaveN />}
-              </>
+
+                <ContentWaveWrapper>
+                  <TitleWrapper>
+                    {waves?.map(({ waveId }) => (
+                      <Title
+                        key={waveId}
+                        selected={waveId === selectedWaveId}
+                        onClick={() => selectWaveId(waveId)}
+                      >
+                        {t('Wave', { phase: waveId })}
+                      </Title>
+                    ))}
+                  </TitleWrapper>
+                  {selectedWaveId === 0 && <RewardWave0 />}
+                  {selectedWaveId !== 0 && <RewardWaveN />}
+                </ContentWaveWrapper>
+              </ContentInnerWrapper>
             )}
           </ContentWrapper>
         </InnerWrapper>
@@ -116,6 +119,14 @@ const InnerWrapper = styled.div<DivProps>(({ banner }) => [
 
 const ContentWrapper = tw.div`
   flex flex-col w-full max-w-840 gap-24
+`;
+
+const ContentInnerWrapper = tw.div`
+  flex flex-col gap-80
+`;
+
+const ContentWaveWrapper = tw.div`
+  flex flex-col gap-24
 `;
 
 const TitleWrapper = tw.div`

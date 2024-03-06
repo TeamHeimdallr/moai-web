@@ -49,7 +49,7 @@ export const AssetInfo = () => {
     window.open(
       `${SCANNER_URL[NETWORK.THE_ROOT_NETWORK]}/${isRoot ? 'addresses' : 'address'}/${
         LENDING_ORACLE_ADDRESS[NETWORK.THE_ROOT_NETWORK]
-      }`
+      }${isRoot ? '/evm-transactions' : ''}`
     );
   };
 
@@ -66,8 +66,9 @@ export const AssetInfo = () => {
         <InfoCard title={t('Utilization Rate')} value={`${formatNumber(utilizationRateNum)}%`} />
         <InfoCard
           title={t('Oracle Price')}
-          value={`$${formatNumber(oraclePrice, 2, 'floor', MILLION, 2)}`}
-          valueIcon={<ButtonIconMedium icon={<IconLink />} onClick={handleOracleLink} />}
+          titleIcon={<ButtonIconMedium icon={<IconLink />} onClick={handleOracleLink} />}
+          titleIconNarrow={false}
+          value={`$${formatNumber(oraclePrice, 2, 'floor', MILLION, 6)}`}
         />
       </InnerWrapper>
     </Wrapper>

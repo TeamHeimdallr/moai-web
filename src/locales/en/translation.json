@@ -509,7 +509,7 @@
   "Liquidation penalty": "Liquidation penalty",
 
   "max-ltv-description": "The Maximum LTV ratio represents the maximum borrowing power of a specific collateral. For example, if a collateral has an LTV of 75%, the user can borrow up to 0.75 worth of XRP in the principal currency for every 1 XRP worth of collateral.",
-  "liquidity-threshold-description": "This represents the threshold at which a borrow position will be considered undercollateralized and subject to liquidation for each collateral. For example, if a collateral has a liquidation threshold of 80%, it means that the position will be liquidated when the debt value is worth 80% of the collateral value.",
+  "liquidity-threshold-description": "This represents the threshold at which a borrow position will be considered undercollateralized and subject to liquidation for each collateral. For example, if a collateral has a liquidation threshold of {{ value }}%, it means that the position will be liquidated when the debt value is worth {{ value }}% of the collateral value.",
   "liquidity-penalty-description": "When a liquidation occurs, liquidators repay up to 50% of the outstanding borrowed amount on behalf of the borrower. In return, they can buy the collateral at a discount and keep the difference (liquidation penalty) as a bonus.",
 
   "Avg": "Avg",
@@ -635,5 +635,8 @@
 
   "lending-borrow-warning": "To borrow you need to supply and asset to be used as collateral.",
   "health-factor-below-warning-title-borrow": "Borrowing is not permitted with the health factor of 1.0 or less.",
-  "health-factor-below-warning-title-withdraw": "Withdrawal is not permitted with the health factor of 1.0 or less."
+  "health-factor-below-warning-title-withdraw": "Withdrawal is not permitted with the health factor of 1.0 or less.",
+
+  "health-factor-below-warning-title-collateral": "Disable as collateral is not possible since the health factor is below 1.0.",
+  "health-factor-below-warning-title-main": "Liquidation has been initiated since the health factor has fallen below 1.0. Please repay to protect the collateral."
 }

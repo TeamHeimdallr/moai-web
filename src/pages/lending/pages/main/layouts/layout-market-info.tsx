@@ -86,6 +86,7 @@ export const LayoutMarketInfo = () => {
                   data-tooltip-id={TOOLTIP_ID.LENDING_NET_APY}
                 />
               }
+              titleIconNarrow
             />
           </InfoInnerWrapper>
           {currentLTV.ltv !== 0 && (
@@ -102,6 +103,7 @@ export const LayoutMarketInfo = () => {
                   )
                 }
                 valueColor={`${healthFactorColor}`}
+                tooltipId={TOOLTIP_ID.LENDING_HEALTH_FACTOR_ALERT}
               />
               <InfoCard
                 title={t('Current LTV')}
@@ -113,22 +115,31 @@ export const LayoutMarketInfo = () => {
               />
             </InfoInnerWrapper>
           )}
-          <Tooltip id={TOOLTIP_ID.LENDING_NET_APY} place="bottom">
-            <TooltipContent>{t('net-apy')}</TooltipContent>
-          </Tooltip>
-          {healthFactorPopupOpened && (
-            <MarketInfoHealthFactorPopup
-              healthFactor={healthFactor}
-              criteria={healthFactorCriteria}
-            />
-          )}
-          {currentLTVPopupOpened && (
-            <MarketInfoCurrentLTVPopup
-              assets={currentLTV.assets}
-              debt={currentLTV.debts}
-              criteria={currentLTVCriteria}
-            />
-          )}
+
+          <ShadowDiv>
+            <Tooltip id={TOOLTIP_ID.LENDING_NET_APY} place="bottom">
+              <TooltipContent>{t('net-apy')}</TooltipContent>
+            </Tooltip>
+
+            {healthFactor <= 1.001 && (
+              <Tooltip id={TOOLTIP_ID.LENDING_HEALTH_FACTOR_ALERT} place="bottom">
+                <TooltipContent>{t('health-factor-below-warning-title-main')}</TooltipContent>
+              </Tooltip>
+            )}
+            {healthFactorPopupOpened && (
+              <MarketInfoHealthFactorPopup
+                healthFactor={healthFactor}
+                criteria={healthFactorCriteria}
+              />
+            )}
+            {currentLTVPopupOpened && (
+              <MarketInfoCurrentLTVPopup
+                assets={currentLTV.assets}
+                debt={currentLTV.debts}
+                criteria={currentLTVCriteria}
+              />
+            )}
+          </ShadowDiv>
         </InfoWrapper>
       )}
     </Wrapper>
@@ -164,4 +175,8 @@ const InfoInnerWrapper = tw.div`
 
 const TooltipContent = tw.div`
   w-266
+`;
+
+const ShadowDiv = tw.div`
+  absolute
 `;
