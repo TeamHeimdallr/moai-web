@@ -125,7 +125,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
         vault,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed
+        '400000', // gas limit estimation todo: can be changed
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -208,7 +208,7 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
         vault,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed
+        '400000', // gas limit estimation todo: can be changed
         feeHistory.baseFeePerGas[0],
         0,
         null,

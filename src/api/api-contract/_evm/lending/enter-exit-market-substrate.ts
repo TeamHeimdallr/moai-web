@@ -78,7 +78,7 @@ export const useEnterOrExitMarket = ({ marketAddress, currentStatus, enabled }: 
         UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed. actual: around 17k
+        '400000', // gas limit estimation todo: can be changed. actual: around 17k
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -141,7 +141,7 @@ export const useEnterOrExitMarket = ({ marketAddress, currentStatus, enabled }: 
         UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '300000', // gas limit estimation todo: can be changed. actual: around 17k
+        '400000', // gas limit estimation todo: can be changed. actual: around 17k
         feeHistory.baseFeePerGas[0],
         0,
         null,
