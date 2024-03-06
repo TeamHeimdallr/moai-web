@@ -12,18 +12,19 @@ import { IS_MAINNET } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { NETWORK } from '~/types';
 
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 export const useCreateFuturepass = () => {
   const { evm } = useConnectedWallet();
   const address = evm.address ?? '';
-  const { isFpass } = useNetwork();
+  const { selectedNetwork } = useNetwork();
   const [isError, setIsError] = useState(false);
   const [errorCode, setErrorCode] = useState<number | string>(0);
 
   const createFuturepass = async () => {
-    if (!isFpass) return;
+    if (selectedNetwork !== NETWORK.THE_ROOT_NETWORK) return;
 
     try {
       const [api] = await Promise.all([

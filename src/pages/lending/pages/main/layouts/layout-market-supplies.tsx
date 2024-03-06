@@ -44,6 +44,9 @@ export const LayoutMarketSupplies = () => {
   );
 
   const {
+    balance,
+    apy,
+    collateral,
     tableColumns: tableColumnsMySupplies,
     tableData: tableDataMySupplies,
     mobileTableColumn: mobileTableColumnMySupplies,
@@ -52,20 +55,6 @@ export const LayoutMarketSupplies = () => {
     fetchNextPage: fetchNextPageMySupplies,
     refetchGetAssetsIn,
   } = useTableMySupplies();
-
-  const balance = tableDataMySupplies
-    .map(data => data.balance.props.value)
-    .reduce((a, b) => a + b, 0);
-
-  const apySum = tableDataMySupplies
-    .map(data => data.balance.props.value * data.apy.props.value.props.apy)
-    .reduce((a, b) => a + b, 0);
-
-  const apy = apySum / balance;
-
-  const collateral = tableDataMySupplies
-    .map(data => (data.collateral.props.selected ? data.balance.props.value : 0))
-    .reduce((a, b) => a + b, 0);
 
   const {
     tableColumns: tableColumnsAssetsToSupply,

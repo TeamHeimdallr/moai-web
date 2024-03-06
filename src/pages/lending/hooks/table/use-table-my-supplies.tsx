@@ -63,6 +63,7 @@ export const useTableMySupplies = () => {
           );
           const value = underlyingBalance * (price || 0);
           const isCollateralEnabled = enteredMarkets?.includes(d.mTokenAddress) || false;
+          const isCollateral = (market?.collateralFactorsMantissa || 0n) > 0n;
 
           return {
             id: makrketIndex,
@@ -75,6 +76,7 @@ export const useTableMySupplies = () => {
             },
             apy: market?.supplyApy || 0,
             collateral: isCollateralEnabled,
+            isCollateral,
           };
         })
         .filter(d => d.asset.balance > 0),
@@ -116,6 +118,8 @@ export const useTableMySupplies = () => {
     () =>
       sortedMySupplies?.map(d => {
         const handleToggle = (current: boolean) => {
+          if (!d.isCollateral) return;
+
           if (current) {
             openCollateralDisable({ params: { asset: d.asset, address: d.address } });
             return;
@@ -135,7 +139,13 @@ export const useTableMySupplies = () => {
             <TableColumnAmount balance={d.asset.balance} value={d.asset.value} align="center" />
           ),
           apy: <TableColumn value={<APYSmall apy={d.apy} />} align="center" />,
-          collateral: <TableColumnToggle selected={d.collateral} handleSelect={handleToggle} />,
+          collateral: (
+            <TableColumnToggle
+              selected={d.collateral}
+              handleSelect={handleToggle}
+              disabled={!d.isCollateral}
+            />
+          ),
           buttons: (
             <TableColumnButtons>
               <ButtonPrimaryMedium
@@ -307,6 +317,16 @@ export const useTableMySupplies = () => {
     [sort]
   );
 
+  const balance = mySupplies.map(d => d.asset.value).reduce((acc, cur) => acc + cur, 0);
+  const apySum = mySupplies.map(d => d.asset.value * d.apy).reduce((acc, cur) => acc + cur, 0);
+  const apy = apySum / balance;
+  const collateral = mySupplies
+    .map(d => {
+      if (!d.isCollateral) return 0;
+      return d.collateral ? d.asset.value : 0;
+    })
+    .reduce((acc, cur) => acc + cur, 0);
+
   useEffect(() => {
     if (!isMD) setSort({ key: 'balance', order: 'desc' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -326,5 +346,9 @@ export const useTableMySupplies = () => {
     fetchNextPage,
 
     refetchGetAssetsIn,
+
+    balance,
+    apy,
+    collateral,
   };
 };

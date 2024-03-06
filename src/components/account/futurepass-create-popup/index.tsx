@@ -54,6 +54,7 @@ export const FuturepassCreatePopup = () => {
       else return <ButtonPrimaryLarge onClick={() => close()} text={t`Confirm`} />;
     }
   };
+  console.log(isError, errorCode);
 
   return (
     <Popup id={POPUP_ID.FUTUREPASS_CREATE} title="" button={button()}>
