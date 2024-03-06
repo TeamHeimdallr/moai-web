@@ -114,6 +114,7 @@ export const LendingWithdrawInputGroup = () => {
   const isValidToWithdraw = useMemo(() => {
     if (!inputValue) return false;
     if (nextHealthFactor <= threshold && !checkedHealthFactor) return false;
+    if (nextHealthFactor <= 1.0) return false;
 
     if (!isFormError && inputValue > 0 && inputValue <= supplied && inputValue <= remain)
       return true;
@@ -152,7 +153,7 @@ export const LendingWithdrawInputGroup = () => {
           tokenName={symbol}
           tokenValue={tokenValue}
           balanceLabel="Available"
-          balance={supplied}
+          balance={supplied + 1}
           balanceRaw={parseEther(supplied.toString())}
           value={inputValue}
           handleChange={val => {
