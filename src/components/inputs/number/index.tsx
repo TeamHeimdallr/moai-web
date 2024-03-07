@@ -201,6 +201,7 @@ export const InputNumber = ({
                         blurAll?.(false);
                       }}
                       style={{ width: 'auto' }}
+                      isBlack
                       disabled={handledValue === currentBalance}
                     />
                   )}

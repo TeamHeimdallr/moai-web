@@ -278,6 +278,7 @@ const _AddLiquidityInputGroup = () => {
                       handleTotalMax();
                     }}
                     style={{ width: 'auto' }}
+                    isBlack
                     disabled={
                       totalValueMaxed ||
                       !hasBalances ||
@@ -303,6 +304,7 @@ const _AddLiquidityInputGroup = () => {
                       });
                       handleOptimize();
                     }}
+                    isBlack
                     disabled={!hasBalances || (!isSingle && ableToAddLiquidityTokens.length <= 1)}
                   />
                 </ButtonWrapper>

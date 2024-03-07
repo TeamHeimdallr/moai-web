@@ -17,6 +17,8 @@ import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-tok
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetRewardsWave0InfoQuery } from '~/api/api-server/rewards/get-reward-info-wave0';
+import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
+import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
 
 import { IconNext, IconTokenMoai, IconTokenRoot } from '~/assets/icons';
 
@@ -63,6 +65,8 @@ const _LayoutVoyage = () => {
   const [estimatedClaimFee, setEstimatedClaimFee] = useState<number | undefined>();
 
   const { isEvm, selectedNetwork, isFpass } = useNetwork();
+  const networkAbbr = getNetworkAbbr(NETWORK.THE_ROOT_NETWORK);
+
   const { xrp, evm, fpass } = useConnectedWallet();
   const [now, setNow] = useState(new Date());
   const [remainTime, setRemainTime] = useState<RemainLockupTime>({
@@ -77,6 +81,7 @@ const _LayoutVoyage = () => {
   const { t } = useTranslation();
 
   const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
+  const evmAddress = isFpass ? fpass?.address : evm?.address;
 
   const { userAllTokenBalances } = useUserAllTokenBalances();
 
@@ -85,7 +90,7 @@ const _LayoutVoyage = () => {
 
   const { data: rewardInfoData } = useGetRewardsWave0InfoQuery(
     {
-      params: { networkAbbr: 'trn' },
+      params: { networkAbbr },
       queries: { walletAddress },
     },
     { staleTime: 1000 * 3, enabled: !!walletAddress }
@@ -108,7 +113,7 @@ const _LayoutVoyage = () => {
   const { data: poolData } = useGetPoolQuery(
     {
       params: {
-        networkAbbr: getNetworkAbbr(NETWORK.THE_ROOT_NETWORK) as string,
+        networkAbbr,
         poolId: poolId as string,
       },
     },
@@ -122,6 +127,30 @@ const _LayoutVoyage = () => {
   const { compositions } = pool || {};
   const xrpToken = compositions?.[1];
   const xrpBalanceInPool = xrpToken?.balance || 0;
+
+  const { data: wave } = useGetWaveQuery(
+    { params: { networkAbbr } },
+    {
+      enabled: !!networkAbbr && selectedNetwork === NETWORK.THE_ROOT_NETWORK,
+      staleTime: 20 * 1000,
+    }
+  );
+  const { currentWave } = wave || {};
+  const { data: waveInfo } = useGetRewardsWaveNInfoQuery(
+    {
+      params: { networkAbbr },
+      queries: { walletAddress: evmAddress, wave: currentWave?.waveId },
+    },
+    {
+      enabled:
+        !!networkAbbr &&
+        selectedNetwork === NETWORK.THE_ROOT_NETWORK &&
+        !!evmAddress &&
+        !!currentWave?.waveId,
+      staleTime: 20 * 1000,
+    }
+  );
+  const { campaignLpSupply } = waveInfo || {};
 
   /* claim */
   const claimEvm = useClaim();
@@ -354,8 +383,8 @@ const _LayoutVoyage = () => {
                 <TokenCardTitle>{t('Rewards')}</TokenCardTitle>
                 <TokenListWrapper>
                   <TokenListVertical
-                    token="veMOAI"
-                    balance={campaignReward}
+                    token="Moai Points"
+                    balance={campaignLpSupply || '-'}
                     image={<IconTokenMoai width={36} height={36} />}
                     button={
                       <ButtonPrimaryLarge text={t('Coming soon')} buttonType="filled" disabled />
@@ -461,7 +490,7 @@ const TokenCardTitle = tw.div`
 `;
 
 const TokenListWrapper = tw.div`
-  flex flex-col gap-16
+  flex-center flex-col gap-16
   md:(flex-row)
 `;
 
