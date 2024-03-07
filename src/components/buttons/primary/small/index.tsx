@@ -9,9 +9,17 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 
   isLoading?: boolean;
   isGrayScale?: boolean;
+  isBlack?: boolean;
 }
 
-export const ButtonPrimarySmall = ({ text, isLoading, disabled, isGrayScale, ...rest }: Props) => {
+export const ButtonPrimarySmall = ({
+  text,
+  isLoading,
+  disabled,
+  isGrayScale,
+  isBlack,
+  ...rest
+}: Props) => {
   const warpperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,6 +42,7 @@ export const ButtonPrimarySmall = ({ text, isLoading, disabled, isGrayScale, ...
       disabled={disabled || isLoading}
       isLoading={isLoading}
       isGrayScale={isGrayScale}
+      isBlack={isBlack}
       {...rest}
     >
       {text}
@@ -45,17 +54,19 @@ export const ButtonPrimarySmall = ({ text, isLoading, disabled, isGrayScale, ...
 interface WrapperProps {
   isLoading?: boolean;
   isGrayScale?: boolean;
+  isBlack?: boolean;
 }
-const Wrapper = styled.button<WrapperProps>(({ isLoading, isGrayScale }) => [
+const Wrapper = styled.button<WrapperProps>(({ isLoading, isGrayScale, isBlack }) => [
   tw`
     gap-6 px-12 py-4 inline-flex-center rounded-8 clickable font-m-12 relative transition-colors w-full
+
+    bg-primary-60 text-neutral-0 hover:(bg-primary-50 text-neutral-0)
 
     disabled:(bg-neutral-5 text-neutral-40 non-clickable)
     disabled:hover:(bg-neutral-5 text-neutral-40)
   `,
-  isGrayScale
-    ? tw`bg-neutral-10 text-neutral-100 hover:(bg-neutral-100 text-neutral-0)`
-    : tw`bg-primary-60 text-neutral-0 hover:(bg-primary-50 text-neutral-0)`,
+  isBlack && tw`bg-neutral-10 text-primary-60`,
+  isGrayScale && tw`bg-neutral-10 text-neutral-100 hover:(bg-neutral-100 text-neutral-0)`,
 
   isLoading &&
     tw`

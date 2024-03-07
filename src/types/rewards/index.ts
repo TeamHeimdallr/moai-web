@@ -29,6 +29,7 @@ export interface IRewardsWaveNInfo {
   totalPoint: number;
 
   lpSupply: number;
+  campaignLpSupply: number;
   lendingSupply: number;
   lendingBorrow: number;
   referees: number;
