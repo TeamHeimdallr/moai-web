@@ -4,6 +4,8 @@ export interface IWave {
 
   startAt: Date;
   endAt: Date;
+
+  lastUpdated: Date;
 }
 
 export interface IRewardsWave0Info {
@@ -29,6 +31,8 @@ export interface IRewardsWaveNInfo {
   lpSupply: number;
   lendingSupply: number;
   lendingBorrow: number;
+  referees: number;
+  boost: number;
   veMOAI: number;
 }
 
@@ -50,6 +54,7 @@ export interface IRewardWaveNParticipant {
   lpSupply: number;
   lendingSupply: number;
   lendingBorrow: number;
+  referees: number;
   total: number;
   boost: number;
 }

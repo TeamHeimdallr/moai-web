@@ -58,7 +58,7 @@ export const useTableRewards = () => {
       },
     },
     {
-      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!currentWave?.waveId && !!evmAddress,
+      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!currentWave?.waveId,
       staleTime: 20 * 1000,
     }
   );

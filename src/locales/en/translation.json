@@ -620,6 +620,7 @@
   "repay-failed-message": "Repayment has failed. Please try again.",
 
   "My rewards": "My rewards",
+  "My Points": "My Points",
   "Total points": "Total points",
   "Total Points": "Total Points",
   "LP Supply": "LP Supply",
@@ -628,6 +629,8 @@
   "reward-lending-supplying": "Lending",
   "reward-lending-borrow": "Borrowing",
   "reward-lending-borrowing": "Borrowing",
+  "reward-lending-referees": "My Referral",
+
   "Boost": "Boost",
   "boost": "boost",
 
@@ -638,5 +641,8 @@
   "health-factor-below-warning-title-withdraw": "Withdrawal is not permitted with the health factor of 1.0 or less.",
 
   "health-factor-below-warning-title-collateral": "Disable as collateral is not possible since the health factor is below 1.0.",
-  "health-factor-below-warning-title-main": "Liquidation has been initiated since the health factor has fallen below 1.0. Please repay to protect the collateral."
+  "health-factor-below-warning-title-main": "Liquidation has been initiated since the health factor has fallen below 1.0. Please repay to protect the collateral.",
+
+  "Last update": "Last update",
+  "reward-boost-description": "The boost provides an opportunity to earn more points. To activate the boost, try to reach the total deposit of LP and Lending. This affects only to LP Supplying and Lending points."
 }

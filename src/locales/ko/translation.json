@@ -620,6 +620,7 @@
   "repay-failed-message": "{{ token }} 상환에 실패했습니다. 다시 시도해주세요.",
 
   "My rewards": "내 리워드",
+  "My Points": "내 포인트",
   "Total points": "합계 포인트",
   "Total Points": "합계 포인트",
   "LP Supply": "LP 공급",
@@ -628,6 +629,7 @@
   "reward-lending-supplying": "Lending",
   "reward-lending-borrow": "Borrowing",
   "reward-lending-borrowing": "Borrowing",
+  "reward-lending-referees": "레퍼럴 포인트",
 
   "Boost": "부스트",
   "boost": "부스트",
@@ -639,5 +641,8 @@
   "health-factor-below-warning-title-withdraw": "건전성 지수가 1.0 이하가 되도록 출금 할 수 없습니다.",
 
   "health-factor-below-warning-title-collateral": "건전성 지수가 1.0 이하이므로 해당 자산의 담보 비활성화를 할 수 없습니다.",
-  "health-factor-below-warning-title-main": "건전성 지수가 1.0 이하가 되어 청산이 시작되었습니다. 대출 상환으로 담보물을 보호하세요."
+  "health-factor-below-warning-title-main": "건전성 지수가 1.0 이하가 되어 청산이 시작되었습니다. 대출 상환으로 담보물을 보호하세요.",
+
+  "Last update": "마지막 업데이트",
+  "reward-boost-description": "부스트는 더 많은 포인트를 적립할 수 있는 기회를 제공합니다. 부스트를 활성화하려면 LP 공급과 Lending의 총 예치금이 기준을 넘어야 합니다. 부스트는 LP 공급 및 Lending의 포인트로만 적용됩니다."
 }
