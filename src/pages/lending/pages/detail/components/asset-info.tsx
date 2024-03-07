@@ -59,7 +59,7 @@ export const AssetInfo = () => {
         <InfoCard title={t('Reserve Size')} value={`$${formatNumber(totalReservesValue)}`} />
         <InfoCard
           title={t('Available Liquidity')}
-          value={`$${formatNumber(totalCashValue - totalReservesValue, 2, 'floor', MILLION, 2)}`}
+          value={`$${formatNumber(totalCashValue, 2, 'floor', MILLION, 2)}`}
         />
       </InnerWrapper>
       <InnerWrapper>

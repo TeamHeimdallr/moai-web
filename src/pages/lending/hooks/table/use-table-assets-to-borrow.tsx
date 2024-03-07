@@ -63,7 +63,7 @@ export const useTableAssetsToBorrow = () => {
   const assetsToBorrow = useMemo(
     () =>
       markets.map((m, i) => {
-        const remain = Number(formatUnits(m.cash - m.totalReserves, m.underlyingDecimals || 18));
+        const remain = Number(formatUnits(m.cash, m.underlyingDecimals || 18));
         const remainValue = remain * (m.price || 0);
 
         if (!accountSnapshots || accountSnapshots.length === 0) {

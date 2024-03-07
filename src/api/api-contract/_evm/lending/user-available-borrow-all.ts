@@ -107,10 +107,9 @@ export const useUserAvailableBorrowAll = ({ mTokenAddresses }: Props) => {
 
     const totalBorrows = metaData?.['totalBorrows'] as bigint;
     const borrowCap = metaData?.['borrowCap'] as bigint;
-    const cashMinusReserve = ((metaData?.['totalCash'] as bigint) -
-      metaData?.['totalReserves']) as bigint;
+    const cash = metaData?.['totalCash'] as bigint;
 
-    let availableAmountRaw = cashMinusReserve;
+    let availableAmountRaw = cash;
     if (borrowCap !== 0n) {
       availableAmountRaw =
         availableAmountRaw > borrowCap - totalBorrows
