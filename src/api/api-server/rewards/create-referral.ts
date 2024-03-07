@@ -18,6 +18,7 @@ interface Request {
 
 export interface Response {
   success: boolean;
+  message: string;
 }
 
 const axios = async (params: Params, body: Body) =>

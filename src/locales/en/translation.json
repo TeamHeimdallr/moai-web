@@ -644,5 +644,33 @@
   "health-factor-below-warning-title-main": "Liquidation has been initiated since the health factor has fallen below 1.0. Please repay to protect the collateral.",
 
   "Last update": "Last update",
-  "reward-boost-description": "The boost provides an opportunity to earn more points. To activate the boost, try to reach the total deposit of LP and Lending. This affects only to LP Supplying and Lending points."
+  "reward-boost-description": "The boost provides an opportunity to earn more points. To activate the boost, try to reach the total deposit of LP and Lending. This affects only to LP Supplying and Lending points.",
+
+  "My Referral Code": "My Referral Code",
+  "My Referees": "My Referees",
+
+  "reward-referral-share-title": "Share your code with friends!",
+  "reward-referral-share-description": "Invite friends to receive 10% bonus points of their earnings.",
+  "Share code": "Share code",
+  "reward-referral-bind-title": "Bind referrer",
+  "reward-referral-bind-description": "Enter a referral code to earn additional 5% points.",
+
+  "Bind referrer": "Bind referrer",
+
+  "Bind Referrer": "Bind Referrer",
+  "Bound Referrer": "Bound Referrer",
+  "bind-referrer-popup-description": "Enter a referral code to earn an additional 5% points. Please note that you can only bind once.",
+  "bound-referrer-popup-description": "You have bound the referrer of the following code. You earn an additional 5% points.",
+
+  "Referral code": "Referral code",
+  "Enter code": "Enter code",
+  "bind-referrer-button": "Confirm",
+
+  "Please enter 8 letters and numbers.": "Please enter 8 letters and numbers.",
+  "Already binded": "Already binded",
+  "Can not bind yourself": "Can not bind yourself.",
+  "Invalid code": "Invalid code.",
+
+  "Bound confirmed!": "Bound confirmed!",
+  "You have just successfully bound with": "You have just successfully bound with {{ code }}"
 }

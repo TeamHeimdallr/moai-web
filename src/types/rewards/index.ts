@@ -33,6 +33,7 @@ export interface IRewardsWaveNInfo {
   lendingBorrow: number;
   referees: number;
   boost: number;
+  referral: string;
   veMOAI: number;
 }
 

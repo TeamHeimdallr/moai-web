@@ -15,11 +15,14 @@ import { ButtonIconMedium, ButtonIconSmall } from '~/components/buttons';
 import { Tooltip } from '~/components/tooltips/base';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
-import { NETWORK, TOOLTIP_ID } from '~/types';
+import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
 
+import { RewardBindReferralPopup } from './reward-bind-referral-popup';
+import { RewardBoundReferralPopup } from './reward-bound-referral-popup';
 import { RewardReferral } from './reward-referral';
 
 export const RewardMyInfo = () => {
@@ -34,6 +37,9 @@ export const RewardMyInfo = () => {
 
   const { evm, fpass } = useConnectedWallet();
   const evmAddress = isFpass ? fpass.address : evm?.address || '';
+
+  const { opened: bindReferralOpened } = usePopup(POPUP_ID.REWARD_BIND_REFERRAL);
+  const { opened: boundReferralOpened } = usePopup(POPUP_ID.REWARD_BOUND_REFERRAL);
 
   const { data: wave } = useGetWaveQuery(
     { params: { networkAbbr: currentNetworkAbbr } },
@@ -54,7 +60,7 @@ export const RewardMyInfo = () => {
       staleTime: 20 * 1000,
     }
   );
-  const { totalPoint, lendingBorrow, lendingSupply, lpSupply, referees, boost, veMOAI } =
+  const { totalPoint, lendingBorrow, lendingSupply, lpSupply, referees, boost, veMOAI, referral } =
     waveInfo || {
       totalPoint: 0,
       lendingBorrow: 0,
@@ -125,6 +131,14 @@ export const RewardMyInfo = () => {
           <TooltipContent>{t('reward-boost-description')}</TooltipContent>
         </Tooltip>
       </TooltipWrapper>
+      {bindReferralOpened && (
+        <RewardBindReferralPopup
+          walletAddress={evmAddress}
+          networkAbbr={currentNetworkAbbr}
+          waveId={currentWave?.waveId || 0}
+        />
+      )}
+      {boundReferralOpened && <RewardBoundReferralPopup code={referral || ''} />}
     </Wrapper>
   );
 };

@@ -644,5 +644,33 @@
   "health-factor-below-warning-title-main": "건전성 지수가 1.0 이하가 되어 청산이 시작되었습니다. 대출 상환으로 담보물을 보호하세요.",
 
   "Last update": "마지막 업데이트",
-  "reward-boost-description": "부스트는 더 많은 포인트를 적립할 수 있는 기회를 제공합니다. 부스트를 활성화하려면 LP 공급과 Lending의 총 예치금이 기준을 넘어야 합니다. 부스트는 LP 공급 및 Lending의 포인트로만 적용됩니다."
+  "reward-boost-description": "부스트를 통해 더 많은 포인트를 적립할 수 있습니다. 부스트를 활성화하려면 LP와 Lending의 총 예치금에 도달하세요..? 이는 LP 공급과 Lending 포인트에만 적용됩니다.",
+
+  "My Referral Code": "나의 레퍼럴 코드",
+  "My Referees": "추천받은 사람",
+
+  "reward-referral-share-title": "레퍼럴 코드 공유하기",
+  "reward-referral-share-description": "친구를 초대하면 포인트 수익의 10% 추가 포인트를 받을 수 있습니다.",
+  "Share code": "코드 공유하기",
+  "reward-referral-bind-title": "레퍼럴 등록하기",
+  "reward-referral-bind-description": "레퍼럴 코드를 등록하여 10% 포인트를 추가로 적립하세요!",
+
+  "Bind referrer": "레퍼럴 등록하기",
+
+  "Bind Referrer": "레퍼럴 등록하기",
+  "Bound Referrer": "등록된 레퍼럴",
+  "bind-referrer-popup-description": "레퍼럴 코드를 등록하여 5%의 포인트를 추가로 적립하세요. 단, 레퍼럴 코드는 한 명만 등록 가능합니다.",
+  "bound-referrer-popup-description": "아래의 레퍼럴 코드를 등록하였습니다. 5%의 포인트를 추가로 적립하고 있습니다.",
+
+  "Referral code": "레퍼럴 코드",
+  "Enter code": "코드를 입력하세요.",
+  "bind-referrer-button": "등록하기",
+
+  "Please enter 8 letters and numbers.": "8개의 문자와 숫자를 입력하세요.",
+  "Already binded": "이미 레퍼럴을 등록했습니다",
+  "Can not bind yourself": "자신을 초대할 수 없습니다.",
+  "Invalid code": "유효하지 않은 코드입니다.",
+
+  "Bound confirmed!": "등록이 완료되었습니다.",
+  "You have just successfully bound with": "{{ code }} 코드를 성공적으로 등록했습니다."
 }
