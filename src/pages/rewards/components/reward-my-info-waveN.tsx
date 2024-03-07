@@ -6,13 +6,24 @@ import tw, { styled } from 'twin.macro';
 import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
 import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
 
+import { COLOR } from '~/assets/colors';
+import { IconLink, IconQuestion } from '~/assets/icons';
+
 import { MILLION, TRILLION } from '~/constants';
 
+import { ButtonIconMedium, ButtonIconSmall } from '~/components/buttons';
+import { Tooltip } from '~/components/tooltips/base';
+
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
-import { NETWORK } from '~/types';
+import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
+
+import { RewardBindReferralPopup } from './reward-bind-referral-popup';
+import { RewardBoundReferralPopup } from './reward-bound-referral-popup';
+import { RewardReferral } from './reward-referral';
 
 export const RewardMyInfo = () => {
   const { ref } = useGAInView({ name: 'reward-my-info' });
@@ -26,6 +37,9 @@ export const RewardMyInfo = () => {
 
   const { evm, fpass } = useConnectedWallet();
   const evmAddress = isFpass ? fpass.address : evm?.address || '';
+
+  const { opened: bindReferralOpened } = usePopup(POPUP_ID.REWARD_BIND_REFERRAL);
+  const { opened: boundReferralOpened } = usePopup(POPUP_ID.REWARD_BOUND_REFERRAL);
 
   const { data: wave } = useGetWaveQuery(
     { params: { networkAbbr: currentNetworkAbbr } },
@@ -46,45 +60,85 @@ export const RewardMyInfo = () => {
       staleTime: 20 * 1000,
     }
   );
-  const { totalPoint, lendingBorrow, lendingSupply, lpSupply, veMOAI } = waveInfo || {};
+  const { totalPoint, lendingBorrow, lendingSupply, lpSupply, referees, boost, veMOAI, referral } =
+    waveInfo || {
+      totalPoint: 0,
+      lendingBorrow: 0,
+      lendingSupply: 0,
+      lpSupply: 0,
+      referees: 0,
+      boost: 0,
+      veMOAI: 0,
+    };
   const hasToken = !!veMOAI && veMOAI > 0;
 
   return (
     <Wrapper ref={ref}>
-      <Title>{t('My rewards')}</Title>
-      <InnerWrapper>
-        <InnerTitleWrapper>
-          <div>{t('Total points')}</div>
-          <div>{formatNumber(totalPoint, 2, 'floor', TRILLION, 2)}</div>
-        </InnerTitleWrapper>
-        <InnerInfoWrapper hasToken={hasToken}>
-          {/* TODO: 추후 받아오는 데이터를 contract로 수정 */}
-          {hasToken && (
-            <InfoCard
-              name={t('Wave 0')}
-              value={formatNumber(veMOAI, 2, 'floor', MILLION, 2)}
-              subValue={'veMOAI'}
+      <TitleWrapper>
+        <Title>
+          {t('My rewards')}
+          <ButtonIconMedium
+            onClick={() => {
+              window.open(
+                'https://medium.com/@moai-finance/wave-1-earn-your-moai-points-fdb6f0392a46'
+              );
+            }}
+            icon={<IconLink fill={COLOR.NEUTRAL[60]} />}
+          />
+        </Title>
+
+        <PointWrapper>
+          {formatNumber(totalPoint, 2, 'floor', TRILLION, 2)}
+          <BoostWrapper>
+            {`${t('Boost')} ${formatNumber(boost, 1, 'floor', TRILLION, 1)}x`}
+            <ButtonIconSmall
+              icon={<IconQuestion fill={COLOR.NEUTRAL[60]} />}
+              data-tooltip-id={TOOLTIP_ID.REWARD_BOOST_INFO}
             />
-          )}
-          <InfoCardWrapper full={!hasToken}>
-            <InfoCard
-              name={t('LP Supply')}
-              value={formatNumber(lpSupply, 2, 'floor', MILLION, 2)}
-              subValue={t('points')}
-            />
-          </InfoCardWrapper>
+          </BoostWrapper>
+        </PointWrapper>
+      </TitleWrapper>
+      <InnerInfoWrapper hasToken={hasToken}>
+        {/* TODO: 추후 받아오는 데이터를 contract로 수정 */}
+        {hasToken && (
           <InfoCard
-            name={t('reward-lending-supply')}
-            value={formatNumber(lendingSupply, 2, 'floor', MILLION, 2)}
+            name={t('Wave 0')}
+            value={formatNumber(veMOAI, 2, 'floor', MILLION, 2)}
+            subValue={'veMOAI'}
+          />
+        )}
+        <InfoCardWrapper full={!hasToken}>
+          <InfoCard
+            name={t('LP Supply')}
+            value={formatNumber(lpSupply, 2, 'floor', MILLION, 2)}
             subValue={t('points')}
           />
-          <InfoCard
-            name={t('reward-lending-borrow')}
-            value={formatNumber(lendingBorrow, 2, 'floor', MILLION, 2)}
-            subValue={t('points')}
-          />
-        </InnerInfoWrapper>
-      </InnerWrapper>
+        </InfoCardWrapper>
+        <InfoCard
+          name={t('reward-lending-supply')}
+          value={formatNumber(lendingSupply + lendingBorrow, 2, 'floor', MILLION, 2)}
+          subValue={t('points')}
+        />
+        <InfoCard
+          name={t('reward-lending-referees')}
+          value={formatNumber(referees, 2, 'floor', MILLION, 2)}
+          subValue={t('points')}
+        />
+      </InnerInfoWrapper>
+      <RewardReferral />
+      <TooltipWrapper>
+        <Tooltip id={TOOLTIP_ID.REWARD_BOOST_INFO}>
+          <TooltipContent>{t('reward-boost-description')}</TooltipContent>
+        </Tooltip>
+      </TooltipWrapper>
+      {bindReferralOpened && (
+        <RewardBindReferralPopup
+          walletAddress={evmAddress}
+          networkAbbr={currentNetworkAbbr}
+          waveId={currentWave?.waveId || 0}
+        />
+      )}
+      {boundReferralOpened && <RewardBoundReferralPopup code={referral || ''} />}
     </Wrapper>
   );
 };
@@ -93,19 +147,20 @@ const Wrapper = tw.div`
   flex gap-24 flex-col
 `;
 
+const TitleWrapper = tw.div`
+  flex items-start justify-between gap-10
+`;
+
 const Title = tw.div`
-  font-b-20 text-neutral-100 px-20
+  flex items-center font-b-20 text-neutral-100 px-20 gap-8 
   md:(font-b-24 px-0)
 `;
 
-const InnerWrapper = tw.div`
-  flex flex-col gap-20 rounded-12 bg-neutral-10 pt-16 pb-20 px-20
-  md:(gap-24 pt-20 pb-24 px-20)
+const PointWrapper = tw.div`
+  flex flex-col items-end font-b-24 text-neutral-100
 `;
-
-const InnerTitleWrapper = tw.div`
-  w-full flex items-center justify-between gap-10 font-b-18 text-neutral-100
-  md:(font-b-20)
+const BoostWrapper = tw.div`
+  flex items-center gap-2 font-r-14 text-neutral-80
 `;
 
 interface InnerInfoWrapperProps {
@@ -144,7 +199,7 @@ const InfoCard = ({ name, value, subValue, button, ...rest }: InfoCardProps) => 
   );
 };
 const PoolInfoCardWrapper = tw.div`
-  w-full flex flex-1 flex-col items-start bg-neutral-15 rounded-12
+  w-full flex flex-1 flex-col items-start bg-neutral-10 rounded-12
   py-20 pl-24 pr-16 gap-16
   md:()
 `;
@@ -166,4 +221,12 @@ const Value = tw.div`
 const SubValueWrapper = tw.div`
   flex items-center gap-4
   font-r-14 text-neutral-80
+`;
+
+const TooltipWrapper = tw.div`
+  absolute
+`;
+
+const TooltipContent = tw.div`
+  w-266
 `;

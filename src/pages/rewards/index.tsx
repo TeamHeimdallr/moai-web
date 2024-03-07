@@ -1,17 +1,21 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { differenceInDays, differenceInMinutes, format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 
 import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
 
+import { BadgeGnbNew } from '~/components/badges/new-gnb';
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
+import { Tooltip } from '~/components/tooltips/base';
 
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
-import { NETWORK, POPUP_ID } from '~/types';
+import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { RewardMyInfo } from './components/reward-my-info-waveN';
 import { RewardsNetworkAlertPopup } from './components/reward-network-alert';
@@ -28,7 +32,8 @@ const RewardsPage = () => {
     callCallbackUnmounted: true,
   });
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
 
   const { isFpass, selectedNetwork } = useNetwork();
   const currentNetworkAbbr = getNetworkAbbr(selectedNetwork);
@@ -51,6 +56,35 @@ const RewardsPage = () => {
   const legacy = !currentWave || currentWave?.waveId === 0;
 
   const { selectWaveId, selectedWaveId } = useRewardSelectWaveIdStore();
+
+  useEffect(() => {
+    selectWaveId(currentWave?.waveId || 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentWave?.waveId]);
+
+  const { startAt, endAt } = currentWave || {};
+
+  const startAtDate = new Date(startAt || new Date());
+  const endAtDate = new Date(endAt || new Date());
+  const formattedStartAt = isKo
+    ? `${format(startAtDate, 'yyyy년 MM월 dd일 a hh시(O시)')
+        .replace('AM', '오전')
+        .replace('PM', '오후')}부터`
+    : `From ${format(startAtDate, 'MMM d, yyyy, hh a O')}`;
+  const formattedEndAt = isKo
+    ? `${format(endAtDate, 'yyyy년 MM월 dd일 a hh시(O시)')
+        .replace('AM', '오전')
+        .replace('PM', '오후')}까지`
+    : `to ${format(endAtDate, 'MMM d, yyyy, hh a O')}`;
+
+  const showBadge = (waveId: number) => {
+    if (!currentWave) return;
+
+    const now = new Date();
+    const diff = differenceInDays(now, startAtDate);
+
+    return currentWave.waveId === waveId && diff <= 10;
+  };
 
   return (
     <>
@@ -76,8 +110,15 @@ const RewardsPage = () => {
                         key={waveId}
                         selected={waveId === selectedWaveId}
                         onClick={() => selectWaveId(waveId)}
+                        data-tooltip-id={waveId >= 1 ? TOOLTIP_ID.REWARD_WAVE_INFO : undefined}
                       >
                         {t('Wave', { phase: waveId })}
+
+                        {showBadge(waveId) && (
+                          <BadgeWrapper>
+                            <BadgeGnbNew />
+                          </BadgeWrapper>
+                        )}
                       </Title>
                     ))}
                   </TitleWrapper>
@@ -90,6 +131,9 @@ const RewardsPage = () => {
         </InnerWrapper>
         <Footer />
       </Wrapper>
+      <Tooltip place="bottom" id={TOOLTIP_ID.REWARD_WAVE_INFO}>
+        <TooltipContent>{`${formattedStartAt}\n${formattedEndAt}.`}</TooltipContent>
+      </Tooltip>
       {opened && <RewardsNetworkAlertPopup />}
     </>
   );
@@ -138,10 +182,15 @@ interface TitleProps {
 }
 const Title = styled.div<TitleProps>(({ selected }) => [
   tw`
-    font-b-20 h-40 flex items-center text-neutral-60 clickable
+    font-b-20 flex items-center text-neutral-60 clickable relative
     md:(font-b-24)
   `,
   selected && tw`text-neutral-100`,
 ]);
 
+const TooltipContent = tw.div`
+  w-266 whitespace-pre-wrap
+`;
+
+const BadgeWrapper = styled.div(() => [tw`absolute -top-4 -right-18`]);
 export default RewardsPage;

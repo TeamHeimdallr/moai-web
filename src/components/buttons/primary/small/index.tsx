@@ -11,7 +11,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   isGrayScale?: boolean;
 }
 
-export const ButtonPrimarySmall = ({ text, isLoading, disabled, ...rest }: Props) => {
+export const ButtonPrimarySmall = ({ text, isLoading, disabled, isGrayScale, ...rest }: Props) => {
   const warpperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,7 +30,12 @@ export const ButtonPrimarySmall = ({ text, isLoading, disabled, ...rest }: Props
   }, [warpperRef, isLoading, disabled]);
 
   return (
-    <Wrapper disabled={disabled || isLoading} isLoading={isLoading} {...rest}>
+    <Wrapper
+      disabled={disabled || isLoading}
+      isLoading={isLoading}
+      isGrayScale={isGrayScale}
+      {...rest}
+    >
       {text}
       {isLoading && <LottieWrapper ref={warpperRef} />}
     </Wrapper>
@@ -45,14 +50,12 @@ const Wrapper = styled.button<WrapperProps>(({ isLoading, isGrayScale }) => [
   tw`
     gap-6 px-12 py-4 inline-flex-center rounded-8 clickable font-m-12 relative transition-colors w-full
 
-    bg-neutral-10
-    
     disabled:(bg-neutral-5 text-neutral-40 non-clickable)
     disabled:hover:(bg-neutral-5 text-neutral-40)
   `,
   isGrayScale
-    ? tw`text-neutral-100 hover:(bg-neutral-100 text-neutral-0)`
-    : tw`text-primary-60 hover:(bg-primary-50 text-neutral-0)`,
+    ? tw`bg-neutral-10 text-neutral-100 hover:(bg-neutral-100 text-neutral-0)`
+    : tw`bg-primary-60 text-neutral-0 hover:(bg-primary-50 text-neutral-0)`,
 
   isLoading &&
     tw`
