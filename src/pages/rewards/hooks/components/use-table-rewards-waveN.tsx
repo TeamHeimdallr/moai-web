@@ -88,10 +88,14 @@ export const useTableRewards = () => {
           },
           rank: (
             <TableColumn
-              value={`${formatNumber(d?.rank, 0)}`}
+              value={`${!d?.rank ? '-' : formatNumber(d?.rank, 0)}`}
               align="flex-start"
               style={{
-                color: (d?.rank || 4) <= 3 ? COLOR.PRIMARY[50] : COLOR.NEUTRAL[100],
+                color: !d?.rank
+                  ? COLOR.NEUTRAL[100]
+                  : (d?.rank || 4) <= 3
+                  ? COLOR.PRIMARY[50]
+                  : COLOR.NEUTRAL[100],
               }}
             />
           ),
@@ -120,19 +124,19 @@ export const useTableRewards = () => {
           ),
           lending: (
             <TableColumn
-              value={formatNumber(d?.lendingSupply, 2, 'floor', MILLION, 2)}
+              value={formatNumber(
+                (d?.lendingSupply || 0) + (d?.lendingBorrow || 0),
+                2,
+                'floor',
+                MILLION,
+                2
+              )}
               align="flex-end"
             />
           ),
-          borrowing: (
+          referral: (
             <TableColumn
-              value={formatNumber(d?.lendingBorrow, 2, 'floor', MILLION, 2)}
-              align="flex-end"
-            />
-          ),
-          boost: (
-            <TableColumn
-              value={`${formatNumber(d?.boost, 1, 'floor', THOUSAND, 1)}x`}
+              value={formatNumber(d?.referees, 2, 'floor', MILLION, 2)}
               align="flex-end"
             />
           ),
@@ -170,14 +174,9 @@ export const useTableRewards = () => {
         accessorKey: 'lending',
       },
       {
-        header: () => <TableHeader label="reward-lending-borrowing" align="flex-end" />,
+        header: () => <TableHeader label="referral-point" align="flex-end" />,
         cell: row => row.renderValue(),
-        accessorKey: 'borrowing',
-      },
-      {
-        header: () => <TableHeader label="Boost" align="flex-end" />,
-        cell: row => row.renderValue(),
-        accessorKey: 'boost',
+        accessorKey: 'referral',
       },
       {
         header: () => <TableHeader label="Total Points" align="flex-end" />,
@@ -205,10 +204,14 @@ export const useTableRewards = () => {
           rows: [
             <RowWrapper key={i}>
               <TableColumn
-                value={`${formatNumber(d?.rank, 0)}`}
+                value={`${!d?.rank ? '-' : formatNumber(d?.rank, 0)}`}
                 align="flex-start"
                 style={{
-                  color: (d?.rank || 4) <= 3 ? COLOR.PRIMARY[50] : COLOR.NEUTRAL[100],
+                  color: !d?.rank
+                    ? COLOR.NEUTRAL[100]
+                    : (d?.rank || 4) <= 3
+                    ? COLOR.PRIMARY[50]
+                    : COLOR.NEUTRAL[100],
                 }}
               />
               <TableColumnIconTextLink
@@ -241,25 +244,22 @@ export const useTableRewards = () => {
               label: 'reward-lending-supplying',
               value: (
                 <TableColumn
-                  value={formatNumber(d?.lendingSupply, 2, 'floor', MILLION, 2)}
+                  value={formatNumber(
+                    (d?.lendingSupply || 0) + d?.lendingBorrow || 0,
+                    2,
+                    'floor',
+                    MILLION,
+                    2
+                  )}
                   align="flex-end"
                 />
               ),
             },
             {
-              label: 'reward-lending-borrowing',
+              label: 'referral-point',
               value: (
                 <TableColumn
-                  value={formatNumber(d?.lendingBorrow, 2, 'floor', MILLION, 2)}
-                  align="flex-end"
-                />
-              ),
-            },
-            {
-              label: 'Boost',
-              value: (
-                <TableColumn
-                  value={`${formatNumber(d?.boost, 1, 'floor', THOUSAND, 1)}x`}
+                  value={`${formatNumber(d?.referees, 1, 'floor', THOUSAND, 1)}x`}
                   align="flex-end"
                 />
               ),

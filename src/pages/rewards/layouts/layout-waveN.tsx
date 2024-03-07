@@ -72,7 +72,7 @@ const RewardWaveN = () => {
           <Table
             data={tableData}
             columns={tableColumns}
-            ratio={['54px', '156px', 1, 1, 1, '44px', 1]}
+            ratio={['54px', '156px', 1, 1, 1, 1]}
             type="darker"
             hasMore={hasNextPage}
             handleMoreClick={() => fetchNextPage()}
