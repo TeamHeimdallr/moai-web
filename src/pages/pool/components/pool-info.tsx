@@ -7,8 +7,6 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { imageMoai2 } from '~/assets/images';
 
-import { TooltipApr } from '~/components/tooltips/apr';
-
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { formatNumber, getNetworkFull } from '~/utils';
@@ -36,7 +34,7 @@ export const PoolInfo = () => {
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const { pool } = data || {};
-  const { value, volume, apr, moaiApr, tradingFee: tradingFeeRaw } = pool || {};
+  const { value, volume, apr, tradingFee: tradingFeeRaw } = pool || {};
   const protocolFee = 0.0005;
   const tradingFee =
     currentNetwork === NETWORK.THE_ROOT_NETWORK ? tradingFeeRaw + protocolFee : tradingFeeRaw;
@@ -45,14 +43,6 @@ export const PoolInfo = () => {
   const formattedVolume = volume ? `$${formatNumber(volume)}` : '$0';
 
   const formattedApr = apr ? `${formatNumber(apr)}%` : '0%'; // swap apr
-  // const formattedMoaiApr = moaiApr ? `${formatNumber(moaiApr)}%` : '0%'; // moai pre-mining apr
-  // Pre-mining APR is finished
-  const formattedMoaiApr = `+ Moai Points`;
-
-  const formattedSwapApr = `${formatNumber(
-    (apr || 0) < (moaiApr || 0) ? 0 : (apr || 0) - (moaiApr || 0)
-  )}%`;
-
   const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100)}%` : '0%';
 
   return (
@@ -62,17 +52,9 @@ export const PoolInfo = () => {
         <PoolInfoCard name={t('Volume (24h)')} value={formattedVolume} />
       </InnerWrapper>
       <InnerWrapper>
-        <PoolInfoCard
-          name={t('APR')}
-          value={formattedApr}
-          subValue={currentNetwork === NETWORK.XRPL ? undefined : formattedMoaiApr}
-          hoverable
-        />
+        <PoolInfoCard name={t('APR')} value={formattedApr} subValue={`+ ${t('Moai Points')}`} />
         <PoolInfoCard name={t('Trading Fee')} value={formattedFees} />
       </InnerWrapper>
-      <ToolTipWrapper>
-        <TooltipApr swapApr={formattedSwapApr} moaiApr={formattedMoaiApr} place="bottom" />
-      </ToolTipWrapper>
     </Wrapper>
   );
 };
@@ -83,10 +65,6 @@ const Wrapper = tw.div`
 `;
 const InnerWrapper = tw.div`
   flex flex-1 gap-16
-`;
-
-const ToolTipWrapper = tw.div`
-  absolute
 `;
 
 interface PoolInfoCardProps {

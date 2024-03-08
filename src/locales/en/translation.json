@@ -260,7 +260,7 @@
 
   "Activate your $XRP": "Activate your $XRP",
   "Activate $XRP": "Activate $XRP",
-  "campaign-landing-main-text": "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders\nwithin XRPL to embark on our 'Voyage to the Future.' By joining this journey, you will \nhave the unique opportunity to provide early liquidity to The Root Network. In return,\n you will gain exclusive access to $MOAI pre-mining and special $ROOT rewards.",
+  "campaign-landing-main-text": "Before the official launch of Mainnet DEX on The Root Network, we invite $XRP holders\nwithin XRPL to embark on our 'Voyage to the Future.' By joining this journey, you will \nhave the unique opportunity to provide early liquidity to The Root Network. In return,\nyou will gain exclusive access to Moai Points and special $ROOT rewards.",
   "Expected APR": "Expected APR",
   "My Voyage": "My Voyage",
   "Bridge to XRPL": "Bridge to XRPL",
@@ -675,5 +675,8 @@
   "Invalid code": "Invalid code.",
 
   "Bound confirmed!": "Bound confirmed!",
-  "You have just successfully bound with": "You have just successfully bound with {{ code }}"
+  "You have just successfully bound with": "You have just successfully bound with {{ code }}",
+
+  "Moai Points": "Moai Points",
+  "Moai points": "Moai points"
 }

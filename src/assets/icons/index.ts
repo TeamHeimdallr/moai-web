@@ -12,6 +12,8 @@ import IconComment from './icon-comment.svg?react';
 import IconCopy from './icon-copy.svg?react';
 import IconDashboard from './icon-dashboard.svg?react';
 import IconDepth from './icon-depth.svg?react';
+import IconDiamond from './icon-diamond.svg?react';
+import IconDiamondActive from './icon-diamond-active.svg?react';
 import IconDiscord from './icon-discord.svg?react';
 import IconDivision from './icon-division.svg?react';
 import IconDollarWithCircle from './icon-dollar-with-circle.svg?react';
@@ -83,6 +85,8 @@ export {
   IconCopy,
   IconDashboard,
   IconDepth,
+  IconDiamond,
+  IconDiamondActive,
   IconDiscord,
   IconDivision,
   IconDollars,
