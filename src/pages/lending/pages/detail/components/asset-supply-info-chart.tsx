@@ -129,7 +129,7 @@ export const AssetSupplyInfoChart = () => {
           <HeaderTitle>{t('Supply APR')}</HeaderTitle>
         </HeaderTitleWrapper>
         <HeaderValueWrapper>
-          <HeaderValue id="header-value">${formatNumber(chartValue)}</HeaderValue>
+          <HeaderValue id="header-value">{formatNumber(chartValue)}%</HeaderValue>
           <HeaderValueLabel id="header-caption">{chartCaption}</HeaderValueLabel>
         </HeaderValueWrapper>
       </Header>
