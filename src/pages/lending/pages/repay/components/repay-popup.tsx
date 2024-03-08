@@ -245,9 +245,9 @@ export const LendingRepayPopup = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, step]);
 
-  const estimatedFee = step === 1 ? estimatedTokenApproveFee || 1 : estimatedLendingRepayFee || 1;
+  const estimatedFee = step === 1 ? estimatedTokenApproveFee : estimatedLendingRepayFee;
   const gasError =
-    (userTokenBalance || 0) <= Number(estimatedFee || 1) || lendingGasError || approveGasError;
+    (userTokenBalance || 0) <= Number(estimatedFee || 4) || lendingGasError || approveGasError;
 
   return (
     <Popup

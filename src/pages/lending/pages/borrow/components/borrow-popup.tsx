@@ -199,8 +199,8 @@ export const LendingBorrowPopup = ({
     });
   };
 
-  const estimatedFee = estimatedLendingBorrowFee || 1;
-  const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 1) || lendingGasError;
+  const estimatedFee = estimatedLendingBorrowFee;
+  const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 4) || lendingGasError;
 
   return (
     <Popup

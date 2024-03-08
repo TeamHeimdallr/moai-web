@@ -183,8 +183,8 @@ export const LendingWithdrawPopup = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount]);
 
-  const estimatedFee = estimatedLendingWithdrawFee || 1;
-  const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 1) || lendingGasError;
+  const estimatedFee = estimatedLendingWithdrawFee;
+  const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 4) || lendingGasError;
 
   return (
     <Popup
