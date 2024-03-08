@@ -30,13 +30,21 @@ export interface Response {
   };
 }
 
-const axios = async (body: IMyPoolListRequest, queries?: Queries) =>
-  (
-    await api.post<Response, AxiosResponse<Response>, IMyPoolListRequest>(
-      `/pools/my${encodeQuery(queries)}`,
-      body
-    )
-  ).data;
+const axios = async (body: IMyPoolListRequest, queries?: Queries) => {
+  const dataDoubleVol = await api.post<Response, AxiosResponse<Response>, IMyPoolListRequest>(
+    `/pools/my${encodeQuery(queries)}`,
+    body
+  );
+  // TODO: remove /2 when server updated
+  const res = {
+    pools: dataDoubleVol.data?.pools.map(pool => ({
+      ...pool,
+      apr: pool.apr ? (pool.apr - pool.moaiApr) / 2 + pool.moaiApr : 0,
+    })),
+    metadata: dataDoubleVol.data?.metadata,
+  };
+  return res;
+};
 
 type MutateOptions = UseMutationOptions<
   Response,
@@ -47,27 +55,11 @@ export const useGetMyPoolsQuery = (request: Request, options?: MutateOptions) =>
   const { queries } = request;
 
   const queryKey = ['POST', 'POOLS', 'MY', queries];
-  const dataDoubleVol = useMutation<
-    Response,
-    AxiosError<Response, IMyPoolListRequest>,
-    IMyPoolListRequest
-  >(queryKey, data => axios(data, queries), options);
-
-  // TODO: remove /2 when server updated
-  const data = {
-    ...dataDoubleVol,
-    data: {
-      ...dataDoubleVol.data,
-      pools: dataDoubleVol.data?.pools.map(pool => ({
-        ...pool,
-        apr: pool.apr ? (pool.apr - pool.moaiApr) / 2 + pool.moaiApr : undefined,
-        compositions: dataDoubleVol.data?.pools.map(pool => ({
-          ...pool,
-          compositions: pool.compositions?.sort((a, b) => a.symbol.localeCompare(b.symbol)),
-        })),
-      })),
-    },
-  };
+  const data = useMutation<Response, AxiosError<Response, IMyPoolListRequest>, IMyPoolListRequest>(
+    queryKey,
+    data => axios(data, queries),
+    options
+  );
 
   return {
     queryKey,
