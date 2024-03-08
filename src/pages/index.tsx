@@ -55,9 +55,7 @@ const Page = () => {
             {(IS_LOCAL || IS_DEVNET) && (
               <Route path="/faucet" element={getMaintanence('/faucet', <FaucetPage />)} />
             )}
-            {IS_LOCAL && (
-              <Route path="/lending/*" element={getMaintanence('/lending/*', <LendingPage />)} />
-            )}
+            <Route path="/lending/*" element={getMaintanence('/lending/*', <LendingPage />)} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
