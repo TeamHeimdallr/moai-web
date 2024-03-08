@@ -109,7 +109,9 @@ export const RewardReferral = () => {
             <Value>{referees || '-'}</Value>
           </ContentWrapper>
         </UpperInnerWrapper>
-        <ButtonWrapper onClick={() => openBoundReferral()}>{t('Bound Referrer')}</ButtonWrapper>
+        {!!referral && (
+          <ButtonWrapper onClick={() => openBoundReferral()}>{t('Bound Referrer')}</ButtonWrapper>
+        )}
       </UpperWrapper>
 
       <BottomWrapper>

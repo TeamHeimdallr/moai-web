@@ -127,8 +127,16 @@ export const RewardMyInfo = () => {
       </InnerInfoWrapper>
       <RewardReferral />
       <TooltipWrapper>
-        <Tooltip id={TOOLTIP_ID.REWARD_BOOST_INFO}>
-          <TooltipContent>{t('reward-boost-description')}</TooltipContent>
+        <Tooltip id={TOOLTIP_ID.REWARD_BOOST_INFO} place="bottom">
+          <TooltipContent>
+            {t(
+              boost === 1
+                ? 'reward-boost-description1'
+                : boost === 1.5
+                ? 'reward-boost-description2'
+                : 'reward-boost-description3'
+            )}
+          </TooltipContent>
         </Tooltip>
       </TooltipWrapper>
       {bindReferralOpened && (

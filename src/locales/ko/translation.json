@@ -644,7 +644,9 @@
   "health-factor-below-warning-title-main": "건전성 지수가 1.0 이하가 되어 청산이 시작되었습니다. 대출 상환으로 담보물을 보호하세요.",
 
   "Last update": "마지막 업데이트",
-  "reward-boost-description": "부스트를 통해 더 많은 포인트를 적립할 수 있습니다. 부스트를 활성화하려면 LP와 Lending의 총 예치금에 도달하세요..? 이는 LP 공급과 Lending 포인트에만 적용됩니다.",
+  "reward-boost-description1": "부스트를 통해 더 많은 포인트를 적립할 수 있습니다. LP 공급과 Lending 금액이 $50k보다 많으면 1.5배의 포인트가 적립됩니다.",
+  "reward-boost-description2": "부스트를 통해 더 많은 포인트를 적립할 수 있습니다. LP 공급과 Lending 금액이 $250k보다 많으면 3배의 포인트가 적립됩니다.",
+  "reward-boost-description3": "최대 부스트를 적용받고 있습니다. LP 공급과 Lending 금액이 $250k보다 많아 3배의 포인트가 적립되고 있습니다.",
 
   "referral-point": "레퍼럴 포인트",
   "My Referral Code": "나의 레퍼럴 코드",

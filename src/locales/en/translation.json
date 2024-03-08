@@ -644,7 +644,9 @@
   "health-factor-below-warning-title-main": "Liquidation has been initiated since the health factor has fallen below 1.0. Please repay to protect the collateral.",
 
   "Last update": "Last update",
-  "reward-boost-description": "The boost provides an opportunity to earn more points. To activate the boost, try to reach the total deposit of LP and Lending. This affects only to LP Supplying and Lending points.",
+  "reward-boost-description1": "Try to activate the boost for additional points. Once your total deposit of LP and Lending exceeds $50k, you will receive a 1.5x points boost.",
+  "reward-boost-description2": "Try to get the higer boost for even more points. Once your total deposit of LP and Lending exceeds $250k, you will receive a 3x points boost.",
+  "reward-boost-description3": "You've reached the higest boost. Your total deposit of LP and Lending has exceeded $250k, so the 3x points boost is activated.",
 
   "referral-point": "Referral",
   "My Referral Code": "My Referral Code",

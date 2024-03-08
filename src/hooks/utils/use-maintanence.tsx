@@ -8,8 +8,6 @@ export const useMaintanence = () => {
   const urls = maintanenceData?.map(m => m.url) || [];
 
   const getMaintanence = (path: string, page: JSX.Element) => {
-    if (!maintanenceData) return page;
-
     if (urls.includes(path)) return <MaintenancePage />;
     return page;
   };
