@@ -150,7 +150,7 @@ export const useTableMySupplies = () => {
             <TableColumnToggle
               selected={d.collateral}
               handleSelect={handleToggle}
-              disabled={!d.isCollateral}
+              disabled={!d.isCollateral || isInLiquidation}
             />
           ),
           buttons: (
@@ -303,7 +303,13 @@ export const useTableMySupplies = () => {
                   }
                 />
               ),
-              value: <TableColumnToggle selected={d.collateral} handleSelect={handleToggle} />,
+              value: (
+                <TableColumnToggle
+                  selected={d.collateral}
+                  handleSelect={handleToggle}
+                  disabled={!d.isCollateral || isInLiquidation}
+                />
+              ),
             },
           ],
         };
