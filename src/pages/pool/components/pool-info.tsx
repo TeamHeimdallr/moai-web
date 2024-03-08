@@ -45,7 +45,10 @@ export const PoolInfo = () => {
   const formattedVolume = volume ? `$${formatNumber(volume)}` : '$0';
 
   const formattedApr = apr ? `${formatNumber(apr)}%` : '0%'; // swap apr
-  const formattedMoaiApr = moaiApr ? `${formatNumber(moaiApr)}%` : '0%'; // moai pre-mining apr
+  // const formattedMoaiApr = moaiApr ? `${formatNumber(moaiApr)}%` : '0%'; // moai pre-mining apr
+  // Pre-mining APR is finished
+  const formattedMoaiApr = `+ Moai Points`;
+
   const formattedSwapApr = `${formatNumber(
     (apr || 0) < (moaiApr || 0) ? 0 : (apr || 0) - (moaiApr || 0)
   )}%`;
