@@ -115,7 +115,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const isSuccess = enterOrExitSuccess && !!txData;
   const isError = enterOrExitError;
   const estimatedFee = estimatedEnterOrExitMarketFee;
-  const gasError = (balance || 0) <= Number(estimatedFee || 1.5) || enterOrExitGasError;
+  const gasError = (balance || 0) <= Number(estimatedFee || 2) || enterOrExitGasError;
 
   const buttonText = useMemo(() => {
     if (isLoading) return t('Confirm in wallet');

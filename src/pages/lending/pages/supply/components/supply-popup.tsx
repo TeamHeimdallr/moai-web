@@ -244,12 +244,12 @@ export const LendingSupplyPopup = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, step]);
 
-  const estimatedFee = step === 1 ? estimatedTokenApproveFee || 1 : estimatedLendingSupplyFee || 1;
+  const estimatedFee = step === 1 ? estimatedTokenApproveFee : estimatedLendingSupplyFee;
   const validMaxXrpAmount =
-    symbol === 'XRP' ? (amount || 0) + Number(estimatedFee || 1) < (balance || 0) : true;
+    symbol === 'XRP' ? (amount || 0) + Number(estimatedFee || 4) < (balance || 0) : true;
 
   const gasError =
-    (balance || 0) <= Number(estimatedFee || 1) ||
+    (balance || 0) <= Number(estimatedFee || 4) ||
     lendingGasError ||
     approveGasError ||
     !validMaxXrpAmount;
