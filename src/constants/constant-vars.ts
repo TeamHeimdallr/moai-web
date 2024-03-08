@@ -95,3 +95,5 @@ export const BREAKPOINT = {
 };
 
 export const ASSET_URL = 'https://assets.moai-finance.xyz';
+
+export const HEALTH_FACTOR_THRESHOLD = 1 * 1000; // 10k
