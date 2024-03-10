@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { differenceInDays, differenceInMinutes, format } from 'date-fns';
+import { differenceInDays, format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 
 import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';

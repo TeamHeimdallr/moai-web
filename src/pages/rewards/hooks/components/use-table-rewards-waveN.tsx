@@ -259,7 +259,7 @@ export const useTableRewards = () => {
               label: 'referral-point',
               value: (
                 <TableColumn
-                  value={`${formatNumber(d?.referees, 1, 'floor', THOUSAND, 1)}x`}
+                  value={`${formatNumber(d?.referees, 1, 'floor', THOUSAND, 1)}`}
                   align="flex-end"
                 />
               ),

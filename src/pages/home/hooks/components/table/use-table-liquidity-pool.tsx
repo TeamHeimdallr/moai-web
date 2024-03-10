@@ -15,6 +15,7 @@ import {
   TableHeaderComposition,
   TableHeaderSortable,
 } from '~/components/tables';
+import { TableColumnApr } from '~/components/tables/columns/column-normal-icon';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
@@ -75,7 +76,9 @@ export const useTableLiquidityPool = () => {
         volume: (
           <TableColumn value={`$${formatNumber(d.volume, 2, 'floor', MILLION)}`} align="flex-end" />
         ),
-        apr: <TableColumn value={`${formatNumber(d.apr)}%`} align="flex-end" />,
+        apr: (
+          <TableColumnApr value={`${formatNumber(d.apr)}%`} align="flex-end" network={d.network} />
+        ),
       })),
     [pools, showAllPools]
   );
@@ -171,7 +174,13 @@ export const useTableLiquidityPool = () => {
           },
           {
             label: 'APR',
-            value: <TableColumn value={`${formatNumber(d.apr)}%`} align="flex-end" />,
+            value: (
+              <TableColumnApr
+                value={`${formatNumber(d.apr)}%`}
+                network={d.network}
+                align="flex-end"
+              />
+            ),
           },
         ],
       })),

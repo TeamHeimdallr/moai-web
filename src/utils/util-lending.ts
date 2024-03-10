@@ -1,5 +1,7 @@
 import { Address, formatEther, formatUnits } from 'viem';
 
+import { HEALTH_FACTOR_THRESHOLD } from '~/constants';
+
 import { IMarketWithToken, ISnapshot } from '~/types/lending';
 
 interface Props {
@@ -109,7 +111,8 @@ export const calcHealthFactor = ({
   }, 0);
 
   const healthFactor = denom === 0 ? Infinity : numerator / denom;
-  return healthFactor;
+
+  return healthFactor >= HEALTH_FACTOR_THRESHOLD ? Infinity : healthFactor;
 };
 
 export const calcLtv = ({ markets, snapshots }: Props) => {

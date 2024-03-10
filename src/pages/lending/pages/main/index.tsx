@@ -134,8 +134,9 @@ const Tab = styled.div<TabProps>(({ selected }) => [
   tw`
     font-b-18 clickable
     md:(font-b-20)
+    hover:(text-primary-80)
   `,
-  selected ? tw`text-primary-60` : tw`text-neutral-60`,
+  selected ? tw`text-primary-60 hover:(text-primary-60)` : tw`text-neutral-60`,
 ]);
 
 export default LendingMain;

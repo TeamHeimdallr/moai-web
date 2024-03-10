@@ -258,7 +258,7 @@
 
   "Activate your $XRP": "$XRP로 리워드를 받아가세요!",
   "Activate $XRP": "$XRP로 리워드 받기",
-  "campaign-landing-main-text": "The Root Network의 메인넷 DEX 런칭을 기념하기 위해 Moai Finance에서 $XRP 홀더를 위한\n캠페인 “Voyage to the Future”에 초대합니다. 캠페인을 통해 Futureverse의 The Root\nNetwork에 초기 유동성을 제공하고 $MOAI 프리마이닝과 특별한 $ROOT 리워드를 받아가세요!",
+  "campaign-landing-main-text": "The Root Network의 메인넷 DEX 런칭을 기념하기 위해 Moai Finance에서 $XRP 홀더를 위한\n캠페인 “Voyage to the Future”에 초대합니다. 캠페인을 통해 Futureverse의 The Root\nNetwork에 초기 유동성을 제공하고 Moai 포인트와 특별한 $ROOT 리워드를 받아가세요!",
   "Expected APR": "예상 APR",
   "My Voyage": "내 Voyage",
   "Bridge to XRPL": "XRPL로 브릿지하기",
@@ -272,7 +272,7 @@
   "description-title-1": "부스팅된 수익률을 즐기세요.",
   "description-title-2": "$XRP를 예치하세요.",
   "description-title-3": "초기 단계의 생태계에 참여할 수 있는 특별한 기회",
-  "description-text-1": "기존 LP 보상에 Futureverse 네이티브 코인인 $ROOT와 프리마이닝 $MOAI로 이루어진 10% 추가 보상을 드립니다.",
+  "description-text-1": "기존 LP 보상에 Futureverse 네이티브 코인인 $ROOT로 10% 추가 보상을 드립니다.",
   "description-text-2": "단일 토큰 예치를 통해 보상을 수령하세요.",
   "description-text-3": "Futureverse와 Moai Finance의 초기 유동성 풀에서 혜택을 누리세요.",
 
@@ -675,5 +675,8 @@
   "Invalid code": "유효하지 않은 코드입니다.",
 
   "Bound confirmed!": "등록이 완료되었습니다.",
-  "You have just successfully bound with": "{{ code }} 코드를 성공적으로 등록했습니다."
+  "You have just successfully bound with": "{{ code }} 코드를 성공적으로 등록했습니다.",
+
+  "Moai Points": "Moai 포인트",
+  "Moai points": "Moai 포인트"
 }

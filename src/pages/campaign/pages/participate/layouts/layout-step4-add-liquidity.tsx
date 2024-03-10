@@ -331,7 +331,7 @@ const _AddLiquidity = () => {
               <Divider />
               <TokenList
                 type="campaign"
-                title={t('Pre-mining $veMOAI')}
+                title={t('Moai Points')}
                 image={<IconTokenMoai width={36} height={36} />}
               />
             </List>
@@ -429,7 +429,7 @@ const _AddLiquidity = () => {
             <Divider />
             <TokenList
               type="campaign"
-              title={t('Pre-mining $veMOAI')}
+              title={t('Moai Points')}
               image={<IconTokenMoai width={36} height={36} />}
             />
           </List>
