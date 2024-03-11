@@ -14,6 +14,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   barChart?: boolean;
   barChartValue?: number;
   barChartLabel?: string;
+  barChartSubLabel?: ReactNode;
 }
 export const AssetSupplyBorrowInfoCard = ({
   title,
@@ -25,6 +26,7 @@ export const AssetSupplyBorrowInfoCard = ({
   barChart,
   barChartValue,
   barChartLabel,
+  barChartSubLabel,
   ...rest
 }: Props) => {
   return (
@@ -40,7 +42,10 @@ export const AssetSupplyBorrowInfoCard = ({
       {barChart && (
         <BarWrapper>
           <Bar value={barChartValue || 0} />
-          <Caption>{barChartLabel}</Caption>
+          <BarCaption>
+            <Caption>{barChartLabel}</Caption>
+            {barChartSubLabel}
+          </BarCaption>
         </BarWrapper>
       )}
     </Wrapper>
@@ -100,4 +105,8 @@ const Bar = styled.div<InfoBarProps>(({ value }) => [
 const Caption = tw.div`
   text-neutral-90 font-r-12
   md:(font-r-14)
+`;
+
+const BarCaption = tw.div`
+  flex justify-between
 `;

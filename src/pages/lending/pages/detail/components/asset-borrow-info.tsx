@@ -48,6 +48,8 @@ export const AssetBorrowInfo = () => {
   const reserveFactorNum = Number(formatUnits(reserveFactorMantissa || 0n, 18)) * 100;
 
   const ratio = (totalBorrowNum / borrowCap) * 100;
+  const totalBorrowUsd = totalBorrowNum * price;
+  const borrowCapUsd = borrowCap * price;
 
   return (
     <OuterWrapper>
@@ -64,15 +66,24 @@ export const AssetBorrowInfo = () => {
               />
             }
             value={
-              <>
-                <InfoText>{formatNumber(totalBorrowNum)}</InfoText>
-                <InfoTextSmall>of</InfoTextSmall>
-                <InfoText>{formatNumber(borrowCap)}</InfoText>
-              </>
+              <InfoTextWrapper>
+                <InfoText>{formatNumber(totalBorrowNum, 2, 'floor', THOUSAND, 2)}</InfoText>
+                <InfoSubText>${formatNumber(totalBorrowUsd, 2, 'floor', THOUSAND, 2)}</InfoSubText>
+              </InfoTextWrapper>
             }
             barChart
             barChartValue={ratio}
             barChartLabel={`${formatNumber(ratio, 2, 'floor', THOUSAND, 2)}%`}
+            barChartSubLabel={
+              <InfoTextWrapper>
+                <BarChartSubLabelText>
+                  {formatNumber(borrowCap, 2, 'floor', THOUSAND, 2)}
+                </BarChartSubLabelText>
+                <BarChartSubLabelSubText>
+                  ${formatNumber(borrowCapUsd, 2, 'floor', THOUSAND, 2)}
+                </BarChartSubLabelSubText>
+              </InfoTextWrapper>
+            }
           />
           <AssetSupplyBorrowInfoCard
             title={t('APY')}
@@ -143,10 +154,6 @@ const InfoText = tw.div`
   font-m-16
   md:(font-m-18)
 `;
-const InfoTextSmall = tw.div`
-  font-r-14
-  md:(font-r-16)
-`;
 
 const ChartWrapper = tw.div``;
 
@@ -161,4 +168,23 @@ const CollectorCards = tw.div`
 
 const TooltipContent = tw.div`
   w-266
+`;
+
+const InfoTextWrapper = tw.div`
+  gap-6 items-center flex
+`;
+
+const InfoSubText = tw.div`
+  text-neutral-70 font-r-12
+  md:(font-r-14)
+`;
+
+const BarChartSubLabelText = tw.div`
+  text-neutral-90 font-m-12
+  md:(font-m-14)
+`;
+
+const BarChartSubLabelSubText = tw.div`
+  text-neutral-70 font-m-12
+  md:(font-m-12)
 `;
