@@ -7,6 +7,8 @@ import { Address } from 'viem';
 import { useBalance } from 'wagmi';
 
 import { useEnterOrExitMarketPrepare } from '~/api/api-contract/_evm/lending/enter-exit-market-substrate';
+import { useGetHypotheticalAccount } from '~/api/api-contract/_evm/lending/get-hypothetical-Account';
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useEnterOrExitMarket } from '~/api/api-contract/lending/enter-exit-market';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -58,6 +60,11 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const walletAddress = isFpass ? fpass.address : evm.address;
 
   const { data: nativeBalance } = useBalance({ address: walletAddress as Address });
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const xrpBalance = xrp?.balance || 0;
+
+  const userTokenBalance = xrpBalance || 0;
 
   const isEnable = type === 'enable';
   const popupId = isEnable
@@ -77,13 +84,20 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
 
   const { markets: markets } = useGetAllMarkets();
   const { accountSnapshots: snapshots } = useUserAccountSnapshotAll();
+  const mTokenBalance = snapshots?.find(s => s.mTokenAddress === marketAddress)?.mTokenBalance;
+  const { shortfall: hypotheticalShortfall } = useGetHypotheticalAccount({
+    mTokenAddress: marketAddress,
+    redeemAmount: mTokenBalance || 0n,
+    borrowAmount: 0n,
+  });
+
   const healthFactor = calcHealthFactor({ markets, snapshots });
 
   const [estimatedEnterOrExitMarketFee, setEstimatedEnterOrExitMarketFee] = useState<
     number | undefined
   >();
 
-  const isExitPossible = true; // TODO: check if exit is possible by using hypothetical liquidity
+  const isExitPossible = !!(hypotheticalShortfall === 0n);
   const {
     isLoading,
     isSuccess: enterOrExitSuccess,
@@ -115,7 +129,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const isSuccess = enterOrExitSuccess && !!txData;
   const isError = enterOrExitError;
   const estimatedFee = estimatedEnterOrExitMarketFee;
-  const gasError = (balance || 0) <= Number(estimatedFee || 2) || enterOrExitGasError;
+  const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 2) || enterOrExitGasError;
 
   const buttonText = useMemo(() => {
     if (isLoading) return t('Confirm in wallet');
@@ -216,7 +230,8 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
               !estimatedFee ||
               isPrepareLoading ||
               isPrepareError ||
-              healthFactor <= 1.001
+              healthFactor <= 1.001 ||
+              !(!isEnable && isExitPossible)
             }
           />
         </ButtonWrapper>
