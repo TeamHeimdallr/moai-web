@@ -112,12 +112,20 @@ export const useBatchSwap = ({
             })
           : '0x0';
 
+      const gas = await publicClient.estimateContractGas({
+        address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+        abi: BALANCER_VAULT_ABI,
+        functionName: 'batchSwap',
+        args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         EVM_VAULT_ADDRESS[selectedNetwork],
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        gas,
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -128,14 +136,6 @@ export const useBatchSwap = ({
 
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
-
-      const gas = await publicClient.estimateContractGas({
-        address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
-        abi: BALANCER_VAULT_ABI,
-        functionName: 'batchSwap',
-        args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
-        account: walletAddress as Address,
-      });
 
       const maxFeePerGas = feeHistory.baseFeePerGas[0];
       const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
@@ -174,12 +174,20 @@ export const useBatchSwap = ({
             })
           : '0x0';
 
+      const gas = await publicClient.estimateContractGas({
+        address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+        abi: BALANCER_VAULT_ABI,
+        functionName: 'batchSwap',
+        args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         EVM_VAULT_ADDRESS[selectedNetwork],
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        gas,
         feeHistory.baseFeePerGas[0],
         0,
         null,

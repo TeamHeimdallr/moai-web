@@ -76,12 +76,20 @@ export const useRepay = ({ token, enabled, isMax }: Props) => {
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: (token?.mTokenAddress || '') as Address,
+        abi: MTOKEN_ABI,
+        functionName: 'repayBorrow',
+        args: [isMax ? uint256Max : inputAmount],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         (token?.mTokenAddress || '0x0') as Address,
         encodedData,
         0,
-        '1000000', // gas limit estimation todo: can be changed. actual: around 18k
+        evmGas, // around 18k
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -92,14 +100,6 @@ export const useRepay = ({ token, enabled, isMax }: Props) => {
 
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
-
-      const evmGas = await publicClient.estimateContractGas({
-        address: (token?.mTokenAddress || '') as Address,
-        abi: MTOKEN_ABI,
-        functionName: 'repayBorrow',
-        args: [isMax ? uint256Max : inputAmount],
-        account: walletAddress as Address,
-      });
 
       const maxFeePerGas = feeHistory.baseFeePerGas[0];
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
@@ -139,12 +139,20 @@ export const useRepay = ({ token, enabled, isMax }: Props) => {
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: (token?.mTokenAddress || '') as Address,
+        abi: MTOKEN_ABI,
+        functionName: 'repayBorrow',
+        args: [isMax ? uint256Max : inputAmount],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         (token?.mTokenAddress || '0x0') as Address,
         encodedData,
         0,
-        '1000000', // gas limit estimation todo: can be changed
+        evmGas,
         feeHistory.baseFeePerGas[0],
         0,
         null,

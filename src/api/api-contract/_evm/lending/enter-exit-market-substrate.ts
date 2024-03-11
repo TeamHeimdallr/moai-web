@@ -73,12 +73,20 @@ export const useEnterOrExitMarket = ({ marketAddress, currentStatus, enabled }: 
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+        abi: COMPTROLLER_ABI,
+        functionName: isEnterRequest ? 'enterMarkets' : 'exitMarket',
+        args: isEnterRequest ? [[marketAddress]] : [marketAddress],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed. actual: around 17k
+        evmGas,
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -89,14 +97,6 @@ export const useEnterOrExitMarket = ({ marketAddress, currentStatus, enabled }: 
 
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
-
-      const evmGas = await publicClient.estimateContractGas({
-        address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
-        abi: COMPTROLLER_ABI,
-        functionName: isEnterRequest ? 'enterMarkets' : 'exitMarket',
-        args: isEnterRequest ? [[marketAddress]] : [marketAddress],
-        account: walletAddress as Address,
-      });
 
       const maxFeePerGas = feeHistory.baseFeePerGas[0];
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
@@ -136,12 +136,20 @@ export const useEnterOrExitMarket = ({ marketAddress, currentStatus, enabled }: 
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+        abi: COMPTROLLER_ABI,
+        functionName: isEnterRequest ? 'enterMarkets' : 'exitMarket',
+        args: isEnterRequest ? [[marketAddress]] : [marketAddress],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed. actual: around 17k
+        evmGas, // around 17k
         feeHistory.baseFeePerGas[0],
         0,
         null,

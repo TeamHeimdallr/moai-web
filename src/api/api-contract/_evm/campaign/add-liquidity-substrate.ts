@@ -76,12 +76,20 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+        abi: CAMPAIGN_ABI,
+        functionName: 'participate',
+        args: ['1', '0'],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        evmGas,
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -92,14 +100,6 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
 
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
-
-      const evmGas = await publicClient.estimateContractGas({
-        address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
-        abi: CAMPAIGN_ABI,
-        functionName: 'participate',
-        args: ['1', '0'],
-        account: walletAddress as Address,
-      });
 
       const maxFeePerGas = feeHistory.baseFeePerGas[0];
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
@@ -131,6 +131,14 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
         getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
       ]);
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+        abi: CAMPAIGN_ABI,
+        functionName: 'participate',
+        args: [xrpAmount, '0'],
+        account: walletAddress as Address,
+      });
+
       const encodedData =
         isFpass && !!walletAddress && !!signer
           ? encodeFunctionData({
@@ -145,7 +153,7 @@ export const useAddLiquidity = ({ xrpAmount, enabled }: Props) => {
         CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        evmGas,
         feeHistory.baseFeePerGas[0],
         0,
         null,

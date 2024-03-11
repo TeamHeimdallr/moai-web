@@ -120,23 +120,6 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
             })
           : '0x0';
 
-      const evmCall = api.tx.evm.call(
-        walletAddress,
-        vault,
-        encodedData,
-        0,
-        '400000', // gas limit estimation todo: can be changed
-        feeHistory.baseFeePerGas[0],
-        0,
-        null,
-        []
-      );
-
-      const extrinsic = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
-
-      const info = await extrinsic.paymentInfo(signer);
-      const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
-
       const evmGas = await publicClient.estimateContractGas({
         address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
         abi: BALANCER_VAULT_ABI,
@@ -154,6 +137,23 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
         ],
         account: walletAddress as Address,
       });
+
+      const evmCall = api.tx.evm.call(
+        walletAddress,
+        vault,
+        encodedData,
+        0,
+        evmGas,
+        feeHistory.baseFeePerGas[0],
+        0,
+        null,
+        []
+      );
+
+      const extrinsic = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
+
+      const info = await extrinsic.paymentInfo(signer);
+      const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
 
       const maxFeePerGas = feeHistory.baseFeePerGas[0];
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
@@ -203,12 +203,30 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
+        abi: BALANCER_VAULT_ABI,
+        functionName: 'joinPool',
+        args: [
+          poolId,
+          walletAddress,
+          walletAddress,
+          [
+            sortedTokenAddressses,
+            sortedAmountsIn,
+            WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+            false,
+          ],
+        ],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         vault,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        evmGas,
         feeHistory.baseFeePerGas[0],
         0,
         null,
