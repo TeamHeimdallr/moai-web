@@ -95,12 +95,20 @@ export const useApprove = ({
           })
         : '0x0';
 
+      const gas = await publicClient.estimateContractGas({
+        address: tokenAddress as Address,
+        abi: ERC20_TOKEN_ABI,
+        functionName: 'approve',
+        account: walletAddress as Address,
+        args: [spender, parseEther(Number.MAX_SAFE_INTEGER.toString())],
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         tokenAddress,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        gas,
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -110,14 +118,6 @@ export const useApprove = ({
       const extrinsic = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
-
-      const gas = await publicClient.estimateContractGas({
-        address: tokenAddress as Address,
-        abi: ERC20_TOKEN_ABI,
-        functionName: 'approve',
-        account: walletAddress as Address,
-        args: [spender, parseEther(Number.MAX_SAFE_INTEGER.toString())],
-      });
 
       const maxFeePerGas = feeHistory.baseFeePerGas[0];
       const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
@@ -157,12 +157,20 @@ export const useApprove = ({
           })
         : '0x0';
 
+      const gas = await publicClient.estimateContractGas({
+        address: tokenAddress as Address,
+        abi: ERC20_TOKEN_ABI,
+        functionName: 'approve',
+        account: walletAddress as Address,
+        args: [spender, parseEther(Number.MAX_SAFE_INTEGER.toString())],
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         tokenAddress,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        gas,
         feeHistory.baseFeePerGas[0],
         0,
         null,

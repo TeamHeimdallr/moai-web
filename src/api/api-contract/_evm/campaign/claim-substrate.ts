@@ -74,12 +74,19 @@ export const useClaim = () => {
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+        abi: CAMPAIGN_ABI,
+        functionName: 'claim',
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        evmGas,
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -90,13 +97,6 @@ export const useClaim = () => {
 
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
-
-      const evmGas = await publicClient.estimateContractGas({
-        address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
-        abi: CAMPAIGN_ABI,
-        functionName: 'claim',
-        account: walletAddress as Address,
-      });
 
       const maxFeePerGas = feeHistory.baseFeePerGas[0];
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
@@ -136,12 +136,19 @@ export const useClaim = () => {
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+        abi: CAMPAIGN_ABI,
+        functionName: 'claim',
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         CAMPAIGN_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
         encodedData,
         0,
-        '400000', // gas limit estimation todo: can be changed
+        evmGas,
         feeHistory.baseFeePerGas[0],
         0,
         null,

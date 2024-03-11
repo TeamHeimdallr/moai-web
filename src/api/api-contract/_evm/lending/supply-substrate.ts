@@ -73,12 +73,20 @@ export const useSupply = ({ token, enabled }: Props) => {
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: (token?.mTokenAddress || '') as Address,
+        abi: MTOKEN_ABI,
+        functionName: 'mint',
+        args: [inputAmount],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         (token?.mTokenAddress || '') as Address,
         encodedData,
         0,
-        '1000000', // gas limit estimation todo: can be changed. actual: around 20k
+        evmGas,
         feeHistory.baseFeePerGas[0],
         0,
         null,
@@ -89,14 +97,6 @@ export const useSupply = ({ token, enabled }: Props) => {
 
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
-
-      const evmGas = await publicClient.estimateContractGas({
-        address: (token?.mTokenAddress || '') as Address,
-        abi: MTOKEN_ABI,
-        functionName: 'mint',
-        args: [inputAmount],
-        account: walletAddress as Address,
-      });
 
       const maxFeePerGas = feeHistory.baseFeePerGas[0];
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
@@ -136,12 +136,20 @@ export const useSupply = ({ token, enabled }: Props) => {
             })
           : '0x0';
 
+      const evmGas = await publicClient.estimateContractGas({
+        address: (token?.mTokenAddress || '') as Address,
+        abi: MTOKEN_ABI,
+        functionName: 'mint',
+        args: [inputAmount],
+        account: walletAddress as Address,
+      });
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         (token?.mTokenAddress || '') as Address,
         encodedData,
         0,
-        '1000000', // gas limit estimation todo: can be changed
+        evmGas,
         feeHistory.baseFeePerGas[0],
         0,
         null,
