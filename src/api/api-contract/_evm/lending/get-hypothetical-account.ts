@@ -36,7 +36,8 @@ export const useGetHypotheticalAccount = ({ mTokenAddress, redeemAmount, borrowA
 
     args: [walletAddress, mTokenAddress, redeemAmount, borrowAmount],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm && !!walletAddress && !!mTokenAddress,
+    enabled:
+      !!chainId && isEvm && !!walletAddress && !!mTokenAddress && !!redeemAmount && !!borrowAmount,
   });
 
   return {

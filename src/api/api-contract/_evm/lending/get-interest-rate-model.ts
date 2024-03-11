@@ -33,7 +33,7 @@ export const useGetInterestRateModel = ({ marketAddress }: Props) => {
     chainId,
     args: [marketAddress],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm,
+    enabled: !!chainId && isEvm && !!marketAddress,
   });
 
   const metadata = metadataData as IMTokenMetadata;
@@ -95,7 +95,14 @@ export const useGetInterestRateModel = ({ marketAddress }: Props) => {
       bigint,
     ],
     staleTime: 1000 * 3,
-    enabled: !!marketAddress && !!chainId && isEvm && !!interestRateModel,
+    enabled:
+      !!marketAddress &&
+      !!chainId &&
+      isEvm &&
+      !!interestRateModel &&
+      !!metadata?.totalCash &&
+      !!metadata?.totalBorrows &&
+      !!metadata?.totalReserves,
   });
 
   const utilizationRate = Number(formatEther((utilizationRateData ?? 0n) as bigint)) as number;

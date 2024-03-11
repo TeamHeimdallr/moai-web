@@ -61,9 +61,9 @@ export const useTableMySupplies = () => {
   const mySupplies = useMemo(
     () =>
       accountSnapshots
-        .map(d => {
-          const makrketIndex = markets.findIndex(m => m.address === d.mTokenAddress);
-          const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
+        ?.map(d => {
+          const makrketIndex = markets?.findIndex(m => m.address === d.mTokenAddress);
+          const market = makrketIndex === -1 ? undefined : markets?.[makrketIndex];
           const price = market?.price;
           const underlyingBalance = Number(
             formatUnits(d.exchangeRate * d.mTokenBalance, 16 + (market?.decimals || 18))
@@ -243,7 +243,7 @@ export const useTableMySupplies = () => {
 
   const mobileTableData = useMemo(
     () =>
-      sortedMySupplies.map((d, i) => {
+      sortedMySupplies?.map((d, i) => {
         const handleToggle = (current: boolean) => {
           if (current) {
             openCollateralDisable({ params: { asset: d.asset, address: d.address } });
@@ -332,15 +332,17 @@ export const useTableMySupplies = () => {
     [sort]
   );
 
-  const balance = mySupplies.map(d => d.asset.value).reduce((acc, cur) => acc + cur, 0);
-  const apySum = mySupplies.map(d => d.asset.value * d.apy).reduce((acc, cur) => acc + cur, 0);
-  const apy = apySum / balance;
-  const collateral = mySupplies
-    .map(d => {
-      if (!d.isCollateral) return 0;
-      return d.collateral ? d.asset.value : 0;
-    })
-    .reduce((acc, cur) => acc + cur, 0);
+  const balance = mySupplies?.map(d => d.asset.value).reduce((acc, cur) => acc + cur, 0) || 0;
+  const apySum =
+    mySupplies?.map(d => d.asset.value * d.apy).reduce((acc, cur) => acc + cur, 0) || 0;
+  const apy = balance === 0 ? 0 : apySum / balance;
+  const collateral =
+    mySupplies
+      ?.map(d => {
+        if (!d.isCollateral) return 0;
+        return d.collateral ? d.asset.value : 0;
+      })
+      ?.reduce((acc, cur) => acc + cur, 0) || 0;
 
   useEffect(() => {
     if (!isMD) setSort({ key: 'balance', order: 'desc' });

@@ -22,7 +22,7 @@ export const useUserAccountSnapshotAll = () => {
   const { evm, fpass } = useConnectedWallet();
   const { address: walletAddress } = isFpass ? fpass : evm;
 
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetwork = getNetworkFull(network) || selectedNetwork;
   const chainId = useNetworkId(currentNetwork);
 
   const { data: marketsData, refetch: refetchMarkets } = useContractRead({
@@ -58,7 +58,7 @@ export const useUserAccountSnapshotAll = () => {
 
     args: [marketAddrs, walletAddress],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm && !!marketAddrs && !!walletAddress,
+    enabled: !!chainId && isEvm && !!walletAddress && !!marketAddrs && marketAddrs.length > 0,
   });
   const balances = balanceData as Array<bigint>;
 
@@ -69,19 +69,19 @@ export const useUserAccountSnapshotAll = () => {
     chainId,
     args: [marketAddrs],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm,
+    enabled: !!chainId && isEvm && !!marketAddrs && marketAddrs.length > 0,
   });
   const metadataList = (metadataAll as Array<IMTokenMetadata>)?.map((m: IMTokenMetadata) => m);
 
   const accountSnapshots = (balances?.map((d, i) => {
     return {
       error: BigInt(d === undefined),
-      mTokenBalance: BigInt(d?.['balanceOf'] ?? 0),
-      borrowBalance: BigInt(d?.['borrowBalanceCurrent'] ?? 0),
-      exchangeRate: BigInt(metadataList?.[i]?.['exchangeRateCurrent'] ?? 200000000000000n),
-      collateralFator: BigInt(metadataList?.[i]?.['collateralFactorMantissa'] ?? 0),
-      mTokenAddress: marketAddrs[i] ?? '0x0',
-      isCollateral: assetsIn?.includes(marketAddrs[i]),
+      mTokenBalance: BigInt(d?.['balanceOf'] || 0),
+      borrowBalance: BigInt(d?.['borrowBalanceCurrent'] || 0),
+      exchangeRate: BigInt(metadataList?.[i]?.['exchangeRateCurrent'] || 200000000000000n),
+      collateralFator: BigInt(metadataList?.[i]?.['collateralFactorMantissa'] || 0),
+      mTokenAddress: marketAddrs?.[i] || '0x0',
+      isCollateral: assetsIn?.includes(marketAddrs?.[i]),
     };
   }) || []) as ISnapshot[];
 

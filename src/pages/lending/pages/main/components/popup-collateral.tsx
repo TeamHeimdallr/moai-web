@@ -7,7 +7,7 @@ import { Address } from 'viem';
 import { useBalance } from 'wagmi';
 
 import { useEnterOrExitMarketPrepare } from '~/api/api-contract/_evm/lending/enter-exit-market-substrate';
-import { useGetHypotheticalAccount } from '~/api/api-contract/_evm/lending/get-hypothetical-Account';
+import { useGetHypotheticalAccount } from '~/api/api-contract/_evm/lending/get-hypothetical-account';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useEnterOrExitMarket } from '~/api/api-contract/lending/enter-exit-market';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';

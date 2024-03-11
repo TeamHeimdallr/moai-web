@@ -60,17 +60,17 @@ export const useGetMarket = ({ marketAddress }: Props) => {
   });
 
   const metadata = metadataData as IMTokenMetadata;
-  const underlyingAddress = metadata?.underlyingAssetAddress as Address;
-  const underlyingDecimals = Number(metadata?.underlyingDecimals);
-  const supplyRatePerBlocks = Number(metadata?.supplyRatePerBlock);
-  const borrowRatePerBlocks = Number(metadata?.borrowRatePerBlock);
+  const underlyingAddress = metadata?.underlyingAssetAddress || ('0x' as Address);
+  const underlyingDecimals = Number(metadata?.underlyingDecimals || 0n);
+  const supplyRatePerBlocks = Number(metadata?.supplyRatePerBlock || 0n);
+  const borrowRatePerBlocks = Number(metadata?.borrowRatePerBlock || 0n);
 
-  const totalReserves = metadata?.totalReserves as bigint;
-  const totalBorrows = metadata?.totalBorrows as bigint;
-  const cashes = metadata?.totalCash as bigint;
-  const reserveFactorMantissa = metadata?.reserveFactorMantissa as bigint;
-  const totalSupply = metadata?.totalSupply as bigint; // ctoken's total supply. not an supplied amount
-  const collateralFactorsMantissa = metadata?.collateralFactorMantissa as bigint;
+  const totalReserves = metadata?.totalReserves || (0n as bigint);
+  const totalBorrows = metadata?.totalBorrows || (0n as bigint);
+  const cashes = metadata?.totalCash || (0n as bigint);
+  const reserveFactorMantissa = metadata?.reserveFactorMantissa || (0n as bigint);
+  const totalSupply = metadata?.totalSupply || (0n as bigint); // ctoken's total supply. not an supplied amount
+  const collateralFactorsMantissa = metadata?.collateralFactorMantissa || (0n as bigint);
 
   const blocksPerYear = 7884000;
   const blocksPerDay = blocksPerYear / 365;
@@ -102,7 +102,9 @@ export const useGetMarket = ({ marketAddress }: Props) => {
     price: Number(formatUnits(price?.['underlyingPrice'] || 0n, 36 - underlyingDecimals)),
   };
 
-  const { userTokenBalances } = useUserTokenBalances({ addresses: [underlyingAddress] });
+  const { userTokenBalances } = useUserTokenBalances({
+    addresses: underlyingAddress ? [underlyingAddress] : [],
+  });
 
   const token = userTokenBalances?.find(t => t.address === market.underlyingAsset);
 

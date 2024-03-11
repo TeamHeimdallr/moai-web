@@ -43,10 +43,10 @@ export const useUserAccountSnapshot = ({ mTokenAddress }: Props) => {
   const isError = data?.[0] !== 0n || isContractReadError || noParticipation;
 
   const accountSnapshot = {
-    error: BigInt(data?.[0] ?? 1),
-    mTokenBalance: isError ? 0n : BigInt(data?.[1] ?? 0),
-    borrowBalance: isError ? 0n : BigInt(data?.[2] ?? 0),
-    exchangeRate: isError ? 0n : BigInt(data?.[3] ?? 0),
+    error: BigInt(data?.[0] || 1),
+    mTokenBalance: isError ? 0n : BigInt(data?.[1] || 0),
+    borrowBalance: isError ? 0n : BigInt(data?.[2] || 0),
+    exchangeRate: isError ? 0n : BigInt(data?.[3] || 0),
     mTokenAddress,
   } as ISnapshot;
 

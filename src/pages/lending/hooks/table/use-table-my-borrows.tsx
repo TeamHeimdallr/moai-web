@@ -50,9 +50,9 @@ export const useTableMyBorrows = () => {
   const myBorrows = useMemo(
     () =>
       accountSnapshots
-        .map(d => {
-          const makrketIndex = markets.findIndex(m => m.address === d.mTokenAddress);
-          const market = makrketIndex === -1 ? undefined : markets[makrketIndex];
+        ?.map(d => {
+          const makrketIndex = markets?.findIndex(m => m.address === d.mTokenAddress);
+          const market = makrketIndex === -1 ? undefined : markets?.[makrketIndex];
           const debt = Number(formatUnits(d.borrowBalance, market?.underlyingDecimals || 18));
           const price = market?.price;
           const debtValue = debt * (price || 0);
@@ -192,7 +192,7 @@ export const useTableMyBorrows = () => {
 
   const mobileTableData = useMemo(
     () =>
-      sortedMyBorrows.map((d, i) => {
+      sortedMyBorrows?.map((d, i) => {
         return {
           meta: { id: d.id, asset: d.asset, address: d.address },
           rows: [

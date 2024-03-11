@@ -45,8 +45,8 @@ export const useGetUnderlyingPrice = ({ mTokenAddress }: Props) => {
     enabled: !!chainId && isEvm && !!mTokenAddress,
   });
 
-  const priceRaw = data?.['underlyingPrice'] as bigint;
-  const decimals = Number(metaData?.['underlyingDecimals']) as number;
+  const priceRaw = (data?.['underlyingPrice'] || 0n) as bigint;
+  const decimals = Number(metaData?.['underlyingDecimals'] || 0n) as number;
   const price = priceRaw ? formatUnits(priceRaw, 36 - decimals) : undefined;
 
   return {

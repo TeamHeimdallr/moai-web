@@ -34,7 +34,7 @@ export const useGetMarkets = ({ mTokenAddress }: Props) => {
     enabled: !!chainId && isEvm && !!mTokenAddress,
   });
 
-  const collateralFactorsMantissa = data?.[1];
+  const collateralFactorsMantissa = data?.[1] || 0n;
 
   return {
     marketMetadata: {

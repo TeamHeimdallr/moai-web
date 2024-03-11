@@ -51,7 +51,7 @@ export const useGetMaxBorrowPower = () => {
 
     args: [marketAddrs, walletAddress],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm && !!marketAddrs && !!walletAddress,
+    enabled: !!chainId && isEvm && !!marketAddrs && marketAddrs.length > 0 && !!walletAddress,
   });
   const balances = balanceData as Array<bigint>;
 
@@ -63,7 +63,7 @@ export const useGetMaxBorrowPower = () => {
 
     args: [marketAddrs],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm && !!marketAddrs,
+    enabled: !!chainId && isEvm && !!marketAddrs && marketAddrs.length > 0,
   });
 
   const metadataAll = metadataAllData as Array<IMTokenMetadata>;
@@ -76,7 +76,7 @@ export const useGetMaxBorrowPower = () => {
 
     args: [marketAddrs],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm && !!marketAddrs,
+    enabled: !!chainId && isEvm && !!marketAddrs && marketAddrs.length > 0,
   });
 
   const underlyingPriceAll = underlyingPriceAllData as Array<IPriceData>;
