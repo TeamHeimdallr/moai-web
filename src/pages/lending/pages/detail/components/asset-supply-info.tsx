@@ -38,6 +38,7 @@ export const AssetSupplyInfo = () => {
     supplyApy,
     collateralFactorsMantissa,
     underlyingDecimals,
+    price,
   } = market || {};
   const { liquidationIncentiveRaw } = useGetLiquidationIncentive();
 
@@ -50,6 +51,8 @@ export const AssetSupplyInfo = () => {
     formatUnits(cash + totalBorrows + totalReserves || 0n, underlyingDecimals || 0)
   );
   const supplyApyNum = Number(supplyApy);
+
+  const totalSupplyUsd = totalSupplyNum * price;
 
   return (
     <OuterWrapper>
@@ -65,7 +68,12 @@ export const AssetSupplyInfo = () => {
                 data-tooltip-id={TOOLTIP_ID.LENDING_DETAIL_TOTAL_SUPPLIED}
               />
             }
-            value={<InfoText>{formatNumber(totalSupplyNum, 2, 'floor', THOUSAND, 2)}</InfoText>}
+            value={
+              <InfoTextWrapper>
+                <InfoText>{formatNumber(totalSupplyNum, 2, 'floor', THOUSAND, 2)}</InfoText>
+                <InfoSubText>${formatNumber(totalSupplyUsd, 2, 'floor', THOUSAND, 2)}</InfoSubText>
+              </InfoTextWrapper>
+            }
           />
           <AssetSupplyBorrowInfoCard
             title={t('APY')}
@@ -206,4 +214,13 @@ const CollateralCards = tw.div`
 
 const TooltipContent = tw.div`
   w-266
+`;
+
+const InfoTextWrapper = tw.div`
+  gap-6 items-center flex
+`;
+
+const InfoSubText = tw.div`
+  text-neutral-70 font-r-12
+  md:(font-r-14)
 `;
