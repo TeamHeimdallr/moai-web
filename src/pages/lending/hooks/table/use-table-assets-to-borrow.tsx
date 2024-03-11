@@ -47,8 +47,8 @@ export const useTableAssetsToBorrow = () => {
   const { accountSnapshots } = useUserAccountSnapshotAll();
 
   const hf = calcHealthFactor({
-    markets,
-    snapshots: accountSnapshots,
+    markets: markets || [],
+    snapshots: accountSnapshots || [],
   });
   const isInLiquidation = hf <= 1.0;
 
@@ -57,12 +57,12 @@ export const useTableAssetsToBorrow = () => {
   const fetchNextPage = () => {};
 
   const { availableAmountList } = useUserAvailableBorrowAll({
-    mTokenAddresses: markets.map(m => m.address),
+    mTokenAddresses: markets?.map(m => m?.address || ''),
   });
 
   const assetsToBorrow = useMemo(
     () =>
-      markets.map((m, i) => {
+      markets?.map((m, i) => {
         const remain = Number(formatUnits(m.cash, m.underlyingDecimals || 18));
         const remainValue = remain * (m.price || 0);
 
@@ -86,14 +86,14 @@ export const useTableAssetsToBorrow = () => {
             s => s.mTokenAddress === m.address
           );
           const accountSnapshot =
-            accountSnapshotIndex === -1 ? undefined : accountSnapshots[accountSnapshotIndex];
+            accountSnapshotIndex === -1 ? undefined : accountSnapshots?.[accountSnapshotIndex];
           const underlyingBalance = Number(
             formatUnits(
               (accountSnapshot?.exchangeRate || 0n) * (accountSnapshot?.mTokenBalance || 0n),
               16 + (m.decimals || 18)
             )
           );
-          const availables = availableAmountList[i] || 0;
+          const availables = availableAmountList?.[i] || 0;
           const value = availables * (m.price || 0);
           const debt = Number(
             formatUnits(accountSnapshot?.borrowBalance || 0n, m.underlyingDecimals || 18)
@@ -120,7 +120,7 @@ export const useTableAssetsToBorrow = () => {
 
   const sortedAssetsToBorrow = useMemo(() => {
     if (sort?.key === 'available') {
-      return assetsToBorrow.sort((a, b) => {
+      return assetsToBorrow?.sort((a, b) => {
         if (sort.order === 'desc') {
           return b.asset.value - a.asset.value;
         }
@@ -128,7 +128,7 @@ export const useTableAssetsToBorrow = () => {
       });
     }
     if (sort?.key === 'apy') {
-      return assetsToBorrow.sort((a, b) => {
+      return assetsToBorrow?.sort((a, b) => {
         if (sort.order === 'desc') {
           return b.apy - a.apy;
         }
@@ -240,7 +240,7 @@ export const useTableAssetsToBorrow = () => {
 
   const mobileTableData = useMemo(
     () =>
-      sortedAssetsToBorrow.map((d, i) => {
+      sortedAssetsToBorrow?.map((d, i) => {
         return {
           meta: { id: d.id, asset: d.asset, address: d.address },
           rows: [

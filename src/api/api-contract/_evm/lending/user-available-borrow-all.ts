@@ -51,28 +51,6 @@ export const useUserAvailableBorrowAll = ({ mTokenAddresses }: Props) => {
   const isError = liquidityData?.[0] !== 0n || isContractReadError;
   const liquidityUsd = (noParticipation || isError ? 0n : liquidityData?.[1]) || 0n;
 
-  // const { data: metaData, refetch: metaDataRefetch } = useContractReads({
-  //   contracts: mTokenAddresses?.flatMap(address => [
-  //     {
-  //       address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
-  //       abi: MOAI_LENS_ABI as Abi,
-  //       functionName: 'cTokenMetadata',
-  //       chainId,
-
-  //       args: [address],
-  //       staleTime: 1000 * 3,
-  //       enabled: !!walletAddress && !!chainId && isEvm && !!address,
-  //     },
-  //   ]),
-  //   staleTime: 1000 * 3,
-  //   enabled: !!mTokenAddresses && !!chainId && isEvm && !!walletAddress,
-  // });
-
-  // const metaDataList = (metaData?.map(d => {
-  //   const r = d.result;
-  //   return r as IMetaData;
-  // }) || []) as IMetaData[];
-
   const { data: metadataAll, refetch: metaDataRefetch } = useContractRead({
     address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
     abi: MOAI_LENS_ABI as Abi,
@@ -80,7 +58,7 @@ export const useUserAvailableBorrowAll = ({ mTokenAddresses }: Props) => {
     chainId,
     args: [mTokenAddresses],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm,
+    enabled: !!chainId && isEvm && !!mTokenAddresses && mTokenAddresses.length > 0,
   });
   const metaDataList = (metadataAll as Array<IMTokenMetadata>)?.map((m: IMTokenMetadata) => m);
 
@@ -92,22 +70,22 @@ export const useUserAvailableBorrowAll = ({ mTokenAddresses }: Props) => {
 
     args: [mTokenAddresses],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm && !!mTokenAddresses,
+    enabled: !!chainId && isEvm && !!mTokenAddresses && mTokenAddresses.length > 0,
   });
   const prices = pricesData as Array<IPriceData>;
-  const undrlyingPriceList = prices?.map(d => d['underlyingPrice'] as bigint) || [];
+  const undrlyingPriceList = prices?.map(d => (d?.['underlyingPrice'] || 0n) as bigint) || [];
 
   const availableAmountRawList = metaDataList?.map((metaData, i) => {
-    const decimals = Number(metaData?.['underlyingDecimals']) as number;
+    const decimals = Number(metaData?.['underlyingDecimals'] || 0n) as number;
     const price = undrlyingPriceList[i]
       ? Number(formatUnits(undrlyingPriceList[i] as bigint, 36 - decimals))
       : 0;
     const liquidityNum = !price || price === 0 ? 0 : Number(formatUnits(liquidityUsd, 18)) / price;
     const liquidity = parseUnits(liquidityNum.toString(), decimals);
 
-    const totalBorrows = metaData?.['totalBorrows'] as bigint;
-    const borrowCap = metaData?.['borrowCap'] as bigint;
-    const cash = metaData?.['totalCash'] as bigint;
+    const totalBorrows = (metaData?.['totalBorrows'] || 0n) as bigint;
+    const borrowCap = (metaData?.['borrowCap'] || 0n) as bigint;
+    const cash = (metaData?.['totalCash'] || 0n) as bigint;
 
     let availableAmountRaw = cash;
     if (borrowCap !== 0n) {
@@ -119,18 +97,11 @@ export const useUserAvailableBorrowAll = ({ mTokenAddresses }: Props) => {
     availableAmountRaw = availableAmountRaw > liquidity ? liquidity : availableAmountRaw;
     availableAmountRaw = availableAmountRaw > 10n ? availableAmountRaw - 10n : 0n; // safe buffer
 
-    // console.log(
-    //   cashMinusReserve,
-    //   liquidity,
-    //   borrowCap === 0n ? '' : borrowCap - totalBorrows,
-    //   availableAmountRaw
-    // );
-
     return availableAmountRaw;
   });
 
   const availableAmountList = availableAmountRawList?.map((d, i) => {
-    const decimals = Number(metaDataList[i]?.['underlyingDecimals']) as number;
+    const decimals = Number(metaDataList?.[i]?.['underlyingDecimals'] || 0n) as number;
     return Number(formatUnits(d, decimals));
   });
 

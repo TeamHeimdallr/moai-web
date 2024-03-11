@@ -35,7 +35,13 @@ export const useGetMTokenBalancesAll = ({ mTokenAddresses, enabled }: Props) => 
 
     args: [mTokenAddresses, walletAddress],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm && !!mTokenAddresses && !!walletAddress && enabled,
+    enabled:
+      !!chainId &&
+      isEvm &&
+      !!mTokenAddresses &&
+      mTokenAddresses.length > 0 &&
+      !!walletAddress &&
+      enabled,
   });
 
   return {

@@ -32,7 +32,7 @@ export const useUserAccountLiquidity = () => {
 
     args: [walletAddress],
     staleTime: 1000 * 3,
-    enabled: !!walletAddress && !!chainId && isEvm,
+    enabled: !!walletAddress && !!chainId && isEvm && !!walletAddress,
   });
 
   const refetch = () => {

@@ -54,7 +54,7 @@ export const useUserAvailableBorrow = ({ mTokenAddress }: Props) => {
 
     args: [mTokenAddress],
     staleTime: 1000 * 3,
-    enabled: !!walletAddress && !!chainId && isEvm && !!mTokenAddress,
+    enabled: !!walletAddress && !!chainId && isEvm && !!mTokenAddress && mTokenAddress.length > 0,
   });
 
   const { data: underlyingPriceData, refetch: underlyingPriceRefetch } = useContractRead({
@@ -65,21 +65,19 @@ export const useUserAvailableBorrow = ({ mTokenAddress }: Props) => {
 
     args: [mTokenAddress],
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm && !!mTokenAddress,
+    enabled: !!chainId && isEvm && !!mTokenAddress && mTokenAddress.length > 0,
   });
 
-  //   console.log(metaData, 'metaData');
-
-  const decimals = Number(metaData?.['underlyingDecimals']) as number;
+  const decimals = Number(metaData?.['underlyingDecimals'] || 0n) as number;
   const price = underlyingPriceData?.['underlyingPrice']
     ? Number(formatUnits(underlyingPriceData?.['underlyingPrice'] as bigint, 36 - decimals))
     : 0;
   const liquidityNum = !price || price === 0 ? 0 : Number(formatUnits(liquidityUsd, 18)) / price;
   const liquidity = parseUnits(liquidityNum.toString(), decimals);
 
-  const totalBorrows = metaData?.['totalBorrows'] as bigint;
-  const borrowCap = metaData?.['borrowCap'] as bigint;
-  const cash = metaData?.['totalCash'] as bigint;
+  const totalBorrows = (metaData?.['totalBorrows'] || 0n) as bigint;
+  const borrowCap = (metaData?.['borrowCap'] || 0n) as bigint;
+  const cash = (metaData?.['totalCash'] || 0n) as bigint;
 
   let availableAmountRaw = cash;
   if (borrowCap !== 0n) {
