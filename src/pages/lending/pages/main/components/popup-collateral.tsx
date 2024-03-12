@@ -231,7 +231,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
               isPrepareLoading ||
               isPrepareError ||
               healthFactor <= 1.001 ||
-              !(!isEnable && isExitPossible)
+              (!isEnable && !isExitPossible)
             }
           />
         </ButtonWrapper>
