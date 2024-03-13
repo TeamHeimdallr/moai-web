@@ -678,5 +678,9 @@
   "You have just successfully bound with": "{{ code }} 코드를 성공적으로 등록했습니다.",
 
   "Moai Points": "Moai 포인트",
-  "Moai points": "Moai 포인트"
+  "Moai points": "Moai 포인트",
+  "Moai Rewards": "Moai 리워드",
+
+  "View details": "자세히 보기",
+  "Points": "포인트"
 }

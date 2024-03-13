@@ -678,5 +678,9 @@
   "You have just successfully bound with": "You have just successfully bound with {{ code }}",
 
   "Moai Points": "Moai Points",
-  "Moai points": "Moai points"
+  "Moai points": "Moai points",
+  "Moai Rewards": "Moai Rewards",
+
+  "View details": "View details",
+  "Points": "Points"
 }
