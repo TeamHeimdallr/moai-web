@@ -31,7 +31,7 @@ export const useApprove = ({
   const { isEvm, isFpass } = useNetwork();
 
   const resEvm = useApproveEvm({
-    amount: amount * 10n,
+    amount: BigInt(amount) * 10n,
     allowanceMin: amount,
     symbol,
     spender: spender as Address,
@@ -40,7 +40,7 @@ export const useApprove = ({
   });
 
   const resFpass = useApproveFpass({
-    amount: amount * 10n,
+    amount: BigInt(amount) * 10n,
     allowanceMin: amount,
     symbol,
     spender: spender as Address,

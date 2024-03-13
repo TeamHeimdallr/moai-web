@@ -168,7 +168,8 @@ const _WithdrawLiquidityPopup = ({
   const isLoading = withdrawLiquidityLoading;
   const totalValue = userXrpOutBalance * (xrpToken?.price || 0);
 
-  const isErrorRaw = withdrawLiquidityIsError || withdrawLiquiditySubstratePrepareIsError;
+  const isErrorRaw =
+    (!isFpass && withdrawLiquidityIsError) || withdrawLiquiditySubstratePrepareIsError;
   const error = withdrawLiquidityError || withdrawLiquiditySubstratePrepareError;
   const zeroAmountError = error?.message?.includes('Campaign: Unfarmed amount should not be zero');
   const wrongAmountError = error?.message?.includes(
