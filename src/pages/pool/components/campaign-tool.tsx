@@ -302,7 +302,8 @@ export const CampaignTool = () => {
               }}
               showValue={false}
               token={t('Moai Points')}
-              balance={campaignReward}
+              balance={'-'}
+              // balance={campaignReward}
               image={<IconTokenMoai width={36} height={36} />}
             />
             <TokenListVertical
