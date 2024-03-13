@@ -104,7 +104,7 @@ const Balance = tw.div`
   md:(font-m-20)
 `;
 const Value = tw.div`
-  text-neutral-80 font-r-12 h-22
+  text-neutral-60 font-r-12 h-22
   md:(font-r-14)
 `;
 const ButtonWrapper = tw.div``;

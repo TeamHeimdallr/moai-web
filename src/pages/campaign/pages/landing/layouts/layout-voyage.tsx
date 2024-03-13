@@ -16,11 +16,10 @@ import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campa
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
-import { useGetRewardsWave0InfoQuery } from '~/api/api-server/rewards/get-reward-info-wave0';
 import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
 import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
 
-import { IconNext, IconTokenMoai, IconTokenRoot } from '~/assets/icons';
+import { IconNext, IconTokenRoot } from '~/assets/icons';
 
 import { BASE_URL } from '~/constants';
 import { POOL_ID } from '~/constants';
@@ -30,6 +29,7 @@ import {
   ButtonPrimaryMedium,
   ButtonPrimaryMediumIconTrailing,
 } from '~/components/buttons';
+import { TokenListMoaiPoint } from '~/components/token-list-moai-point';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
@@ -88,16 +88,6 @@ const _LayoutVoyage = () => {
   const userXrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
   const userXrpBalance = userXrp?.balance || 0;
 
-  const { data: rewardInfoData } = useGetRewardsWave0InfoQuery(
-    {
-      params: { networkAbbr },
-      queries: { walletAddress },
-    },
-    { staleTime: 1000 * 3, enabled: !!walletAddress }
-  );
-
-  const campaignReward = rewardInfoData?.myCampaignReward || 0;
-
   const {
     amountFarmedInBPT,
     depositedTime,
@@ -150,7 +140,7 @@ const _LayoutVoyage = () => {
       staleTime: 20 * 1000,
     }
   );
-  const { campaignLpSupply } = waveInfo || {};
+  const { veMOAI, campaignLpSupply } = waveInfo || {};
 
   /* claim */
   const claimEvm = useClaim();
@@ -220,7 +210,11 @@ const _LayoutVoyage = () => {
   );
 
   const isEmpty =
-    !evm.isConnected || (amountFarmedInBPT <= 0 && campaignReward <= 0 && rootReward <= 0);
+    !evm.isConnected ||
+    (amountFarmedInBPT <= 0 &&
+      (veMOAI || 0) <= 0 &&
+      (campaignLpSupply || 0) <= 0 &&
+      rootReward <= 0);
 
   const handleClick = () => {
     if (!isEmpty || bothConnected) {
@@ -382,15 +376,7 @@ const _LayoutVoyage = () => {
               <TokenCard col2>
                 <TokenCardTitle>{t('Rewards')}</TokenCardTitle>
                 <TokenListWrapper>
-                  <TokenListVertical
-                    token="Moai Points"
-                    // balance={campaignLpSupply || '-'}
-                    balance={'-'}
-                    image={<IconTokenMoai width={36} height={36} />}
-                    button={
-                      <ButtonPrimaryLarge text={t('Coming soon')} buttonType="filled" disabled />
-                    }
-                  />
+                  <TokenListMoaiPoint veMOAI={veMOAI} moaiPoint={campaignLpSupply} />
                   <TokenListVertical
                     token="ROOT"
                     balance={rootReward}

@@ -18,14 +18,16 @@ import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-tok
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
-import { useGetRewardsWave0InfoQuery } from '~/api/api-server/rewards/get-reward-info-wave0';
+import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
+import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
 
-import { IconNext, IconTokenMoai, IconTokenRoot } from '~/assets/icons';
+import { IconNext, IconTokenRoot } from '~/assets/icons';
 
 import { BASE_URL, POOL_ID } from '~/constants';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMediumIconTrailing } from '~/components/buttons';
 import { ButtonPrimaryLargeIconTrailing } from '~/components/buttons/primary/large-icon-trailing';
+import { TokenListMoaiPoint } from '~/components/token-list-moai-point';
 
 import { TokenListVertical } from '~/pages/campaign/pages/landing/components/token-list-vertical';
 import { WithdrawLiquidityPopup } from '~/pages/campaign/pages/landing/components/withdraw-liquidity-popup';
@@ -54,6 +56,8 @@ export const CampaignTool = () => {
   const [estimatedClaimFee, setEstimatedClaimFee] = useState<number | undefined>();
 
   const { isEvm, selectedNetwork, isFpass } = useNetwork();
+  const networkAbbr = getNetworkAbbr(NETWORK.THE_ROOT_NETWORK);
+
   const { xrp, evm, fpass } = useConnectedWallet();
   const [now, setNow] = useState(new Date());
   const [remainTime, setRemainTime] = useState<RemainLockupTime>({
@@ -84,16 +88,6 @@ export const CampaignTool = () => {
 
   const started = differenceInSeconds(campaignStartDate, now) <= 0;
 
-  const { data: rewardInfoData } = useGetRewardsWave0InfoQuery(
-    {
-      params: { networkAbbr: 'trn' },
-      queries: { walletAddress: evmWalletAddress },
-    },
-    { staleTime: 1000 * 3, enabled: !!evmWalletAddress }
-  );
-
-  const campaignReward = rewardInfoData?.myCampaignReward || 0;
-
   const {
     amountFarmedInBPT,
     depositedTime,
@@ -123,6 +117,30 @@ export const CampaignTool = () => {
   const { compositions } = pool || {};
   const xrpToken = compositions?.[1];
   const xrpBalanceInPool = xrpToken?.balance || 0;
+
+  const { data: wave } = useGetWaveQuery(
+    { params: { networkAbbr } },
+    {
+      enabled: !!networkAbbr && selectedNetwork === NETWORK.THE_ROOT_NETWORK,
+      staleTime: 20 * 1000,
+    }
+  );
+  const { currentWave } = wave || {};
+  const { data: waveInfo } = useGetRewardsWaveNInfoQuery(
+    {
+      params: { networkAbbr },
+      queries: { walletAddress: evmWalletAddress, wave: currentWave?.waveId },
+    },
+    {
+      enabled:
+        !!networkAbbr &&
+        selectedNetwork === NETWORK.THE_ROOT_NETWORK &&
+        !!evmWalletAddress &&
+        !!currentWave?.waveId,
+      staleTime: 20 * 1000,
+    }
+  );
+  const { veMOAI, campaignLpSupply } = waveInfo || {};
 
   /* claim */
   const claimEvm = useClaim();
@@ -223,7 +241,11 @@ export const CampaignTool = () => {
   }, [claimIsSuccess, claimTxData]);
 
   const isEmpty =
-    !evm.isConnected || (amountFarmedInBPT <= 0 && campaignReward <= 0 && rootReward <= 0);
+    !evm.isConnected ||
+    (amountFarmedInBPT <= 0 &&
+      (veMOAI || 0) <= 0 &&
+      (campaignLpSupply || 0) <= 0 &&
+      rootReward <= 0);
 
   const isRootXrpPool = id === POOL_ID?.[NETWORK.THE_ROOT_NETWORK]?.ROOT_XRP;
 
@@ -295,16 +317,13 @@ export const CampaignTool = () => {
         <ContentInnerWrapper>
           <TitleSmall>{t('Rewards')}</TitleSmall>
           <TokenInfoWrapper>
-            <TokenListVertical
+            <TokenListMoaiPoint
+              veMOAI={veMOAI}
+              moaiPoint={campaignLpSupply}
               style={{
                 background: 'rgba(255, 255, 255, 0.10)',
                 backdropFilter: 'blur(2px)',
               }}
-              showValue={false}
-              token={t('Moai Points')}
-              balance={'-'}
-              // balance={campaignReward}
-              image={<IconTokenMoai width={36} height={36} />}
             />
             <TokenListVertical
               style={{
