@@ -121,3 +121,27 @@ export const xrpEvmSidechainForAdd = {
   rpcUrls: ['https://rpc-evm-sidechain.xrpl.org'],
   blockExplorerUrls: ['https://evm-sidechain.xrpl.org/'],
 };
+
+export const ethereumForAdd = IS_MAINNET
+  ? {
+      chainId: '0x01',
+      chainName: 'Ethereum Mainnet',
+      rpcUrls: ['https://mainnet.infura.io/v3/'],
+      nativeCurrency: {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimals: 18,
+      },
+      blockExplorerUrls: ['https://etherscan.io'],
+    }
+  : {
+      chainId: '0xAA36A7',
+      chainName: 'Sepolia test network',
+      nativeCurrency: {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimals: 18,
+      },
+      rpcUrls: ['https://sepolia.infura.io/v3/'],
+      blockExplorerUrls: ['https://sepolia.etherscan.io'],
+    };

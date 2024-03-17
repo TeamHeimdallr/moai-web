@@ -735,7 +735,7 @@ const _AddLiquidityPopup = ({
                   image={image}
                   leftAlign
                 />
-                {idx !== tokenLength - 1 && <Divider />}
+                {idx !== tokensIn.length - 1 && <Divider />}
               </Fragment>
             ))}
           </List>

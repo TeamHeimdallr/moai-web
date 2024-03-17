@@ -20,6 +20,13 @@ export const GNB_MENU: IGnbMenu[] = [
     network: [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK, NETWORK.XRPL],
   },
   {
+    id: 'bridge',
+    text: 'Bridge',
+    path: '/bridge',
+    show: true,
+    network: [NETWORK.THE_ROOT_NETWORK, NETWORK.XRPL],
+  },
+  {
     id: 'lending',
     text: 'Lending',
     path: '/lending',

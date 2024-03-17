@@ -16,6 +16,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   image?: boolean;
   imageUrl?: string;
   icon?: ReactNode;
+  iconWrapper?: boolean;
 
   type?: 'large' | 'small';
 
@@ -33,6 +34,7 @@ export const Token = ({
   image = true,
   imageUrl,
   icon,
+  iconWrapper = true,
   type = 'large',
   selected,
   clickable = true,
@@ -47,6 +49,7 @@ export const Token = ({
       clickable={clickable}
       disabled={disabled}
       hasImage={!!image}
+      icon={!!icon}
       {...rest}
     >
       {image &&
@@ -61,7 +64,7 @@ export const Token = ({
       <TextWrapper>
         <TokenText type={type}>{title ? title : token}</TokenText>
         {percentage && <Percentage>{percentage}%</Percentage>}
-        {icon && <IconWrapper>{icon}</IconWrapper>}
+        {icon && iconWrapper ? <IconWrapper>{icon}</IconWrapper> : icon}
       </TextWrapper>
     </Wrapper>
   );
@@ -73,29 +76,34 @@ interface WrapperProps {
   clickable?: boolean;
   hasImage?: boolean;
   disabled?: boolean;
+  icon?: boolean;
 }
-const Wrapper = styled.div<WrapperProps>(({ type, selected, clickable, disabled, hasImage }) => [
-  tw`flex-shrink-0 gap-8 transition-colors inline-flex-center bg-neutral-20 text-neutral-100 basis-auto`,
+const Wrapper = styled.div<WrapperProps>(
+  ({ type, selected, clickable, disabled, hasImage, icon }) => [
+    tw`flex-shrink-0 gap-8 transition-colors inline-flex-center bg-neutral-20 text-neutral-100 basis-auto`,
 
-  selected &&
-    !disabled &&
-    tw`border-solid bg-primary-20 border-1 border-primary-60 hover:(bg-primary-20)`,
+    selected &&
+      !disabled &&
+      tw`border-solid bg-primary-20 border-1 border-primary-60 hover:(bg-primary-20)`,
 
-  type === 'large' && tw`py-8 px-14 rounded-10`,
+    type === 'large' && tw`py-8 px-14 rounded-10`,
 
-  type === 'large' && hasImage && !selected && tw`pl-10 pr-14`,
-  type === 'large' && hasImage && selected && tw`py-7 pl-9 pr-13`,
-  type === 'large' && !hasImage && !selected && tw`px-14`,
-  type === 'large' && !hasImage && selected && tw`py-7 px-13`,
+    type === 'large' && hasImage && !selected && tw`pl-10 pr-14`,
+    type === 'large' && hasImage && selected && tw`py-7 pl-9 pr-13`,
+    type === 'large' && !hasImage && !selected && tw`px-14`,
+    type === 'large' && !hasImage && selected && tw`py-7 px-13`,
 
-  type === 'small' && tw`px-8 py-4 rounded-8`,
-  type === 'small' && selected && tw`py-3 px-7`,
+    type === 'small' && tw`px-8 py-4 rounded-8`,
+    type === 'small' && selected && tw`py-3 px-7`,
 
-  clickable && !disabled && tw`clickable`,
-  clickable && !selected && tw`hover:(bg-neutral-30)`,
+    icon && tw`pr-8`,
 
-  disabled && tw`non-clickable opacity-30 hover:(bg-neutral-20)`,
-]);
+    clickable && !disabled && tw`clickable`,
+    clickable && !selected && tw`hover:(bg-neutral-30)`,
+
+    disabled && tw`non-clickable opacity-30 hover:(bg-neutral-20)`,
+  ]
+);
 
 const TextWrapper = tw.div`
   flex gap-4 items-end

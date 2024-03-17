@@ -1,5 +1,6 @@
 import {
   imageNetworkEmpty,
+  imageNetworkEthereum,
   imageNetworkEvm,
   imageNetworkROOT,
   imageNetworkXRPL,
@@ -13,6 +14,7 @@ export const NETWORK_IMAGE_MAPPER: Record<string, string> = {
   [NETWORK.THE_ROOT_NETWORK]: imageNetworkROOT,
   [NETWORK.EVM_SIDECHAIN]: imageNetworkEvm,
   [NETWORK.XRPL]: imageNetworkXRPL,
+  ETHEREUM: imageNetworkEthereum,
   EMPTY: imageNetworkEmpty,
 };
 

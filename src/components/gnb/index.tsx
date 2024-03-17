@@ -11,6 +11,8 @@ import { GNB_MENU } from '~/constants';
 import { ButtonPrimaryMedium, ButtonPrimarySmallBlack } from '~/components/buttons/primary';
 import { TooltipCommingSoon } from '~/components/tooltips/comming-soon';
 
+import { useBanner as useBannerBridge } from '~/pages/bridge/hooks/use-banner';
+
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useBanner } from '~/hooks/components/use-banner';
 import { usePopup } from '~/hooks/components/use-popup';
@@ -38,6 +40,7 @@ export const Gnb = () => {
 
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: openedBanner } = usePopup(POPUP_ID.WALLET_ALERT);
+  const { opened: openedBridgeBanner } = usePopup(POPUP_ID.WALLET_ALERT_BRIDGE);
 
   const { network } = useParams();
   const { selectedNetwork } = useNetwork();
@@ -46,6 +49,7 @@ export const Gnb = () => {
 
   const { evm, xrp } = useConnectedWallet();
   const { text, type: bannerType, connectWallet, switchNetwork } = useBanner();
+  const { text: bridgeBannerText, switchNetwork: bridgeBannerSwitchNetwork } = useBannerBridge();
 
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
@@ -98,6 +102,21 @@ export const Gnb = () => {
                 <ButtonPrimarySmallBlack
                   text={bannerType === 'select' ? t('Connect wallet') : t('Switch network')}
                   onClick={bannerType === 'select' ? handleConnetWallet : handleSwitchNetwork}
+                />
+              }
+            />
+          </BannerWrapper>
+        )}
+
+        {/* BRIDGE NETWORK BANNER */}
+        {openedBridgeBanner && (
+          <BannerWrapper>
+            <AlertBanner
+              text={bridgeBannerText}
+              button={
+                <ButtonPrimarySmallBlack
+                  text={t('Switch network')}
+                  onClick={bridgeBannerSwitchNetwork}
                 />
               }
             />
