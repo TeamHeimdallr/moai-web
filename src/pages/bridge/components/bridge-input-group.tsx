@@ -1,27 +1,17 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
 import { css } from '@emotion/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { isEmpty, last } from 'lodash-es';
-import { strip } from 'number-precision';
+import { isEmpty } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
-import { Address, formatUnits, parseUnits } from 'viem';
-import { usePrepareContractWrite } from 'wagmi';
 import * as yup from 'yup';
-
-import { useBatchSwapPrepare as useBatchSwapPrepareEvm } from '~/api/api-contract/_evm/swap/substrate-batch-swap';
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
-import { useSorQuery } from '~/api/api-server/sor/batch-swap';
-import { useSorFallbackQuery } from '~/api/api-server/sor/get-swap-fallback';
 
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconDown } from '~/assets/icons';
 
-import { ASSET_URL, EVM_VAULT_ADDRESS, NETWORK_IMAGE_MAPPER, THOUSAND } from '~/constants';
+import { NETWORK_IMAGE_MAPPER } from '~/constants';
 
-import { AlertMessage } from '~/components/alerts';
 import { ButtonIconSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { DropdownList } from '~/components/dropdown';
 import { InputNumber } from '~/components/inputs';
@@ -34,26 +24,15 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useOnClickOutside } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import {
-  formatNumber,
-  getNetworkAbbr,
-  getNetworkFull,
-  getTokenDecimal,
-  truncateAddress,
-} from '~/utils';
-import { useSlippageStore } from '~/states/data';
-import { useSwapStore } from '~/states/pages';
-import { NETWORK, SwapKind } from '~/types';
+import { truncateAddress } from '~/utils';
 import { POPUP_ID } from '~/types/components';
-
-import { BALANCER_VAULT_ABI } from '~/abi';
 
 import { useBalance } from '../hooks/use-balance';
 import { useSelectNetwork } from '../hooks/use-select-network';
 import { useSelectToken } from '../hooks/use-select-token';
-import { useSelecteNetworkStore } from '../states';
 import { getNetworkName } from '../utils/network-name';
 
+import { BridgePopup } from './bridge-popup';
 import { SelectFromTokenPopup } from './select-from-token-popup';
 
 interface InputFormState {
@@ -102,8 +81,6 @@ const _BridgeInputGroup = () => {
   );
 
   const { evm, xrp, fpass } = useConnectedWallet();
-
-  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
 
   const evmAddress = isFpass ? fpass?.address : isEvm ? evm?.address : '';
   const xrpAddress = xrp?.address || '';
@@ -288,6 +265,12 @@ const _BridgeInputGroup = () => {
       </Wrapper>
       {bridgeSelectTokenOpened && !isEmpty(balances) && (
         <SelectFromTokenPopup currentToken={currentTokenWithBalance} tokens={balances} />
+      )}
+      {bridgeOpened && (
+        <BridgePopup
+          amount={input || 0}
+          value={(input || 0) * (currentTokenWithBalance?.price || 0)}
+        />
       )}
     </>
   );
