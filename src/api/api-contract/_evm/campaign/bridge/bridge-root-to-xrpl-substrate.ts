@@ -55,7 +55,8 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
     } catch (err) {
       setError(true);
     }
-  }, [destination, setError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [destination]);
 
   const reset = () => {
     setError(false);

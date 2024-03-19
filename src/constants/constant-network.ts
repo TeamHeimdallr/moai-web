@@ -1,5 +1,6 @@
 import {
   imageNetworkEmpty,
+  imageNetworkEthereum,
   imageNetworkEvm,
   imageNetworkROOT,
   imageNetworkXRPL,
@@ -13,6 +14,7 @@ export const NETWORK_IMAGE_MAPPER: Record<string, string> = {
   [NETWORK.THE_ROOT_NETWORK]: imageNetworkROOT,
   [NETWORK.EVM_SIDECHAIN]: imageNetworkEvm,
   [NETWORK.XRPL]: imageNetworkXRPL,
+  ETHEREUM: imageNetworkEthereum,
   EMPTY: imageNetworkEmpty,
 };
 
@@ -44,6 +46,7 @@ export const SCANNER_URL = {
     : IS_TESTNET
     ? 'https://testnet.xrpl.org'
     : 'https://devnet.xrpl.org',
+  ETHEREUM: IS_MAINNET ? 'https://etherscan.io' : 'https://sepolia.etherscan.io',
 };
 
 export const EVM_TOKEN_ADDRESS: Record<string, Record<string, string>> = {

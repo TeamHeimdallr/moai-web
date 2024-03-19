@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { useWeb3Modal } from '@web3modal/react';
 import { useAccount, useNetwork as useNetworkWagmi } from 'wagmi';
 
@@ -29,6 +30,11 @@ export const useBanner = () => {
   const { fpass, evm, xrp, anyAddress } = useConnectedWallet();
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
+  const { pathname } = useLocation();
+  const excludes = ['bridge'];
+
+  const isExclude = excludes.some(exclude => pathname.includes(exclude));
+
   const network =
     selectedNetwork === NETWORK.EVM_SIDECHAIN
       ? 'EVM sidechain'
@@ -42,7 +48,7 @@ export const useBanner = () => {
 
   useEffect(() => {
     // if wallet not connected or on the swap page, can proceed regardless of the selected network.
-    if (!anyAddress) {
+    if (!anyAddress || isExclude) {
       close();
       return;
     }
@@ -62,7 +68,7 @@ export const useBanner = () => {
   }, [evm.isConnected, fpass.isConnected, selectedNetwork, xrp.isConnected, anyAddress]);
 
   useEffect(() => {
-    if (isDisconnected || isConnecting || isReconnecting || !anyAddress) {
+    if (isDisconnected || isConnecting || isReconnecting || !anyAddress || isExclude) {
       web3modalClose();
       close();
       return;

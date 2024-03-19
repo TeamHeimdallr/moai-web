@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
 import { Address, formatUnits } from 'viem';
 import { usePublicClient, useWalletClient } from 'wagmi';
-import { decodeAccountID } from 'xrpl';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
 import { getTrnApi } from '~/api/api-contract/_evm/substrate/get-trn-api';
@@ -18,18 +17,20 @@ import { IS_MAINNET } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useBridgeToXrplNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useBridgeNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 interface Props {
   amount: bigint; // XRP amount, formatted 6 decimal
   destination: string; // XRP address
+  tokenId: number;
+
   enabled?: boolean;
 }
-export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
+export const useBridgeRootToEthSubstrate = ({ amount, destination, tokenId, enabled }: Props) => {
   // ref: https://github.com/futureversecom/trn-app-hub/blob/main/libs/components/RootToXRP.jsx
-  const { setError } = useBridgeToXrplNetworkFeeErrorStore();
+  const { setError } = useBridgeNetworkFeeErrorStore();
 
   const { data: walletClient } = useWalletClient();
 
@@ -49,17 +50,6 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
-  const decodedDestination = useMemo(() => {
-    if (!destination) return;
-    try {
-      const decoded = decodeAccountID(destination).toString('hex');
-      return `0x${decoded}`;
-    } catch (err) {
-      setError(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [destination]);
-
   const reset = () => {
     setError(false);
     setIsSuccess(false);
@@ -73,9 +63,10 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
         getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
       ]);
 
-      const extrinsic = api.tx.xrplBridge.withdrawXrp(
+      const extrinsic = api.tx.erc20Peg.withdraw(
+        tokenId,
         amount.toString(),
-        decodedDestination
+        destination
       ) as Extrinsic;
 
       const info = await extrinsic.paymentInfo(signer);
@@ -87,7 +78,7 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
     }
   };
 
-  const bridgeToXrpl = async () => {
+  const bridgeToEth = async () => {
     if (!isEvmButNotFpass || !enabled) return;
 
     try {
@@ -97,9 +88,10 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
         getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
       ]);
 
-      const extrinsic = api.tx.xrplBridge.withdrawXrp(
+      const extrinsic = api.tx.erc20Peg.withdraw(
+        tokenId,
         amount.toString(),
-        decodedDestination
+        destination
       ) as Extrinsic;
 
       const [payload, ethPayload] = await createExtrinsicPayload(
@@ -165,7 +157,7 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
     txData: txData as any,
     blockTimestamp,
 
-    writeAsync: bridgeToXrpl,
+    writeAsync: bridgeToEth,
     estimateFee,
   };
 };

@@ -9,12 +9,12 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { useAccountInfo } from '../account/account-info';
 
 interface Props {
-  fromInput: number;
+  amount: number;
+  destination: string;
 
-  toAddress: string;
   enabled?: boolean;
 }
-export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) => {
+export const useBridgeXrplToRoot = ({ amount, destination, enabled }: Props) => {
   const { xrp } = useConnectedWallet();
   const { address, connectedConnector } = xrp;
 
@@ -25,14 +25,14 @@ export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) =>
     TransactionType: 'Payment',
     Account: address,
     Destination: XRPL_BRIDGE_ADDRESS,
-    Amount: xrpToDrops(fromInput),
+    Amount: xrpToDrops(amount.toString()),
     Fee: '100',
     Sequence: connectedConnector === 'dcent' ? sequence : undefined,
     Memos: [
       {
         Memo: {
           MemoType: convertStringToHex('Address'),
-          MemoData: convertStringToHex(toAddress),
+          MemoData: convertStringToHex(destination),
         },
       },
     ],
@@ -41,7 +41,7 @@ export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) =>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitTx = async () => await xrp.submitTransaction(txRequest as any);
 
-  const { data, isLoading, isSuccess, isError, mutateAsync, reset } = useMutation(
+  const { data, isLoading, isSuccess, isError, error, mutateAsync, reset } = useMutation(
     ['XRPL', 'BRIDGE', 'XRP'],
     submitTx
   );
@@ -73,11 +73,13 @@ export const useBridgeXrplToRoot = ({ fromInput, toAddress, enabled }: Props) =>
     isSuccess,
     isError,
 
+    error,
+    reset,
+
     txData: data,
     blockTimestamp,
 
-    bridge: writeAsync,
-    reset,
-    estimateFee: () => 0.000015,
+    writeAsync,
+    estimateFee: () => 0.0001,
   };
 };

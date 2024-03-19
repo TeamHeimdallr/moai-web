@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { zeroAddress } from 'viem';
-import { Address, useAccount, useContractRead } from 'wagmi';
+import { Address, useAccount, useContractRead, useNetwork as useNetworkWagmi } from 'wagmi';
 
 import { IS_MAINNET } from '~/constants';
 
@@ -19,14 +19,17 @@ const FUTUREPASS_REGISTER = IS_MAINNET
   ? '0x000000000000000000000000000000000000FFff'
   : '0x000000000000000000000000000000000000FFff';
 export const useFuturepassOf = ({ enabled }: Props) => {
+  const { chain } = useNetworkWagmi();
+
   const { selectedNetwork } = useNetwork();
   const { address: walletAddress } = useAccount();
 
   const { selectedWallet: selectedWalletTRN, selectWallet } = useTheRootNetworkSwitchWalletStore();
 
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
+  const isRootChain = chain?.id === 7668 || chain?.id === 7672;
 
-  const internalEnabled = enabled && !!walletAddress && isRoot;
+  const internalEnabled = enabled && !!walletAddress && isRoot && isRootChain;
   const {
     data: _data,
     isFetchedAfterMount: isFetched,

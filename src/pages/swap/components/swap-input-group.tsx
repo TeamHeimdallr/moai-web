@@ -1,11 +1,11 @@
-import { Suspense, useEffect, useMemo } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { last } from 'lodash-es';
 import { strip } from 'number-precision';
-import tw from 'twin.macro';
+import tw, { css, styled } from 'twin.macro';
 import { Address, formatUnits, parseUnits } from 'viem';
 import { usePrepareContractWrite } from 'wagmi';
 import * as yup from 'yup';
@@ -56,6 +56,8 @@ export const SwapInputGroup = () => {
 };
 const _SwapInputGroup = () => {
   const { gaAction } = useGAAction();
+
+  const [arrowHover, setArrowHover] = useState(false);
 
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
@@ -322,8 +324,12 @@ const _SwapInputGroup = () => {
               setValue={setValue}
               formState={formState}
             />
-            <IconWrapper onClick={() => arrowClick()}>
-              <ArrowDownWrapper>
+            <IconWrapper
+              onClick={() => arrowClick()}
+              onMouseEnter={() => setArrowHover(true)}
+              onMouseLeave={() => setArrowHover(false)}
+            >
+              <ArrowDownWrapper hover={arrowHover}>
                 <IconArrowDown width={20} height={20} fill={COLOR.PRIMARY[50]} />
               </ArrowDownWrapper>
             </IconWrapper>
@@ -428,9 +434,18 @@ const IconWrapper = tw.div`
   absolute absolute-center-x bottom-100 z-2 clickable select-none
 `;
 
-const ArrowDownWrapper = tw.div`
-  p-6 flex-center rounded-full bg-neutral-20
-`;
+interface ArrowDownWrapperProps {
+  hover?: boolean;
+}
+const ArrowDownWrapper = styled.div<ArrowDownWrapperProps>(({ hover }) => [
+  tw`
+    p-6 flex-center rounded-full bg-neutral-20 transition-transform
+  `,
+  hover &&
+    css`
+      transform: rotate(180deg);
+    `,
+]);
 
 const InputLabel = tw.div`
   flex justify-end font-r-12 text-neutral-60

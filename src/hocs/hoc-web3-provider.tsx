@@ -1,6 +1,6 @@
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
 import { Web3Modal } from '@web3modal/react';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import { configureChains, createConfig, mainnet, sepolia, WagmiConfig } from 'wagmi';
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
 
 import { WALLETCONNECT_PROJECT_ID } from '~/constants';
@@ -11,7 +11,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const chains = [theRootNetwork, xrpEvmSidechain];
+const chains = [theRootNetwork, xrpEvmSidechain, mainnet, sepolia];
 const projectId = WALLETCONNECT_PROJECT_ID as string;
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiConfig = createConfig({

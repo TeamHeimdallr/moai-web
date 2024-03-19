@@ -33,6 +33,10 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, OmitType> {
 
   focus?: boolean;
   blured?: boolean;
+  handleFocus?: () => void;
+  handleBlur?: () => void;
+  handleError?: (error: string) => void;
+
   blurAll?: (focused: boolean) => void;
   autoFocus?: boolean;
 
@@ -61,6 +65,10 @@ export const InputNumber = ({
   sliderActive,
   focus = true,
   value,
+  handleFocus,
+  handleBlur,
+  handleError,
+
   handleChange,
   handleChangeRaw,
   handleTokenClick,
@@ -96,11 +104,14 @@ export const InputNumber = ({
     if (!focus) return;
     if (!handledValue || blured) {
       setFocus(false);
+      handleBlur?.();
       return;
     }
     if (autoFocus) {
       setFocus(handledValue > 0);
+      if (handledValue > 0) handleFocus?.();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handledValue, focus, blured, autoFocus]);
 
   useEffect(() => {
@@ -112,6 +123,12 @@ export const InputNumber = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
+  useEffect(() => {
+    if (errorMessage) handleError?.(errorMessage);
+    else handleError?.('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errorMessage]);
+
   const CustomInput = useCallback((props: Props) => <Input {...props} />, []);
   return (
     <Controller
@@ -122,9 +139,10 @@ export const InputNumber = ({
         const { onChange, onBlur, name } = field;
 
         const onValueChange = (handledValue?: number) => {
-          setFocus(true);
+          if (focus) setFocus(true);
           onChange(handledValue);
           handleChange?.(handledValue);
+          handleFocus?.();
         };
 
         const length = currentBalance?.toString()?.split('.')?.[1]?.length || 0;
@@ -136,10 +154,11 @@ export const InputNumber = ({
           length === 0 ? currentBalance : Math.floor(currentBalance * 10 ** 4) / 10 ** 4;
 
         const onMaxValue = () => {
-          setFocus(true);
+          if (focus) setFocus(true);
           onChange(flooredBalance);
           handleChange?.(flooredBalance);
           handleChangeRaw?.(currentBalanceRaw);
+          handleFocus?.();
         };
 
         return (
@@ -177,11 +196,13 @@ export const InputNumber = ({
                         setFocus(true);
                         blurAll?.(false);
                       }
+                      handleFocus?.();
                     }}
                     onBlur={() => {
                       onBlur();
                       setFocus(false);
                       blurAll?.(true);
+                      handleBlur?.();
                     }}
                     {...rest}
                   />
@@ -247,7 +268,7 @@ const Wrapper = styled.div<WrapperProps>(({ focus, focused, error, hasTitle }) =
   tw`w-full flex flex-col transition-colors bg-neutral-15 rounded-8 outline outline-1 outline-transparent`,
   focus && tw`hover:(outline-neutral-80)`,
   focused && tw`outline-primary-50 hover:(outline-primary-50)`,
-  error && tw`outline-red-50 hover:(outline-red-50)`,
+  error && focus && tw`outline-red-50 hover:(outline-red-50)`,
   error &&
     css`
       & input {

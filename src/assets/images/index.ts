@@ -4,6 +4,7 @@ import imageCampaignToken from './campaign-token.png';
 import imageMoai from './image-moai.png';
 import imageMoai2 from './image-moai2.png';
 import imageNetworkEmpty from './network-empty.png';
+import imageNetworkEthereum from './network-ethereum.png';
 import imageNetworkEvm from './network-evm.png';
 import imageNetworkEvmSidechain from './network-evm.png';
 import imageNetworkROOT from './network-root.png';
@@ -25,6 +26,7 @@ export {
   imageMoai,
   imageMoai2,
   imageNetworkEmpty,
+  imageNetworkEthereum,
   imageNetworkEvm,
   imageNetworkEvmSidechain,
   imageNetworkROOT,

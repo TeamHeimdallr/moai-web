@@ -93,6 +93,8 @@
 
   "Just now": "Just now",
 
+  "minutes": "{{ minute }} minutes",
+
   "second ago": "{{ time }} second ago",
   "minute ago": "{{ time }} minute ago",
   "hour ago": "{{ time }} hour ago",
@@ -682,5 +684,14 @@
   "Moai Rewards": "Moai Rewards",
 
   "View details": "View details",
-  "Points": "Points"
+  "Points": "Points",
+
+  "Bridge preview": "Bridge preview",
+  "Bridge Reqeust Success!": "Bridge Reqeust Success!",
+  "bridge-request-success-message": "Successfully requested the bridge. Bridge transaction takes 15 minutes. Please wail until you receive your XRP to the Metamask or Futurepass.",
+  "You're expected to receive bridge": "You're expected to receive",
+  "Return to bridge page": "Return to bridge page",
+  "Bridge failed": "Bridge failed",
+  "bridge-request-fail-message": "Bridge request has failed. Please try again.",
+  "approve-bridge-token-message": "Approve {{token}} for bridging"
 }

@@ -10,10 +10,12 @@ import { useGARouteChange } from '~/hooks/analaystics/ga-route-change';
 import { useGAIdenitiy } from '~/hooks/analaystics/ga-wallet-identity';
 import { usePopup } from '~/hooks/components/use-popup';
 import { useConnectXrpl } from '~/hooks/contexts';
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMaintanence } from '~/hooks/utils/use-maintanence';
 import { useXummWalletClient } from '~/hooks/wallets/use-xumm-wallet-client';
-import { POPUP_ID } from '~/types';
+import { NETWORK, POPUP_ID } from '~/types';
 
+import BridgeRootPage from './bridge';
 import Campaign from './campaign';
 import FaucetPage from './faucet';
 import Home from './home';
@@ -34,6 +36,10 @@ const Page = () => {
 
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: xummQrOpened } = usePopup(POPUP_ID.XUMM_QR);
+
+  const { selectedNetwork } = useNetwork();
+  const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
+  const isXrpl = selectedNetwork === NETWORK.XRPL;
 
   return (
     <>
@@ -56,6 +62,9 @@ const Page = () => {
               <Route path="/faucet" element={getMaintanence('/faucet', <FaucetPage />)} />
             )}
             <Route path="/lending/*" element={getMaintanence('/lending/*', <LendingPage />)} />
+            {(isRoot || isXrpl) && (
+              <Route path="/bridge" element={getMaintanence('/bridge', <BridgeRootPage />)} />
+            )}
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </>

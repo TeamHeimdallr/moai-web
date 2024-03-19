@@ -16,6 +16,7 @@ interface Props {
   spender?: string; // for evm
   currency?: string; // for xrp
 
+  chainId?: number;
   enabled?: boolean;
 }
 
@@ -26,6 +27,7 @@ export const useApprove = ({
   issuer,
   spender,
   currency,
+  chainId,
   enabled,
 }: Props) => {
   const { isEvm, isFpass } = useNetwork();
@@ -35,6 +37,7 @@ export const useApprove = ({
     allowanceMin: amount,
     symbol,
     spender: spender as Address,
+    chainId,
     tokenAddress: address as Address,
     enabled,
   });

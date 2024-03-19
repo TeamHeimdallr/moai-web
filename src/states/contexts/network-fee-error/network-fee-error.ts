@@ -127,3 +127,13 @@ export const useEnterOrExitMarketNetworkFeeErrorStore = create<State>()(
     }))
   )
 );
+
+export const useBridgeNetworkFeeErrorStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'BRIDGE_NETWORK_FEE_ERROR_STORE',
+      error: false,
+      setError: error => set({ error }),
+    }))
+  )
+);
