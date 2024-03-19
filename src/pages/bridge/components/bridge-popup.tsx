@@ -313,7 +313,7 @@ export const BridgePopup = ({ amount, value }: Props) => {
                 <ListItem
                   image={<ListImage src={NETWORK_IMAGE_MAPPER.THE_ROOT_NETWORK} />}
                   title={`${getNetworkName('THE_ROOT_NETWORK')} Bridge`}
-                  titleCaption={`${t('minutes', { minute: 10 })}`}
+                  titleCaption={`${t('minutes', { minute: 15 })}`}
                   value={`${formatNumber(amount, 2)} ${token?.symbol}`}
                   valueType="large"
                   valueCaption={`$${formatNumber(value, 2, 'floor', MILLION, 2)}`}
