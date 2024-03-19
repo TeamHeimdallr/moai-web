@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { useWeb3Modal } from '@web3modal/react';
 import { mainnet, sepolia, useAccount, useNetwork as useNetworkWagmi } from 'wagmi';
 
@@ -17,6 +18,7 @@ import { getNetworkName } from '../utils/network-name';
 import { useSwitchAndAddNetwork } from './use-add-network';
 
 export const useBanner = () => {
+  const location = useLocation();
   const { from } = useSelecteNetworkStore();
 
   const { switchNetwork } = useSwitchAndAddNetwork();
@@ -33,9 +35,10 @@ export const useBanner = () => {
   const network = getNetworkName(from);
 
   const text = t('wallet-alert-message-switch', { network });
+  const isBridge = location.pathname.includes('bridge');
 
   useEffect(() => {
-    if (isDisconnected || isConnecting || isReconnecting || !anyAddress) {
+    if (isDisconnected || isConnecting || isReconnecting || !anyAddress || !isBridge) {
       web3modalClose();
       close();
       return;
@@ -60,6 +63,7 @@ export const useBanner = () => {
     close,
     ethereum.id,
     from,
+    isBridge,
     isConnecting,
     isDisconnected,
     isReconnecting,

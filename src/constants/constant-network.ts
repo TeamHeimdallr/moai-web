@@ -46,6 +46,7 @@ export const SCANNER_URL = {
     : IS_TESTNET
     ? 'https://testnet.xrpl.org'
     : 'https://devnet.xrpl.org',
+  ETHEREUM: IS_MAINNET ? 'https://etherscan.io' : 'https://sepolia.etherscan.io',
 };
 
 export const EVM_TOKEN_ADDRESS: Record<string, Record<string, string>> = {

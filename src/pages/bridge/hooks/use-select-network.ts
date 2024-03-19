@@ -4,8 +4,9 @@ export const useSelectNetwork = () => {
   const { from, to, selectFrom, selectTo } = useSelecteNetworkStore();
 
   const getSelectable = (network: string) => {
-    if (network === 'ETHEREUM') return ['THE_ROOT_NETWORK'];
-    if (network === 'THE_ROOT_NETWORK') return ['ETHEREUM', 'XRPL'];
+    // if (network === 'ETHEREUM') return ['THE_ROOT_NETWORK'];
+    // if (network === 'THE_ROOT_NETWORK') return ['ETHEREUM', 'XRPL'];
+    if (network === 'THE_ROOT_NETWORK') return ['XRPL'];
     if (network === 'XRPL') return ['THE_ROOT_NETWORK'];
     return [];
   };
@@ -38,6 +39,7 @@ export const useSelectNetwork = () => {
       selectFrom(to);
       selectTo(selectableTo[0]);
     }
+
     if (!selectableFrom.includes(from) && selectableTo.includes(to)) {
       selectFrom(selectableFrom[0]);
       selectTo(from);

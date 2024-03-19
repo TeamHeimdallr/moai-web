@@ -17,8 +17,8 @@ export const useSelecteNetworkStore = create<State>()(
     immer(
       logger(set => ({
         name: 'BRIDGE_SELECTED_NETWORK_STORE',
-        from: 'ETHEREUM',
-        to: 'THE_ROOT_NETWORK',
+        from: 'THE_ROOT_NETWORK',
+        to: 'XRPL',
         selectFrom: (network: string) => set({ from: network }),
         selectTo: (network: string) => set({ to: network }),
       }))

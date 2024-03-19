@@ -77,7 +77,7 @@ const _Bridge = () => {
 
   const bridgeFee = 0; // TODO: check bridge fee
 
-  const xrplFee = 0.000015; // TODO: get actual fee
+  const xrplFee = 0.0001; // TODO: get actual fee
   const xrpAfterFee = Number(inputValue || 0) * (1 - bridgeFee);
   const validToBridge =
     !!inputValue && Number(inputValue || 0) > 0 && Number(inputValue || 0) + xrplFee <= xrpBalance;
@@ -90,10 +90,10 @@ const _Bridge = () => {
     txData,
     blockTimestamp,
     reset,
-    bridge,
+    writeAsync: bridge,
   } = useBridgeXrplToRoot({
-    fromInput: Number(inputValue || 0),
-    toAddress: address,
+    amount: inputValue || 0,
+    destination: address,
     enabled: !!validToBridge && !!address,
   });
 

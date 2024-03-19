@@ -1,9 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Abi, formatUnits } from 'viem';
-import { Address, mainnet, sepolia, useBalance as useBalanceWagmi, useContractReads } from 'wagmi';
+import { Address, useBalance as useBalanceWagmi, useContractReads } from 'wagmi';
 import { AccountInfoResponse } from 'xrpl';
-
-import { IS_MAINNET } from '~/constants';
 
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -25,7 +23,16 @@ export const useBalance = () => {
   const evmAddress = isFpass ? fpass?.address : isEvm ? evm?.address : '';
   const xrpAddress = xrp?.address || '';
 
+  const { data: xrpBalanceData } = useBalanceWagmi({
+    scopeKey: 'TRN_NATIVE',
+    address: evmAddress as Address,
+    chainId: theRootNetwork.id,
+    enabled: from === 'THE_ROOT_NETWORK' && !!evmAddress,
+    staleTime: 10 * 1000,
+  });
+
   // from ETHEREUM
+  /*
   const { data: ethBalanceData } = useBalanceWagmi({
     scopeKey: 'EVM_NATIVE',
     address: evmAddress as Address,
@@ -100,6 +107,7 @@ export const useBalance = () => {
       : [];
 
   // from THE_ROOT_NETWORK to ETHEREUM
+ 
   const { data: trnEthTokenBalanceData } = useContractReads({
     scopeKey: 'TRN_EVM_TOKEN',
     contracts:
@@ -161,6 +169,7 @@ export const useBalance = () => {
           return { ...token, balance };
         })
       : [];
+  */
 
   // from THE_ROOT_NETWORK to XRPL
   const { data: trnXrplTokenBalanceData } = useContractReads({
@@ -239,14 +248,22 @@ export const useBalance = () => {
       : [];
 
   const getBalance = () => {
-    if (from === 'ETHEREUM' && to === 'THE_ROOT_NETWORK') return ethBalance;
-    if (from === 'THE_ROOT_NETWORK' && to === 'ETHEREUM') return trnEthBalance;
+    // if (from === 'ETHEREUM' && to === 'THE_ROOT_NETWORK') return ethBalance;
+    // if (from === 'THE_ROOT_NETWORK' && to === 'ETHEREUM') return trnEthBalance;
     if (from === 'THE_ROOT_NETWORK' && to === 'XRPL') return trnXrplBalance;
     if (from === 'XRPL' && to === 'THE_ROOT_NETWORK') return xrplXrpBalance;
     return [];
   };
 
+  const getGasBalance = () => {
+    // if (from === 'ETHEREUM') return Number(ethBalanceData?.formatted || '0');
+    if (from === 'THE_ROOT_NETWORK') return Number(xrpBalanceData?.formatted || '0');
+    if (from === 'XRPL') return Number(xrplXrpTokenBalanceData?.result?.account_data?.Balance || 0);
+    return 0;
+  };
+
   return {
     balances: getBalance(),
+    gasBalance: getGasBalance(),
   };
 };

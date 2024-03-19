@@ -81,6 +81,8 @@
 
   "Just now": "방금 전",
 
+  "minutes": "{{ minute }}분",
+
   "second ago": "{{ time }}초 전",
   "minute ago": "{{ time }}분 전",
   "hour ago": "{{ time }}시간 전",
@@ -682,5 +684,14 @@
   "Moai Rewards": "Moai 리워드",
 
   "View details": "자세히 보기",
-  "Points": "포인트"
+  "Points": "포인트",
+
+  "Bridge preview": "브릿지 미리보기",
+  "Bridge Reqeust Success!": "브릿지를 요청했습니다.",
+  "bridge-request-success-message": "브릿지 요청에 성공했습니다. 브릿지는 15분 정도 소요됩니다. The Root Network의 Metamask나 FuturePass에서 토큰이 확인될 때까지 기다려주세요.",
+  "You're expected to receive bridge": "수령 예정 토큰",
+  "Return to bridge page": "브릿지 화면으로 돌아가기",
+  "Bridge failed": "브릿지에 실패했습니다.",
+  "bridge-request-fail-message": "브릿지 요청에 실패했습니다. 다시 시도해주세요.",
+  "approve-bridge-token-message": "브릿지를 위해 ${{token}} 승인하기"
 }

@@ -12,12 +12,14 @@ import { IconArrowDown, IconDown } from '~/assets/icons';
 
 import { NETWORK_IMAGE_MAPPER } from '~/constants';
 
-import { ButtonIconSmall, ButtonPrimaryLarge } from '~/components/buttons';
+import { ButtonPrimaryLarge } from '~/components/buttons';
 import { DropdownList } from '~/components/dropdown';
 import { InputNumber } from '~/components/inputs';
 import { List } from '~/components/lists';
 import { SkeletonBase } from '~/components/skeleton/skeleton-base';
 import { Token } from '~/components/token';
+
+import { TooltipAddress } from '~/pages/campaign/components/tooltip-address';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
@@ -25,7 +27,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useOnClickOutside } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { truncateAddress } from '~/utils';
-import { POPUP_ID } from '~/types/components';
+import { POPUP_ID, TOOLTIP_ID } from '~/types/components';
 
 import { useBalance } from '../hooks/use-balance';
 import { useSelectNetwork } from '../hooks/use-select-network';
@@ -83,8 +85,15 @@ const _BridgeInputGroup = () => {
   const { evm, xrp, fpass } = useConnectedWallet();
 
   const evmAddress = isFpass ? fpass?.address : isEvm ? evm?.address : '';
+  const evmDestination = isFpass
+    ? to === 'ETHEREUM'
+      ? evm?.address
+      : fpass?.address
+    : isEvm
+    ? evm?.address
+    : '';
   const xrpAddress = xrp?.address || '';
-  const address = to === 'XRPL' ? xrpAddress : evmAddress;
+  const destination = to === 'XRPL' ? xrpAddress : evmDestination;
 
   const schema = yup.object().shape({
     input: yup.number().min(0).max(currentBalance, t('Exceeds wallet balance')).required(),
@@ -127,7 +136,7 @@ const _BridgeInputGroup = () => {
 
   const allNetworks = [
     { id: 'XRPL', selectable: true },
-    { id: 'ETHEREUM', selectable: true },
+    // { id: 'ETHEREUM', selectable: true },
     { id: 'THE_ROOT_NETWORK', selectable: true },
   ];
   const fromSelectableNetwork = allNetworks.map(({ id }) => ({
@@ -148,9 +157,9 @@ const _BridgeInputGroup = () => {
               title={t('From')}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               network={from as any}
-              networkSelectIcon={
-                <ButtonIconSmall icon={<IconDown />} onClick={() => setOpenFromNetwork(true)} />
-              }
+              // networkSelectIcon={
+              //   <ButtonIconSmall icon={<IconDown />} onClick={() => setOpenFromNetwork(true)} />
+              // }
               focus
               focused={focus}
               error={error}
@@ -227,13 +236,15 @@ const _BridgeInputGroup = () => {
               title={t('To')}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               network={to as any}
-              networkSelectIcon={
-                <ButtonIconSmall icon={<IconDown />} onClick={() => setOpenToNetwork(true)} />
-              }
+              // networkSelectIcon={
+              //   <ButtonIconSmall icon={<IconDown />} onClick={() => setOpenToNetwork(true)} />
+              // }
             >
               <ToWrapper>
                 <ToTitle>{t('Account')}</ToTitle>
-                <ToValue>{address ? truncateAddress(address, to === 'XRPL' ? 6 : 4) : '-'}</ToValue>
+                <ToValue data-tooltip-id={TOOLTIP_ID.ADDRESS}>
+                  {destination ? truncateAddress(destination, to === 'XRPL' ? 6 : 4) : '-'}
+                </ToValue>
               </ToWrapper>
             </List>
             {openToNetwork && (
@@ -272,6 +283,7 @@ const _BridgeInputGroup = () => {
           value={(input || 0) * (currentTokenWithBalance?.price || 0)}
         />
       )}
+      <TooltipAddress address={destination} />
     </>
   );
 };

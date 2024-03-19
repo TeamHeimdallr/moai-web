@@ -18,18 +18,19 @@ import { IS_MAINNET } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useBridgeToXrplNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useBridgeNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 interface Props {
   amount: bigint; // XRP amount, formatted 6 decimal
   destination: string; // XRP address
+
   enabled?: boolean;
 }
-export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
+export const useBridgeRootToXrpl = ({ amount, destination, enabled }: Props) => {
   // ref: https://github.com/futureversecom/trn-app-hub/blob/main/libs/components/RootToXRP.jsx
-  const { setError } = useBridgeToXrplNetworkFeeErrorStore();
+  const { setError } = useBridgeNetworkFeeErrorStore();
 
   const { data: walletClient } = useWalletClient();
 
@@ -146,6 +147,7 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
     if (!txData || !txData.blockNumber || !isEvmButNotFpass) return;
 
     const { timestamp } = await publicClient.getBlock({ blockNumber: txData.blockNumber });
+    console.log(timestamp, Number(timestamp) * 1000);
     setBlockTimestamp(Number(timestamp) * 1000);
   };
 

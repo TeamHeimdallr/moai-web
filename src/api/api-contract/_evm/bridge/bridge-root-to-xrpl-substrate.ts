@@ -18,32 +18,31 @@ import { IS_MAINNET } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useBridgeToXrplNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useBridgeNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 interface Props {
   amount: bigint; // XRP amount, formatted 6 decimal
   destination: string; // XRP address
+
   enabled?: boolean;
 }
-export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
+export const useBridgeRootToXrplSubstrate = ({ amount, destination, enabled }: Props) => {
   // ref: https://github.com/futureversecom/trn-app-hub/blob/main/libs/components/RootToXRP.jsx
-  const { setError } = useBridgeToXrplNetworkFeeErrorStore();
+  const { setError } = useBridgeNetworkFeeErrorStore();
 
   const { data: walletClient } = useWalletClient();
 
-  const { evm } = useConnectedWallet();
-  const { address: walletAddress } = evm;
-  const signer = walletAddress;
+  const { fpass } = useConnectedWallet();
+  const { address: walletAddress, signer } = fpass;
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [txData, setTxData] = useState<SubmittableResponse>();
 
-  const { isFpass, isEvm } = useNetwork();
-  const isEvmButNotFpass = isEvm && !isFpass;
+  const { isFpass } = useNetwork();
 
   const publicClient = usePublicClient();
 
@@ -67,15 +66,20 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
     setTxData(undefined);
   };
   const estimateFee = async () => {
-    if (!isEvmButNotFpass) return;
+    if (!isFpass) return;
     try {
       const [api] = await Promise.all([
         getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
       ]);
 
-      const extrinsic = api.tx.xrplBridge.withdrawXrp(
+      const bridgeExtrinsic = api.tx.xrplBridge.withdrawXrp(
         amount.toString(),
         decodedDestination
+      ) as Extrinsic;
+
+      const extrinsic = api.tx.futurepass.proxyExtrinsic(
+        walletAddress,
+        bridgeExtrinsic
       ) as Extrinsic;
 
       const info = await extrinsic.paymentInfo(signer);
@@ -88,7 +92,7 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
   };
 
   const bridgeToXrpl = async () => {
-    if (!isEvmButNotFpass || !enabled) return;
+    if (!isFpass || !enabled) return;
 
     try {
       setIsLoading(true);
@@ -97,9 +101,14 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
         getTrnApi(IS_MAINNET ? ('root' as NetworkName) : ('porcini' as NetworkName)),
       ]);
 
-      const extrinsic = api.tx.xrplBridge.withdrawXrp(
+      const bridgeExtrinsic = api.tx.xrplBridge.withdrawXrp(
         amount.toString(),
         decodedDestination
+      ) as Extrinsic;
+
+      const extrinsic = api.tx.futurepass.proxyExtrinsic(
+        walletAddress,
+        bridgeExtrinsic
       ) as Extrinsic;
 
       const [payload, ethPayload] = await createExtrinsicPayload(
@@ -143,7 +152,7 @@ export const useBridgeToXrpl = ({ amount, destination, enabled }: Props) => {
   };
 
   const getBlockTimestamp = async () => {
-    if (!txData || !txData.blockNumber || !isEvmButNotFpass) return;
+    if (!txData || !txData.blockNumber || !isFpass) return;
 
     const { timestamp } = await publicClient.getBlock({ blockNumber: txData.blockNumber });
     setBlockTimestamp(Number(timestamp) * 1000);

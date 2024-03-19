@@ -23,6 +23,7 @@ interface Props {
   spender?: Address;
   tokenAddress?: Address;
   symbol?: string;
+  chainId?: number;
 
   enabled?: boolean;
 }
@@ -31,6 +32,7 @@ export const useApprove = ({
   allowanceMin,
   spender,
   tokenAddress,
+  chainId,
 
   enabled,
 }: Props) => {
@@ -38,7 +40,7 @@ export const useApprove = ({
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-  const chainId = useNetworkId(currentNetwork);
+  const defaultChainId = useNetworkId(currentNetwork);
 
   const publicClient = usePublicClient();
 
@@ -59,7 +61,7 @@ export const useApprove = ({
     address: tokenAddress,
     abi: ERC20_TOKEN_ABI,
     functionName: 'allowance',
-    chainId,
+    chainId: chainId || defaultChainId,
     args: [walletAddress, spender],
     enabled: internalEnabled,
 
@@ -79,7 +81,7 @@ export const useApprove = ({
     address: tokenAddress,
     abi: ERC20_TOKEN_ABI,
     functionName: 'approve',
-    chainId,
+    chainId: chainId || defaultChainId,
     account: walletAddress as Address,
     args: [spender, amount],
     enabled: internalEnabled,

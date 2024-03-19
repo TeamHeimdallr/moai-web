@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
+import { zeroAddress } from 'viem';
 
 import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { IS_MAINNET } from '~/constants';
 
+import { usePrevious } from '~/hooks/utils';
 import { IToken } from '~/types';
 
 import { useSelecteNetworkStore, useSelecteTokenStore } from '../states';
@@ -47,6 +49,9 @@ export const useSelectToken = () => {
   const { token, selectToken } = useSelecteTokenStore();
   const { from, to } = useSelecteNetworkStore();
 
+  const prevFrom = usePrevious<string>(from);
+  const prevTo = usePrevious<string>(to);
+
   const { data } = useGetTokensQuery(
     { queries: { tokens: 'eth,xrp,root,usdc,usdt' } },
     { staleTime: 10 * 1000 }
@@ -63,13 +68,15 @@ export const useSelectToken = () => {
     if (from === 'ETHEREUM') {
       if (to === 'THE_ROOT_NETWORK')
         return ETHEREUM_TRN_TOKEN_LISTS.map(symbol => {
-          const address = ETHEREUM_TOKEN_ADDRESS_MAP[symbol];
+          const address = symbol === 'ETH' ? zeroAddress : ETHEREUM_TOKEN_ADDRESS_MAP[symbol];
           const tokenData = uniqTokens?.[symbol];
+          const decimal = symbol === 'ETH' ? 18 : tokenData?.decimal;
 
           return {
             ...tokenData,
             symbol,
             address,
+            decimal,
           };
         });
       return [];
@@ -120,7 +127,15 @@ export const useSelectToken = () => {
   const selectableToken = getSelectable(from, to) || [];
 
   useEffect(() => {
-    if (!token.symbol && selectableToken[0]?.image) {
+    const initial = !token.symbol;
+    const tokenSelectedAndWaitingImage =
+      token.symbol === selectableToken[0]?.symbol && !token.image;
+
+    const changeFromTo = !!prevFrom && !!prevTo && (from !== prevFrom || to !== prevTo);
+    const changedFromToAndChangeSelectableToken =
+      changeFromTo && token.symbol !== selectableToken[0]?.symbol;
+
+    if (initial || tokenSelectedAndWaitingImage || changedFromToAndChangeSelectableToken) {
       selectToken({
         symbol: selectableToken[0].symbol,
         address: selectableToken[0].address,
@@ -131,7 +146,7 @@ export const useSelectToken = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectableToken[0]?.image, token.symbol]);
+  }, [selectableToken[0]?.image, token.symbol, from, to, prevFrom, prevTo]);
 
   return { selectableToken, token, selectToken };
 };
