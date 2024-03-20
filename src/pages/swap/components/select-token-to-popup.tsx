@@ -20,8 +20,9 @@ import { usePopup } from '~/hooks/components/use-popup';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
-import { useSwapStore } from '~/states/pages';
 import { IToken, POPUP_ID } from '~/types';
+
+import { useSwapStore } from '../states';
 
 interface Props {
   userAllTokenBalances: (IToken & { balance: number })[];

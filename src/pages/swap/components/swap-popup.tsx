@@ -37,11 +37,12 @@ import {
   useSwapNetworkFeeErrorStore,
 } from '~/states/contexts/network-fee-error/network-fee-error';
 import { useSlippageStore } from '~/states/data';
-import { useSwapStore } from '~/states/pages';
 import { IPool, NETWORK, SwapKind } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
+
+import { useSwapStore } from '../states';
 
 interface Props {
   swapOptimizedPathPool?: IPool;

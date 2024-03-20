@@ -7,9 +7,11 @@ import { Gnb } from '~/components/gnb';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
-import { POPUP_ID } from '~/types';
+import { useNetwork } from '~/hooks/contexts/use-network';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { SwapInputGroup } from './components/swap-input-group';
+import { SwapInputGroupXrpl } from './components/swap-input-group-xrpl';
 
 const SwapPage = () => {
   useGAPage();
@@ -17,6 +19,8 @@ const SwapPage = () => {
 
   const { t } = useTranslation();
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
+
+  const { selectedNetwork } = useNetwork();
 
   return (
     <Wrapper ref={ref}>
@@ -28,7 +32,7 @@ const SwapPage = () => {
           <Title>{t('Swap')}</Title>
 
           <SwapWrapper>
-            <SwapInputGroup />
+            {selectedNetwork === NETWORK.XRPL ? <SwapInputGroupXrpl /> : <SwapInputGroup />}
           </SwapWrapper>
         </ContentWrapper>
       </InnerWrapper>

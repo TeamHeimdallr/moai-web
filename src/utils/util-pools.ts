@@ -1,7 +1,5 @@
 import { formatEther, parseEther, parseUnits } from 'viem';
 
-import { IToken } from '~/types';
-
 import { BZERO, ONE, SolidityMaths } from './';
 
 interface Props {
@@ -175,15 +173,3 @@ const calcPriceImpact = (
     return pi < 0 ? 0 : 100 * Number(formatEther(pi));
   }
 };
-
-export const formatAmmAssets = (assets: IToken[]) =>
-  assets.map(asset => {
-    if (asset.symbol === 'XRP')
-      return {
-        currency: 'XRP',
-      };
-    return {
-      currency: asset.currency,
-      issuer: asset.address,
-    };
-  });

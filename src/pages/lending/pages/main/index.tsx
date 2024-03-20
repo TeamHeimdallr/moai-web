@@ -6,12 +6,13 @@ import { useUserAccountLiquidity } from '~/api/api-contract/lending/user-account
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
+import { useSupplyBorrowTabStore } from '~/pages/lending/states';
+
 import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { usePrevious } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { useSupplyBorrowTabStore } from '~/states/pages/lending';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { LayoutMarketBorrows } from './layouts/layout-market-borrows';
