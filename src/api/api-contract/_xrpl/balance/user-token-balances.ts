@@ -3,33 +3,29 @@ import { uniqBy } from 'lodash-es';
 import { formatUnits } from 'viem';
 import { AccountInfoResponse, GatewayBalancesResponse } from 'xrpl';
 
-import { useGetTokensInfinityQuery } from '~/api/api-server/token/get-tokens';
+import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { IToken, NETWORK } from '~/types';
 
-/**
- * @description Get all token handling in moai finance balances for user
- */
 type TokenBalance = IToken & { balance: number; totalSupply: number };
-export const useUserAllTokenBalances = () => {
+interface Props {
+  addresses: string[];
+}
+export const useUserTokenBalances = ({ addresses }: Props) => {
   const { isXrp } = useNetwork();
 
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
   const { address: walletAddress } = xrp;
 
-  const {
-    data: tokensData,
-    hasNextPage,
-    fetchNextPage,
-  } = useGetTokensInfinityQuery(
-    { queries: { filter: 'network:in:xrpl' } },
-    { staleTime: 10 * 1000 }
+  const { data: tokensData } = useGetTokensQuery(
+    { queries: { filter: `address:in:${addresses.join(',')}` } },
+    { staleTime: 10 * 1000, enabled: !!addresses && addresses.length > 0 }
   );
-  const tokens = tokensData?.pages?.flatMap(p => p.tokens) || [];
+  const { tokens } = tokensData || {};
 
   /* get user xrp token balance */
   const xrpTokenBalanceRequest = {
@@ -45,35 +41,6 @@ export const useUserAllTokenBalances = () => {
         staleTime: 1000 * 3,
       }
     );
-
-  const lpTokens = tokens?.filter(
-    t => t.network === NETWORK.XRPL && !!t.address && t.symbol !== 'XRP' && t.isLpToken
-  );
-  const getLpTokenTotalSupply = (account: string) => ({
-    command: 'gateway_balances',
-    account: account,
-  });
-  const lpTokenTotalSupplyData = useQueries<GatewayBalancesResponse[]>({
-    queries:
-      lpTokens?.map(token => ({
-        queryKey: ['GET', 'XRPL', 'GATEWAY_BALANCES', 'LP_TOKEN', token.address],
-        queryFn: () => client.request(getLpTokenTotalSupply(token.address)),
-        enabled: !!client && isConnected && isXrp,
-        staleTime: 1000 * 3,
-      })) || [],
-  });
-
-  const lpTokenTotalSupplyRaw = lpTokenTotalSupplyData?.flatMap(d => {
-    const supply = (d.data as GatewayBalancesResponse)?.result?.obligations;
-    const currencies = Object.keys(supply || {});
-
-    return [
-      ...currencies.map(currency => ({
-        currency,
-        supply: Number(supply?.[currency] || 0),
-      })),
-    ];
-  });
 
   const getTokenBalanceRequest = (account: string) => ({
     command: 'gateway_balances',
@@ -119,16 +86,13 @@ export const useUserAllTokenBalances = () => {
         const composition = tokens?.find(token => token.address === key);
         const [asset] = assets[key];
 
-        const totalSupply =
-          lpTokenTotalSupplyRaw?.find(supply => supply.currency === asset?.currency)?.supply || 0;
-
         if (asset && composition)
-          res.push({ ...composition, balance: Number(asset?.value || 0), totalSupply });
+          res.push({ ...composition, balance: Number(asset?.value || 0), totalSupply: 0 });
       }
 
       return res;
     })
-    .flat();
+    ?.flat();
 
   const userTokenBalances = uniqBy(userTokenBalancesNotUniq, 'address');
   const tokenBalances = (tokens
@@ -152,14 +116,12 @@ export const useUserAllTokenBalances = () => {
     tokenBalancesRefetch();
   };
 
-  const userAllTokens = [...xrpBalance, ...tokenBalances]
+  const userTokens = [...xrpBalance, ...tokenBalances]
     .filter(t => !!t)
     .sort((a, b) => a?.symbol?.localeCompare(b?.symbol || '') || 0) as (IToken & TokenBalance)[];
 
   return {
-    userAllTokenBalances: userAllTokens,
+    userTokenBalances: userTokens,
     refetch,
-    fetchNextPage,
-    hasNextPage,
   };
 };

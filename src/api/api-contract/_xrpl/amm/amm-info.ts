@@ -28,6 +28,8 @@ export const useAmmInfo = ({ asset, asset2, enabled = true }: Props) => {
 
   const res = useQuery(['GET', 'XRPL', 'AMM_INFO', request], getAmmInfo, {
     enabled: !!client && isConnected && isXrp && enabled,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60,
   });
 
   return res;

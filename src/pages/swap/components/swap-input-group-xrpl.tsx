@@ -35,8 +35,8 @@ import { POPUP_ID } from '~/types/components';
 
 import { useSwapStore } from '../states';
 
-import { SelectFromTokenPopup } from './select-token-from-popup';
-import { SelectToTokenPopup } from './select-token-to-popup';
+import { SelectFromTokenPopupXrpl } from './select-token-from-popup-xrpl';
+import { SelectToTokenPopupXrpl } from './select-token-to-popup-xrpl';
 import { SwapPopup } from './swap-popup';
 
 interface InputFormState {
@@ -63,7 +63,7 @@ const _SwapInputGroup = () => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { xrp } = useConnectedWallet();
-  const walletAddress = xrp?.address || '';
+  const walletAddress = useMemo(() => xrp?.address || '', [xrp]);
 
   const {
     fromToken,
@@ -108,7 +108,11 @@ const _SwapInputGroup = () => {
       ? (toInput || 0) / (Number(fromInput || 0) === 0 ? 0.0001 : Number(fromInput || 0))
       : toTokenReserve - toTokenReserve * (fromTokenReserve / (fromTokenReserve + (1 - fee)));
 
-  const { userAllTokenBalances: userAllTokenBalancesWithLpToken } = useUserAllTokenBalances();
+  const {
+    userAllTokenBalances: userAllTokenBalancesWithLpToken,
+    hasNextPage,
+    fetchNextPage,
+  } = useUserAllTokenBalances();
   const userAllTokenBalances = useMemo(
     () => userAllTokenBalancesWithLpToken?.filter(t => !t.isLpToken),
     [userAllTokenBalancesWithLpToken]
@@ -248,13 +252,20 @@ const _SwapInputGroup = () => {
       </Wrapper>
 
       {walletAddress && selectTokenFromPopupOpened && (
-        <SelectFromTokenPopup
+        <SelectFromTokenPopupXrpl
           userAllTokenBalances={userAllTokenBalances}
           tokenPrice={fromTokenPrice}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
         />
       )}
       {walletAddress && selectTokenToPopupOpened && (
-        <SelectToTokenPopup userAllTokenBalances={userAllTokenBalances} tokenPrice={toTokenPrice} />
+        <SelectToTokenPopupXrpl
+          userAllTokenBalances={userAllTokenBalances}
+          tokenPrice={toTokenPrice}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
+        />
       )}
 
       {walletAddress && swapPopupOpened && <SwapPopup />}

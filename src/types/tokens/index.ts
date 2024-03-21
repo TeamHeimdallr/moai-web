@@ -20,6 +20,9 @@ export interface IToken {
 
   isLpToken: boolean;
   isCexListed: boolean;
+
+  issuerOrganization?: string;
+  issuerOrganizationImage?: string;
 }
 
 export interface ICreateRecentlySelectedTokenRequest {

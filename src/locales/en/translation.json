@@ -693,5 +693,8 @@
   "Return to bridge page": "Return to bridge page",
   "Bridge failed": "Bridge failed",
   "bridge-request-fail-message": "Bridge request has failed. Please try again.",
-  "approve-bridge-token-message": "Approve {{token}} for bridging"
+  "approve-bridge-token-message": "Approve {{token}} for bridging",
+
+  "Recent": "Recent",
+  "Trending": "Trending"
 }
