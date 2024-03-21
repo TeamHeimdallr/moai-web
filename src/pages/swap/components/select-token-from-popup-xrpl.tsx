@@ -11,10 +11,11 @@ import { useGetTrendingTokensQuery } from '~/api/api-server/token/get-trending-t
 import { useSearchTokensQuery } from '~/api/api-server/token/search-tokens';
 
 import { COLOR } from '~/assets/colors';
-import { IconDown } from '~/assets/icons';
+import { IconDown, IconPlus } from '~/assets/icons';
 
 import { MILLION } from '~/constants';
 
+import { ButtonPrimarySmallIconLeading } from '~/components/buttons/primary/small-icon-leading';
 import { InputSearch } from '~/components/inputs';
 import { Popup } from '~/components/popup';
 import { Token } from '~/components/token';
@@ -177,54 +178,68 @@ export const SelectFromTokenPopupXrpl = ({
               </RecommendInnerWrapper>
             )}
           </RecommendWrapper>
-          <TokenLists>
-            {tokens?.map(token => (
-              <TokenList
-                key={`${token.network}-${token.symbol}`}
-                title={token.symbol}
-                image={token.image}
-                description={
-                  token.issuerOrganization ? (
-                    <Issuer>
-                      {token.issuerOrganizationImage && (
-                        <IssuerIcon src={token.issuerOrganizationImage} />
-                      )}
-                      {token.issuerOrganization}
-                    </Issuer>
-                  ) : (
-                    <Issuer>{truncateAddress(token.address)}</Issuer>
-                  )
-                }
-                type={'selectable'}
-                balance={`${formatNumber(token?.balance || 0, 4, 'floor', MILLION, 0)}`}
-                value={`$${`${formatNumber(
-                  (token?.balance || 0) * (token.price || tokenPrice || 0),
-                  2,
-                  'floor',
-                  MILLION,
-                  2
-                )}`}`}
-                disabled={token.symbol === toToken?.symbol}
-                selected={fromToken?.symbol === token.symbol}
-                onClick={() => {
-                  gaAction({
-                    action: 'select-from-token',
-                    data: { page: 'swap', token: token.symbol },
-                  });
-                  if (token.symbol === toToken?.symbol) return;
-                  handleSelect(token);
-                }}
-                backgroundColor={COLOR.NEUTRAL[15]}
-              />
-            ))}
+          {tokens && tokens.length > 0 && (
+            <TokenLists>
+              {tokens?.map(token => (
+                <TokenList
+                  key={`${token.network}-${token.symbol}`}
+                  title={token.symbol}
+                  image={token.image}
+                  description={
+                    token.issuerOrganization ? (
+                      <Issuer>
+                        {token.issuerOrganizationImage && (
+                          <IssuerIcon src={token.issuerOrganizationImage} />
+                        )}
+                        {token.issuerOrganization}
+                      </Issuer>
+                    ) : (
+                      <Issuer>{truncateAddress(token.address)}</Issuer>
+                    )
+                  }
+                  type={'selectable'}
+                  balance={`${formatNumber(token?.balance || 0, 4, 'floor', MILLION, 0)}`}
+                  value={`$${`${formatNumber(
+                    (token?.balance || 0) * (token.price || tokenPrice || 0),
+                    2,
+                    'floor',
+                    MILLION,
+                    2
+                  )}`}`}
+                  disabled={token.symbol === toToken?.symbol}
+                  selected={fromToken?.symbol === token.symbol}
+                  onClick={() => {
+                    gaAction({
+                      action: 'select-from-token',
+                      data: { page: 'swap', token: token.symbol },
+                    });
+                    if (token.symbol === toToken?.symbol) return;
+                    handleSelect(token);
+                  }}
+                  backgroundColor={COLOR.NEUTRAL[15]}
+                />
+              ))}
 
-            {hasNextPage && (
-              <More onClick={fetchNextPage}>
-                {t('Load more')}
-                <IconDown width={20} height={20} />
-              </More>
-            )}
-          </TokenLists>
+              {hasNextPage && (
+                <More onClick={fetchNextPage}>
+                  {t('Load more')}
+                  <IconDown width={20} height={20} />
+                </More>
+              )}
+            </TokenLists>
+          )}
+
+          {searchText && tokens?.length === 0 && (
+            <NotFound>
+              {t('Sorry! No token found :(')}
+              <NotFoundDescription>{t('Add the missing tokens.')}</NotFoundDescription>
+            </NotFound>
+          )}
+          {searchText && (
+            <AddTokenWrapper>
+              <ButtonPrimarySmallIconLeading icon={<IconPlus />} text={t('Add token')} />
+            </AddTokenWrapper>
+          )}
         </ContentContainer>
       </Wrapper>
     </Popup>
@@ -238,7 +253,7 @@ const SearchWrapper = tw.div`
 `;
 const ContentContainer = styled.div(() => [
   tw`
-    px-12 flex flex-col gap-24 overflow-auto h-552
+    px-12 flex flex-col gap-24 overflow-auto h-444
     `,
   css`
     scroll-behavior: smooth;
@@ -297,3 +312,14 @@ const More = styled.div(() => [
     }
   `,
 ]);
+
+const NotFound = tw.div`
+  flex-center flex-col gap-4 font-m-16 text-neutral-100 pt-82
+`;
+const NotFoundDescription = tw.div`
+  font-r-12 text-neutral-60
+`;
+
+const AddTokenWrapper = tw.div`
+  w-full flex-center
+`;

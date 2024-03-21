@@ -696,5 +696,9 @@
   "approve-bridge-token-message": "Approve {{token}} for bridging",
 
   "Recent": "Recent",
-  "Trending": "Trending"
+  "Trending": "Trending",
+
+  "Add token": "Add token",
+  "Sorry! No token found :(": "Sorry! No token found :(",
+  "Add the missing tokens.": "Add the missing tokens."
 }
