@@ -12,13 +12,17 @@ export const tokenToAmmAsset = (token?: IToken): Currency => {
 
   if (token.symbol === 'XRP') return { currency: 'XRP' };
   return {
-    currency: token.symbol,
+    currency: token.currency,
     issuer: token.address,
   };
 };
 
-export const formatAmountToNumber = (amount: Amount): number => {
-  if (typeof amount === 'string') return Number(xrpToDrops(amount));
+export const formatAmountToNumber = (
+  amount: Amount,
+  type: 'dropToXrp' | 'xrpToDrop' = 'xrpToDrop'
+): number => {
+  if (typeof amount === 'string')
+    return Number(type === 'dropToXrp' ? dropsToXrp(amount) : xrpToDrops(amount));
   return Number(amount.value);
 };
 

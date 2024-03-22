@@ -1,7 +1,6 @@
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { strip } from 'number-precision';
 import tw, { css, styled } from 'twin.macro';
@@ -23,21 +22,14 @@ import { Token } from '~/components/token';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
-import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import {
-  formatAmountToNumberFromToken,
-  formatNumber,
-  getNetworkFull,
-  tokenToAmmAsset,
-} from '~/utils';
+import { formatAmountToNumberFromToken, formatNumber, tokenToAmmAsset } from '~/utils';
 import { POPUP_ID } from '~/types/components';
 
 import { useSwapStore } from '../states';
 
-import { SelectFromTokenPopupXrpl } from './select-token-from-popup-xrpl';
-import { SelectToTokenPopupXrpl } from './select-token-to-popup-xrpl';
-import { SwapPopup } from './swap-popup';
+import { SelectTokenPopupXrpl } from './select-token-popup-xrpl';
+import { SwapPopupXrpl } from './swap-popup-xrpl';
 
 interface InputFormState {
   from: number;
@@ -56,11 +48,7 @@ const _SwapInputGroup = () => {
 
   const [arrowHover, setArrowHover] = useState(false);
 
-  const { network } = useParams();
-  const { selectedNetwork } = useNetwork();
   const { t } = useTranslation();
-
-  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
   const { xrp } = useConnectedWallet();
   const walletAddress = useMemo(() => xrp?.address || '', [xrp]);
@@ -75,7 +63,6 @@ const _SwapInputGroup = () => {
     setToToken,
 
     setFromInput,
-    resetAll,
   } = useSwapStore();
 
   const { data: ammInfoData, isError } = useAmmInfo({
@@ -88,7 +75,7 @@ const _SwapInputGroup = () => {
 
   const fromTokenReserve = formatAmountToNumberFromToken(fromToken, amm);
   const toTokenReserve = formatAmountToNumberFromToken(toToken, amm);
-  const fee = (trandingFee || 0) * 10 ** 6;
+  const fee = (trandingFee || 0) / 10 ** 6;
 
   const toInput =
     fromToken && toToken
@@ -161,11 +148,6 @@ const _SwapInputGroup = () => {
     setFromToken(toToken);
     setToToken(fromToken);
   };
-
-  useEffect(() => {
-    resetAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork]);
 
   return (
     <>
@@ -251,16 +233,18 @@ const _SwapInputGroup = () => {
         />
       </Wrapper>
 
-      {walletAddress && selectTokenFromPopupOpened && (
-        <SelectFromTokenPopupXrpl
+      {selectTokenFromPopupOpened && (
+        <SelectTokenPopupXrpl
+          type="from"
           userAllTokenBalances={userAllTokenBalances}
           tokenPrice={fromTokenPrice}
           hasNextPage={hasNextPage}
           fetchNextPage={fetchNextPage}
         />
       )}
-      {walletAddress && selectTokenToPopupOpened && (
-        <SelectToTokenPopupXrpl
+      {selectTokenToPopupOpened && (
+        <SelectTokenPopupXrpl
+          type="to"
           userAllTokenBalances={userAllTokenBalances}
           tokenPrice={toTokenPrice}
           hasNextPage={hasNextPage}
@@ -268,7 +252,7 @@ const _SwapInputGroup = () => {
         />
       )}
 
-      {walletAddress && swapPopupOpened && <SwapPopup />}
+      {walletAddress && swapPopupOpened && <SwapPopupXrpl />}
     </>
   );
 };

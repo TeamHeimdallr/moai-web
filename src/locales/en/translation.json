@@ -700,5 +700,19 @@
 
   "Add token": "Add token",
   "Sorry! No token found :(": "Sorry! No token found :(",
-  "Add the missing tokens.": "Add the missing tokens."
+  "Add the missing tokens.": "Add the missing tokens.",
+
+  "Validating": "Validating",
+  "Currency code (case-sensitive)": "Currency code (case-sensitive)",
+  "enter-code-xrpl": "Enter Code",
+  "Issuer": "Issuer",
+  "enter-issuer-xrpl": "Enter issuer",
+
+  "add-token-already-exist": "The token is already added.",
+  "add-token-already-exist-description": "Search the token from the list.",
+
+  "add-token-invalid-token": "Currency code, Issuer is not valid.",
+  "add-token-invalid-token-description": "No token was found. Please check again.",
+
+  "add-token-unknown-error": "Please check your currency code, issuer and try again. If the issue persists, contact to our support team."
 }

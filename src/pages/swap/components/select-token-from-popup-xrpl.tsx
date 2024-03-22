@@ -37,17 +37,21 @@ interface Props {
 
   hasNextPage?: boolean;
   fetchNextPage?: () => void;
+
+  showAddToken?: () => void;
 }
 export const SelectFromTokenPopupXrpl = ({
   userAllTokenBalances,
   tokenPrice,
   hasNextPage,
   fetchNextPage,
+
+  showAddToken,
 }: Props) => {
   const { ref } = useGAInView({ name: 'swap-from-token-popup' });
   const { gaAction } = useGAAction();
 
-  const [searchText, setSearchText] = useState<string | undefined>(undefined);
+  const [searchText, setSearchText] = useState<string>('');
 
   const queryClient = useQueryClient();
   const { network } = useParams();
@@ -237,7 +241,11 @@ export const SelectFromTokenPopupXrpl = ({
           )}
           {searchText && (
             <AddTokenWrapper>
-              <ButtonPrimarySmallIconLeading icon={<IconPlus />} text={t('Add token')} />
+              <ButtonPrimarySmallIconLeading
+                icon={<IconPlus />}
+                text={t('Add token')}
+                onClick={() => showAddToken?.()}
+              />
             </AddTokenWrapper>
           )}
         </ContentContainer>

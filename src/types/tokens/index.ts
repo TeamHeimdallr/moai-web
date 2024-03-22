@@ -33,3 +33,8 @@ export interface ICreateRecentlySelectedTokenRequest {
 
 // [token addresses, balance, last change block number]
 export type IPoolTokenBalanceRaw = [Address[], bigint[], bigint];
+
+export interface ICreateTokenXrplRequest {
+  currency: string;
+  issuer: string;
+}

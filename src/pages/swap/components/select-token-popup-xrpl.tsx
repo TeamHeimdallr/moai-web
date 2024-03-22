@@ -1,0 +1,50 @@
+import { useState } from 'react';
+
+import { IToken } from '~/types';
+
+import { AddTokenXrpl } from './add-token-xrpl';
+import { SelectFromTokenPopupXrpl } from './select-token-from-popup-xrpl';
+import { SelectToTokenPopupXrpl } from './select-token-to-popup-xrpl';
+
+interface Props {
+  type: 'from' | 'to';
+
+  userAllTokenBalances: (IToken & { balance: number })[];
+  tokenPrice: number;
+
+  hasNextPage?: boolean;
+  fetchNextPage?: () => void;
+}
+export const SelectTokenPopupXrpl = ({
+  type,
+  userAllTokenBalances,
+  tokenPrice,
+  hasNextPage,
+  fetchNextPage,
+}: Props) => {
+  const [addToken, setAddToken] = useState(false);
+
+  if (type === 'from')
+    return addToken ? (
+      <AddTokenXrpl type={'from'} showTokens={() => setAddToken(false)} />
+    ) : (
+      <SelectFromTokenPopupXrpl
+        userAllTokenBalances={userAllTokenBalances}
+        tokenPrice={tokenPrice}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+        showAddToken={() => setAddToken(true)}
+      />
+    );
+  return addToken ? (
+    <AddTokenXrpl type={'to'} showTokens={() => setAddToken(false)} />
+  ) : (
+    <SelectToTokenPopupXrpl
+      userAllTokenBalances={userAllTokenBalances}
+      tokenPrice={tokenPrice}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      showAddToken={() => setAddToken(true)}
+    />
+  );
+};
