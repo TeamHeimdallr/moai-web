@@ -30,7 +30,7 @@ export const PoolCompositions = () => {
   );
 
   const { pool } = data || {};
-  const { compositions } = pool || {};
+  const { poolId, compositions } = pool || {};
 
   return (
     <Wrapper ref={ref}>
@@ -42,7 +42,7 @@ export const PoolCompositions = () => {
             <TokenCompositionLabel composition={compositions[1]} idx={1} />
           </ContentInnerWrapper>
           <GraphWrapper>
-            <PoolCompositionsChart data={compositions} />
+            <PoolCompositionsChart data={compositions} poolId={poolId} />
           </GraphWrapper>
         </ContentsWrapper>
       )}

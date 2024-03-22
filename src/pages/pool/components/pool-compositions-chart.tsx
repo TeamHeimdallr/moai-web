@@ -10,9 +10,10 @@ import { ITokenComposition } from '~/types';
 
 interface Props {
   data: ITokenComposition[];
+  poolId?: string;
 }
 
-export const PoolCompositionsChart = ({ data }: Props) => {
+export const PoolCompositionsChart = ({ data, poolId }: Props) => {
   const { t } = useTranslation();
   const { isMD } = useMediaQuery();
 
@@ -29,13 +30,13 @@ export const PoolCompositionsChart = ({ data }: Props) => {
       <ChartWrapper>
         <svg width={'100%'} height={isMD ? '190px' : '144px'}>
           <LinearGradient
-            id="pool-pie-gradient-left"
+            id={`pool-pie-gradient-left-${poolId}`}
             from="#FCFFD6"
             to="rgba(252, 255, 214, 0.10)"
             toOffset={'100%'}
           />
           <LinearGradient
-            id="pool-pie-gradient-right"
+            id={`pool-pie-gradient-right-${poolId}`}
             from="#A3B6FF"
             to="rgba(163, 182, 255, 0.10)"
             toOffset={'100%'}
@@ -48,6 +49,7 @@ export const PoolCompositionsChart = ({ data }: Props) => {
               outerRadius={width}
               innerRadius={width - 36}
               padAngle={0.015}
+              pieSort={(a, b) => a.id.localeCompare(b.id)}
               startAngle={-(Math.PI / 2)}
               endAngle={Math.PI / 2}
               cornerRadius={5}
@@ -58,7 +60,9 @@ export const PoolCompositionsChart = ({ data }: Props) => {
                   const key = `arc-${data.id}-${i}`;
                   const d = pie.path(arc) || '';
                   const color =
-                    i === 0 ? `url('#pool-pie-gradient-left')` : `url('#pool-pie-gradient-right')`;
+                    i === 0
+                      ? `url('#pool-pie-gradient-left-${poolId}')`
+                      : `url('#pool-pie-gradient-right-${poolId}')`;
 
                   return (
                     <Group key={key}>
