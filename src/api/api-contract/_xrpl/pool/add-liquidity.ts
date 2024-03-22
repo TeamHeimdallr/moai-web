@@ -138,7 +138,7 @@ export const useAddLiquidity = ({ poolId, token1, token2, enabled }: Props) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, isLoading, isSuccess, mutateAsync } = useMutation<any>(
+  const { data, isLoading, isSuccess, isError, mutateAsync } = useMutation<any>(
     ['XRPL', 'ADD_LP'],
     submitTx
   );
@@ -152,9 +152,12 @@ export const useAddLiquidity = ({ poolId, token1, token2, enabled }: Props) => {
     await mutateAsync?.();
   };
 
+  const error = data?.meta?.TransactionResult !== 'tesSUCCESS';
+
   return {
     isLoading,
     isSuccess,
+    isError: isError || error,
 
     txData: data,
     blockTimestamp,

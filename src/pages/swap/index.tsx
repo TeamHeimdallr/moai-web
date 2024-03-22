@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
+import { IS_MAINNET } from '~/constants';
+
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
@@ -32,7 +34,16 @@ const SwapPage = () => {
           <Title>{t('Swap')}</Title>
 
           <SwapWrapper>
-            {selectedNetwork === NETWORK.XRPL ? <SwapInputGroupXrpl /> : <SwapInputGroup />}
+            {/* TODO: Change after XRPL AMM MAINNET Launched */}
+            {selectedNetwork === NETWORK.XRPL ? (
+              IS_MAINNET ? (
+                <SwapInputGroup />
+              ) : (
+                <SwapInputGroupXrpl />
+              )
+            ) : (
+              <SwapInputGroup />
+            )}
           </SwapWrapper>
         </ContentWrapper>
       </InnerWrapper>

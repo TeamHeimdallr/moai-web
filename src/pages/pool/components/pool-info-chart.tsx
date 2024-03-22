@@ -174,7 +174,7 @@ export const PoolInfoChart = () => {
 
               const valueScale = scaleLinear<number>({
                 range: [height - 20, 0],
-                domain: [0, Math.max(...chartData.map(d => d.value))],
+                domain: [0, Math.max(...chartData.map(d => d.value), 1)],
               });
 
               const changeHeader = (d: IChartData | undefined) => {
