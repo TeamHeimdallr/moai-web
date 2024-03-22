@@ -17,6 +17,8 @@ import {
 } from '~/components/tables';
 import { TableColumnApr } from '~/components/tables/columns/column-normal-icon';
 
+import { useShowAllPoolsStore } from '~/pages/home/states';
+
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr, getNetworkFull } from '~/utils';
@@ -25,7 +27,6 @@ import {
   useTableLiquidityPoolSortStore,
   useTablePoolCompositionSelectTokenStore,
 } from '~/states/components';
-import { useShowAllPoolsStore } from '~/states/pages';
 
 export const useTableLiquidityPool = () => {
   const navigate = useNavigate();

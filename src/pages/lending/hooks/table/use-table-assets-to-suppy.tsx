@@ -19,13 +19,14 @@ import { TableColumnButtons } from '~/components/tables/columns/column-buttons';
 import { TableColumnCheck } from '~/components/tables/columns/column-check';
 import { TableHeaderTooltip } from '~/components/tables/headers/header-normal';
 
+import { useShowZeroBalanceAssetsStore } from '~/pages/lending/states';
+
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
 import { useTableLendingAssetsToSupplySortStore } from '~/states/components';
-import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { APYSmall } from '../../components/apy';

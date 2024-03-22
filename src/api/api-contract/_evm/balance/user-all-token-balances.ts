@@ -122,5 +122,7 @@ export const useUserAllTokenBalances = () => {
   return {
     userAllTokenBalances: userAllTokens,
     refetch,
+    fetchNextPage: () => {},
+    hasNextPage: false,
   };
 };

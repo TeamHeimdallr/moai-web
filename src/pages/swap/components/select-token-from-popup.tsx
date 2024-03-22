@@ -20,8 +20,9 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
-import { useSwapStore } from '~/states/pages';
 import { IToken, POPUP_ID } from '~/types';
+
+import { useSwapStore } from '../states';
 
 interface Props {
   userAllTokenBalances: (IToken & { balance: number })[];
@@ -90,19 +91,22 @@ export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props
     >
       <Wrapper ref={ref}>
         <ContentContainer>
-          <Tokens>
-            {recentlySelectedTokens?.map(token => (
-              <Token
-                key={token.symbol}
-                token={token.symbol}
-                image
-                imageUrl={token.image}
-                clickable
-                disabled={token.symbol === toToken?.symbol}
-                onClick={() => handleSelect(token)}
-              />
-            ))}
-          </Tokens>
+          <RecentWrapper>
+            {t('Recent')}
+            <Recent>
+              {recentlySelectedTokens?.map(token => (
+                <Token
+                  key={token.symbol}
+                  token={token.symbol}
+                  image
+                  imageUrl={token.image}
+                  clickable
+                  disabled={token.symbol === toToken?.symbol}
+                  onClick={() => handleSelect(token)}
+                />
+              ))}
+            </Recent>
+          </RecentWrapper>
           <TokenLists>
             {userAllTokenBalances
               ?.filter(t => t.symbol !== toToken?.symbol)
@@ -138,10 +142,10 @@ export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props
   );
 };
 
-const Wrapper = tw.div`px-8`;
+const Wrapper = tw.div`pt-4 px-12`;
 const ContentContainer = styled.div(() => [
   tw`
-    px-8 flex flex-col gap-24 overflow-auto max-h-376
+    px-12 flex flex-col gap-24 overflow-auto max-h-376
     `,
   css`
     scroll-behavior: smooth;
@@ -160,5 +164,9 @@ const ContentContainer = styled.div(() => [
     }
   `,
 ]);
+const RecentWrapper = tw.div`
+  flex flex-col gap-8 font-r-14 text-neutral-40
+`;
+const Recent = tw.div`flex gap-8 flex-wrap`;
+
 const TokenLists = tw.div`flex flex-col gap-8`;
-const Tokens = tw.div`flex gap-8 flex-wrap`;

@@ -32,11 +32,12 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr, getNetworkFull, getTokenDecimal } from '~/utils';
 import { useSlippageStore } from '~/states/data';
-import { useSwapStore } from '~/states/pages';
 import { NETWORK, SwapKind } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
+
+import { useSwapStore } from '../states';
 
 import { SelectFromTokenPopup } from './select-token-from-popup';
 import { SelectToTokenPopup } from './select-token-to-popup';
@@ -142,7 +143,7 @@ const _SwapInputGroup = () => {
     },
     {
       enabled: (isRoot || isXrpEvm) && !!fromToken && !!toToken,
-      staleTime: 2000,
+      staleTime: 1000 * 3,
     }
   );
   const swapsRaw = swapInfoData?.data.swaps ?? [];

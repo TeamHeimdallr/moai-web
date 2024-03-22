@@ -16,13 +16,13 @@ import { APYMedium } from '~/pages/lending/components/apy';
 import { InfoCard } from '~/pages/lending/components/info-card';
 import { useTableAssetsToSupply } from '~/pages/lending/hooks/table/use-table-assets-to-suppy';
 import { useTableMySupplies } from '~/pages/lending/hooks/table/use-table-my-supplies';
+import { useShowZeroBalanceAssetsStore } from '~/pages/lending/states';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { formatNumber, getNetworkAbbr } from '~/utils';
-import { useShowZeroBalanceAssetsStore } from '~/states/pages/lending';
 import { POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { PopupCollateral } from '../components/popup-collateral';

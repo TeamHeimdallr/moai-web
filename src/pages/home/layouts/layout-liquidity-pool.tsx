@@ -11,6 +11,8 @@ import { Table } from '~/components/tables';
 import { TableMobile } from '~/components/tables/table-mobile';
 import { Toggle } from '~/components/toggle';
 
+import { useShowAllPoolsStore } from '~/pages/home/states';
+
 import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
@@ -18,7 +20,6 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
 import { useTablePoolCompositionSelectTokenStore } from '~/states/components/table';
-import { useShowAllPoolsStore } from '~/states/pages';
 import { IPoolTokenList, NETWORK, POPUP_ID } from '~/types';
 
 import { useTableLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool';
