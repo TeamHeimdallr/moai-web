@@ -84,14 +84,14 @@ const _BridgeInputGroup = () => {
 
   const { evm, xrp, fpass } = useConnectedWallet();
 
-  const evmAddress = isFpass ? fpass?.address : isEvm ? evm?.address : '';
+  const evmAddress = isFpass ? fpass?.address : isEvm ? evm?.address : evm?.address;
   const evmDestination = isFpass
     ? to === 'ETHEREUM'
       ? evm?.address
       : fpass?.address
     : isEvm
     ? evm?.address
-    : '';
+    : evm?.address;
   const xrpAddress = xrp?.address || '';
   const destination = to === 'XRPL' ? xrpAddress : evmDestination;
 
