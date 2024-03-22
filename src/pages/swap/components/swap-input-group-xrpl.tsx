@@ -75,7 +75,7 @@ const _SwapInputGroup = () => {
 
   const fromTokenReserve = formatAmountToNumberFromToken(fromToken, amm);
   const toTokenReserve = formatAmountToNumberFromToken(toToken, amm);
-  const fee = (trandingFee || 0) / 10 ** 6;
+  const fee = (trandingFee || 0) / 10 ** 5;
 
   const toInput =
     fromToken && toToken

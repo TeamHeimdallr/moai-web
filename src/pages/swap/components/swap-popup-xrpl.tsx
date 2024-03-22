@@ -40,25 +40,24 @@ import {
   useSwapNetworkFeeErrorStore,
 } from '~/states/contexts/network-fee-error/network-fee-error';
 import { useSlippageStore } from '~/states/data';
-import { IPool, NETWORK } from '~/types';
+import { NETWORK } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 import { useSwapStore } from '../states';
 
 interface Props {
-  swapOptimizedPathPool?: IPool;
   refetchBalance?: () => void;
 }
 
-export const SwapPopupXrpl = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
+export const SwapPopupXrpl = ({ refetchBalance }: Props) => {
   return (
     <Suspense fallback={<_SwapPopupSkeleton />}>
-      <_SwapPopup swapOptimizedPathPool={swapOptimizedPathPool} refetchBalance={refetchBalance} />
+      <_SwapPopup refetchBalance={refetchBalance} />
     </Suspense>
   );
 };
 
-const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
+const _SwapPopup = ({ refetchBalance }: Props) => {
   const { ref } = useGAInView({ name: 'swap-popup' });
   const { gaAction } = useGAAction();
 
@@ -97,7 +96,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const fromTokenReserve = formatAmountToNumberFromToken(fromToken, amm);
   const toTokenReserve = formatAmountToNumberFromToken(toToken, amm);
-  const fee = (trandingFee || 0) / 10 ** 6;
+  const fee = (trandingFee || 0) / 10 ** 5;
 
   const toInput =
     fromToken && toToken
@@ -167,15 +166,9 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
         }`
       : '';
 
-  const fromTokenPrice =
-    fromToken?.price ||
-    swapOptimizedPathPool?.compositions?.find(c => c.symbol === fromToken?.symbol)?.price ||
-    0;
+  const fromTokenPrice = fromToken?.price || 0;
   const fromTokenValue = numFromInput * fromTokenPrice;
-  const toTokenPrice =
-    toToken?.price ||
-    swapOptimizedPathPool?.compositions?.find(c => c.symbol === toToken?.symbol)?.price ||
-    0;
+  const toTokenPrice = toToken?.price || 0;
   const toTokenValue = (toInput || 0) * toTokenPrice;
 
   const fromTokenActualAmount = Number(formatUnits(txData?.swapAmountFrom ?? 0n, 6));
@@ -186,11 +179,9 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const toTokenFinalValue = toTokenActualAmount * toTokenPrice;
 
   const currentUnit = selectedDetailInfo === 'TOKEN' ? toToken?.symbol || '' : 'USD';
-  const totalAfterFee = (1 - (swapOptimizedPathPool?.tradingFee || 0.003)) * (toInput || 0);
-  const totalAfterFeeUsd = totalAfterFee * toTokenPrice;
 
   const slippageText = `${Number(slippage.toFixed(2))}%`;
-  const totalAfterSlippage = (1 - slippage / 100) * totalAfterFee;
+  const totalAfterSlippage = (1 - slippage / 100) * (toInput || 0);
   const totalAfterSlippageUsd = totalAfterSlippage * toTokenPrice;
 
   const step = useMemo(() => {
@@ -434,7 +425,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   <DetailInfoTextWrapper>
                     <DetailInfoText>{t('Total expected after fees')}</DetailInfoText>
                     <DetailInfoText>{`${formatNumber(
-                      selectedDetailInfo === 'TOKEN' ? totalAfterFee : totalAfterFeeUsd,
+                      selectedDetailInfo === 'TOKEN' ? toInput : toTokenValue,
                       selectedDetailInfo === 'TOKEN' ? 6 : 2,
                       'floor',
                       MILLION,
