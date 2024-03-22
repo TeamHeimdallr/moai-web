@@ -6,6 +6,7 @@ import { AccountInfoResponse } from 'xrpl';
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
 import { theRootNetwork } from '~/configs/evm-network';
@@ -14,13 +15,21 @@ import { useSelectNetwork } from './use-select-network';
 import { useSelectToken } from './use-select-token';
 
 export const useBalance = () => {
+  const { selectedWallet: selectedWalletTRN } = useTheRootNetworkSwitchWalletStore();
+
   const { from, to } = useSelectNetwork();
   const { selectableToken } = useSelectToken();
 
   const { isEvm, isFpass } = useNetwork();
   const { evm, xrp, fpass } = useConnectedWallet();
 
-  const evmAddress = isFpass ? fpass?.address : isEvm ? evm?.address : '';
+  const evmAddress = isFpass
+    ? fpass?.address
+    : isEvm
+    ? evm?.address
+    : selectedWalletTRN === 'fpass'
+    ? fpass?.address
+    : evm?.address;
   const xrpAddress = xrp?.address || '';
 
   const { data: xrpBalanceData } = useBalanceWagmi({
