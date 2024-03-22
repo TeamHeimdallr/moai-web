@@ -77,7 +77,10 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitTx = async () => await xrp.submitTransaction(txRequest as any);
 
-  const { data, isLoading, isSuccess, mutateAsync } = useMutation(['XRPL', 'SWAP'], submitTx);
+  const { data, isLoading, isSuccess, isError, mutateAsync } = useMutation(
+    ['XRPL', 'SWAP'],
+    submitTx
+  );
 
   if (data) {
     if (typeof data.Amount === 'object') {
@@ -101,10 +104,12 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
     await mutateAsync();
   };
 
+  const error = data?.meta?.TransactionResult !== 'tesSUCCESS';
+
   return {
     isLoading,
     isSuccess,
-    isError: !address || !isXrp,
+    isError: isError || error,
 
     txData: data,
     blockTimestamp,

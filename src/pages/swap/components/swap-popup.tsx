@@ -229,6 +229,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     blockTimestamp,
     isLoading: swapLoading,
     isSuccess: swapSuccess,
+    isError: swapError,
     swap,
     estimateFee: estimateSwapFee,
   } = useSwap({
@@ -242,7 +243,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const txDate = new Date(blockTimestamp || 0);
   const isIdle = !txData;
-  const isSuccess = swapSuccess && !!txData;
+  const isSuccess = !swapError && swapSuccess && !!txData;
   const isLoading = swapLoading || allowFromTokenLoading || allowToTokenLoading;
 
   const effectivePrice =
