@@ -79,7 +79,7 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitTx = async () => await xrp.submitTransaction(txRequest as any);
 
-  const { data, isLoading, isSuccess, mutateAsync } = useMutation(
+  const { data, isLoading, isSuccess, isError, mutateAsync } = useMutation(
     ['XRPL', 'WITHDRAW_LP'],
     submitTx
   );
@@ -93,9 +93,12 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
     await mutateAsync();
   };
 
+  const error = data?.meta?.TransactionResult !== 'tesSUCCESS';
+
   return {
     isLoading,
     isSuccess,
+    isError: isError || error,
 
     txData: data,
     blockTimestamp,
