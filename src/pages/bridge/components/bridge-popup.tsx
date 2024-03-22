@@ -27,6 +27,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber, truncateAddress } from '~/utils';
+import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { POPUP_ID } from '~/types';
 
 import { useBalance } from '../hooks/use-balance';
@@ -46,6 +47,8 @@ export const BridgePopup = ({ amount, value }: Props) => {
 
   const { gaAction } = useGAAction();
 
+  const { selectedWallet: selectedWalletTRN } = useTheRootNetworkSwitchWalletStore();
+
   const navigate = useNavigate();
   const { close } = usePopup(POPUP_ID.BRIDGE);
 
@@ -59,13 +62,21 @@ export const BridgePopup = ({ amount, value }: Props) => {
 
   const { xrp, fpass, evm } = useConnectedWallet();
 
-  const evmAddress = isFpass ? fpass?.address : isEvm ? evm?.address : evm?.address;
+  const evmAddress = isFpass
+    ? fpass?.address
+    : isEvm
+    ? evm?.address
+    : selectedWalletTRN === 'fpass'
+    ? fpass?.address
+    : evm?.address;
   const evmDestination = isFpass
     ? to === 'ETHEREUM'
       ? evm?.address
       : fpass?.address
     : isEvm
     ? evm?.address
+    : selectedWalletTRN === 'fpass'
+    ? fpass?.address
     : evm?.address;
   const xrpAddress = xrp?.address || '';
   const destination = to === 'XRPL' ? xrpAddress : evmDestination;

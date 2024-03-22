@@ -27,6 +27,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useOnClickOutside } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { truncateAddress } from '~/utils';
+import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { POPUP_ID, TOOLTIP_ID } from '~/types/components';
 
 import { useBalance } from '../hooks/use-balance';
@@ -50,6 +51,8 @@ export const BridgeInputGroup = () => {
 };
 const _BridgeInputGroup = () => {
   const { gaAction } = useGAAction();
+
+  const { selectedWallet: selectedWalletTRN } = useTheRootNetworkSwitchWalletStore();
 
   const { isEvm, isFpass } = useNetwork();
   const { t } = useTranslation();
@@ -84,13 +87,21 @@ const _BridgeInputGroup = () => {
 
   const { evm, xrp, fpass } = useConnectedWallet();
 
-  const evmAddress = isFpass ? fpass?.address : isEvm ? evm?.address : evm?.address;
+  const evmAddress = isFpass
+    ? fpass?.address
+    : isEvm
+    ? evm?.address
+    : selectedWalletTRN === 'fpass'
+    ? fpass?.address
+    : evm?.address;
   const evmDestination = isFpass
     ? to === 'ETHEREUM'
       ? evm?.address
       : fpass?.address
     : isEvm
     ? evm?.address
+    : selectedWalletTRN === 'fpass'
+    ? fpass?.address
     : evm?.address;
   const xrpAddress = xrp?.address || '';
   const destination = to === 'XRPL' ? xrpAddress : evmDestination;
