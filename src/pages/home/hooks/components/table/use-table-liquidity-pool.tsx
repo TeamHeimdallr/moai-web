@@ -41,14 +41,31 @@ export const useTableLiquidityPool = () => {
   const { isMD } = useMediaQuery();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
-  const currentNetwokrAbbr = getNetworkAbbr(currentNetwork);
+  const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
   const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
 
+  const getFilter = () => {
+    // show all pool 의 경우 xrpl에서는 whitelist만 보여줌. 다른 네트워크에서는 전체 풀을 보여줌
+    if (showAllPools) {
+      if (selectedNetwork !== 'XRPL')
+        return `network:eq:${currentNetworkAbbr},whiteList:eq:true:boolean`;
+      return `network:eq:${currentNetworkAbbr}`;
+    }
+
+    // xrpl이 아닌경우 전체 풀을 보여줌
+    if (selectedNetwork !== 'XRPL') return `network:eq:${currentNetworkAbbr}`;
+
+    // xrpl인 경우 선택된 토큰이 없으면 whitelist가 true인 풀만 보여줌
+    if (selectedTokens.length === 0)
+      return `network:eq:${currentNetworkAbbr},whitelist:eq:true:boolean`;
+    // xrpl인 경우 선택된 토큰이 있으면 whitelist와 관계없이 선택된 토큰이 포함된 풀을 보여줌
+    return `network:eq:${currentNetworkAbbr}`;
+  };
   const { data, hasNextPage, fetchNextPage } = useGetPoolsInfinityQuery({
     queries: {
       take: 10,
-      filter: showAllPools ? undefined : `network:eq:${currentNetwokrAbbr}`,
+      filter: getFilter(),
       sort: sort ? `${sort.key}:${sort.order}` : undefined,
       tokens: selectedTokens.length > 0 ? selectedTokens.join(',') : undefined,
     },
