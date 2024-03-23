@@ -13,7 +13,7 @@ import { useSearchTokensQuery } from '~/api/api-server/token/search-tokens';
 import { COLOR } from '~/assets/colors';
 import { IconDown, IconPlus } from '~/assets/icons';
 
-import { MILLION } from '~/constants';
+import { ASSET_URL, MILLION } from '~/constants';
 
 import { ButtonPrimarySmallIconLeading } from '~/components/buttons/primary/small-icon-leading';
 import { InputSearch } from '~/components/inputs';
@@ -186,7 +186,7 @@ export const SelectToTokenPopupXrpl = ({
                 <TokenList
                   key={`${token.network}-${token.symbol}`}
                   title={token.symbol}
-                  image={token.image}
+                  image={token.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   description={
                     token.issuerOrganization ? (
                       <Issuer>
