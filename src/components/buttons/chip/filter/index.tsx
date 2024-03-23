@@ -9,13 +9,14 @@ import { IPoolTokenList } from '~/types';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: IPoolTokenList;
+  image?: string;
   selected?: boolean;
 }
 
-export const ButtonChipFilter = ({ selected, token, ...rest }: Props) => {
+export const ButtonChipFilter = ({ selected, token, image, ...rest }: Props) => {
   return (
     <Wrapper selected={selected} {...rest}>
-      <Image src={token.image} />
+      <Image src={image || token.image} />
       <TextWrapper>
         {token.symbol}
         {selected && (
