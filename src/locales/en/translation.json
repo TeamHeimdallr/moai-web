@@ -714,5 +714,29 @@
   "add-token-invalid-token": "Currency code, Issuer is not valid.",
   "add-token-invalid-token-description": "No token was found. Please check again.",
 
-  "add-token-unknown-error": "Please check your currency code, issuer and try again. If the issue persists, contact to our support team."
+  "add-token-unknown-error": "Please check your currency code, issuer and try again. If the issue persists, contact to our support team.",
+
+  "Farming Incentives": "Farming Incentives",
+  "Farmed LP Tokens": "Farmed LP Tokens",
+  "Unfarmed LP Tokens": "Unfarmed LP Tokens",
+  "Farm": "Farm",
+  "Unfarm": "Unfarm",
+  "Farming Rewards": "Farming Rewards",
+
+  "Farm LP Tokens": "Farm LP Tokens",
+  "Farm confirmed!": "Farm confirmed",
+  "Farm-success-message": "Successfully farmed LP tokens",
+  "Farm failed": "Farm failed",
+  "Farm-failed-message": "Farm has failed. Please try again.",
+  "Total value to farm": "Total value to farm",
+
+  "Unfarm LP Tokens": "Unfarm LP Tokens",
+  "Unfarm confirmed!": "Unfarm confirmed",
+  "unfarm-success-message": "Successfully unfarmed LP tokens",
+  "Unfarm failed": "Unfarm failed",
+  "unfarm-failed-message": "Unfarm has failed. Please try again.",
+  "Total value to unfarm": "Total value to unfarm",
+  "Your total share": "Your total share",
+
+  "approve-lp-farm-message": "Approve LP token for farming"
 }

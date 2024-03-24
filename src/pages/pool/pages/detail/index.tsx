@@ -12,6 +12,7 @@ import { getNetworkFull } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { CampaignTool } from '../../components/campaign-tool';
+import { LpFarmTool } from '../../components/lp-farm-tool';
 import { PoolCompositions } from '../../components/pool-compositions';
 import { PoolHeader } from '../../components/pool-header';
 import { PoolInfo } from '../../components/pool-info';
@@ -61,6 +62,7 @@ const PoolDetailMainPage = () => {
               <RightContentWrapper>
                 <UserPoolBalances />
                 {isRoot && <CampaignTool />}
+                {isRoot && <LpFarmTool />}
               </RightContentWrapper>
             </ContentWrapper>
           </ContentOuterWrapper>
@@ -78,7 +80,7 @@ interface DivProps {
   banner?: boolean;
 }
 const InnerWrapper = styled.div<DivProps>(({ banner }) => [
-  tw`  
+  tw`
     flex flex-col pt-120 pb-120 pt-112
     md:(px-20)
     mlg:(pt-120)
@@ -105,7 +107,7 @@ const ContentOuterWrapper = tw.div`
 
 const ContentWrapper = tw.div`
   flex flex-col gap-20
-  lg:(grid grid-cols-3) 
+  lg:(grid grid-cols-3)
   xl:(gap-40)
 `;
 

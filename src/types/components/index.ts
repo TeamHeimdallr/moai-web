@@ -99,6 +99,9 @@ export enum POPUP_ID {
 
   BRIDGE = 'BRIDGE',
   BRIDGE_SELECT_TOKEN = 'BRIDGE_SELECT_TOKEN',
+
+  LP_FARM = 'LP_FARM',
+  LP_UNFARM = 'LP_UNFARM',
 }
 
 /**

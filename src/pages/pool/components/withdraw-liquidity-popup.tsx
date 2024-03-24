@@ -630,7 +630,7 @@ const _WithdrawLiquidityPopup = ({
           </FailedWrapper>
         )}
         {isIdle && (
-          <List title={t(`You're providing`)}>
+          <List title={t(`You're receiving`)}>
             <TokenList
               type="large"
               title={`${formatNumber(
@@ -735,7 +735,7 @@ const _WithdrawLiquidityPopupSkeleton = () => {
   return (
     <Popup id={POPUP_ID.WITHDRAW_LP} title={t('Withdrawal preview')}>
       <Wrapper>
-        <ListSkeleton height={114} title={t("You're providing")} />
+        <ListSkeleton height={114} title={t("You're receiving")} />
         <ListSkeleton height={183} title={t("You're expected to receive")} />
         <ListSkeleton height={122} title={t('Summary')} />
         <SkeletonBase height={48} borderRadius={12} />
