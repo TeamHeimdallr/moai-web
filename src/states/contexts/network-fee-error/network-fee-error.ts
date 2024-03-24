@@ -137,3 +137,23 @@ export const useBridgeNetworkFeeErrorStore = create<State>()(
     }))
   )
 );
+
+export const useFarmNetworkFeeErrorStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'LP_FARM_NETWORK_FEE_ERROR_STORE',
+      error: false,
+      setError: error => set({ error }),
+    }))
+  )
+);
+
+export const useUnfarmNetworkFeeErrorStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'LP_UNFARM_NETWORK_FEE_ERROR_STORE',
+      error: false,
+      setError: error => set({ error }),
+    }))
+  )
+);
