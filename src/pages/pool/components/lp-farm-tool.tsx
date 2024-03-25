@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 import { css } from '@emotion/react';
@@ -10,7 +10,7 @@ import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-t
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
-import { IconDown, IconFarming, IconFarmingColored, IconTokenRoot } from '~/assets/icons';
+import { IconDown, IconFarming, IconTokenRoot } from '~/assets/icons';
 
 import { LP_FARM_ADDRESS_WITH_POOL_ID } from '~/constants';
 
@@ -82,10 +82,11 @@ export const LpFarmTool = () => {
     unfarmPopupOpen();
   };
 
-  const refetchAll = () => {
+  useEffect(() => {
     refetchFarm();
     refetchLp();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [farmPopupOpened, unfarmPopupOpened]);
 
   const blocktime = 4; // TRN's blocktime
   const rewardValuesInYear =
@@ -125,11 +126,11 @@ export const LpFarmTool = () => {
         <TitleWithApr>
           <Apr>{`APR ${formatedApr}%`}</Apr>
           <TitleWithIcon>
-            {opened ? (
-              <IconFarmingColored width={24} height={24} />
-            ) : (
-              <IconFarming width={24} height={24} />
-            )}
+            <IconFarming
+              fill={opened ? COLOR.PRIMARY[50] : COLOR.NEUTRAL[0]}
+              width={24}
+              height={24}
+            />
             <Title opened={opened}> {t('Farming Incentives')} </Title>
           </TitleWithIcon>
         </TitleWithApr>
@@ -187,10 +188,10 @@ export const LpFarmTool = () => {
         </ContentWrapper>
       )}
       {farmPopupOpened && !isFarmPrepareError && !unfarmPopupOpened && (
-        <FarmPopup poolId={id || ''} refetchBalance={refetchAll} />
+        <FarmPopup poolId={id || ''} />
       )}
       {unfarmPopupOpened && !isUnFarmPrepareError && !farmPopupOpened && (
-        <UnfarmPopup poolId={id || ''} refetchBalance={refetchAll} />
+        <UnfarmPopup poolId={id || ''} />
       )}
     </Wrapper>
   );

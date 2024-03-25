@@ -2,7 +2,6 @@ import { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { formatUnits } from 'viem';
@@ -31,6 +30,7 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { usePrevious } from '~/hooks/utils';
 import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
 import {
   useApproveNetworkFeeErrorStore,
@@ -40,21 +40,19 @@ import { NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
   poolId: string;
-  refetchBalance?: () => void;
 }
 
-export const FarmPopup = ({ poolId, refetchBalance }: Props) => {
+export const FarmPopup = ({ poolId }: Props) => {
   return (
     <Suspense fallback={<_FarmPopupSkeleton />}>
-      <_FarmPopup poolId={poolId} refetchBalance={refetchBalance} />
+      <_FarmPopup poolId={poolId} />
     </Suspense>
   );
 };
 
-const _FarmPopup = ({ poolId, refetchBalance }: Props) => {
+const _FarmPopup = ({ poolId }: Props) => {
   const { ref } = useGAInView({ name: 'lp-farm-popup' });
   const { gaAction } = useGAAction();
-  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
   const { isEvm, isFpass } = useNetwork();
@@ -102,6 +100,8 @@ const _FarmPopup = ({ poolId, refetchBalance }: Props) => {
       id: poolId,
     });
 
+  const prevLpBalance = usePrevious<bigint | undefined>(userLpTokenBalanceRaw);
+
   const userShare = formatNumber((100 * userLpTokenBalance) / lpTokenTotalSupply, 3);
   const farmValue = userLpTokenBalance * lpTokenPrice;
 
@@ -131,7 +131,7 @@ const _FarmPopup = ({ poolId, refetchBalance }: Props) => {
   } = useFarm({
     poolId,
     farmAmount: userLpTokenBalanceRaw,
-    enabled: isLpFarmExisted && !!allowance,
+    enabled: isLpFarmExisted && !!allowance && userLpTokenBalanceRaw > 0n,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -235,14 +235,6 @@ const _FarmPopup = ({ poolId, refetchBalance }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (!isIdle) {
-      queryClient.invalidateQueries(['GET', 'POOL']);
-      refetchBalance?.();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIdle, queryClient]);
-
-  useEffect(() => {
     if (allowSuccess) refetchAllowance();
   }, [allowSuccess, refetchAllowance]);
 
@@ -283,7 +275,7 @@ const _FarmPopup = ({ poolId, refetchBalance }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={isIdle ? 'filled' : 'outlined'}
-            disabled={(isIdle && gasError) || !estimatedFee}
+            disabled={(isIdle && gasError) || !estimatedFee || (isIdle && userLpTokenBalance <= 0)}
           />
         </ButtonWrapper>
       }
@@ -330,7 +322,7 @@ const _FarmPopup = ({ poolId, refetchBalance }: Props) => {
               <TokenList
                 type="large"
                 title={`${formatNumber(
-                  Number(formatUnits(userLpTokenBalanceRaw || 0n, 18)), // TODO: this is refetched value
+                  Number(formatUnits(prevLpBalance || 0n, 18)),
                   4,
                   'floor',
                   THOUSAND,

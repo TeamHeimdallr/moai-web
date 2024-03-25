@@ -4,6 +4,7 @@ import { Address } from 'wagmi';
 
 import { useBatchSwap as useBatchSwapEvm } from '~/api/api-contract/_evm/swap/batch-swap';
 import { useBatchSwap as useBatchSwapFpass } from '~/api/api-contract/_evm/swap/substrate-batch-swap';
+import { useSwap as useSwapEvm } from '~/api/api-contract/_evm/swap/swap';
 import { useSwap as useSwapXrp } from '~/api/api-contract/_xrpl/swap/swap';
 
 import { EVM_TOKEN_ADDRESS } from '~/constants';
@@ -12,7 +13,7 @@ import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull, getTokenDecimal } from '~/utils';
 import { useSlippageStore } from '~/states/data';
-import { IToken, NETWORK } from '~/types';
+import { IToken, NETWORK, SwapSingleSwapInput } from '~/types';
 
 interface Props {
   id: string; // deprecated because we use batchswap
@@ -82,24 +83,36 @@ export const useSwap = ({ id: _id, fromToken, fromInput, toToken, toInput, enabl
     enabled,
   });
 
-  const resRootEvm = useBatchSwapEvm({
-    fromToken: (fromToken?.address || '0x0') as Address,
-    toToken: (toToken?.address || '0x0') as Address,
-    swapAmount: parseUnits(
-      `${(fromInput || 0).toFixed(18)}`,
-      getTokenDecimal(currentNetwork, fromToken?.symbol)
-    ),
-    fundManagement: [evmAddress, false, evmAddress, false],
-    limit: [
-      parseUnits(
-        `${(fromInput || 0).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, fromToken?.symbol)
-      ),
-      -parseUnits(
-        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, toToken?.symbol)
-      ),
+  const resRootEvm = useSwapEvm({
+    poolId: '0xb0c5d8c3414e4a2c320dbbb2e1a1e15582fcfcc1000200000000000000000004',
+    singleSwap: [
+      '0xb0c5d8c3414e4a2c320dbbb2e1a1e15582fcfcc1000200000000000000000004',
+      0,
+      '0xcCcCCccC00000001000000000000000000000000',
+      '0xccCcCccC00000464000000000000000000000000',
+      5000000000n,
+      '0x0',
     ],
+    fundManagement: [evmAddress, false, evmAddress, false],
+    // enabled,
+
+    // fromToken: (fromToken?.address || '0x0') as Address,
+    // toToken: (toToken?.address || '0x0') as Address,
+    // swapAmount: parseUnits(
+    //   `${(fromInput || 0).toFixed(18)}`,
+    //   getTokenDecimal(currentNetwork, fromToken?.symbol)
+    // ),
+    // fundManagement: [evmAddress, false, evmAddress, false],
+    // limit: [
+    //   parseUnits(
+    //     `${(fromInput || 0).toFixed(18)}`,
+    //     getTokenDecimal(currentNetwork, fromToken?.symbol)
+    //   ),
+    //   -parseUnits(
+    //     `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
+    //     getTokenDecimal(currentNetwork, toToken?.symbol)
+    //   ),
+    // ],
     enabled,
   });
 

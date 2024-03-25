@@ -25,7 +25,6 @@ import IconDownload from './icon-download.svg?react';
 import IconEnglish from './icon-english.svg?react';
 import IconEquals from './icon-equals.svg?react';
 import IconFarming from './icon-farming.svg?react';
-import IconFarmingColored from './icon-farming-colored.svg?react';
 import IconFavorites from './icon-favorites.svg?react';
 import IconFilter from './icon-filter.svg?react';
 import IconFuturepass from './icon-futurepass.svg?react';
@@ -100,7 +99,6 @@ export {
   IconEnglish,
   IconEquals,
   IconFarming,
-  IconFarmingColored,
   IconFavorites,
   IconFilter,
   IconFuturepass,
