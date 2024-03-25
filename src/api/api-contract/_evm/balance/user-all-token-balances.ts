@@ -30,6 +30,7 @@ export const useUserAllTokenBalances = () => {
     {
       queries: {
         filter: `network:in:${currentNetworkAbbr}`,
+        take: 100,
       },
     },
     { staleTime: 60 * 1000 }

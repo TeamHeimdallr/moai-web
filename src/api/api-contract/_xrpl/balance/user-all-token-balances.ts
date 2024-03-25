@@ -26,7 +26,7 @@ export const useUserAllTokenBalances = () => {
     hasNextPage,
     fetchNextPage,
   } = useGetTokensInfinityQuery(
-    { queries: { filter: 'network:in:xrpl' } },
+    { queries: { filter: 'network:in:xrpl', take: 100 } },
     { staleTime: 10 * 1000 }
   );
   const tokens = tokensData?.pages?.flatMap(p => p.tokens) || [];

@@ -22,7 +22,7 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
   const { address: walletAddress } = xrp;
 
   const { data: tokensData } = useGetTokensQuery(
-    { queries: { filter: `address:in:${addresses.join(',')}` } },
+    { queries: { filter: `address:in:${addresses.join(',')}`, take: 100 } },
     { staleTime: 10 * 1000, enabled: !!addresses && addresses.length > 0 }
   );
   const { tokens } = tokensData || {};
