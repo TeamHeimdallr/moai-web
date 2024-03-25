@@ -31,6 +31,7 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
     {
       queries: {
         filter: !!addresses && addresses.length > 0 ? `address:in:${addresses.join(',')}` : '',
+        take: 100,
       },
     },
     { enabled: !!addresses && addresses.length > 0 && !!addresses.join(','), staleTime: 60 * 1000 }
