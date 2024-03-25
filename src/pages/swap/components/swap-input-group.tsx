@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -11,6 +11,7 @@ import { usePrepareContractWrite } from 'wagmi';
 import * as yup from 'yup';
 
 import { useBatchSwapPrepare as useBatchSwapPrepareEvm } from '~/api/api-contract/_evm/swap/substrate-batch-swap';
+import { useSwapPrepare } from '~/api/api-contract/_evm/swap/substrate-swap';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 import { useSorFallbackQuery } from '~/api/api-server/sor/get-swap-fallback';
@@ -30,9 +31,15 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { formatNumber, getNetworkAbbr, getNetworkFull, getTokenDecimal } from '~/utils';
+import {
+  formatNumber,
+  getNetworkAbbr,
+  getNetworkFull,
+  getTokenDecimal,
+  handleEvmTokenAddress,
+} from '~/utils';
 import { useSlippageStore } from '~/states/data';
-import { NETWORK, SwapKind } from '~/types';
+import { NETWORK, SwapKind, SwapSingleSwapInput } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
 import { BALANCER_VAULT_ABI } from '~/abi';
@@ -61,7 +68,7 @@ const _SwapInputGroup = () => {
   const [arrowHover, setArrowHover] = useState(false);
 
   const { network } = useParams();
-  const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const { selectedNetwork, isEvm, isFpass, isXrp } = useNetwork();
   const { t } = useTranslation();
 
   const { slippage: slippageRaw } = useSlippageStore();
@@ -94,7 +101,6 @@ const _SwapInputGroup = () => {
     setToToken,
 
     setFromInput,
-    resetAll,
   } = useSwapStore();
 
   const { userAllTokenBalances: userAllTokenBalancesWithLpToken, refetch: refetchBalance } =
@@ -123,7 +129,7 @@ const _SwapInputGroup = () => {
       },
     },
     {
-      enabled: !(isRoot || isXrpEvm) && rightNetwork && !!currentNetworkAbbr,
+      enabled: rightNetwork && !!currentNetworkAbbr,
       staleTime: 1000 * 3,
     }
   );
@@ -142,7 +148,7 @@ const _SwapInputGroup = () => {
       },
     },
     {
-      enabled: (isRoot || isXrpEvm) && !!fromToken && !!toToken,
+      enabled: (isRoot || isXrpEvm) && !!fromToken && !!toToken && isSorFallbackError,
       staleTime: 1000 * 3,
     }
   );
@@ -161,7 +167,7 @@ const _SwapInputGroup = () => {
     abi: BALANCER_VAULT_ABI,
     functionName: 'queryBatchSwap',
     args: [SwapKind.GivenIn, swaps, assets, [walletAddress, false, walletAddress, false]],
-    enabled: !!walletAddress && !!swaps?.length && !!assets?.length,
+    enabled: !!walletAddress && !!swaps?.length && !!assets?.length && !!swapInfoData,
     staleTime: 1000 * 10,
   });
 
@@ -247,11 +253,6 @@ const _SwapInputGroup = () => {
     setToToken(fromToken);
   };
 
-  useEffect(() => {
-    resetAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetwork]);
-
   const { isPrepareLoading, isPrepareError, prepareError } = useBatchSwapPrepareEvm({
     fromToken: (fromToken?.address || '0x0') as Address,
     toToken: (toToken?.address || '0x0') as Address,
@@ -270,17 +271,46 @@ const _SwapInputGroup = () => {
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],
-    proxyEnabled: !!(swapInfoData || swapOptimizedPathPool?.poolId) && !!validToSwap,
+    proxyEnabled: !!swapInfoData && !!validToSwap && !swapOptimizedPathPool,
   });
 
-  const errorMessage = prepareError?.message;
+  const singleSwap = [
+    swapOptimizedPathPool?.poolId || '',
+    SwapKind.GivenIn,
+    handleEvmTokenAddress(fromToken, currentNetwork)?.address || '',
+    handleEvmTokenAddress(toToken, currentNetwork)?.address || '',
+    parseUnits(
+      `${Number(fromInput || 0).toFixed(18)}`,
+      getTokenDecimal(currentNetwork, fromToken?.symbol)
+    ),
+    '0x0',
+  ] as SwapSingleSwapInput;
+  const {
+    isPrepareLoading: isSingleSwapPrepareLoading,
+    isPrepareError: isSingleSwapPrepareError,
+    prepareError: singleSwapPrepareError,
+  } = useSwapPrepare({
+    poolId: swapOptimizedPathPool?.poolId || '',
+    singleSwap,
+    fundManagement: [walletAddress, false, walletAddress, false],
+    enabled: !!validToSwap && !!swapOptimizedPathPool,
+  });
+
+  const errorMessage = prepareError?.message || singleSwapPrepareError?.message || '';
   const poolImpactError = errorMessage?.includes('304') || errorMessage?.includes('305');
 
-  const sorError = isRoot && fromToken && toToken && toInputFromSor === 0 && fromInput;
-  const sorFallbackError = isSorFallbackError && !isRoot && fromToken && toToken;
+  const sorError =
+    (isRoot || isXrpEvm) &&
+    fromToken &&
+    toToken &&
+    toInputFromSor === 0 &&
+    fromInput &&
+    !!swapInfoData;
+
+  const sorFallbackError = isSorFallbackError && isXrp && fromToken && toToken;
 
   const errorTitle = t(
-    isRoot
+    isRoot || isXrpEvm
       ? poolImpactError || sorError
         ? 'Price impact over 30%'
         : 'Something went wrong'
@@ -289,7 +319,7 @@ const _SwapInputGroup = () => {
       : 'Something went wrong'
   );
   const errorDescription = t(
-    isRoot
+    isRoot || isXrpEvm
       ? poolImpactError || sorError
         ? 'price-impact-error-message'
         : 'unknown-error-message'
@@ -367,19 +397,14 @@ const _SwapInputGroup = () => {
           )}
         </InputWrapper>
 
-        {(isPrepareError || sorError || sorFallbackError) && (
+        {(isPrepareError || isSingleSwapPrepareError || sorError || sorFallbackError) && (
           <AlertMessage title={errorTitle} description={errorDescription} type="warning" />
         )}
 
         <ButtonPrimaryLarge
           text={t('Preview')}
-          disabled={
-            !validToSwap ||
-            isPrepareLoading ||
-            isPrepareError ||
-            isSorFallbackLoading ||
-            isSorFallbackError
-          }
+          isLoading={isPrepareLoading || isSingleSwapPrepareLoading || isSorFallbackLoading}
+          disabled={!validToSwap || isPrepareError || isSingleSwapPrepareError}
           onClick={() => openSwapPopup()}
         />
       </Wrapper>
@@ -394,7 +419,7 @@ const _SwapInputGroup = () => {
         <SelectToTokenPopup userAllTokenBalances={userAllTokenBalances} tokenPrice={toTokenPrice} />
       )}
 
-      {walletAddress && swapPopupOpened && !isPrepareError && (
+      {walletAddress && swapPopupOpened && !isPrepareError && !isSingleSwapPrepareError && (
         <SwapPopup swapOptimizedPathPool={swapOptimizedPathPool} refetchBalance={refetchBalance} />
       )}
     </>

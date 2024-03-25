@@ -2,7 +2,7 @@ import { Address, zeroAddress } from 'viem';
 
 import { EVM_TOKEN_ADDRESS } from '~/constants';
 
-import { NETWORK } from '~/types';
+import { IToken, NETWORK } from '~/types';
 
 interface IsNativeTokenProps {
   network: NETWORK;
@@ -28,4 +28,20 @@ export const getTokenDecimal = (network: NETWORK, symbol?: string) => {
   if (network === NETWORK.EVM_SIDECHAIN) return 18;
   if (network === NETWORK.XRPL) return 6;
   return 6;
+};
+
+export const handleEvmTokenAddress = (token?: IToken, network?: NETWORK) => {
+  if (!token || !network) return;
+
+  // evm sidechain wxrp 처리
+  const handled = token
+    ? network !== NETWORK.EVM_SIDECHAIN
+      ? token
+      : {
+          ...token,
+          address: token.address === EVM_TOKEN_ADDRESS[network].WXRP ? zeroAddress : token?.address,
+        }
+    : token;
+
+  return handled;
 };

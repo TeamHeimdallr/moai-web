@@ -31,6 +31,7 @@ export const useSorQuery = (request: Request, options?: QueryOption) => {
   const queryKey = ['GET', 'SOR', queries];
   const data = useQuery<Response>(queryKey, () => axios(queries), options);
 
+  if (options?.enabled === false) return { queryKey, data: undefined };
   return {
     queryKey,
     ...data,

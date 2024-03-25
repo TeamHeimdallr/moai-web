@@ -76,7 +76,9 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { selectedNetwork, isXrp, isEvm, isFpass } = useNetwork();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
+  const isXrpEvm = currentNetwork === NETWORK.EVM_SIDECHAIN;
 
   const { currentAddress } = useConnectedWallet(currentNetwork);
 
@@ -108,7 +110,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       },
     },
     {
-      enabled: isRoot && !!fromToken && !!toToken,
+      enabled: (isRoot || isXrpEvm) && !!fromToken && !!toToken && !swapOptimizedPathPool,
       staleTime: 2000,
     }
   );
