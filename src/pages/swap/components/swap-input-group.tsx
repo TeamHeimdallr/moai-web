@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -101,6 +101,7 @@ const _SwapInputGroup = () => {
     setToToken,
 
     setFromInput,
+    resetAll,
   } = useSwapStore();
 
   const { userAllTokenBalances: userAllTokenBalancesWithLpToken, refetch: refetchBalance } =
@@ -327,6 +328,11 @@ const _SwapInputGroup = () => {
       ? 'cannot-swap-error-message'
       : 'unknown-error-message'
   );
+
+  useEffect(() => {
+    resetAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentNetwork]);
 
   return (
     <>
