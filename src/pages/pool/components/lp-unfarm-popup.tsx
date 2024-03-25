@@ -2,7 +2,6 @@ import { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { formatUnits } from 'viem';
@@ -29,27 +28,26 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
+import { usePrevious } from '~/hooks/utils';
 import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
 import { useUnfarmNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
 import { NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
   poolId: string;
-  refetchBalance?: () => void;
 }
 
-export const UnfarmPopup = ({ poolId, refetchBalance }: Props) => {
+export const UnfarmPopup = ({ poolId }: Props) => {
   return (
     <Suspense fallback={<_UnfarmPopupSkeleton />}>
-      <_UnfarmPopup poolId={poolId} refetchBalance={refetchBalance} />
+      <_UnfarmPopup poolId={poolId} />
     </Suspense>
   );
 };
 
-const _UnfarmPopup = ({ poolId, refetchBalance }: Props) => {
+const _UnfarmPopup = ({ poolId }: Props) => {
   const { ref } = useGAInView({ name: 'lp-unfarm-popup' });
   const { gaAction } = useGAAction();
-  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
   const { isEvm, isFpass } = useNetwork();
@@ -106,7 +104,7 @@ const _UnfarmPopup = ({ poolId, refetchBalance }: Props) => {
   } = useUnfarm({
     poolId,
     unfarmAmount: depositedRaw,
-    enabled: isLpFarmExisted,
+    enabled: isLpFarmExisted && depositedRaw > 0n,
   });
 
   const txDate = new Date(blockTimestamp || 0);
@@ -176,14 +174,6 @@ const _UnfarmPopup = ({ poolId, refetchBalance }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (!isIdle) {
-      queryClient.invalidateQueries(['GET', 'POOL']);
-      refetchBalance?.();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIdle, queryClient]);
-
-  useEffect(() => {
     if (!estimateUnfarmFee || !isLpFarmExisted) return;
 
     const estimateUnfarmFeeAsync = async () => {
@@ -193,6 +183,8 @@ const _UnfarmPopup = ({ poolId, refetchBalance }: Props) => {
     estimateUnfarmFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLpFarmExisted]);
+
+  const prevFarmed = usePrevious<bigint | undefined>(depositedRaw);
 
   const estimatedFee = estimatedUnfarmFee || '';
 
@@ -208,7 +200,7 @@ const _UnfarmPopup = ({ poolId, refetchBalance }: Props) => {
             text={buttonText}
             isLoading={isLoading}
             buttonType={isIdle ? 'filled' : 'outlined'}
-            disabled={(isIdle && gasError) || !estimatedFee}
+            disabled={(isIdle && gasError) || !estimatedFee || (isIdle && deposited <= 0)}
           />
         </ButtonWrapper>
       }
@@ -268,7 +260,7 @@ const _UnfarmPopup = ({ poolId, refetchBalance }: Props) => {
             <TokenList
               type="large"
               title={`${formatNumber(
-                Number(formatUnits(depositedRaw || 0n, 18)),
+                Number(formatUnits(prevFarmed || 0n, 18)),
                 4,
                 'floor',
                 THOUSAND,
