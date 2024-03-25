@@ -41,6 +41,10 @@ const PoolDetailMainPage = () => {
 
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
 
+  const now = new Date();
+  const farmOpenTime = new Date('2024-03-25T12:00:00Z');
+  const isFarmOpen = now >= farmOpenTime;
+
   return (
     <Wrapper>
       <GnbWrapper banner={!!opened}>
@@ -62,7 +66,7 @@ const PoolDetailMainPage = () => {
               <RightContentWrapper>
                 <UserPoolBalances />
                 {isRoot && <CampaignTool />}
-                {isRoot && <LpFarmTool />}
+                {isRoot && isFarmOpen && <LpFarmTool />}
               </RightContentWrapper>
             </ContentWrapper>
           </ContentOuterWrapper>
