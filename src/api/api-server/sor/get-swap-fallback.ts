@@ -27,7 +27,12 @@ export const useSorFallbackQuery = (request: Request, options?: QueryOption) => 
   const { queries } = request;
 
   const queryKey = ['GET', 'SWAP_OPTIMIZED_PATH', queries];
-  const data = useQuery<Response>(queryKey, () => axios(queries), options);
+  const data = useQuery<Response>(queryKey, () => axios(queries), {
+    retry: 0,
+    retryOnMount: false,
+    retryDelay: 0,
+    ...options,
+  });
 
   return {
     queryKey,

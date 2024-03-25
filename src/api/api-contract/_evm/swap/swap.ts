@@ -50,8 +50,6 @@ export const useSwap = ({
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
-  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
-
   const chainId = useNetworkId(currentNetwork);
   const { data: poolVaultAmmData } = useGetPoolVaultAmmQuery(
     {
@@ -83,8 +81,7 @@ export const useSwap = ({
     chainId,
     value: singleSwap[2] === zeroAddress ? singleSwap[4] : 0n,
     args: [singleSwap, fundManagement, limit, deadline],
-    enabled:
-      enabled && !!vault && !!singleSwap && !!fundManagement && !!walletAddress && isEvm && !isRoot,
+    enabled: enabled && !!vault && !!singleSwap && !!fundManagement && !!walletAddress && isEvm,
   });
 
   const { data, isLoading: isWriteLoading, writeAsync } = useContractWrite(config);
@@ -111,7 +108,7 @@ export const useSwap = ({
   };
 
   const getEstimatedGas = async () => {
-    if (!isEvm || isRoot) return;
+    if (!isEvm) return;
 
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
@@ -142,7 +139,10 @@ export const useSwap = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txData]);
 
-  const approveError = error?.message?.includes('Approved') || error?.message?.includes('BAL#401');
+  const approveError =
+    error?.message?.includes('Approved') ||
+    error?.message?.includes('BAL#401') ||
+    error?.message?.includes('allowance');
 
   const log = txData?.logs?.find(
     ({ address }) => address.toLowerCase() === EVM_VAULT_ADDRESS[selectedNetwork].toLowerCase()

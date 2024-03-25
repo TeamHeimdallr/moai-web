@@ -1,18 +1,18 @@
 import { useParams } from 'react-router-dom';
-import { parseUnits, zeroAddress } from 'viem';
+import { parseUnits } from 'viem';
 import { Address } from 'wagmi';
 
 import { useBatchSwap as useBatchSwapEvm } from '~/api/api-contract/_evm/swap/batch-swap';
 import { useBatchSwap as useBatchSwapFpass } from '~/api/api-contract/_evm/swap/substrate-batch-swap';
+import { useSwap as useSwapFpass } from '~/api/api-contract/_evm/swap/substrate-swap';
+import { useSwap as useSwapEvm } from '~/api/api-contract/_evm/swap/swap';
 import { useSwap as useSwapXrp } from '~/api/api-contract/_xrpl/swap/swap';
-
-import { EVM_TOKEN_ADDRESS } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull, getTokenDecimal } from '~/utils';
+import { getNetworkFull, getTokenDecimal, handleEvmTokenAddress } from '~/utils';
 import { useSlippageStore } from '~/states/data';
-import { IToken, NETWORK } from '~/types';
+import { IToken, NETWORK, SwapKind } from '~/types';
 
 interface Props {
   id: string; // deprecated because we use batchswap
@@ -24,9 +24,9 @@ interface Props {
   toInput?: number;
   enabled?: boolean;
 }
-export const useSwap = ({ id: _id, fromToken, fromInput, toToken, toInput, enabled }: Props) => {
+export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }: Props) => {
   const { network } = useParams();
-  const { selectedNetwork, isEvm, isFpass } = useNetwork();
+  const { selectedNetwork, isXrp, isFpass } = useNetwork();
   const { slippage: slippageRaw } = useSlippageStore();
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
@@ -34,32 +34,11 @@ export const useSwap = ({ id: _id, fromToken, fromInput, toToken, toInput, enabl
   const slippage = Number(slippageRaw || 0);
 
   const { evm, fpass } = useConnectedWallet();
-  const evmAddress = evm?.address ?? '';
-  const fpassAddress = fpass?.address ?? '';
+  const evmFpassAddress = (isRoot ? (isFpass ? fpass?.address : evm?.address) : evm?.address) || '';
 
   // evm sidechain wxrp 처리
-  const handledFromToken = fromToken
-    ? currentNetwork !== NETWORK.EVM_SIDECHAIN
-      ? fromToken
-      : {
-          ...fromToken,
-          address:
-            fromToken.address === EVM_TOKEN_ADDRESS[currentNetwork].WXRP
-              ? zeroAddress
-              : fromToken?.address,
-        }
-    : fromToken;
-  const handledToToken = toToken
-    ? currentNetwork !== NETWORK.EVM_SIDECHAIN
-      ? toToken
-      : {
-          ...toToken,
-          address:
-            toToken.address === EVM_TOKEN_ADDRESS[currentNetwork].WXRP
-              ? zeroAddress
-              : toToken?.address,
-        }
-    : toToken;
+  const handledFromToken = handleEvmTokenAddress(fromToken, currentNetwork);
+  const handledToToken = handleEvmTokenAddress(toToken, currentNetwork);
 
   const resEvm = useBatchSwapEvm({
     fromToken: (handledFromToken?.address || '0x0') as Address,
@@ -68,7 +47,7 @@ export const useSwap = ({ id: _id, fromToken, fromInput, toToken, toInput, enabl
       `${(fromInput || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, fromToken?.symbol)
     ),
-    fundManagement: [evmAddress, false, evmAddress, false],
+    fundManagement: [evmFpassAddress, false, evmFpassAddress, false],
     limit: [
       parseUnits(
         `${(fromInput || 0).toFixed(18)}`,
@@ -79,17 +58,17 @@ export const useSwap = ({ id: _id, fromToken, fromInput, toToken, toInput, enabl
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],
-    enabled,
+    enabled: enabled && !isFpass && !id,
   });
 
-  const resRootEvm = useBatchSwapEvm({
-    fromToken: (fromToken?.address || '0x0') as Address,
-    toToken: (toToken?.address || '0x0') as Address,
+  const resEvmFpass = useBatchSwapFpass({
+    fromToken: (handledFromToken?.address || '0x0') as Address,
+    toToken: (handledToToken?.address || '0x0') as Address,
     swapAmount: parseUnits(
       `${(fromInput || 0).toFixed(18)}`,
       getTokenDecimal(currentNetwork, fromToken?.symbol)
     ),
-    fundManagement: [evmAddress, false, evmAddress, false],
+    fundManagement: [evmFpassAddress, false, evmFpassAddress, false],
     limit: [
       parseUnits(
         `${(fromInput || 0).toFixed(18)}`,
@@ -100,28 +79,49 @@ export const useSwap = ({ id: _id, fromToken, fromInput, toToken, toInput, enabl
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],
-    enabled,
+    proxyEnabled: enabled && isFpass && !id,
   });
 
-  const resFpass = useBatchSwapFpass({
-    fromToken: (fromToken?.address || '0x0') as Address,
-    toToken: (toToken?.address || '0x0') as Address,
-    swapAmount: parseUnits(
-      `${(fromInput || 0).toFixed(18)}`,
-      getTokenDecimal(currentNetwork, fromToken?.symbol)
-    ),
-    fundManagement: [fpassAddress, false, fpassAddress, false],
-    limit: [
+  const resEvmSingleSwap = useSwapEvm({
+    poolId: id,
+    singleSwap: [
+      id,
+      SwapKind.GivenIn,
+      handledFromToken?.address || '',
+      handledToToken?.address || '',
       parseUnits(
         `${(fromInput || 0).toFixed(18)}`,
         getTokenDecimal(currentNetwork, fromToken?.symbol)
       ),
-      -parseUnits(
-        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, toToken?.symbol)
-      ),
+      '0x0',
     ],
-    proxyEnabled: enabled,
+    fundManagement: [evmFpassAddress, false, evmFpassAddress, false],
+    limit: parseUnits(
+      `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
+      getTokenDecimal(currentNetwork, toToken?.symbol)
+    ),
+    enabled: enabled && !isFpass && !!id,
+  });
+
+  const resFpassSingleSwap = useSwapFpass({
+    poolId: id,
+    singleSwap: [
+      id,
+      SwapKind.GivenIn,
+      handledFromToken?.address || '',
+      handledToToken?.address || '',
+      parseUnits(
+        `${(fromInput || 0).toFixed(18)}`,
+        getTokenDecimal(currentNetwork, fromToken?.symbol)
+      ),
+      '0x0',
+    ],
+    fundManagement: [evmFpassAddress, false, evmFpassAddress, false],
+    limit: parseUnits(
+      `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
+      getTokenDecimal(currentNetwork, toToken?.symbol)
+    ),
+    enabled: enabled && isFpass && !!id,
   });
 
   const resXrp = useSwapXrp({
@@ -133,5 +133,22 @@ export const useSwap = ({ id: _id, fromToken, fromInput, toToken, toInput, enabl
     enabled,
   });
 
-  return isRoot ? (isFpass ? resFpass : resRootEvm) : isEvm ? resEvm : resXrp;
+  const getRes = () => {
+    if (isXrp) return resXrp;
+    if (isRoot) {
+      if (isFpass) {
+        // can be single swap
+        if (id) return resFpassSingleSwap;
+        return resEvmFpass;
+      }
+
+      if (id) return resEvmSingleSwap;
+      return resEvm;
+    }
+
+    if (id) return resEvmSingleSwap;
+    return resEvm;
+  };
+
+  return getRes();
 };
