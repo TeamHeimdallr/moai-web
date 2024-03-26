@@ -13,7 +13,9 @@ interface Props {
 
 const chains = [theRootNetwork, xrpEvmSidechain, mainnet, sepolia];
 const projectId = WALLETCONNECT_PROJECT_ID as string;
-const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
+const { publicClient, webSocketPublicClient } = configureChains(chains, [
+  w3mProvider({ projectId }),
+]);
 const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: [
@@ -21,6 +23,7 @@ const wagmiConfig = createConfig({
     new CoinbaseWalletConnector({ options: { appName: 'MOAI_FINANCE' } }),
   ],
   publicClient,
+  webSocketPublicClient,
 });
 const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
