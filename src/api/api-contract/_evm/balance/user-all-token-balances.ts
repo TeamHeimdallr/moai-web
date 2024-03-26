@@ -117,6 +117,7 @@ export const useUserAllTokenBalances = () => {
   })[];
 
   const refetch = () => {
+    if (tokenAddresses.length === 0 || !chainId || !walletAddress || !isEvm) return;
     lpTokenRefetch();
     tokenBalanceRefetch();
   };

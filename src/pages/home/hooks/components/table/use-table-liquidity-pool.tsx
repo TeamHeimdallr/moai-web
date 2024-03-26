@@ -3,9 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 import { uniqBy } from 'lodash-es';
 
+import { useUserLpFarmsDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
 import { useGetPoolsInfinityQuery } from '~/api/api-server/pools/get-pools';
 
-import { MILLION } from '~/constants';
+import { MILLION, TRILLION } from '~/constants';
 
 import { NetworkChip } from '~/components/network-chip';
 import {
@@ -27,6 +28,7 @@ import {
   useTableLiquidityPoolSortStore,
   useTablePoolCompositionSelectTokenStore,
 } from '~/states/components';
+import { IPoolList } from '~/types';
 
 export const useTableLiquidityPool = () => {
   const navigate = useNavigate();
@@ -51,15 +53,20 @@ export const useTableLiquidityPool = () => {
       tokens: selectedTokens.length > 0 ? selectedTokens.join(',') : undefined,
     },
   });
-  const pools = useMemo(() => data?.pages?.flatMap(page => page.pools) || [], [data?.pages]);
+  const pools = useMemo(
+    () => (data?.pages?.flatMap(page => page.pools) || []) as IPoolList[],
+    [data?.pages]
+  );
   const poolTokens = useMemo(
     () => uniqBy(data?.pages?.flatMap(page => page.poolTokens) || [], 'symbol'),
     [data?.pages]
   );
 
+  const poolWithFarm = useUserLpFarmsDeposited({ pools });
+
   const tableData = useMemo(
     () =>
-      pools.map(d => ({
+      poolWithFarm.map(d => ({
         meta: {
           id: d.id,
           poolId: d.poolId,
@@ -78,10 +85,19 @@ export const useTableLiquidityPool = () => {
           <TableColumn value={`$${formatNumber(d.volume, 2, 'floor', MILLION)}`} align="flex-end" />
         ),
         apr: (
-          <TableColumnApr value={`${formatNumber(d.apr)}%`} align="flex-end" network={d.network} />
+          <TableColumnApr
+            value={`${formatNumber(d.apr)}%`}
+            value2={
+              isFinite(d.farmApr)
+                ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+                : undefined
+            }
+            align="flex-end"
+            network={d.network}
+          />
         ),
       })),
-    [pools, showAllPools]
+    [poolWithFarm, showAllPools]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
