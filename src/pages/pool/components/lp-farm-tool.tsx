@@ -113,86 +113,90 @@ export const LpFarmTool = () => {
 
   if (!isLpFarmExisted || (deposited <= 0 && userLpTokenBalance <= 0)) return <></>;
   return (
-    <Wrapper opened={opened} ref={ref}>
-      <TitleWrapper
-        onClick={() => {
-          gaAction({
-            action: 'pool-detail-lp-farm-open',
-            data: { page: 'pool-detail', component: 'lp-farm', open: !opened },
-          });
-          open(prev => !prev);
-        }}
-      >
-        <TitleWithApr>
-          <Apr>{`APR ${formatedApr}%`}</Apr>
-          <TitleWithIcon>
-            <IconFarming
-              fill={opened ? COLOR.PRIMARY[50] : COLOR.NEUTRAL[0]}
-              width={24}
-              height={24}
-            />
-            <Title opened={opened}> {t('Farming Incentives')} </Title>
-          </TitleWithIcon>
-        </TitleWithApr>
-        <Icon opened={opened}>
-          <IconDown fill={COLOR.NEUTRAL[60]} width={24} height={24} />
-        </Icon>
-      </TitleWrapper>
-      <Divider />
-      {opened && (
-        <ContentWrapper>
-          <TokenInfoWrapper>
-            <TokenInfo>
-              <FarmedText>{t('Farmed LP Tokens')}</FarmedText>
-              <BalanceWrapper>
-                <Balance>{formatNumber(deposited, 4)}</Balance>
-                <Value>{`$${formatNumber(depositedValue)}`}</Value>
-              </BalanceWrapper>
-            </TokenInfo>
-            <TokenInfo>
-              <FarmedText>{t('Unfarmed LP Tokens')}</FarmedText>
-              <BalanceWrapper>
-                <Balance>{formatNumber(userLpTokenBalance, 4)}</Balance>
-                <Value>{`$${formatNumber(userLpTokenBalanceValue)}`}</Value>
-              </BalanceWrapper>
-            </TokenInfo>
-          </TokenInfoWrapper>
-          <ButtonWrapper>
-            <ButtonInnerWrapper>
-              <ButtonPrimaryLarge
-                text={t('Farm')}
-                onClick={handleFarm}
-                disabled={userLpTokenBalanceValue <= 0}
-              ></ButtonPrimaryLarge>
-              {!!deposited && deposited > 0 && (
-                <ButtonPrimaryLarge
-                  buttonType="outlined"
-                  text={t('Unfarm')}
-                  onClick={handleUnFarm}
-                ></ButtonPrimaryLarge>
+    <Wrapper ref={ref}>
+      <InnerWrapper opened={opened}>
+        <TitleWrapper
+          onClick={() => {
+            gaAction({
+              action: 'pool-detail-lp-farm-open',
+              data: { page: 'pool-detail', component: 'lp-farm', open: !opened },
+            });
+            open(prev => !prev);
+          }}
+        >
+          <TitleWithApr>
+            <Apr>{`APR ${formatedApr}%`}</Apr>
+            <TitleWithIcon>
+              <IconFarming
+                fill={opened ? COLOR.GREEN[50] : COLOR.NEUTRAL[0]}
+                width={24}
+                height={24}
+              />
+              <Title opened={opened}> {t('Farming Incentives')} </Title>
+            </TitleWithIcon>
+          </TitleWithApr>
+          <Icon opened={opened}>
+            <IconDown fill={COLOR.NEUTRAL[60]} width={24} height={24} />
+          </Icon>
+        </TitleWrapper>
+        {opened && (
+          <>
+            <Divider />
+            <ContentWrapper>
+              <TokenInfoWrapper>
+                <TokenInfo>
+                  <FarmedText>{t('Farmed LP Tokens')}</FarmedText>
+                  <BalanceWrapper>
+                    <Balance>{formatNumber(deposited, 4)}</Balance>
+                    <Value>{`$${formatNumber(depositedValue)}`}</Value>
+                  </BalanceWrapper>
+                </TokenInfo>
+                <TokenInfo>
+                  <FarmedText>{t('Unfarmed LP Tokens')}</FarmedText>
+                  <BalanceWrapper>
+                    <Balance>{formatNumber(userLpTokenBalance, 4)}</Balance>
+                    <Value>{`$${formatNumber(userLpTokenBalanceValue)}`}</Value>
+                  </BalanceWrapper>
+                </TokenInfo>
+              </TokenInfoWrapper>
+              <ButtonWrapper>
+                <ButtonInnerWrapper>
+                  <ButtonPrimaryLarge
+                    text={t('Farm')}
+                    onClick={handleFarm}
+                    disabled={userLpTokenBalanceValue <= 0}
+                  ></ButtonPrimaryLarge>
+                  {!!deposited && deposited > 0 && (
+                    <ButtonPrimaryLarge
+                      buttonType="outlined"
+                      text={t('Unfarm')}
+                      onClick={handleUnFarm}
+                    ></ButtonPrimaryLarge>
+                  )}
+                </ButtonInnerWrapper>
+              </ButtonWrapper>
+              {!!pending && pending > 0 && (
+                <RewardWarpper>
+                  <RewardTitle>{t('Farming Rewards')}</RewardTitle>
+                  <RewardAmount>
+                    <IconTokenRoot width={36} height={36} />
+                    <RewardBalanceWrapper>
+                      <Balance>{`${formatNumber(pending, 4)} ROOT`}</Balance>
+                      <Value>{`$${formatNumber(pendingValue)}`}</Value>
+                    </RewardBalanceWrapper>
+                  </RewardAmount>
+                </RewardWarpper>
               )}
-            </ButtonInnerWrapper>
-          </ButtonWrapper>
-          {!!pending && pending > 0 && (
-            <RewardWarpper>
-              <RewardTitle>{t('Farming Rewards')}</RewardTitle>
-              <RewardAmount>
-                <IconTokenRoot width={36} height={36} />
-                <RewardBalanceWrapper>
-                  <Balance>{`${formatNumber(pending, 4)} ROOT`}</Balance>
-                  <Value>{`$${formatNumber(pendingValue)}`}</Value>
-                </RewardBalanceWrapper>
-              </RewardAmount>
-            </RewardWarpper>
-          )}
-        </ContentWrapper>
-      )}
-      {farmPopupOpened && !isFarmPrepareError && !unfarmPopupOpened && (
-        <FarmPopup poolId={id || ''} />
-      )}
-      {unfarmPopupOpened && !isUnFarmPrepareError && !farmPopupOpened && (
-        <UnfarmPopup poolId={id || ''} />
-      )}
+            </ContentWrapper>
+          </>
+        )}
+        {farmPopupOpened && !isFarmPrepareError && !unfarmPopupOpened && (
+          <FarmPopup poolId={id || ''} />
+        )}
+        {unfarmPopupOpened && !isUnFarmPrepareError && !farmPopupOpened && (
+          <UnfarmPopup poolId={id || ''} />
+        )}
+      </InnerWrapper>
     </Wrapper>
   );
 };
@@ -200,25 +204,34 @@ export const LpFarmTool = () => {
 interface DivProps {
   opened?: boolean;
 }
-const Wrapper = styled.div<DivProps>(({ opened }) => [
+
+const Wrapper = styled.div(() => [
   tw`
-    flex flex-col w-full gap-4 rounded-12
+    flex flex-col w-full gap-4 rounded-12 p-2
   `,
-  opened
-    ? tw`bg-neutral-10`
-    : css`
-        background: linear-gradient(123.11deg, #f3ff66 -13.53%, #fbffce 118.65%);
-      `,
+  css`
+    background: linear-gradient(123deg, #f3ff66 -13.53%, #43cf9d 118.65%);
+  `,
+]);
+
+const InnerWrapper = styled.div<DivProps>(({ opened }) => [
+  tw`
+    w-full h-full bg-neutral-10 rounded-12
+  `,
+  !opened &&
+    css`
+      background: linear-gradient(123deg, #f3ff66 -13.53%, #43cf9d 118.65%);
+    `,
 ]);
 
 const TitleWrapper = tw.div`
-  flex justify-between items-center gap-4 py-20 px-24 clickable
+  flex justify-between items-center gap-4 pt-18 pb-20 px-22 clickable
 `;
 const Title = styled.div<DivProps>(({ opened }) => [
   tw`font-b-20 text-neutral-0`,
   opened &&
     css`
-      background: linear-gradient(123.11deg, #f3ff66 -13.53%, #fbffce 118.65%);
+      background: linear-gradient(123deg, #f3ff66 -13.53%, #43cf9d 118.65%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     `,
@@ -227,7 +240,7 @@ const TitleWithApr = tw.div`
   flex flex-col gap-4 font-b-20 text-neutral-0
 `;
 const Apr = tw.div`
-  bg-primary-20 rounded-17 gap-4 px-10 py-2 font-m-12 text-primary-50 flex flex-center
+  bg-neutral-20 rounded-17 gap-4 px-10 py-2 font-m-12 text-green-50 flex flex-center
   w-max
 `;
 const TitleWithIcon = tw.div`
@@ -243,7 +256,7 @@ const Icon = styled.div<DivProps>(({ opened }) => [
   `,
 ]);
 const ButtonWrapper = tw.div`
-  flex w-full gap-24 pt-20 pb-24 px-24
+  flex w-full gap-24 pt-20 pb-24 px-22
 `;
 const ButtonInnerWrapper = tw.div`
   flex w-full gap-8
@@ -256,7 +269,7 @@ const ContentWrapper = tw.div`
 `;
 
 const TokenInfoWrapper = tw.div`
-  flex flex-col px-24 py-12 gap-16 bg-neutral-10 w-full
+  flex flex-col px-22 py-12 gap-16 bg-neutral-10 w-full
 `;
 const TokenInfo = tw.div`
   flex justify-between gap-4 w-full items-center
@@ -279,7 +292,7 @@ const Value = tw.div`
 `;
 
 const RewardWarpper = tw.div`
-  flex flex-col gap-8 bg-neutral-15 w-full pt-20 pb-24 px-24 rounded-b-12
+  flex flex-col gap-8 bg-neutral-15 w-full pt-20 pb-22 px-22 rounded-b-12
 `;
 const RewardTitle = tw.div`
   flex gap-2 font-m-16 text-neutral-80
