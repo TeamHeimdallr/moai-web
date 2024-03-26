@@ -115,6 +115,10 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
   // TODO: if currentblock > endblock => apr = 0
   const ended = false;
 
+  const { isFpass } = useNetwork();
+  const { evm, fpass } = useConnectedWallet();
+  const { address: walletAddress } = isFpass ? fpass : evm;
+
   const { data: tokensData } = useGetTokensQuery(
     {
       queries: {
@@ -139,6 +143,19 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
     staleTime: Infinity,
     enabled: !!pools && !ended,
   });
+
+  const { data: depositedData } = useContractReads({
+    scopeKey: 'LP_FARM_DEPOSITED',
+    contracts: pools?.map(pool => ({
+      address: farmAddressMap?.[pool.poolId] as Address,
+      abi: LP_FARM_ABI as Abi,
+      functionName: 'deposited',
+      args: [0, walletAddress as Address],
+    })),
+    staleTime: 1000 * 10,
+    enabled: !!pools && !ended,
+  });
+
   const { data: totalDepositedData } = useContractReads({
     scopeKey: 'LP_FARM',
     contracts: pools?.map(pool => ({
@@ -157,9 +174,11 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
 
   const blocktime = 4; // TRN's blocktime
   const poolsWithFarm = pools?.map((pool, i) => {
+    const deposited = Number(formatUnits((depositedData?.[i]?.result || 0n) as bigint, 18));
     const totalDeposited = Number(
       formatUnits((totalDepositedData?.[i]?.result || 0n) as bigint, 18)
     );
+
     const rewardPerBlockData = (rewardPerBlockDataRaw?.[i]?.result || 0n) as bigint;
     const rewardValuesInYear =
       (365 * 24 * 60 * 60 * Number(formatUnits(rewardPerBlockData, 6)) * (rootToken?.price || 0)) /
@@ -171,6 +190,7 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
 
     return {
       ...pool,
+      deposited: deposited,
       farmApr: farmApr,
     };
   });
