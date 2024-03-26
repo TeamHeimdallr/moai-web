@@ -42,12 +42,12 @@ export const theRootNetwork: Chain = defineChain(
         },
         rpcUrls: {
           public: {
-            http: ['https://porcini.rootnet.app/archive'],
-            webSocket: ['wss://porcini.rootnet.app/archive/ws'],
+            http: ['https://porcini.rpc-moai-finance.xyz/archive'],
+            webSocket: ['wss://porcini.rpc-moai-finance.xyz/ws'],
           },
           default: {
-            http: ['https://porcini.rootnet.app/archive'],
-            webSocket: ['wss://porcini.rootnet.app/archive/ws'],
+            http: ['https://porcini.rpc-moai-finance.xyz/archive'],
+            webSocket: ['wss://porcini.rpc-moai-finance.xyz/ws'],
           },
         },
         blockExplorers: {
