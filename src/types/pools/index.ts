@@ -6,6 +6,7 @@ export interface IPoolList {
   id: string;
   poolId: string;
   network: NETWORK;
+  address: string;
 
   compositions: ITokenComposition[];
 
@@ -19,6 +20,7 @@ export interface IMyPoolList {
   id: string;
   poolId: string;
   network: NETWORK;
+  address: string;
 
   compositions: ITokenComposition[];
 

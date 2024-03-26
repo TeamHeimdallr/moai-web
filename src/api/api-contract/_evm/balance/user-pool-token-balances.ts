@@ -130,6 +130,7 @@ export const useUserPoolTokenBalances = (props?: Props) => {
   }, 0);
 
   const refetch = () => {
+    if (!poolAddress || !walletAddress || !lpTokenAddress || !isEvm || !queryEnabled) return;
     lpTokenRefetch();
     tokenBalanceRefetch();
   };

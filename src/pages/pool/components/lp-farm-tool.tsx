@@ -12,7 +12,7 @@ import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 import { COLOR } from '~/assets/colors';
 import { IconDown, IconFarming, IconTokenRoot } from '~/assets/icons';
 
-import { LP_FARM_ADDRESS_WITH_POOL_ID } from '~/constants';
+import { LP_FARM_ADDRESS_WITH_POOL_ID, TRILLION } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 
@@ -100,7 +100,7 @@ export const LpFarmTool = () => {
   const totalDepositedValue = totalDeposited * lpTokenPrice;
   const formatedApr =
     totalDepositedValue !== 0
-      ? formatNumber((100 * rewardValuesInYear) / totalDepositedValue)
+      ? formatNumber((100 * rewardValuesInYear) / totalDepositedValue, 0, 'round', TRILLION, 0)
       : Infinity;
   // TODO: if currentblock > endblock => apr = 0
   const depositedValue = deposited * lpTokenPrice;
@@ -164,7 +164,7 @@ export const LpFarmTool = () => {
                 onClick={handleFarm}
                 disabled={userLpTokenBalanceValue <= 0}
               ></ButtonPrimaryLarge>
-              {deposited && deposited > 0 && (
+              {!!deposited && deposited > 0 && (
                 <ButtonPrimaryLarge
                   buttonType="outlined"
                   text={t('Unfarm')}
@@ -173,7 +173,7 @@ export const LpFarmTool = () => {
               )}
             </ButtonInnerWrapper>
           </ButtonWrapper>
-          {pending && pending > 0 && (
+          {!!pending && pending > 0 && (
             <RewardWarpper>
               <RewardTitle>{t('Farming Rewards')}</RewardTitle>
               <RewardAmount>
@@ -212,7 +212,7 @@ const Wrapper = styled.div<DivProps>(({ opened }) => [
 ]);
 
 const TitleWrapper = tw.div`
-  flex justify-between items-center gap-4 py-20 px-24
+  flex justify-between items-center gap-4 py-20 px-24 clickable
 `;
 const Title = styled.div<DivProps>(({ opened }) => [
   tw`font-b-20 text-neutral-0`,

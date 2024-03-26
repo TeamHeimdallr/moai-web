@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 import { isEqual } from 'lodash-es';
 
+import { useUserLpFarmsDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 
-import { MILLION } from '~/constants';
+import { MILLION, TRILLION } from '~/constants';
 
 import {
   TableColumn,
@@ -89,15 +90,20 @@ export const useTableMyLiquidityPool = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [networkAbbr, currentAddress, isRequestEqual, sort?.key, sort?.order]);
 
-  const pools = useMemo(() => poolsRaw?.slice(0, currentTake) || [], [currentTake, poolsRaw]);
+  const pools = useMemo(
+    () => (poolsRaw?.slice(0, currentTake) || []) as IMyPoolList[],
+    [currentTake, poolsRaw]
+  );
   const hasNextPage = (poolsRaw?.length || 0) > currentTake;
   const fetchNextPage = () => {
     setCurrentTake(currentTake + 5);
   };
 
+  const poolWithFarm = useUserLpFarmsDeposited({ pools });
+
   const tableData = useMemo(
     () =>
-      pools?.map(d => ({
+      poolWithFarm?.map(d => ({
         meta: {
           id: d.id,
           poolId: d.poolId,
@@ -119,10 +125,19 @@ export const useTableMyLiquidityPool = () => {
           <TableColumn value={`$${formatNumber(d.value, 2, 'floor', MILLION)}`} align="flex-end" />
         ),
         apr: (
-          <TableColumnApr value={`${formatNumber(d.apr)}%`} network={d.network} align="flex-end" />
+          <TableColumnApr
+            value={`${formatNumber(d.apr)}%`}
+            value2={
+              isFinite(d.farmApr)
+                ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+                : undefined
+            }
+            network={d.network}
+            align="flex-end"
+          />
         ),
       })),
-    [pools]
+    [poolWithFarm]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
