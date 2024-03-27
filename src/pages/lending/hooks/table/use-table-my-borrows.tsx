@@ -73,7 +73,8 @@ export const useTableMyBorrows = () => {
           };
         })
         ?.filter(d => (d?.asset?.debt || 0) > 0) || [],
-    [accountSnapshots, markets]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [!!accountSnapshots, !!markets]
   );
 
   const sortedMyBorrows = useMemo(() => {
@@ -95,7 +96,8 @@ export const useTableMyBorrows = () => {
     }
 
     return myBorrows;
-  }, [myBorrows, sort]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!myBorrows, sort]);
 
   const handleLendingBorrow = (address: string) => {
     const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/borrow`;
@@ -143,7 +145,7 @@ export const useTableMyBorrows = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sortedMyBorrows, t]
+    [isInLiquidation, !!sortedMyBorrows, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -238,7 +240,7 @@ export const useTableMyBorrows = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sortedMyBorrows, t]
+    [isInLiquidation, !!sortedMyBorrows, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

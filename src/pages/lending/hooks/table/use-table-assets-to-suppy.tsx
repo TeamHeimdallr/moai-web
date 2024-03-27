@@ -69,7 +69,8 @@ export const useTableAssetsToSupply = () => {
     }
 
     return assetsToSupply;
-  }, [assetsToSupply, sort]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!assetsToSupply, sort]);
 
   const handleLendingSupply = (address: string) => {
     if ((isFpass && fpass.isConnected) || evm.isConnected) {
@@ -121,7 +122,7 @@ export const useTableAssetsToSupply = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentAddress, evm.isConnected, fpass.isConnected, isFpass, sortedAssetsToSupply, t]
+    [currentAddress, evm.isConnected, fpass.isConnected, isFpass, !!sortedAssetsToSupply, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -246,7 +247,7 @@ export const useTableAssetsToSupply = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [evm.isConnected, fpass.isConnected, isFpass, sortedAssetsToSupply, t]
+    [evm.isConnected, fpass.isConnected, isFpass, !!sortedAssetsToSupply, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

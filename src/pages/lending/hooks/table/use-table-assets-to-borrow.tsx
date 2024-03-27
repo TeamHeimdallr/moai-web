@@ -115,7 +115,8 @@ export const useTableAssetsToBorrow = () => {
           };
         }
       }),
-    [accountSnapshots, availableAmountList, markets]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [!!accountSnapshots, !!availableAmountList, !!markets]
   );
 
   const sortedAssetsToBorrow = useMemo(() => {
@@ -137,7 +138,8 @@ export const useTableAssetsToBorrow = () => {
     }
 
     return assetsToBorrow;
-  }, [assetsToBorrow, sort]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!assetsToBorrow, sort]);
 
   const handleLendingBorrow = (address: string) => {
     if ((isFpass && fpass.isConnected) || evm.isConnected) {
@@ -182,7 +184,7 @@ export const useTableAssetsToBorrow = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [evm.isConnected, fpass.isConnected, isFpass, isInLiquidation, sortedAssetsToBorrow, t]
+    [evm.isConnected, fpass.isConnected, isFpass, isInLiquidation, !!sortedAssetsToBorrow, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -279,7 +281,7 @@ export const useTableAssetsToBorrow = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [evm.isConnected, fpass.isConnected, isFpass, isInLiquidation, sortedAssetsToBorrow, t]
+    [evm.isConnected, fpass.isConnected, isFpass, isInLiquidation, !!sortedAssetsToBorrow, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

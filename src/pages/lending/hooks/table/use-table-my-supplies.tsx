@@ -90,7 +90,8 @@ export const useTableMySupplies = () => {
           };
         })
         ?.filter(d => (d?.asset?.balance || 0) > 0) || [],
-    [accountSnapshots, enteredMarkets, markets]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [!!accountSnapshots, !!enteredMarkets, !!markets]
   );
 
   const sortedMySupplies = useMemo(() => {
@@ -112,7 +113,8 @@ export const useTableMySupplies = () => {
     }
 
     return mySupplies;
-  }, [mySupplies, sort]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!mySupplies, sort]);
 
   const handleLendingSupply = (address: string) => {
     const link = `/lending/${getNetworkAbbr(selectedNetwork)}/${address}/supply`;
@@ -179,7 +181,7 @@ export const useTableMySupplies = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sortedMySupplies, t]
+    [isInLiquidation, !!sortedMySupplies, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -318,7 +320,7 @@ export const useTableMySupplies = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sortedMySupplies, t]
+    [isInLiquidation, !!sortedMySupplies, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
