@@ -57,7 +57,7 @@ export const useTableAssetsToBorrow = () => {
   const fetchNextPage = () => {};
 
   const { availableAmountList } = useUserAvailableBorrowAll({
-    mTokenAddresses: markets?.map(m => m?.address || ''),
+    mTokenAddresses: markets?.map(m => m?.address || '') || [],
   });
 
   const assetsToBorrow = useMemo(
@@ -182,7 +182,7 @@ export const useTableAssetsToBorrow = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sortedAssetsToBorrow, t]
+    [evm.isConnected, fpass.isConnected, isFpass, isInLiquidation, sortedAssetsToBorrow, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -279,7 +279,7 @@ export const useTableAssetsToBorrow = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sortedAssetsToBorrow, t]
+    [evm.isConnected, fpass.isConnected, isFpass, isInLiquidation, sortedAssetsToBorrow, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

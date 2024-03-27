@@ -106,6 +106,8 @@ export const useUserAvailableBorrowAll = ({ mTokenAddresses }: Props) => {
   });
 
   const refetch = () => {
+    if (!mTokenAddresses || !mTokenAddresses.length) return;
+
     liquidityRefetch();
     metaDataRefetch();
     underlyingPriceRefetch();

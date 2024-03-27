@@ -22,7 +22,7 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { evm, fpass } = useConnectedWallet();
-  const { address: walletAddress } = isFpass ? fpass : evm;
+  const walletAddress = isFpass ? fpass.address : evm?.address || '';
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const chainId = useNetworkId(currentNetwork);
@@ -114,6 +114,7 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
   )?.sort((a, b) => a?.symbol?.localeCompare(b?.symbol));
 
   const refetch = () => {
+    if (!addresses || addresses.length === 0) return;
     totalSupplyRefetch();
     tokenBalanceRefetch();
   };

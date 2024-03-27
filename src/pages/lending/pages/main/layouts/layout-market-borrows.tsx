@@ -137,7 +137,7 @@ export const LayoutMarketBorrows = () => {
         <Title>{t('Assets to borrow')}</Title>
         {isMD ? (
           <Table
-            data={tableDataAssetsToBorrow}
+            data={tableDataAssetsToBorrow || []}
             columns={tableColumnsAssetsToBorrow}
             ratio={currentAddress ? [1, 1, 1, '94px'] : [1, 1, 1, '128px']}
             type="lighter"
@@ -148,7 +148,7 @@ export const LayoutMarketBorrows = () => {
           />
         ) : (
           <TableMobile
-            data={mobileTableDataAssetsToBorrow}
+            data={mobileTableDataAssetsToBorrow || []}
             columns={mobileTableColumnAssetsToBorrow}
             type="lighter"
             emptyText={t('lending-assets-to-borrow-empty')}

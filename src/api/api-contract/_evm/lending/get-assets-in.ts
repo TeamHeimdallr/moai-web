@@ -18,7 +18,7 @@ export const useGetAssetsIn = () => {
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { evm, fpass } = useConnectedWallet();
-  const { address: walletAddress } = isFpass ? fpass : evm;
+  const walletAddress = isFpass ? fpass.address : evm?.address || '';
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const chainId = useNetworkId(currentNetwork);
@@ -34,8 +34,13 @@ export const useGetAssetsIn = () => {
     enabled: !!chainId && isEvm && !!walletAddress,
   });
 
+  const refetchGetAssetsIn = () => {
+    if (!walletAddress) return;
+    refetch();
+  };
+
   return {
-    enteredMarkets: data as Array<string> | undefined,
-    refetch,
+    enteredMarkets: data as string[] | undefined,
+    refetch: refetchGetAssetsIn,
   };
 };

@@ -35,8 +35,7 @@ export const useGetAllMarkets = () => {
     staleTime: 1000 * 3,
     enabled: !!chainId && isEvm,
   });
-
-  const marketAddrs = (marketsData as Array<string>)?.map((m: string) => m);
+  const marketAddrs = (marketsData as string[])?.map((m: string) => m) as string[] | undefined;
 
   const { data: symbolsData } = useContractReads({
     contracts: marketAddrs?.flatMap(address => [
@@ -50,7 +49,7 @@ export const useGetAllMarkets = () => {
     staleTime: 1000 * 3,
     enabled: !!marketsData && !!chainId && isEvm && !!marketAddrs && marketAddrs.length > 0,
   });
-  const symbols = (symbolsData?.map(d => d.result) || []) as string[];
+  const symbols = symbolsData?.map(d => d.result) as string[] | undefined;
 
   const { data: pricesData } = useContractRead({
     address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
@@ -62,7 +61,7 @@ export const useGetAllMarkets = () => {
     staleTime: 1000 * 3,
     enabled: !!chainId && isEvm && !!marketAddrs && marketAddrs.length > 0,
   });
-  const prices = pricesData as Array<IPriceData>;
+  const prices = pricesData as IPriceData[] | undefined;
 
   const { data: metadataAll } = useContractRead({
     address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
@@ -73,35 +72,45 @@ export const useGetAllMarkets = () => {
     staleTime: 1000 * 3,
     enabled: !!chainId && isEvm && !!marketAddrs && marketAddrs.length > 0,
   });
-  const metadataList = (metadataAll as Array<IMTokenMetadata>)?.map((m: IMTokenMetadata) => m);
+  const metadataList = (metadataAll as IMTokenMetadata[])?.map((m: IMTokenMetadata) => m) as
+    | IMTokenMetadata[]
+    | undefined;
 
-  const underlyings = (metadataList?.map(d => d.underlyingAssetAddress) || []) as Address[];
-  const underlyingDecimals = (metadataList?.map(d => Number(d.underlyingDecimals)) ||
-    []) as number[];
+  const underlyings = metadataList?.map(d => d.underlyingAssetAddress) as Address[] | undefined;
+  const underlyingDecimals = metadataList?.map(d => Number(d.underlyingDecimals)) as
+    | number[]
+    | undefined;
+  const supplyRatePerBlocks = metadataList?.map(d => Number(d.supplyRatePerBlock)) as
+    | number[]
+    | undefined;
+  const borrowRatePerBlocks = metadataList?.map(d => Number(d.borrowRatePerBlock)) as
+    | number[]
+    | undefined;
 
-  const supplyRatePerBlocks = (metadataList?.map(d => Number(d.supplyRatePerBlock)) ||
-    []) as number[];
+  const totalReserves = metadataList?.map(d => d.totalReserves) as bigint[] | undefined;
+  const totalBorrows = metadataList?.map(d => d.totalBorrows) as bigint[] | undefined;
 
-  const borrowRatePerBlocks = (metadataList?.map(d => Number(d.borrowRatePerBlock)) ||
-    []) as number[];
+  const cashes = metadataList?.map(d => d.totalCash) as bigint[] | undefined;
 
-  const totalReserves = (metadataList?.map(d => d.totalReserves) || []) as bigint[];
-  const totalBorrows = (metadataList?.map(d => d.totalBorrows) || []) as bigint[];
-  const cashes = (metadataList?.map(d => d.totalCash) || []) as bigint[];
-  const reserveFactorMantissa = (metadataList?.map(d => d.reserveFactorMantissa) || []) as bigint[];
-  const totalSupply = (metadataList?.map(d => d.totalSupply) || []) as bigint[];
+  const reserveFactorMantissa = metadataList?.map(d => d.reserveFactorMantissa) as
+    | bigint[]
+    | undefined;
+
+  const totalSupply = metadataList?.map(d => d.totalSupply) as bigint[] | undefined;
+
   const collateralFactorsMantissa = (metadataList?.map(d => d.collateralFactorMantissa) ||
     []) as bigint[];
+
   const blocksPerYear = 7884000; // TODO: Futureverse only
   const blocksPerDay = blocksPerYear / 365;
 
-  const markets: IMarket[] = (marketAddrs as Array<string>)?.map((m: string, i: number) => {
+  const markets: IMarket[] | undefined = marketAddrs?.map((m: string, i: number) => {
     return {
       address: m as Address,
       decimals: 8,
-      underlyingAsset: underlyings?.[i],
+      underlyingAsset: underlyings?.[i] || '0x0',
       underlyingDecimals: underlyingDecimals?.[i] || 18,
-      symbol: symbols?.[i],
+      symbol: symbols?.[i] || '',
       supplyRatePerBlock: supplyRatePerBlocks?.[i] || 0,
       borrowRatePerBlock: borrowRatePerBlocks?.[i] || 0,
 

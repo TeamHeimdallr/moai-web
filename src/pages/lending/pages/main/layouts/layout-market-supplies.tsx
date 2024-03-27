@@ -151,7 +151,7 @@ export const LayoutMarketSupplies = () => {
         </TitleWrapper>
         {isMD ? (
           <Table
-            data={tableDataAssetsToSupply}
+            data={tableDataAssetsToSupply || []}
             columns={tableColumnsAssetsToSupply}
             ratio={currentAddress ? [1, 1, 1, 1, '94px'] : [1, 1, 1, 1, '128px']}
             type="lighter"
@@ -160,7 +160,7 @@ export const LayoutMarketSupplies = () => {
           />
         ) : (
           <TableMobile
-            data={mobileTableDataAssetsToSupply}
+            data={mobileTableDataAssetsToSupply || []}
             columns={mobileTableColumnAssetsToSupply}
             type="lighter"
             emptyText={t('lending-assets-to-supply-empty')}

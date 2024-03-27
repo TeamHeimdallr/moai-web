@@ -51,15 +51,17 @@ export const useTableMyBorrows = () => {
     () =>
       accountSnapshots
         ?.map(d => {
-          const makrketIndex = markets?.findIndex(m => m.address === d.mTokenAddress);
+          const makrketIndex = markets?.findIndex(m => m.address === d.mTokenAddress) || -1;
           const market = makrketIndex === -1 ? undefined : markets?.[makrketIndex];
-          const debt = Number(formatUnits(d.borrowBalance, market?.underlyingDecimals || 18));
-          const price = market?.price;
+          const debt = Number(
+            formatUnits(d?.borrowBalance || 0n, market?.underlyingDecimals || 18)
+          );
+          const price = market?.price || 0;
           const debtValue = debt * (price || 0);
 
           return {
             id: makrketIndex,
-            address: d.mTokenAddress,
+            address: d?.mTokenAddress || '0x0',
             asset: {
               symbol: market?.underlyingSymbol || '',
               image: market?.underlyingImage || '',
@@ -70,9 +72,10 @@ export const useTableMyBorrows = () => {
             apy: market?.borrowApy || 0,
           };
         })
-        .filter(d => d.asset.debt > 0),
+        ?.filter(d => (d?.asset?.debt || 0) > 0) || [],
     [accountSnapshots, markets]
   );
+
   const sortedMyBorrows = useMemo(() => {
     if (sort?.key === 'debt') {
       return myBorrows.sort((a, b) => {

@@ -8,8 +8,6 @@ const queryClient = new QueryClient({
     queries: {
       suspense: false,
       keepPreviousData: true,
-      cacheTime: 0,
-      staleTime: 0,
     },
   },
 });

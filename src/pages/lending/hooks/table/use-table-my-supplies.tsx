@@ -62,19 +62,22 @@ export const useTableMySupplies = () => {
     () =>
       accountSnapshots
         ?.map(d => {
-          const makrketIndex = markets?.findIndex(m => m.address === d.mTokenAddress);
-          const market = makrketIndex === -1 ? undefined : markets?.[makrketIndex];
-          const price = market?.price;
+          const marketIndex = markets?.findIndex(m => m.address === d.mTokenAddress) || -1;
+          const market = marketIndex === -1 ? undefined : markets?.[marketIndex];
+          const price = market?.price || 0;
           const underlyingBalance = Number(
-            formatUnits(d.exchangeRate * d.mTokenBalance, 16 + (market?.decimals || 18))
+            formatUnits(
+              (d.exchangeRate || 0n) * (d.mTokenBalance || 0n),
+              16 + (market?.decimals || 18)
+            )
           );
           const value = underlyingBalance * (price || 0);
           const isCollateralEnabled = enteredMarkets?.includes(d.mTokenAddress) || false;
           const isCollateral = (market?.collateralFactorsMantissa || 0n) > 0n;
 
           return {
-            id: makrketIndex,
-            address: d.mTokenAddress,
+            id: marketIndex,
+            address: d?.mTokenAddress || '0x0',
             asset: {
               symbol: market?.underlyingSymbol || '',
               image: market?.underlyingImage || '',
@@ -86,7 +89,7 @@ export const useTableMySupplies = () => {
             isCollateral,
           };
         })
-        .filter(d => d.asset.balance > 0),
+        ?.filter(d => (d?.asset?.balance || 0) > 0) || [],
     [accountSnapshots, enteredMarkets, markets]
   );
 
@@ -176,7 +179,7 @@ export const useTableMySupplies = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [openCollateralDisable, openCollateralEnable, sortedMySupplies, t]
+    [sortedMySupplies, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -315,7 +318,7 @@ export const useTableMySupplies = () => {
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [openCollateralDisable, openCollateralEnable, sortedMySupplies, t]
+    [sortedMySupplies, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

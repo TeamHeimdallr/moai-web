@@ -5,8 +5,8 @@ import { HEALTH_FACTOR_THRESHOLD } from '~/constants';
 import { IMarketWithToken, ISnapshot } from '~/types/lending';
 
 interface Props {
-  markets: IMarketWithToken[];
-  snapshots: ISnapshot[];
+  markets?: IMarketWithToken[];
+  snapshots?: ISnapshot[];
 }
 export const calcNetApy = ({ markets, snapshots }: Props) => {
   if (!markets || !snapshots || markets.length === 0 || snapshots.length === 0) {
@@ -63,8 +63,8 @@ export const calcNetApy = ({ markets, snapshots }: Props) => {
 };
 
 interface HelathFactorProps {
-  markets: IMarketWithToken[];
-  snapshots: ISnapshot[];
+  markets?: IMarketWithToken[];
+  snapshots?: ISnapshot[];
   deltaSupply?: {
     marketAddress: Address;
     delta: bigint; // underlying's delta
@@ -82,6 +82,10 @@ export const calcHealthFactor = ({
   deltaSupply,
   deltaBorrow,
 }: HelathFactorProps) => {
+  if (!markets || !snapshots || markets.length === 0 || snapshots.length === 0) {
+    return Infinity;
+  }
+
   const numerator = snapshots?.reduce((acc, s) => {
     const market = markets?.find(m => m.address === s.mTokenAddress);
 
@@ -126,6 +130,14 @@ export const calcHealthFactor = ({
 };
 
 export const calcLtv = ({ markets, snapshots }: Props) => {
+  if (!markets || !snapshots || markets.length === 0 || snapshots.length === 0) {
+    return {
+      ltv: 0,
+      assets: 0,
+      debts: 0,
+    };
+  }
+
   const numerator = snapshots?.reduce((acc, s) => {
     const market = markets?.find(m => m.address === s.mTokenAddress);
     if (!market) {
@@ -156,6 +168,9 @@ export const calcLtv = ({ markets, snapshots }: Props) => {
 };
 
 export const calcNetworth = ({ markets, snapshots }: Props) => {
+  if (!markets || !snapshots || markets.length === 0 || snapshots.length === 0) {
+    return 0;
+  }
   const borrowValue = snapshots?.reduce((acc, s, i) => {
     const values =
       Number(formatUnits(s?.borrowBalance || 0n, markets?.[i]?.underlyingDecimals || 0)) *
