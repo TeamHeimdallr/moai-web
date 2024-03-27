@@ -7,6 +7,9 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: false,
+      keepPreviousData: true,
+      cacheTime: 0,
+      staleTime: 0,
     },
   },
 });
