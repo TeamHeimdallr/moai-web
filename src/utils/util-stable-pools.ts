@@ -141,7 +141,6 @@ export function calcBptOutAmountAndPriceImpactStable({
   bptTotalSupply,
   swapFeePercentage,
 }: Props) {
-  console.log(amp, balances, amountsIn, bptTotalSupply, swapFeePercentage);
   if (amountsIn.length === 0 || amountsIn.every(v => v === 0n)) {
     return {
       bptOut: 0,
@@ -212,13 +211,48 @@ const calcPriceImpact = (
 
   if (isJoin) {
     const pi = ONE - SolidityMaths.divDownFixed(bptAmount, bptZeroPriceImpact);
-    console.log(pi);
     return pi < 0 ? 0 : 100 * Number(formatEther(pi));
   } else {
     const pi = SolidityMaths.divDownFixed(bptAmount, bptZeroPriceImpact) - ONE;
     return pi < 0 ? 0 : 100 * Number(formatEther(pi));
   }
 };
+
+interface Props2 {
+  amp: bigint;
+  balances: bigint[];
+  bptAmountIn: bigint;
+  bptTotalSupply: bigint;
+}
+export function calcBptInTokenOutAmountAndPriceImpactStable({
+  amp,
+  balances,
+  bptAmountIn,
+  bptTotalSupply,
+}: Props2) {
+  if (bptAmountIn === 0n) {
+    return {
+      amountsOut: new Array<bigint>(balances.length).fill(0n),
+      priceImpact: 0,
+    };
+  }
+
+  const tokensOutNormalized = _calcTokensOutGivenExactBptIn(balances, bptAmountIn, bptTotalSupply);
+  const priceImpact = calcPriceImpact(
+    amp,
+    bptTotalSupply,
+    tokensOutNormalized,
+    balances,
+    bptAmountIn,
+    false
+  );
+
+  const tokensOut = tokensOutNormalized.map(v => BigInt(Math.round(Number(formatEther(v)))));
+  return {
+    amountsOut: tokensOut,
+    priceImpact,
+  };
+}
 
 /**
  * _calcBptOutGivenExactTokensIn

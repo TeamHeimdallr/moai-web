@@ -37,7 +37,9 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
 
   const poolTokenAddress = poolId.slice(0, 42) as Address;
   const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes(poolId);
-  if (isStable && tokens.length <= 2) {
+
+  const tokensWithBpt = tokens.slice();
+  if (isStable && tokensWithBpt.length <= 2) {
     const bptToken = {
       id: 9999,
       network: NETWORK.THE_ROOT_NETWORK,
@@ -49,7 +51,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
       balance: 0,
       amount: 0,
     };
-    tokens.push(bptToken);
+    tokensWithBpt.push(bptToken);
   }
 
   const { network } = useParams();
@@ -83,7 +85,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
       return getWrappedTokenAddress(currentNetwork) ?? token;
     return token;
   };
-  const sortedTokens = tokens
+  const sortedTokens = tokensWithBpt
     .slice()
     .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
   const sortedTokenAddressses = sortedTokens.map(t => t.address);
@@ -102,7 +104,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
       [
         sortedTokenAddressses,
         // TODO: slippage
-        tokens.map(() => 0n),
+        tokensWithBpt.map(() => 0n),
         isStable
           ? ComposableStablePoolEncoder.exitExactBPTInForAllTokensOut(bptIn)
           : WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
@@ -152,7 +154,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
         walletAddress,
         [
           sortedTokenAddressses,
-          tokens.map(() => 0n),
+          tokensWithBpt.map(() => 0n),
           isStable
             ? ComposableStablePoolEncoder.exitExactBPTInForAllTokensOut(bptIn)
             : WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
