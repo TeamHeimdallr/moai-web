@@ -87,6 +87,10 @@ export function _calcOutGivenIn(
   amountIn: bigint,
   fee: bigint
 ): bigint {
+  if (amountIn == BZERO) {
+    return BZERO;
+  }
+
   amountIn = subtractFee(amountIn, fee);
   const invariant = _calculateInvariant(amp, balances);
 

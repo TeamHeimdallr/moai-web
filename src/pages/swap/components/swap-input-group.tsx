@@ -238,7 +238,7 @@ const _SwapInputGroup = () => {
 
   const stableDeciaml = 6; // TODO: hardcoded for USDT-USDC pool
   const toInputFromSinglePoolStable =
-    fromToken && toToken
+    fromToken && toToken && isStable
       ? fromInput
         ? Number(
             formatUnits(
