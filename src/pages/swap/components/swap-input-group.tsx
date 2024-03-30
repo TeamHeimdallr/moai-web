@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { last } from 'lodash-es';
 import { strip } from 'number-precision';
 import tw, { css, styled } from 'twin.macro';
-import { Address, formatUnits, parseUnits } from 'viem';
+import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import { usePrepareContractWrite } from 'wagmi';
 import * as yup from 'yup';
 
@@ -32,6 +32,7 @@ import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import {
+  _calcOutGivenIn,
   formatNumber,
   getNetworkAbbr,
   getNetworkFull,
@@ -103,6 +104,11 @@ const _SwapInputGroup = () => {
     setFromInput,
     resetAll,
   } = useSwapStore();
+
+  // TODO
+  const isStable =
+    (fromToken?.symbol === 'USDC' && toToken?.symbol === 'USDT') ||
+    (fromToken?.symbol === 'USDT' && toToken?.symbol === 'USDC');
 
   const { userAllTokenBalances: userAllTokenBalancesWithLpToken, refetch: refetchBalance } =
     useUserAllTokenBalances();
@@ -217,7 +223,7 @@ const _SwapInputGroup = () => {
   });
   const fee = swapOptimizedPathPool?.tradingFee || 0;
 
-  const toInputFromSinglePool =
+  const toInputFromSinglePoolNormal =
     fromToken && toToken
       ? fromInput
         ? Number(
@@ -229,6 +235,33 @@ const _SwapInputGroup = () => {
           )
         : undefined
       : undefined;
+
+  const stableDeciaml = 6; // TODO: hardcoded for USDT-USDC pool
+  const toInputFromSinglePoolStable =
+    fromToken && toToken
+      ? fromInput
+        ? Number(
+            formatUnits(
+              _calcOutGivenIn(
+                parseEther('1000'), // TODO: hardcoded for USDT-USDC pool
+                [
+                  parseUnits(fromTokenReserve.toFixed(6), stableDeciaml),
+                  parseUnits(toTokenReserve.toFixed(6), stableDeciaml),
+                ],
+                0,
+                1,
+                parseUnits(Number(fromInput).toFixed(6), stableDeciaml),
+                parseEther(fee.toFixed(18))
+              ),
+              stableDeciaml
+            )
+          )
+        : undefined
+      : undefined;
+
+  const toInputFromSinglePool = isStable
+    ? toInputFromSinglePoolStable
+    : toInputFromSinglePoolNormal;
 
   const toInput = toInputFromSor || toInputFromSinglePool || 0;
   const swapRatio =
