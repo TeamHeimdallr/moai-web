@@ -4,12 +4,15 @@ import { useBalance, useContractRead, useContractReads } from 'wagmi';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
+import { STABLE_POOL_IDS } from '~/constants';
+
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkFull, getWrappedTokenAddress } from '~/utils';
 import { ITokenComposition, NETWORK } from '~/types';
 
 import { BALANCER_LP_ABI, ERC20_TOKEN_ABI } from '~/abi';
+import { COMPOSABLE_STABLE_POOL_ABI } from '~/abi/composable-stable-pool';
 
 interface Props {
   network: string;
@@ -42,22 +45,39 @@ export const useUserPoolTokenBalances = (props?: Props) => {
   );
 
   const { pool } = poolData || {};
-  const { address: poolAddress, compositions, lpToken } = pool || {};
+  const { address: poolAddress, compositions, lpToken, poolId } = pool || {};
   const { address: lpTokenAddress } = lpToken || {};
+
+  const isStable = STABLE_POOL_IDS[currentNetwork].includes(poolId);
 
   const tokenAddresses = [lpTokenAddress, ...(compositions?.map(c => c.address) || [])];
 
   const { data: nativeBalance } = useBalance({ address: walletAddress as Address, chainId });
 
-  const { data: lpTokenTotalSupplyData, refetch: lpTokenRefetch } = useContractRead({
+  const { data: lpTokenTotalSupplyDataNormal, refetch: lpTokenRefetchNormal } = useContractRead({
     address: poolAddress as Address,
     abi: BALANCER_LP_ABI as Abi,
     functionName: 'totalSupply',
     chainId,
 
     staleTime: 1000 * 3,
-    enabled: !!poolAddress && !!chainId && isEvm,
+    enabled: !!poolAddress && !!chainId && isEvm && !isStable,
   });
+  const { data: lpTokenTotalSupplyDataStable, refetch: lpTokenRefetchStable } = useContractRead({
+    address: poolAddress as Address,
+    abi: COMPOSABLE_STABLE_POOL_ABI as Abi,
+    functionName: 'actualSupply',
+    chainId,
+
+    staleTime: 1000 * 3,
+    enabled: !!poolAddress && !!chainId && isEvm && isStable,
+  });
+
+  const lpTokenTotalSupplyData = isStable
+    ? lpTokenTotalSupplyDataStable
+    : lpTokenTotalSupplyDataNormal;
+  const lpTokenRefetch = isStable ? lpTokenRefetchStable : lpTokenRefetchNormal;
+
   const { data: tokenBalancesData, refetch: tokenBalanceRefetch } = useContractReads({
     contracts: tokenAddresses.flatMap(address => [
       {
