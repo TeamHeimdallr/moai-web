@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { WeightedPoolEncoder } from '@balancer-labs/sdk';
+import { ComposableStablePoolEncoder, WeightedPoolEncoder } from '@balancer-labs/sdk';
 import { BigNumber } from 'ethers';
 import { formatUnits } from 'viem';
 import {
@@ -13,7 +13,7 @@ import {
 
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
-import { EVM_VAULT_ADDRESS } from '~/constants';
+import { EVM_VAULT_ADDRESS, STABLE_POOL_IDS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -34,6 +34,25 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
   const publicClient = usePublicClient();
   const { evm } = useConnectedWallet();
   const { isConnected, address: walletAddress } = evm;
+
+  const poolTokenAddress = poolId.slice(0, 42) as Address;
+  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes(poolId);
+
+  const tokensWithBpt = tokens.slice();
+  if (isStable && tokensWithBpt.length <= 2) {
+    const bptToken = {
+      id: 9999,
+      network: NETWORK.THE_ROOT_NETWORK,
+      currency: '',
+      isLpToken: true,
+      isCexListed: false,
+      address: poolTokenAddress,
+      symbol: 'BPT',
+      balance: 0,
+      amount: 0,
+    };
+    tokensWithBpt.push(bptToken);
+  }
 
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
@@ -66,7 +85,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
       return getWrappedTokenAddress(currentNetwork) ?? token;
     return token;
   };
-  const sortedTokens = tokens
+  const sortedTokens = tokensWithBpt
     .slice()
     .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
   const sortedTokenAddressses = sortedTokens.map(t => t.address);
@@ -85,8 +104,10 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
       [
         sortedTokenAddressses,
         // TODO: slippage
-        tokens.map(() => 0n),
-        WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
+        tokensWithBpt.map(() => 0n),
+        isStable
+          ? ComposableStablePoolEncoder.exitExactBPTInForAllTokensOut(bptIn)
+          : WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
         false,
       ],
     ],
@@ -133,8 +154,10 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
         walletAddress,
         [
           sortedTokenAddressses,
-          tokens.map(() => 0n),
-          WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
+          tokensWithBpt.map(() => 0n),
+          isStable
+            ? ComposableStablePoolEncoder.exitExactBPTInForAllTokensOut(bptIn)
+            : WeightedPoolEncoder.exitExactBPTInForTokensOut(bptIn),
           false,
         ],
       ],

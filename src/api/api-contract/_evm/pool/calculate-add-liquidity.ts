@@ -1,20 +1,30 @@
 import { useParams } from 'react-router-dom';
-import { Abi, Address, formatEther } from 'viem';
+import { Abi, Address, formatEther, formatUnits, parseEther } from 'viem';
 import { useContractRead } from 'wagmi';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
+import { STABLE_POOL_IDS } from '~/constants';
+
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
-import { calcBptOutAmountAndPriceImpact, getNetworkFull } from '~/utils';
+import {
+  calcBptOutAmountAndPriceImpact,
+  calcBptOutAmountAndPriceImpactStable,
+  getNetworkFull,
+} from '~/utils';
+import { ITokenComposition, NETWORK } from '~/types';
 
 import { BALANCER_LP_ABI } from '~/abi';
 
+import { useGetActualSupplyStable } from './get-actual-supply-stable';
+
 interface Props {
+  tokensInBigint?: (ITokenComposition & { amount: bigint })[]; // TODO: required
   amountsIn: number[];
   txHash?: string;
 }
 
-export const useCalculateAddLiquidity = ({ amountsIn }: Props) => {
+export const useCalculateAddLiquidity = ({ tokensInBigint, amountsIn }: Props) => {
   const { network, id } = useParams();
   const { selectedNetwork, isEvm } = useNetwork();
 
@@ -47,6 +57,12 @@ export const useCalculateAddLiquidity = ({ amountsIn }: Props) => {
     enabled: !!poolAddress && !!chainId && isEvm,
   });
   const lpTokenTotalSupply = Number(formatEther((lpTokenTotalSupplyData as bigint) || 0n));
+  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes((id || '') as string);
+
+  const { actualSupply } = useGetActualSupplyStable({
+    poolAddress: poolAddress as Address,
+    enabled: !!poolAddress && !!chainId && isStable,
+  });
 
   if (!isEvm)
     return {
@@ -62,8 +78,33 @@ export const useCalculateAddLiquidity = ({ amountsIn }: Props) => {
     swapFeePercentage: tradingFee || 0,
   });
 
+  // * @param amp Amplification parameter in EVM Scale
+  // * @param balances Token balances in EVM Scale normalised to 18 decimals (Should not have value for BPT token)
+  // * @param amountsIn Token amounts in EVM Scale normalised to 18 decimals (Should not have value for BPT token)
+  // * @param bptTotalSupply BPT total supply in EVM Scale
+  // * @param swapFeePercentage Swap fee percentage in EVM Scale
+  // * @returns BPT out in EVM Scale
+  const sortedNormalizedBalances =
+    (compositions?.sort((a, b) => a.address.localeCompare(b.address)) || [])?.map(
+      c => parseEther((c.balance || 0).toFixed(18)) || 0n
+    ) || [];
+  const sortedNormalizedAmountsIn =
+    (tokensInBigint?.sort((a, b) => a.address.localeCompare(b.address)) || [])?.map(
+      t => parseEther(formatUnits(t.amount, t.decimal || 18)) || 0n
+    ) || [];
+
+  // https://github.com/balancer/balancer-sor/blob/master/src/pools/composableStable/composableStablePool.ts
+  const { bptOut: bptOutStable, priceImpact: priceImpactStable } =
+    calcBptOutAmountAndPriceImpactStable({
+      amp: parseEther('1000'), // TODO: 1000 hardcoded for USDT-USDC pool
+      balances: sortedNormalizedBalances,
+      amountsIn: sortedNormalizedAmountsIn,
+      bptTotalSupply: (actualSupply || 1n) as bigint,
+      swapFeePercentage: parseEther((tradingFee || 0).toFixed(18)) || 0n,
+    });
+
   return {
-    bptOut,
-    priceImpact,
+    bptOut: isStable ? bptOutStable : bptOut,
+    priceImpact: isStable ? priceImpactStable : priceImpact,
   };
 };

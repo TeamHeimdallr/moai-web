@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { WeightedPoolEncoder } from '@balancer-labs/sdk';
+import { ComposableStablePoolEncoder, WeightedPoolEncoder } from '@balancer-labs/sdk';
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
@@ -17,7 +17,7 @@ import {
 } from '~/api/api-contract/_evm/substrate/send-extrinsic-with-signature';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
-import { EVM_VAULT_ADDRESS, IS_MAINNET } from '~/constants';
+import { EVM_VAULT_ADDRESS, IS_MAINNET, STABLE_POOL_IDS } from '~/constants';
 import { EVM_TOKEN_ADDRESS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
@@ -38,6 +38,24 @@ interface Props {
 }
 export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   const { setError } = useAddLiquidityNetworkFeeErrorStore();
+
+  const poolTokenAddress = poolId.slice(0, 42) as Address;
+  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes(poolId);
+  const tokensWithoutBpt = tokens.map(t => t);
+  if (isStable && tokens.length <= 2) {
+    const bptToken = {
+      id: 9999,
+      network: NETWORK.THE_ROOT_NETWORK,
+      currency: '',
+      isLpToken: true,
+      isCexListed: false,
+      address: poolTokenAddress,
+      symbol: 'BPT',
+      balance: 0,
+      amount: 0n,
+    };
+    tokens.push(bptToken);
+  }
 
   const { data: walletClient } = useWalletClient();
 
@@ -88,6 +106,11 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   const sortedTokenAddressses = sortedTokens.map(t => t.address);
   const sortedAmountsIn = sortedTokens.map(t => t.amount);
 
+  const sortedTokensWithoutBpt = tokensWithoutBpt
+    .slice()
+    .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedAmountsInWithoutBpt = sortedTokensWithoutBpt.map(t => t.amount);
+
   const estimateFee = async () => {
     const feeHistory = await publicClient.getFeeHistory({
       blockCount: 2,
@@ -113,7 +136,12 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
                 [
                   sortedTokenAddressses,
                   sortedAmountsIn, // max amount in
-                  WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+                  isStable
+                    ? ComposableStablePoolEncoder.joinExactTokensInForBPTOut(
+                        sortedAmountsInWithoutBpt,
+                        '0'
+                      )
+                    : WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
                   false,
                 ],
               ],
@@ -131,7 +159,12 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
           [
             sortedTokenAddressses,
             sortedAmountsIn,
-            WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+            isStable
+              ? ComposableStablePoolEncoder.joinExactTokensInForBPTOut(
+                  sortedAmountsInWithoutBpt,
+                  '0'
+                )
+              : WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
             false,
           ],
         ],
@@ -196,7 +229,12 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
                 [
                   sortedTokenAddressses,
                   sortedAmountsIn, // max amount in
-                  WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+                  isStable
+                    ? ComposableStablePoolEncoder.joinExactTokensInForBPTOut(
+                        sortedAmountsInWithoutBpt,
+                        '0'
+                      )
+                    : WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
                   false,
                 ],
               ],
@@ -214,7 +252,12 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
           [
             sortedTokenAddressses,
             sortedAmountsIn,
-            WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+            isStable
+              ? ComposableStablePoolEncoder.joinExactTokensInForBPTOut(
+                  sortedAmountsInWithoutBpt,
+                  '0'
+                )
+              : WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
             false,
           ],
         ],
@@ -305,6 +348,24 @@ export const useAddLiquidityPrepare = ({ poolId, tokens, enabled }: Props) => {
   const { fpass } = useConnectedWallet();
   const { address: walletAddress } = fpass;
 
+  const poolTokenAddress = poolId.slice(0, 42) as Address;
+  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes(poolId);
+  const tokensWithoutBpt = tokens.map(t => t);
+  if (isStable && tokens.length <= 2) {
+    const bptToken = {
+      id: 9999,
+      network: NETWORK.THE_ROOT_NETWORK,
+      currency: '',
+      isLpToken: true,
+      isCexListed: false,
+      address: poolTokenAddress,
+      symbol: 'BPT',
+      balance: 0,
+      amount: 0n,
+    };
+    tokens.push(bptToken);
+  }
+
   const { network } = useParams();
 
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
@@ -349,6 +410,11 @@ export const useAddLiquidityPrepare = ({ poolId, tokens, enabled }: Props) => {
     })
   );
 
+  const sortedTokensWithoutBpt = tokensWithoutBpt
+    .slice()
+    .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedAmountsInWithoutBpt = sortedTokensWithoutBpt.map(t => t.amount);
+
   /* call prepare hook for check evm tx success */
   const {
     isFetching: isPrepareLoading,
@@ -370,7 +436,9 @@ export const useAddLiquidityPrepare = ({ poolId, tokens, enabled }: Props) => {
       [
         sortedTokenAddressses,
         sortedAmountsIn,
-        WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+        isStable
+          ? ComposableStablePoolEncoder.joinExactTokensInForBPTOut(sortedAmountsInWithoutBpt, '0')
+          : WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
         false,
       ],
     ],

@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { last } from 'lodash-es';
 import tw, { css, styled } from 'twin.macro';
-import { Address, formatUnits, parseUnits } from 'viem';
+import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import { usePrepareContractWrite } from 'wagmi';
 
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
@@ -31,7 +31,13 @@ import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { DATE_FORMATTER, formatNumber, getNetworkFull, getTokenDecimal } from '~/utils';
+import {
+  _calcOutGivenIn,
+  DATE_FORMATTER,
+  formatNumber,
+  getNetworkFull,
+  getTokenDecimal,
+} from '~/utils';
 import {
   useApproveNetworkFeeErrorStore,
   useSwapNetworkFeeErrorStore,
@@ -97,6 +103,11 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { fromToken, toToken, fromInput, selectedDetailInfo, selectDetailInfo } = useSwapStore();
   const numFromInput = Number(fromInput) || 0;
 
+  // TODO
+  const isStable =
+    (fromToken?.symbol === 'USDC' && toToken?.symbol === 'USDT') ||
+    (fromToken?.symbol === 'USDT' && toToken?.symbol === 'USDC');
+
   const { data: swapInfoData } = useSorQuery(
     {
       queries: {
@@ -159,7 +170,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const fee = swapOptimizedPathPool?.tradingFee || 0;
 
-  const toInputFromSinglePool =
+  const toInputFromSinglePoolNormal =
     fromToken && toToken
       ? fromInput
         ? Number(
@@ -170,6 +181,32 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
           )
         : undefined
       : undefined;
+  const stableDeciaml = 6; // TODO: hardcoded for USDT-USDC pool
+  const toInputFromSinglePoolStable =
+    fromToken && toToken
+      ? fromInput
+        ? Number(
+            formatUnits(
+              _calcOutGivenIn(
+                parseEther('1000'), // TODO: hardcoded for USDT-USDC pool
+                [
+                  parseUnits(fromTokenReserve.toFixed(6), stableDeciaml),
+                  parseUnits(toTokenReserve.toFixed(6), stableDeciaml),
+                ],
+                0,
+                1,
+                parseUnits(Number(fromInput).toFixed(6), stableDeciaml),
+                parseEther(fee.toFixed(18))
+              ),
+              stableDeciaml
+            )
+          )
+        : undefined
+      : undefined;
+
+  const toInputFromSinglePool = isStable
+    ? toInputFromSinglePoolStable
+    : toInputFromSinglePoolNormal;
 
   const toInput = toInputFromSor || toInputFromSinglePool || 0;
   const numToInput = Number(toInput) || 0;

@@ -3,10 +3,13 @@ import { useContractRead } from 'wagmi';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
+import { STABLE_POOL_IDS } from '~/constants';
+
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { NETWORK } from '~/types';
 
 import { BALANCER_LP_ABI } from '~/abi';
+import { COMPOSABLE_STABLE_POOL_ABI } from '~/abi/composable-stable-pool';
 
 interface Props {
   network: NETWORK;
@@ -35,15 +38,29 @@ export const useLpTokenTotalSupply = ({ network, poolId }: Props) => {
   const { pool } = poolData || {};
   const { address: poolAddress, lpToken } = pool || {};
 
-  const { data: lpTokenTotalSupplyData } = useContractRead({
+  const isStable = STABLE_POOL_IDS[currentNetwork].includes(poolId);
+
+  const { data: lpTokenTotalSupplyDataNormal } = useContractRead({
     address: poolAddress as Address,
     abi: BALANCER_LP_ABI as Abi,
     functionName: 'totalSupply',
     chainId,
 
     staleTime: 1000 * 3,
-    enabled: !!poolAddress && !!chainId && isEvm,
+    enabled: !!poolAddress && !!chainId && isEvm && !isStable,
   });
+  const { data: lpTokenTotalSupplyDataStable } = useContractRead({
+    address: poolAddress as Address,
+    abi: COMPOSABLE_STABLE_POOL_ABI as Abi,
+    functionName: 'actualSupply',
+    chainId,
+
+    staleTime: 1000 * 3,
+    enabled: !!poolAddress && !!chainId && isEvm && isStable,
+  });
+  const lpTokenTotalSupplyData = isStable
+    ? lpTokenTotalSupplyDataStable
+    : lpTokenTotalSupplyDataNormal;
 
   const lpTokenTotalSupply = Number(formatEther(lpTokenTotalSupplyData as bigint));
   const lpTokenPrice = Number(pool?.value || 0 / lpTokenTotalSupply);
