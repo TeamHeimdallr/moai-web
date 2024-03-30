@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { WeightedPoolEncoder } from '@balancer-labs/sdk';
+import { ComposableStablePoolEncoder, WeightedPoolEncoder } from '@balancer-labs/sdk';
 import { BigNumber } from 'ethers';
 import { formatUnits } from 'viem';
 import {
@@ -13,7 +13,7 @@ import {
 
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
 
-import { EVM_VAULT_ADDRESS } from '~/constants';
+import { EVM_VAULT_ADDRESS, STABLE_POOL_IDS } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -30,6 +30,24 @@ interface Props {
 }
 export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   const publicClient = usePublicClient();
+
+  const poolTokenAddress = poolId.slice(0, 42) as Address;
+  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes(poolId);
+  const tokensWithoutBpt = tokens.map(t => t);
+  if (isStable && tokens.length <= 2) {
+    const bptToken = {
+      id: 9999,
+      network: NETWORK.THE_ROOT_NETWORK,
+      currency: '',
+      isLpToken: true,
+      isCexListed: false,
+      address: poolTokenAddress,
+      symbol: 'BPT',
+      balance: 0,
+      amount: 0n,
+    };
+    tokens.push(bptToken);
+  }
 
   const { network } = useParams();
   const { evm } = useConnectedWallet();
@@ -79,6 +97,11 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
     })
   );
 
+  const sortedTokensWithoutBpt = tokensWithoutBpt
+    .slice()
+    .sort((a, b) => handleNativeXrp(a.address).localeCompare(handleNativeXrp(b.address)));
+  const sortedAmountsInWithoutBpt = sortedTokensWithoutBpt.map(t => t.amount);
+
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: (vault || '') as Address,
     abi: BALANCER_VAULT_ABI,
@@ -94,7 +117,9 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
       [
         sortedTokenAddressses,
         sortedAmountsIn,
-        WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+        isStable
+          ? ComposableStablePoolEncoder.joinExactTokensInForBPTOut(sortedAmountsInWithoutBpt, '0')
+          : WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
         false,
       ],
     ],
@@ -142,7 +167,9 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
         [
           sortedTokenAddressses,
           sortedAmountsIn,
-          WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
+          isStable
+            ? ComposableStablePoolEncoder.joinExactTokensInForBPTOut(sortedAmountsInWithoutBpt, '0')
+            : WeightedPoolEncoder.joinExactTokensInForBPTOut(sortedAmountsIn, '0'),
           false,
         ],
       ],

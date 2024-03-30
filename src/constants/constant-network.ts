@@ -126,6 +126,12 @@ export const LP_FARM_ADDRESS_WITH_POOL_ID = {
       },
 };
 
+export const STABLE_POOL_IDS = {
+  [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET
+    ? []
+    : ['0xb7494cec27dc2a4a94f1808bc7af266958739d66000000000000000000000006'],
+};
+
 export const FAUCET_AMOUNT = {
   [NETWORK.XRPL]: {
     MOAI: 100,
