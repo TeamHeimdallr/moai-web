@@ -52,7 +52,7 @@ export const useLpTokenTotalSupply = ({ network, poolId }: Props) => {
   const { data: lpTokenTotalSupplyDataStable } = useContractRead({
     address: poolAddress as Address,
     abi: COMPOSABLE_STABLE_POOL_ABI as Abi,
-    functionName: 'actualSupply',
+    functionName: 'getActualSupply',
     chainId,
 
     staleTime: 1000 * 3,
