@@ -66,7 +66,7 @@ export const useUserPoolTokenBalances = (props?: Props) => {
   const { data: lpTokenTotalSupplyDataStable, refetch: lpTokenRefetchStable } = useContractRead({
     address: poolAddress as Address,
     abi: COMPOSABLE_STABLE_POOL_ABI as Abi,
-    functionName: 'actualSupply',
+    functionName: 'getActualSupply',
     chainId,
 
     staleTime: 1000 * 3,
