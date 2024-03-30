@@ -27,24 +27,37 @@ const HomePage = () => {
     [
       {
         id: 0,
-        symbol: 'ROOT',
+        symbol: 'USDT',
         network: NETWORK.THE_ROOT_NETWORK,
 
-        address: '0xcCcCCccC00000001000000000000000000000000',
-        currency: 'ROOT',
+        address: '0x30E98e06A002f9bbE4b86Bc132228FE8eC2c96cf',
+        currency: 'USDT',
 
         isLpToken: false,
         isCexListed: false,
-        amount: 13168000n,
+        amount: 1000000n,
+        balance: 3000000000000000,
+      },
+      {
+        id: 0,
+        symbol: 'USDT',
+        network: NETWORK.THE_ROOT_NETWORK,
+
+        address: '0xb7494CEC27Dc2A4a94F1808Bc7AF266958739D66',
+        currency: 'USDT',
+
+        isLpToken: false,
+        isCexListed: false,
+        amount: 0n,
         balance: 3000000000000000,
       },
       {
         id: 1,
-        symbol: 'XRP',
+        symbol: 'USDC',
         network: NETWORK.THE_ROOT_NETWORK,
 
-        address: '0xCCCCcCCc00000002000000000000000000000000',
-        currency: 'XRP',
+        address: '0xcCcCCCCc00000864000000000000000000000000',
+        currency: 'USDC',
 
         isLpToken: false,
         isCexListed: false,
@@ -52,6 +65,10 @@ const HomePage = () => {
         balance: 3000000000000000,
       },
     ],
+    // 259614.8429267409214265248164610048
+    // 245939.723478460686762290
+    // 125681.334528690893115089
+
     [
       {
         id: 0,
@@ -228,8 +245,8 @@ const HomePage = () => {
   ];
 
   const { writeAsync } = useAddLiquidity({
-    poolId: '0xf478268f9a73d60ba8a91b824c4909fb4dae9c67000200000000000000000004',
-    tokens: allTokensEvm[2],
+    poolId: '0xb7494cec27dc2a4a94f1808bc7af266958739d66000000000000000000000006',
+    tokens: allTokens[0],
     enabled: true,
   });
 

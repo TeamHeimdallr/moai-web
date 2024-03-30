@@ -1,7 +1,7 @@
 /**
  * @description 블록체인 환경
  */
-export const IS_MAINNET = true;
+export const IS_MAINNET = false;
 //  import.meta.env.VITE_BLOCKCHAIN_ENV === 'mainnet';
 export const IS_TESTNET = import.meta.env.VITE_BLOCKCHAIN_ENV === 'testnet';
 export const IS_DEVNET = import.meta.env.VITE_BLOCKCHAIN_ENV === 'devnet';

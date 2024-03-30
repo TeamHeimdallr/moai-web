@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { WeightedPoolEncoder } from '@balancer-labs/sdk';
+import { ComposableStablePoolEncoder, WeightedPoolEncoder } from '@balancer-labs/sdk';
 import {
   Address,
   useContractWrite,
@@ -74,7 +74,9 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
       network: currentNetwork,
     })
   );
-  const vault = '0x1cc5a9f4fd07E97e616F72D829d38c0A6aC5D623';
+  const vault = '0xc922770de79fc31Cce42DF3fa8234c864fA3FeaE';
+
+  console.log(enabled && isConnected && isEvm && !!walletAddress && !!vault, sortedAmountsIn);
 
   const { isLoading: prepareLoading, config } = usePrepareContractWrite({
     address: (vault || '') as Address,
@@ -84,19 +86,24 @@ export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
     account: walletAddress as Address,
     chainId,
     value: nativeTokenIndex === -1 ? 0n : sortedTokens[nativeTokenIndex].amount,
+    // IAsset[] assets;
+    // uint256[] limits;
+    // bytes userData;
+    // bool useInternalBalance;
     args: [
       poolId,
       walletAddress,
       walletAddress,
       [
         sortedTokenAddressses,
-        sortedAmountsIn,
-        WeightedPoolEncoder.joinInit(sortedAmountsIn),
+        [1000000n, BigInt.asUintN(256, BigInt(-1)).toString(), 1000000n],
+        ComposableStablePoolEncoder.joinInit(sortedAmountsIn),
         false,
       ],
     ],
     enabled: enabled && isConnected && isEvm && !!walletAddress && !!vault,
   });
+  // WeightedPoolEncoder.joinInit(sortedAmountsIn),
 
   const { data, writeAsync: writeAsyncBase } = useContractWrite(config);
 
