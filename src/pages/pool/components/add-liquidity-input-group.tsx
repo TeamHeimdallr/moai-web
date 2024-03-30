@@ -108,16 +108,6 @@ const _AddLiquidityInputGroup = () => {
   const { lpTokenPrice, userPoolTokens, refetch } = useUserPoolTokenBalances();
   const hasBalances = userPoolTokens.length > 0 && userPoolTokens.some(token => token.balance > 0);
 
-  const { bptOut, priceImpact: priceImpactRaw } = useCalculateAddLiquidity({
-    amountsIn: [inputValues[0], inputValues[1]],
-    txHash,
-  });
-  const priceImpact = hasBalances
-    ? priceImpactRaw < 0.01
-      ? '< 0.01'
-      : formatNumber(priceImpactRaw)
-    : '0.00';
-
   const schema = yup.object().shape({
     input1: yup
       .number()
@@ -162,6 +152,18 @@ const _AddLiquidityInputGroup = () => {
       amount: parseUnits((t.amount || 0).toFixed(18), getTokenDecimal(currentNetwork, t.symbol)),
     })) ?? [];
   const tokensInValid = tokensIn.filter(token => token.amount > 0).length > 0;
+
+  const { bptOut, priceImpact: priceImpactRaw } = useCalculateAddLiquidity({
+    tokensInBigint,
+    amountsIn: [inputValues[0], inputValues[1]],
+    txHash,
+  });
+
+  const priceImpact = hasBalances
+    ? priceImpactRaw < 0.01
+      ? '< 0.01'
+      : formatNumber(priceImpactRaw)
+    : '0.00';
 
   const { isPrepareLoading, isPrepareError, prepareError } = useAddLiquidityPrepareEvm({
     poolId: pool?.poolId || '',
