@@ -67,7 +67,7 @@ export const useTableMyLiquidityPool = () => {
     }));
 
   const userLpTokens = useMemo(
-    () => userAllTokenBalances.filter(item => item.isLpToken),
+    () => userAllTokenBalances?.filter(item => item.isLpToken),
     [userAllTokenBalances]
   );
   const { mutateAsync } = useGetMyPoolsQuery({
@@ -79,8 +79,8 @@ export const useTableMyLiquidityPool = () => {
   });
 
   const userLpTokenRequest = userLpTokens
-    .map(item => {
-      const depositedPool = poolWithDeposited.find(pool => pool.address === item.address);
+    ?.map(item => {
+      const depositedPool = poolWithDeposited?.find(pool => pool.address === item.address);
       const deposited = depositedPool?.balance || 0;
 
       return {
