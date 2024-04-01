@@ -9,6 +9,7 @@ import * as yup from 'yup';
 
 import { useBorrowPrepare } from '~/api/api-contract/_evm/lending/borrow-substrate';
 import { useUserAvailableBorrow } from '~/api/api-contract/_evm/lending/user-available-borrow';
+import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 // import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -87,7 +88,11 @@ export const LendingBorrowInputGroup = () => {
     },
   });
 
-  const userTokenBalance = 123123.687598;
+  const { userAllTokenBalances } = useUserAllTokenBalances();
+  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const xrpBalance = xrp?.balance || 0;
+
+  const userTokenBalance = xrpBalance || 0;
   // TODO: determine health factor warning threshold
   const threshold = 1.25;
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor);

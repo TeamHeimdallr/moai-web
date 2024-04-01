@@ -2,14 +2,22 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import tw from 'twin.macro';
+import { formatUnits } from 'viem';
 
+import { useUserLpFarmDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
+import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
+import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
+import { COLOR } from '~/assets/colors';
+import { IconFarming } from '~/assets/icons';
 import { imageMoai2 } from '~/assets/images';
+
+import { LP_FARM_ADDRESS_WITH_POOL_ID, TRILLION } from '~/constants';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
-import { formatNumber, getNetworkFull } from '~/utils';
+import { formatNumber, getNetworkAbbr, getNetworkFull } from '~/utils';
 import { NETWORK, TOOLTIP_ID } from '~/types';
 
 export const PoolInfo = () => {
@@ -17,6 +25,8 @@ export const PoolInfo = () => {
   const { network, id } = useParams();
   const { selectedNetwork } = useNetwork();
   const { t } = useTranslation();
+
+  const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const queryEnabled = !!network && !!id;
   const { data } = useGetPoolQuery(
@@ -33,11 +43,48 @@ export const PoolInfo = () => {
   );
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const currentNetwokrAbbr = getNetworkAbbr(currentNetwork);
+
   const { pool } = data || {};
-  const { value, volume, apr, tradingFee: tradingFeeRaw } = pool || {};
+  const { poolId, value, volume, apr, tradingFee: tradingFeeRaw } = pool || {};
   const protocolFee = 0.0005;
   const tradingFee =
     currentNetwork === NETWORK.THE_ROOT_NETWORK ? tradingFeeRaw + protocolFee : tradingFeeRaw;
+
+  const farmAddress = LP_FARM_ADDRESS_WITH_POOL_ID?.[NETWORK.THE_ROOT_NETWORK]?.[poolId ?? ''];
+  const isLpFarmExisted = isRoot && farmAddress && farmAddress !== '0x0';
+
+  const rootAddress = '0xcCcCCccC00000001000000000000000000000000';
+  const { data: tokenData } = useGetTokenQuery(
+    { queries: { networkAbbr: currentNetwokrAbbr, address: rootAddress } },
+    { enabled: !!rootAddress && !!currentNetwokrAbbr }
+  );
+  const { token: rootToken } = tokenData || {};
+
+  const { lpTokenPrice } = useUserPoolTokenBalances({
+    network: 'trn',
+    id: id ?? '',
+  });
+  const { rewardPerBlockRaw, totalDeposited } = useUserLpFarmDeposited({
+    farmAddress,
+    enabled: isLpFarmExisted,
+  });
+
+  const blocktime = 4; // TRN's blocktime
+  const rewardValuesInYear =
+    (365 *
+      24 *
+      60 *
+      60 *
+      Number(formatUnits(rewardPerBlockRaw || 0n, 6)) *
+      (rootToken?.price || 0)) /
+    blocktime;
+  const totalDepositedValue = totalDeposited * lpTokenPrice;
+  const _formattedFarmApr =
+    totalDepositedValue !== 0
+      ? formatNumber((100 * rewardValuesInYear) / totalDepositedValue, 0, 'round', TRILLION, 0)
+      : Infinity;
+  const formattedFarmApr = isLpFarmExisted ? `${_formattedFarmApr}%` : '';
 
   const formattedValue = value ? `$${formatNumber(value)}` : '$0';
   const formattedVolume = volume ? `$${formatNumber(volume)}` : '$0';
@@ -52,7 +99,12 @@ export const PoolInfo = () => {
         <PoolInfoCard name={t('Volume (24h)')} value={formattedVolume} />
       </InnerWrapper>
       <InnerWrapper>
-        <PoolInfoCard name={t('APR')} value={formattedApr} subValue={`+ ${t('Moai Points')}`} />
+        <PoolInfoCard
+          name={t('APR')}
+          value={formattedApr}
+          subValue={`+ ${t('Moai Points')}`}
+          subValue2={formattedFarmApr ? `+ ${formattedFarmApr}` : ''}
+        />
         <PoolInfoCard name={t('Trading Fee')} value={formattedFees} />
       </InnerWrapper>
     </Wrapper>
@@ -74,6 +126,9 @@ interface PoolInfoCardProps {
   subValue?: string;
   subValueIcon?: ReactNode;
 
+  subValue2?: string;
+  subValueIcon2?: ReactNode;
+
   hoverable?: boolean;
 }
 const PoolInfoCard = ({
@@ -81,6 +136,8 @@ const PoolInfoCard = ({
   value,
   subValue,
   subValueIcon = <MoaiIcon src={imageMoai2} />,
+  subValue2,
+  subValueIcon2 = <IconFarming width={16} height={16} fill={COLOR.GREEN[50]} />,
   hoverable,
 }: PoolInfoCardProps) => {
   return (
@@ -88,11 +145,21 @@ const PoolInfoCard = ({
       <Name>{name}</Name>
       <ValueWrapper data-tooltip-id={hoverable ? TOOLTIP_ID.APR : undefined}>
         <Value>{value}</Value>
-        {subValue && (
-          <SubValueWrapper>
-            {subValue}
-            {subValueIcon}
-          </SubValueWrapper>
+        {(subValue || subValue2) && (
+          <SubValueOuterWrapper>
+            {subValue && (
+              <SubValueWrapper>
+                {subValue}
+                {subValueIcon}
+              </SubValueWrapper>
+            )}
+            {subValue2 && (
+              <SubValueWrapper>
+                {subValue2}
+                {subValueIcon2}
+              </SubValueWrapper>
+            )}
+          </SubValueOuterWrapper>
         )}
       </ValueWrapper>
     </PoolInfoCardWrapper>
@@ -121,6 +188,10 @@ const Value = tw.div`
 const SubValueWrapper = tw.div`
   flex items-center gap-4
   font-r-14 text-neutral-80
+`;
+
+const SubValueOuterWrapper = tw.div`
+  flex flex-col
 `;
 
 const MoaiIcon = tw.img`
