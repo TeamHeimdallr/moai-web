@@ -123,7 +123,7 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
     {
       queries: {
         filter: `network:eq:trn`,
-        tokens: '50ROOT-50ETH,50ROOT-50USDC,50USDC-50USDT,50USDT-50USDC,ROOT',
+        tokens: '50ROOT-50ETH,50ROOT-50USDC,50USDC-50USDT,50USDT-50USDC,ROOT,50USDC-50USDT',
       },
     },
     { enabled: !ended }
