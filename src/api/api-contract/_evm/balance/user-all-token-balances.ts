@@ -4,12 +4,15 @@ import { useBalance, useContractReads } from 'wagmi';
 
 import { useGetTokensQuery } from '~/api/api-server/token/get-tokens';
 
+import { STABLE_POOL_ADDRESS } from '~/constants';
+
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr, getNetworkFull, getWrappedTokenAddress } from '~/utils';
 import { IToken, NETWORK } from '~/types';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
+import { COMPOSABLE_STABLE_POOL_ABI } from '~/abi/composable-stable-pool';
 
 /**
  * @description Get all token handling in moai finance balances for user
@@ -42,14 +45,20 @@ export const useUserAllTokenBalances = () => {
     tokens?.filter(t => evmNetwork.includes(t.network) && !!t.address)?.map(t => t.address) || [];
 
   const { data: tokenTotalSupplyData, refetch: lpTokenRefetch } = useContractReads({
-    contracts: tokenAddresses.flatMap(address => [
-      {
-        address: address as Address,
-        abi: ERC20_TOKEN_ABI as Abi,
-        functionName: 'totalSupply',
-        chainId,
-      },
-    ]),
+    contracts: tokenAddresses.flatMap(address => {
+      const isStable = !!STABLE_POOL_ADDRESS?.[currentNetwork]?.find(
+        (add: string) => add.toLocaleLowerCase() === address.toLocaleLowerCase()
+      );
+
+      return [
+        {
+          address: address as Address,
+          abi: (isStable ? COMPOSABLE_STABLE_POOL_ABI : ERC20_TOKEN_ABI) as Abi,
+          functionName: isStable ? 'getActualSupply' : 'totalSupply',
+          chainId,
+        },
+      ];
+    }),
     staleTime: 1000 * 3,
     enabled: tokenAddresses.length > 0 && !!chainId && !!walletAddress && isEvm,
   });
