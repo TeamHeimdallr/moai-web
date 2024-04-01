@@ -48,7 +48,7 @@ export const useUserPoolTokenBalances = (props?: Props) => {
   const { address: poolAddress, compositions, lpToken, poolId } = pool || {};
   const { address: lpTokenAddress } = lpToken || {};
 
-  const isStable = STABLE_POOL_IDS[currentNetwork].includes(poolId);
+  const isStable = STABLE_POOL_IDS?.[currentNetwork]?.includes(poolId);
 
   const tokenAddresses = [lpTokenAddress, ...(compositions?.map(c => c.address) || [])];
 

@@ -38,7 +38,7 @@ export const useLpTokenTotalSupply = ({ network, poolId }: Props) => {
   const { pool } = poolData || {};
   const { address: poolAddress, lpToken } = pool || {};
 
-  const isStable = STABLE_POOL_IDS[currentNetwork].includes(poolId);
+  const isStable = STABLE_POOL_IDS?.[currentNetwork]?.includes(poolId);
 
   const { data: lpTokenTotalSupplyDataNormal } = useContractRead({
     address: poolAddress as Address,
