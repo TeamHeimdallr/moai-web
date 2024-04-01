@@ -45,7 +45,7 @@ export const useTableMyLiquidityPool = () => {
     { queries: { filter: `network:eq:${networkAbbr}` } },
     { enabled: !!networkAbbr }
   );
-  const allPools = allPoolsData?.pools || [];
+  const allPools = allPoolsData?.pools;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const _poolWithDeposited = useUserLpFarmsDeposited({ pools: allPools as any });
@@ -285,7 +285,7 @@ export const useTableMyLiquidityPool = () => {
     mobileTableColumn,
     handleMobileRowClick,
 
-    pools,
+    pools: poolWithFarm,
     hasNextPage,
     fetchNextPage,
   };

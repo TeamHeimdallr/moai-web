@@ -231,7 +231,7 @@ export const useTableLiquidityPool = () => {
     mobileTableColumn,
     handleMobileRowClick,
 
-    pools,
+    pools: poolWithFarm,
     poolTokens,
     hasNextPage,
     fetchNextPage,
