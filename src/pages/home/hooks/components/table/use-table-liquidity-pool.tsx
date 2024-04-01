@@ -154,7 +154,7 @@ export const useTableLiquidityPool = () => {
 
   const mobileTableData = useMemo(
     () =>
-      pools.map(d => ({
+      poolWithFarm.map(d => ({
         meta: {
           poolId: d.poolId,
           network: getNetworkAbbr(d.network),
@@ -194,14 +194,19 @@ export const useTableLiquidityPool = () => {
             value: (
               <TableColumnApr
                 value={`${formatNumber(d.apr)}%`}
-                network={d.network}
+                value2={
+                  isFinite(d.farmApr)
+                    ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+                    : undefined
+                }
                 align="flex-end"
+                network={d.network}
               />
             ),
           },
         ],
       })),
-    [pools, showAllPools]
+    [poolWithFarm, showAllPools]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

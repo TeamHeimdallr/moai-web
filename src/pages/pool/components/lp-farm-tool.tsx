@@ -111,7 +111,7 @@ export const LpFarmTool = () => {
   const isFarmPrepareError = false;
   const isUnFarmPrepareError = false;
 
-  if (!isLpFarmExisted || (deposited <= 0 && userLpTokenBalance <= 0)) return <></>;
+  if (!isLpFarmExisted) return <></>;
   return (
     <Wrapper ref={ref}>
       <InnerWrapper opened={opened}>

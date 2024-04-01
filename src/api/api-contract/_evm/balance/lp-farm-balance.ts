@@ -36,7 +36,7 @@ export const useUserLpFarmDeposited = ({ farmAddress, enabled }: Props) => {
     args: [0],
     chainId,
     staleTime: 1000 * 3,
-    enabled: !!enabled && !!walletAddress && isRoot,
+    enabled: !!enabled && isRoot,
   });
   const lpTokenAddress = poolInfoData?.[0];
 
@@ -47,7 +47,7 @@ export const useUserLpFarmDeposited = ({ farmAddress, enabled }: Props) => {
     args: [],
     chainId,
     staleTime: 1000 * 3,
-    enabled: !!enabled && !!walletAddress && isRoot,
+    enabled: !!enabled && isRoot,
   });
   const rewardPerBlockRaw = rewardPerBlockData as bigint;
 
@@ -58,7 +58,7 @@ export const useUserLpFarmDeposited = ({ farmAddress, enabled }: Props) => {
     args: [farmAddress as Address],
     chainId,
     staleTime: 1000 * 3,
-    enabled: !!enabled && !!walletAddress && isRoot && !!lpTokenAddress,
+    enabled: !!enabled && isRoot && !!lpTokenAddress,
   });
   const totalDepositedRaw = totalDepositedData as bigint;
   const totalDeposited = totalDepositedData ? Number(formatUnits(totalDepositedRaw, 18)) : 0;
@@ -153,7 +153,7 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
       args: [0, walletAddress as Address],
     })),
     staleTime: 1000 * 10,
-    enabled: !!pools && !ended,
+    enabled: !!pools && !ended && !!walletAddress,
   });
 
   const { data: totalDepositedData } = useContractReads({
@@ -191,6 +191,7 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
     return {
       ...pool,
       deposited: deposited,
+      totalDepositedValue,
       farmApr: farmApr,
     };
   });

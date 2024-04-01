@@ -6,6 +6,7 @@ import { isEqual } from 'lodash-es';
 import { useUserLpFarmsDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
 import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
+import { useGetPoolsQuery } from '~/api/api-server/pools/get-pools';
 
 import { MILLION, TRILLION } from '~/constants';
 
@@ -39,8 +40,34 @@ export const useTableMyLiquidityPool = () => {
   const { currentAddress } = useConnectedWallet(selectedNetwork);
 
   const { userAllTokenBalances } = useUserAllTokenBalances();
+
+  const { data: allPoolsData } = useGetPoolsQuery(
+    { queries: { filter: `network:eq:${networkAbbr}` } },
+    { enabled: !!networkAbbr }
+  );
+  const allPools = allPoolsData?.pools || [];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const _poolWithDeposited = useUserLpFarmsDeposited({ pools: allPools as any });
+  const poolWithDeposited = _poolWithDeposited
+    ?.map(pool => {
+      const balance = (pool.balance || 0) + (pool.deposited || 0);
+      const value = pool.value + (pool.totalDepositedValue || 0);
+      return {
+        ...pool,
+        balance,
+        value,
+      };
+    })
+    ?.filter(pool => pool.balance > 0)
+    ?.map(pool => ({
+      address: (pool.address || '') as string,
+      balance: (pool.balance || 0) as number,
+      totalSupply: (pool?.totalSupply || 0) as number, // not used
+    }));
+
   const userLpTokens = useMemo(
-    () => userAllTokenBalances.filter(item => item.isLpToken && item.balance > 0),
+    () => userAllTokenBalances.filter(item => item.isLpToken),
     [userAllTokenBalances]
   );
   const { mutateAsync } = useGetMyPoolsQuery({
@@ -51,11 +78,18 @@ export const useTableMyLiquidityPool = () => {
     },
   });
 
-  const userLpTokenRequest = userLpTokens.map(item => ({
-    address: item.address,
-    balance: item.balance,
-    totalSupply: item.totalSupply,
-  }));
+  const userLpTokenRequest = userLpTokens
+    .map(item => {
+      const depositedPool = poolWithDeposited.find(pool => pool.address === item.address);
+      const deposited = depositedPool?.balance || 0;
+
+      return {
+        address: item.address,
+        balance: item.balance + deposited,
+        totalSupply: item.totalSupply,
+      };
+    })
+    ?.filter(item => item.balance > 0);
 
   const previous = usePrevious<
     {
@@ -63,8 +97,8 @@ export const useTableMyLiquidityPool = () => {
       balance: number;
       totalSupply: number;
     }[]
-  >(userLpTokenRequest);
-  const isRequestEqual = isEqual(previous, userLpTokenRequest);
+  >(poolWithDeposited);
+  const isRequestEqual = isEqual(previous, poolWithDeposited);
 
   useEffect(() => {
     if (!currentAddress) {
@@ -75,7 +109,7 @@ export const useTableMyLiquidityPool = () => {
     const fetch = async () => {
       const res = await mutateAsync?.({
         walletAddress: currentAddress || '',
-        lpTokens: userLpTokens.map(item => ({
+        lpTokens: userLpTokenRequest.map(item => ({
           address: item.address,
           balance: item.balance,
           totalSupply: item.totalSupply,
@@ -177,7 +211,7 @@ export const useTableMyLiquidityPool = () => {
 
   const mobileTableData = useMemo(
     () =>
-      pools.map(d => ({
+      poolWithFarm.map(d => ({
         meta: {
           poolId: d.poolId,
           network: getNetworkAbbr(d.network),
@@ -212,6 +246,11 @@ export const useTableMyLiquidityPool = () => {
             value: (
               <TableColumnApr
                 value={`${formatNumber(d.apr)}%`}
+                value2={
+                  isFinite(d.farmApr)
+                    ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+                    : undefined
+                }
                 network={d.network}
                 align="flex-end"
               />
@@ -219,7 +258,7 @@ export const useTableMyLiquidityPool = () => {
           },
         ],
       })),
-    [pools]
+    [poolWithFarm]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
