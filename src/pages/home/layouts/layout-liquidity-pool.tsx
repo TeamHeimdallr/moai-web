@@ -32,6 +32,7 @@ import { getNetworkAbbr } from '~/utils';
 import { useTablePoolCompositionSelectTokenStore } from '~/states/components/table';
 import { IPoolTokenList, NETWORK, POPUP_ID } from '~/types';
 
+import { TokenPopupXrpl } from '../components/token-popup-xrpl';
 import { useTableLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool';
 
 interface Meta {
@@ -83,6 +84,9 @@ const _LiquidityPoolLayout = () => {
   );
   const { tokens: recentlySelectedTokens } = recentlySelectedTokensData || {};
 
+  const { open: openXrplPoolFilter, opened: xrplPoolFilterOpened } = usePopup(
+    POPUP_ID.XRPL_POOL_FILTER
+  );
   const { showAllPools, setShowAllPools } = useShowAllPoolsStore();
   const { selectedTokens, setSelectedTokens } = useTablePoolCompositionSelectTokenStore();
   const {
@@ -125,23 +129,41 @@ const _LiquidityPoolLayout = () => {
     navigate(`/pools/${getNetworkAbbr(meta.network)}/${meta.poolId}`);
   };
 
-  const handleTokenClick = (token: string) => {
+  const handleTokenClick = (token: IPoolTokenList) => {
     gaAction({
       action: 'token-filter',
       data: { page: 'home', layout: 'liquidity-pool', token: token },
     });
 
-    if (selectedTokens.includes(token)) {
-      setSelectedTokens(selectedTokens.filter(t => t !== token));
+    if (
+      selectedTokens.find(
+        t =>
+          t.symbol === token.symbol && t.address === token.address && t.currency === token.currency
+      )
+    ) {
+      setSelectedTokens(
+        selectedTokens.filter(
+          t =>
+            !(
+              t.symbol === token.symbol &&
+              t.address === token.address &&
+              t.currency === token.currency
+            )
+        )
+      );
     } else {
       setSelectedTokens([...selectedTokens, token]);
     }
   };
 
-  const sortTokensBySelection = (tokens: IPoolTokenList[], selectedTokens: string[]) => {
+  const sortTokensBySelection = (tokens: IPoolTokenList[], selectedTokens: IPoolTokenList[]) => {
     return tokens.sort((a, b) => {
-      const isASelected = selectedTokens.includes(a.symbol);
-      const isBSelected = selectedTokens.includes(b.symbol);
+      const isASelected = selectedTokens.find(
+        t => t.symbol === a.symbol && t.address === a.address && t.currency === a.currency
+      );
+      const isBSelected = selectedTokens.find(
+        t => t.symbol === b.symbol && t.address === b.address && t.currency === b.currency
+      );
 
       if (isASelected && !isBSelected) return -1;
       if (!isASelected && isBSelected) return 1;
@@ -204,8 +226,15 @@ const _LiquidityPoolLayout = () => {
               key={token.symbol}
               token={token}
               image={token.image || `${ASSET_URL}/tokens/token-unknown.png`}
-              selected={selectedTokens.includes(token.symbol)}
-              onClick={() => handleTokenClick(token.symbol)}
+              selected={
+                !!selectedTokens.find(
+                  t =>
+                    t.symbol === token.symbol &&
+                    t.address === token.address &&
+                    t.currency === token.currency
+                )
+              }
+              onClick={() => handleTokenClick(token)}
             />
           ))}
         </BadgeWrapper>
@@ -215,8 +244,9 @@ const _LiquidityPoolLayout = () => {
               text={t('Filter by token')}
               icon={<IconSearch />}
               buttonType="outlined"
+              onClick={() => openXrplPoolFilter()}
             />
-            <ButtonPrimaryMedium text={t('Add a pool')} />
+            {xrpWalletAddress && <ButtonPrimaryMedium text={t('Add a pool')} />}
           </ButtonInnerWrapper>
         )}
       </ButtonWrapper>
@@ -242,6 +272,7 @@ const _LiquidityPoolLayout = () => {
           handleClick={meta => handleMobileRowClick(meta.network, meta.poolId)}
         />
       )}
+      {xrplPoolFilterOpened && <TokenPopupXrpl />}
     </Wrapper>
   );
 };
