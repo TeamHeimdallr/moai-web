@@ -77,6 +77,8 @@ export interface IPool {
 export interface IPoolTokenList {
   symbol: string; // token symbol
   image?: string; // token image
+  address?: string;
+  currency?: string;
 }
 
 export interface ILiquidityProvision {
