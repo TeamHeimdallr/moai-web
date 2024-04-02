@@ -28,7 +28,7 @@ export const TableColumnToken = ({ tokens, isNew, disableSelectedToken, ...rest 
           token={token.symbol}
           image={true}
           imageUrl={token.image}
-          selected={!disableSelectedToken && selectedTokens?.includes(token.symbol)}
+          selected={!disableSelectedToken && !!selectedTokens?.find(t => t.symbol === token.symbol)}
           type={isMD ? 'large' : 'small'}
         />
       ))}

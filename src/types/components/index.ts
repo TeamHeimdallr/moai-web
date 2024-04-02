@@ -103,6 +103,8 @@ export enum POPUP_ID {
 
   LP_FARM = 'LP_FARM',
   LP_UNFARM = 'LP_UNFARM',
+
+  XRPL_POOL_FILTER = 'XRPL_POOL_FILTER',
 }
 
 /**
