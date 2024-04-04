@@ -135,7 +135,7 @@ const _AddLiquidityInputGroup = () => {
                   <TotalValue>{`$${formatNumber(totalValue, 2, 'floor', TRILLION, 2)}`}</TotalValue>
                 )}
                 <ButtonPrimarySmall
-                  text={maxed ? 'Maxed' : 'Max'}
+                  text={maxed ? t('Maxed') : t('Max')}
                   onClick={handleMax}
                   style={{ width: 'auto' }}
                   isBlack

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import tw from 'twin.macro';
 
 import { IconBack, IconNext } from '~/assets/icons';
@@ -13,6 +14,7 @@ import { useStep } from '../hooks/use-step';
 export const StepButton = () => {
   const { gaAction } = useGAAction();
 
+  const { t } = useTranslation();
   const { step, goNext, goPrev, prevEnabled, nextEnabled } = useStep();
 
   const handleNext = () => {
@@ -37,14 +39,14 @@ export const StepButton = () => {
     <Wrapper>
       <ContentWrapper>
         <ButtonPrimarySmallIconLeading
-          text={'Back'}
+          text={t('Back')}
           icon={<IconBack />}
           disabled={!prevEnabled}
           onClick={handlePrev}
         />
         <ButtonPrimarySmallIconTrailing
           data-tooltip-id={TOOLTIP_ID.ENOUGH_XRP}
-          text={'Next'}
+          text={t('Next')}
           icon={<IconNext />}
           disabled={!nextEnabled}
           onClick={handleNext}

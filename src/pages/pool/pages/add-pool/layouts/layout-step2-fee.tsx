@@ -23,7 +23,7 @@ export const Fee = () => {
   const { initialFee, setInitialFee } = useXrplPoolAddTokenPairStore();
 
   const schema = yup.object().shape({
-    [name]: yup.string().maximum('1', t('Exceeds 1%')),
+    [name]: yup.string().maximum('1', 'Exceeds 1%'),
   });
 
   const methods = useForm({
