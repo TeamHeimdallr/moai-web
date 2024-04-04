@@ -36,7 +36,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
   const { isConnected, address: walletAddress } = evm;
 
   const poolTokenAddress = poolId.slice(0, 42) as Address;
-  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes(poolId);
+  const isStable = STABLE_POOL_IDS?.[NETWORK.THE_ROOT_NETWORK]?.includes(poolId);
 
   const tokensWithBpt = tokens.slice();
   if (isStable && tokensWithBpt.length <= 2) {

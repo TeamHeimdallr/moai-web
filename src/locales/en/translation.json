@@ -741,5 +741,9 @@
   "approve-lp-farm-message": "Approve LP token for farming",
 
   "Pay gas fee with": "Pay gas fee with",
-  "fee-proxy-error-message": "Gas fee payment with {{ token }} is currently unavailable. Please try other assets."
+  "fee-proxy-error-message": "Gas fee payment with {{ token }} is currently unavailable. Please try other assets.",
+
+  "xrpl-add-pool-step-title-1": "Select a pair",
+  "xrpl-add-pool-step-title-2": "Set initial trading fee",
+  "xrpl-add-pool-step-title-3": "Set inital liquidity"
 }

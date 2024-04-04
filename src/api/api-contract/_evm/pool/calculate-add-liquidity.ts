@@ -57,7 +57,7 @@ export const useCalculateAddLiquidity = ({ tokensInBigint, amountsIn }: Props) =
     enabled: !!poolAddress && !!chainId && isEvm,
   });
   const lpTokenTotalSupply = Number(formatEther((lpTokenTotalSupplyData as bigint) || 0n));
-  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes((id || '') as string);
+  const isStable = STABLE_POOL_IDS?.[NETWORK.THE_ROOT_NETWORK]?.includes((id || '') as string);
 
   const { actualSupply } = useGetActualSupplyStable({
     poolAddress: poolAddress as Address,
