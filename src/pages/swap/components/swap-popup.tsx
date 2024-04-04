@@ -19,6 +19,7 @@ import { IconArrowDown, IconCancel, IconCheck, IconLink, IconTime } from '~/asse
 import { EVM_VAULT_ADDRESS, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
+import { FeeProxySelector, FeeToken } from '~/components/fee-proxy-selector';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings';
 import { Popup } from '~/components/popup';
@@ -78,6 +79,10 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { t } = useTranslation();
   const { network } = useParams();
   const { selectedNetwork, isXrp, isEvm, isFpass } = useNetwork();
+  const [selectedFeeToken, selectFeeToken] = useState<FeeToken>({
+    name: 'XRP',
+    assetId: 2,
+  });
 
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
 
@@ -105,6 +110,10 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const isStable =
     (fromToken?.symbol === 'USDC' && toToken?.symbol === 'USDT') ||
     (fromToken?.symbol === 'USDT' && toToken?.symbol === 'USDC');
+
+  const handleFeeSelect = (feeToken: FeeToken) => {
+    selectFeeToken(feeToken);
+  };
 
   const { data: swapInfoData } = useSorQuery(
     {
@@ -542,6 +551,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
           />
         </ButtonWrapper>
       }
+      setting={<FeeProxySelector handleSelect={handleFeeSelect} selectedToken={selectedFeeToken} />}
     >
       <Wrapper style={{ gap: isIdle ? 24 : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
@@ -662,7 +672,9 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   <GasFeeInnerWrapper>
                     <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                     <GasFeeTitleValue>
-                      {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : t('calculating...')}
+                      {estimatedFee
+                        ? `~${formatNumber(estimatedFee)} ${selectedFeeToken.name}`
+                        : t('calculating...')}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
                   <GasFeeInnerWrapper>

@@ -738,5 +738,7 @@
   "Total value to unfarm": "Total value to unfarm",
   "Your total share": "Your total share",
 
-  "approve-lp-farm-message": "Approve LP token for farming"
+  "approve-lp-farm-message": "Approve LP token for farming",
+
+  "Pay gas fee with": "Pay gas fee with"
 }

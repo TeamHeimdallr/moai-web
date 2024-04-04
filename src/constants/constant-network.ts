@@ -158,3 +158,11 @@ export const FAUCET_AMOUNT = {
     XRP: 10,
   },
 };
+
+export const ROOT_ASSET_ID = {
+  XRP: IS_MAINNET ? 2 : 2,
+  ROOT: IS_MAINNET ? 1 : 1,
+  ASTO: IS_MAINNET ? 4196 : 17508,
+  SYLO: IS_MAINNET ? 2148 : 3172,
+  USDC: IS_MAINNET ? 3172 : 2148,
+};
