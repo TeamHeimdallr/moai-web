@@ -193,7 +193,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
             </IconWrapper>
             <SuccessTitle>{t('Pool creation confirmed!')}</SuccessTitle>
             <SuccessSubTitle>
-              {t('xrpl-pool-creation-success-message', { pool: lpTokenSymbol })}
+              {t('xrpl-pool-creation-success-message', { token: lpTokenSymbol })}
             </SuccessSubTitle>
           </SuccessWrapper>
         )}
@@ -207,37 +207,37 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
           </FailedWrapper>
         )}
         {isIdle && (
-          <>
-            <List title={t(`You're providing`)}>
-              {tokensIn?.map(({ symbol, image, amount, price }, idx) => (
-                <Fragment key={`${symbol}-${idx}`}>
-                  <TokenList
-                    type="large"
-                    title={`${formatNumber(amount, 6, 'floor', THOUSAND, 0)} ${symbol}`}
-                    description={price ? `$${formatNumber(amount * (price || 0))}` : undefined}
-                    image={image}
-                    leftAlign
-                  />
-                  {idx !== tokensIn.length - 1 && <Divider />}
-                </Fragment>
-              ))}
-            </List>
-            <List title={t(`You're expected to receive`)}>
-              <TokenList
-                type="large"
-                title={`${formatNumber(bptOut, 4, 'floor', THOUSAND, 0)}`}
-                subTitle={lpTokenSymbol}
-                description={lpTokenValue ? `$${formatNumber(lpTokenValue)}` : undefined}
-                image={
-                  <Jazzicon
-                    diameter={36}
-                    seed={jsNumberForAddress(toHex(lpTokenSymbol || '', { size: 42 }))}
-                  />
-                }
-                leftAlign={true}
-              />
-            </List>
-          </>
+          <List title={t(`You're providing`)}>
+            {tokensIn?.map(({ symbol, image, amount, price }, idx) => (
+              <Fragment key={`${symbol}-${idx}`}>
+                <TokenList
+                  type="large"
+                  title={`${formatNumber(amount, 6, 'floor', THOUSAND, 0)} ${symbol}`}
+                  description={price ? `$${formatNumber(amount * (price || 0))}` : undefined}
+                  image={image}
+                  leftAlign
+                />
+                {idx !== tokensIn.length - 1 && <Divider />}
+              </Fragment>
+            ))}
+          </List>
+        )}
+        {(isIdle || isSuccess) && (
+          <List title={t(`pool-created-expected-to-receive`)}>
+            <TokenList
+              type="large"
+              title={`${formatNumber(bptOut, 4, 'floor', THOUSAND, 0)}`}
+              subTitle={lpTokenSymbol}
+              description={lpTokenValue ? `$${formatNumber(lpTokenValue)}` : undefined}
+              image={
+                <Jazzicon
+                  diameter={36}
+                  seed={jsNumberForAddress(toHex(lpTokenSymbol || '', { size: 42 }))}
+                />
+              }
+              leftAlign={true}
+            />
+          </List>
         )}
         {!isIdle && isSuccess && (
           <Scanner onClick={() => handleLink()}>
@@ -271,7 +271,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
               </GasFeeWrapper>
 
               <InfoWrapper>
-                <GasFeeTitle>{t(`${tokensIn?.[0]?.symbol} transfer fee`)}</GasFeeTitle>
+                <GasFeeTitle> {t(`transfer fee`, { token: tokensIn?.[0]?.symbol })}</GasFeeTitle>
                 <GasFeeTitleValue>
                   {!accountInfo1Loading && accountInfo1TransferRate
                     ? `${formatNumber(accountInfo1TransferRate)}%`
@@ -280,7 +280,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
               </InfoWrapper>
 
               <InfoWrapper>
-                <GasFeeTitle>{t(`${tokensIn?.[1]?.symbol} transfer fee`)}</GasFeeTitle>
+                <GasFeeTitle>{t(`transfer fee`, { token: tokensIn?.[1]?.symbol })}</GasFeeTitle>
                 <GasFeeTitleValue>
                   {!accountInfo2Loading && accountInfo2TransferRate
                     ? `${formatNumber(accountInfo2TransferRate)}%`
@@ -310,7 +310,7 @@ const SuccessTitle = tw.div`
 `;
 
 const SuccessSubTitle = tw.div`
-  text-neutral-80 font-r-14
+  text-neutral-80 font-r-14 text-center
   md:font-r-16
 `;
 

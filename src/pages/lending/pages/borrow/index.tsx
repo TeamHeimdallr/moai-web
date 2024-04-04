@@ -16,15 +16,15 @@ import { useGAPage } from '~/hooks/analaystics/ga-page';
 import { usePopup } from '~/hooks/components';
 import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { getNetworkFull } from '~/utils';
-import { POPUP_ID } from '~/types';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { LendingBorrowInputGroup } from './components/borrow-input-group';
 
 export const LendingBorrow = () => {
   useGAPage();
   useForceNetwork({
-    enableParamsNetwork: true,
-    enableChangeAndRedirect: true,
+    targetNetwork: [NETWORK.XRPL],
+    changeTargetNetwork: NETWORK.XRPL,
     callCallbackUnmounted: true,
   });
 

@@ -8,6 +8,7 @@ import {
   useRef,
 } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -40,6 +41,7 @@ export const InputPercentage = ({
 }: Props) => {
   const { control, setValue } = useFormContext();
   const inputId = useId();
+  const { t } = useTranslation();
 
   const { ref: wrapperRef, handleFocus, handleBlur } = useInputOutline({ inputId, error });
 
@@ -85,7 +87,7 @@ export const InputPercentage = ({
 
               <Unit>{unit || '%'}</Unit>
             </TopWrapper>
-            {error && <ErrorWrapper>{errorMessage}</ErrorWrapper>}
+            {error && <ErrorWrapper>{t(errorMessage || '')}</ErrorWrapper>}
           </Wrapper>
         );
       }}

@@ -1,7 +1,12 @@
 import { useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
 
+import { Gnb } from '~/components/gnb';
+
 import { useGAPage } from '~/hooks/analaystics/ga-page';
+import { usePopup } from '~/hooks/components';
+import { useForceNetwork } from '~/hooks/contexts/use-network';
+import { POPUP_ID } from '~/types';
 
 import { Step } from './components/step';
 import { StepTitle } from './components/step-title';
@@ -13,6 +18,13 @@ import { useXrplPoolAddTokenPairStore } from './states/token-pair';
 
 const AddPoolPage = () => {
   useGAPage();
+  useForceNetwork({
+    enableParamsNetwork: true,
+    enableChangeAndRedirect: true,
+    callCallbackUnmounted: true,
+  });
+
+  const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
 
   const { step, reset: resetStep } = useStep();
   const { reset } = useXrplPoolAddTokenPairStore();
@@ -26,7 +38,11 @@ const AddPoolPage = () => {
   }, []);
 
   return (
-    <Wrapper>
+    <Wrapper banner={!!opened}>
+      <GnbWrapper>
+        <Gnb />
+      </GnbWrapper>
+
       <StepWrapper>
         <Step />
         <StepTitle />
@@ -44,11 +60,15 @@ interface WrapperProps {
 }
 const Wrapper = styled.div<WrapperProps>(({ banner }) => [
   tw`
-    w-full h-full flex items-start justify-center py-40
+    w-full h-full flex flex-col justify-start items-center py-40 gap-40
     md:(py-80)
   `,
   banner && tw`pt-80 md:(pt-100)`,
 ]);
+
+const GnbWrapper = tw.div`
+  w-full absolute top-0 left-0 flex-center flex-col z-10
+`;
 const StepWrapper = tw.div`
   w-455 flex-center flex-col gap-24 pb-80
 `;
