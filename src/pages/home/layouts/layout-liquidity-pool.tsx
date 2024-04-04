@@ -246,7 +246,12 @@ const _LiquidityPoolLayout = () => {
               buttonType="outlined"
               onClick={() => openXrplPoolFilter()}
             />
-            {xrpWalletAddress && <ButtonPrimaryMedium text={t('Add a pool')} />}
+            {xrpWalletAddress && (
+              <ButtonPrimaryMedium
+                text={t('Add a pool')}
+                onClick={() => navigate('/pools/xrpl/add')}
+              />
+            )}
           </ButtonInnerWrapper>
         )}
       </ButtonWrapper>

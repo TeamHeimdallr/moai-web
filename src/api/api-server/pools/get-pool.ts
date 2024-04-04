@@ -32,12 +32,12 @@ export const useGetPoolQuery = (request: Request, options?: QueryOption) => {
     data: {
       pool: {
         ...dataDoubleVol.data?.pool,
-        apr: dataDoubleVol.data?.pool.apr
-          ? (dataDoubleVol.data?.pool.apr - dataDoubleVol.data?.pool.moaiApr) / 2 +
-            dataDoubleVol.data?.pool.moaiApr
+        apr: dataDoubleVol.data?.pool?.apr
+          ? (dataDoubleVol.data?.pool?.apr || 0 - dataDoubleVol.data?.pool?.moaiApr || 0) / 2 +
+            dataDoubleVol.data?.pool?.moaiApr
           : 0,
-        volume: dataDoubleVol.data?.pool.volume ? dataDoubleVol.data?.pool.volume / 2 : 0,
-        compositions: dataDoubleVol.data?.pool.compositions?.sort((a, b) =>
+        volume: dataDoubleVol.data?.pool?.volume ? dataDoubleVol.data?.pool?.volume / 2 : 0,
+        compositions: dataDoubleVol.data?.pool?.compositions?.sort((a, b) =>
           a.symbol.localeCompare(b.symbol)
         ),
       } as IPool,

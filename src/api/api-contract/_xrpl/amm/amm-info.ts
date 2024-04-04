@@ -4,13 +4,16 @@ import { AMMInfoRequest, Currency } from 'xrpl';
 import { useXrpl } from '~/hooks/contexts';
 import { useNetwork } from '~/hooks/contexts/use-network';
 
+// TODO: query options extends, amm info by account
 interface Props {
   asset: Currency;
   asset2: Currency;
 
+  retry?: boolean;
+
   enabled?: boolean;
 }
-export const useAmmInfo = ({ asset, asset2, enabled = true }: Props) => {
+export const useAmmInfo = ({ asset, asset2, retry = false, enabled = true }: Props) => {
   const { isXrp } = useNetwork();
   const { client, isConnected } = useXrpl();
 
@@ -29,6 +32,7 @@ export const useAmmInfo = ({ asset, asset2, enabled = true }: Props) => {
   const res = useQuery(['GET', 'XRPL', 'AMM_INFO', request], getAmmInfo, {
     enabled: !!client && isConnected && isXrp && enabled,
     refetchOnWindowFocus: false,
+    retry,
     staleTime: 1000 * 60,
   });
 
