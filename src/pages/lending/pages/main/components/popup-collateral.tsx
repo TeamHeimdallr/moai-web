@@ -4,11 +4,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { Address } from 'viem';
-import { useBalance } from 'wagmi';
 
 import { useEnterOrExitMarketPrepare } from '~/api/api-contract/_evm/lending/enter-exit-market-substrate';
 import { useGetHypotheticalAccount } from '~/api/api-contract/_evm/lending/get-hypothetical-account';
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 import { useEnterOrExitMarket } from '~/api/api-contract/lending/enter-exit-market';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -59,9 +58,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const walletAddress = isFpass ? fpass.address : evm.address;
 
-  const { data: nativeBalance } = useBalance({ address: walletAddress as Address });
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
 
   const userTokenBalance = xrpBalance || 0;
@@ -170,7 +167,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
         currentStatus: isEnable ? 'disable' : 'enable',
         estimatedFee,
         walletAddress,
-        xrpBalance: nativeBalance,
+        xrpBalance,
       },
     });
     await writeAsync?.();

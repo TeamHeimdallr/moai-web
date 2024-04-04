@@ -7,8 +7,8 @@ import tw, { css, styled } from 'twin.macro';
 import { formatUnits } from 'viem';
 import * as yup from 'yup';
 
-import { useUserAllTokenBalances } from '~/api/api-contract/_xrpl/balance/user-all-token-balances';
 import { useBridgeXrplToRoot } from '~/api/api-contract/_xrpl/bridge/bridge-xrpl-to-root';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 
 import { COLOR } from '~/assets/colors';
 import {
@@ -60,7 +60,6 @@ const _Bridge = () => {
 
   const { selectedWallet } = useTheRootNetworkSwitchWalletStore();
   const { evm, fpass } = useConnectedWallet();
-  const { userAllTokenBalances } = useUserAllTokenBalances();
 
   const { goNext, setStepStatus } = useStep();
 
@@ -70,8 +69,9 @@ const _Bridge = () => {
   const truncatedAddress =
     selectedWallet === 'fpass' ? fpass.truncatedAddress : evm.truncatedAddress;
 
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
+
   const xrpPrice = xrp?.price || 0;
   const tokenValue = inputValue ? inputValue * xrpPrice : 0;
 

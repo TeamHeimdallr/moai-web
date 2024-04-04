@@ -8,8 +8,8 @@ import { formatUnits } from 'viem';
 
 import { useUserLpFarmDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
 import { useUnfarm } from '~/api/api-contract/_evm/lp-farm/unfarm';
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
@@ -62,8 +62,7 @@ const _UnfarmPopup = ({ poolId }: Props) => {
 
   const { error: unfarmGasError, setError: setUnfarmGasError } = useUnfarmNetworkFeeErrorStore();
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
 
   const { close } = usePopup(POPUP_ID.LP_UNFARM);

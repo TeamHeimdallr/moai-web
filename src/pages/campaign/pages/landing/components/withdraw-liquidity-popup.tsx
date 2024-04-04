@@ -15,8 +15,8 @@ import {
   useWithdrawLiquidity as useWithdrawLiquiditySubstrate,
   useWithdrawLiquidityPrepare,
 } from '~/api/api-contract/_evm/campaign/withdraw-liquidity-substrate';
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
@@ -101,8 +101,7 @@ const _WithdrawLiquidityPopup = ({
   const { error: withdrawLiquidityGasError, setError: setWithdrawLiquidityGasError } =
     useWithdrawLiquidityNetworkFeeErrorStore();
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
 
   const { close } = usePopup(POPUP_ID.CAMPAIGN_WITHDRAW);

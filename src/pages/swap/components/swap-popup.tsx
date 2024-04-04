@@ -8,7 +8,7 @@ import tw, { css, styled } from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import { usePrepareContractWrite } from 'wagmi';
 
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 import { useSwap } from '~/api/api-contract/swap/swap';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useSorQuery } from '~/api/api-server/sor/batch-swap';
@@ -70,9 +70,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { error: swapGasError, setError: setSwapGasError } = useSwapNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
 
   const queryClient = useQueryClient();

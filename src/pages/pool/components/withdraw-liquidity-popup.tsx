@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { formatUnits, parseUnits, toHex } from 'viem';
 
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 import { useWithdrawLiquidity } from '~/api/api-contract/pool/withdraw-liquidity';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
@@ -116,8 +116,7 @@ const _WithdrawLiquidityPopup = ({
     useWithdrawLiquidityNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
 
   const { close } = usePopup(POPUP_ID.WITHDRAW_LP);

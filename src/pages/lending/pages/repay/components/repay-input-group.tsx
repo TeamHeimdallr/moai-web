@@ -9,7 +9,7 @@ import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
 import { useRepayPrepare } from '~/api/api-contract/_evm/lending/repay-substrate';
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -79,8 +79,7 @@ export const LendingRepayInputGroup = () => {
     },
   });
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
 
   const userTokenBalance = xrpBalance || 0;

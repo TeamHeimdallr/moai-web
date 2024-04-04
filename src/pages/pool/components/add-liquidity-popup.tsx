@@ -7,7 +7,7 @@ import tw, { styled } from 'twin.macro';
 import { parseUnits, toHex } from 'viem';
 import { useQueryClient } from 'wagmi';
 
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
@@ -95,8 +95,7 @@ const _AddLiquidityPopup = ({
     useAddLiquidityNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
 
   const queryClient = useQueryClient();
