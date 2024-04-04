@@ -33,3 +33,11 @@ declare global {
     };
   }
 }
+
+declare module 'yup' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface StringSchema<TType, TContext, TDefault, TFlags> {
+    minimum(min: string, message: string): StringSchema;
+    maximum(max: string, message: string): StringSchema;
+  }
+}

@@ -38,3 +38,8 @@ export interface ICreateTokenXrplRequest {
   currency: string;
   issuer: string;
 }
+
+export interface ICreatePoolXrplRequest {
+  token1: IToken;
+  token2: IToken;
+}

@@ -94,7 +94,7 @@ export const InputNumber = ({
   const numValue = Number(value) || 0;
   const handledValue = numValue ? (numValue < 0 ? undefined : numValue) : undefined;
 
-  const tokenValue = defaultTokenValue || 0;
+  const tokenValue = defaultTokenValue;
   const currentBalance = balance || 0;
   const currentBalanceRaw = balanceRaw || 0n;
 
@@ -226,9 +226,11 @@ export const InputNumber = ({
                       disabled={handledValue === currentBalance}
                     />
                   )}
-                  <TokenUSDValue>
-                    ${formatNumber(tokenValue || 0, 2, 'floor', MILLION, 2)}
-                  </TokenUSDValue>
+                  {tokenValue !== undefined && (
+                    <TokenUSDValue>
+                      ${formatNumber(tokenValue || 0, 2, 'floor', MILLION, 2)}
+                    </TokenUSDValue>
+                  )}
                 </BalanceWrapper>
                 {slider && (
                   <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>

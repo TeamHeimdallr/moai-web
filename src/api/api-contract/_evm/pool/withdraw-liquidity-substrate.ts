@@ -45,7 +45,7 @@ export const useWithdrawLiquidity = ({ poolId, tokens, bptIn, enabled }: Props) 
   const { isNativeFee, feeToken } = useFeeTokenStore();
 
   const poolTokenAddress = poolId.slice(0, 42) as Address;
-  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes(poolId);
+  const isStable = STABLE_POOL_IDS?.[NETWORK.THE_ROOT_NETWORK]?.includes(poolId);
   const tokensWithBpt = tokens.slice();
   if (isStable && tokensWithBpt.length <= 2) {
     const bptToken = {
@@ -381,7 +381,7 @@ export const useWithdrawLiquidityPrepare = ({ poolId, tokens, bptIn, enabled }: 
   const { fpass } = useConnectedWallet();
   const { address: walletAddress } = fpass;
   const poolTokenAddress = poolId.slice(0, 42) as Address;
-  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes(poolId);
+  const isStable = STABLE_POOL_IDS?.[NETWORK.THE_ROOT_NETWORK]?.includes(poolId);
   const tokensWithBpt = tokens.slice();
   if (isStable && tokensWithBpt.length <= 2) {
     const bptToken = {
