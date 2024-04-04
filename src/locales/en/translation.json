@@ -162,6 +162,9 @@
   "Our team is working on this issue. Please try again later!": "Our team is working on this issue. Please try again later!",
   "Go Back": "Go Back",
 
+  "Back": "Back",
+  "Next": "Next",
+
   "Slippage tolerance": "Slippage tolerance",
   "or enter manually": "or enter manually",
   "Copied!": "Copied!",
@@ -743,7 +746,30 @@
   "Pay gas fee with": "Pay gas fee with",
   "fee-proxy-error-message": "Gas fee payment with {{ token }} is currently unavailable. Please try other assets.",
 
+  "Select Token": "Select Token",
+
   "xrpl-add-pool-step-title-1": "Select a pair",
   "xrpl-add-pool-step-title-2": "Set initial trading fee",
-  "xrpl-add-pool-step-title-3": "Set inital liquidity"
+  "xrpl-add-pool-step-title-3": "Set inital liquidity",
+
+  "Same pool exist": "Same pool exist",
+  "Go to the pool": "Go to the pool",
+
+  "Inital trading fee": "Inital trading fee",
+  "Up to 1%": "Up to 1%",
+
+  "Exceeds 1%": "Exceeds 1%",
+  "Total value": "Total value",
+  "Create a pool": "Create a pool",
+  "Create a pool preview": "Create a pool preview",
+  "pool-created-expected-to-receive": "You're expected to receive",
+  "transfer fee": "{{ token }} transfer fee",
+
+  "Pool creation confirmed!": "Pool creation confirmed!",
+  "xrpl-pool-creation-success-message": "Successfully created the {{ token }} Pool and added liquidity.",
+
+  "Pool creation failed": "Pool creation failed",
+  "xrpl-pool-creation-fail-message": "Pool creation has failed. Please try again.",
+
+  "Go to pool page": "Go to pool page"
 }
