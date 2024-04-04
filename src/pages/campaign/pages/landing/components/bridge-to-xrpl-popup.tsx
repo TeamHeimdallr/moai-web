@@ -10,7 +10,7 @@ import * as yup from 'yup';
 
 import { useBridgeToXrpl as useBridgeToXrplEvmSubstrate } from '~/api/api-contract/_evm/campaign/bridge/bridge-root-to-xrpl';
 import { useBridgeToXrpl as useBridgeToXrplFpassSubstrate } from '~/api/api-contract/_evm/campaign/bridge/bridge-root-to-xrpl-substrate';
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 
 import { COLOR } from '~/assets/colors';
 import {
@@ -84,8 +84,7 @@ const _BridgeToXrplPopup = () => {
   const { error: bridgeGasError, setError: setBridgeGasError } =
     useBridgeToXrplNetworkFeeErrorStore();
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
 
   const { close } = usePopup(POPUP_ID.CAMPAIGN_BRIDGE_TO_XRPL);

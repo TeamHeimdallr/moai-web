@@ -14,8 +14,8 @@ import {
   useClaimPrepare,
 } from '~/api/api-contract/_evm/campaign/claim-substrate';
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 import { useGetCampaignsQuery } from '~/api/api-server/campaign/get-campaigns';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
@@ -58,7 +58,7 @@ export const CampaignTool = () => {
   const { isEvm, selectedNetwork, isFpass } = useNetwork();
   const networkAbbr = getNetworkAbbr(NETWORK.THE_ROOT_NETWORK);
 
-  const { xrp, evm, fpass } = useConnectedWallet();
+  const { evm, fpass } = useConnectedWallet();
   const [now, setNow] = useState(new Date());
   const [remainTime, setRemainTime] = useState<RemainLockupTime>({
     hours: '00',
@@ -66,13 +66,11 @@ export const CampaignTool = () => {
     seconds: '00',
   });
 
-  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
+  const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : '';
   const evmWalletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : undefined;
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-
-  const userXrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
-  const userXrpBalance = userXrp?.balance || 0;
+  const { userXrpBalance: xrp } = useUserXrpBalances();
+  const xrpBalance = xrp?.balance || 0;
 
   const { data: campaignData } = useGetCampaignsQuery(
     { queries: { filter: `active:eq:true:boolean` } },
@@ -163,7 +161,7 @@ export const CampaignTool = () => {
   const error = claimError || claimSubstratePrepareError;
   const approveError = error?.message?.includes('Approved');
   const isError = isErrorRaw && !approveError;
-  const claimGasError = userXrpBalance < (estimatedClaimFee || 0);
+  const claimGasError = xrpBalance < (estimatedClaimFee || 0);
 
   /* withdraw */
   const { opened: withdrawPopupOpened, open: withdrawPopupOpen } = usePopup(
@@ -347,7 +345,7 @@ export const CampaignTool = () => {
                         page: 'pool-detail',
                         component: 'campaign-tool',
                         rootReward,
-                        userXrpBalance,
+                        userXrpBalance: xrpBalance,
                         estimatedClaimFee,
                       },
                     });

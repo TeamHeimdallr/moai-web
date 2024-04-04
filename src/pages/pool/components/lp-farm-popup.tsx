@@ -8,8 +8,8 @@ import { formatUnits } from 'viem';
 
 import { useUserLpFarmDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
 import { useFarm } from '~/api/api-contract/_evm/lp-farm/farm';
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
+import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
@@ -69,8 +69,7 @@ const _FarmPopup = ({ poolId }: Props) => {
   const { error: farmGasError, setError: setFarmGasError } = useFarmNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-  const xrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
+  const { userXrpBalance: xrp } = useUserXrpBalances();
   const xrpBalance = xrp?.balance || 0;
 
   const { close } = usePopup(POPUP_ID.LP_FARM);
