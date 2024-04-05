@@ -21,6 +21,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'css'> {
   label?: ReactNode;
 
   unit?: string;
+  maxDecimals?: number;
 
   error?: boolean;
   errorMessage?: string;
@@ -37,6 +38,9 @@ export const InputPercentage = ({
 
   error,
   errorMessage,
+  maxDecimals = 3,
+
+  style,
   ...rest
 }: Props) => {
   const { control, setValue } = useFormContext();
@@ -62,13 +66,14 @@ export const InputPercentage = ({
 
         const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
           const value = e.target.value || '';
+          if (value.split('.') && value.split('.')[1]?.length > maxDecimals) return;
 
           const commaFormatted = formatComma(value);
           onChange(commaFormatted);
         };
 
         return (
-          <Wrapper ref={wrapperRef} htmlFor={inputId} error={error}>
+          <Wrapper ref={wrapperRef} htmlFor={inputId} error={error} style={style}>
             <TopWrapper>
               <LabelWrapper>{label}</LabelWrapper>
 
