@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { formatUnits } from 'viem';
 
@@ -10,7 +10,7 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
-import { IconFarming } from '~/assets/icons';
+import { IconFarming, IconNext } from '~/assets/icons';
 import { imageMoai2 } from '~/assets/images';
 
 import { LP_FARM_ADDRESS_WITH_POOL_ID, TRILLION } from '~/constants';
@@ -25,8 +25,10 @@ export const PoolInfo = () => {
   const { network, id } = useParams();
   const { selectedNetwork } = useNetwork();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
+  const isXrpl = selectedNetwork === NETWORK.XRPL;
 
   const queryEnabled = !!network && !!id;
   const { data } = useGetPoolQuery(
@@ -105,7 +107,17 @@ export const PoolInfo = () => {
           subValue={`+ ${t('Moai Points')}`}
           subValue2={formattedFarmApr ? `+ ${formattedFarmApr}` : ''}
         />
-        <PoolInfoCard name={t('Trading Fee')} value={formattedFees} />
+        <PoolInfoCard
+          name={t('Trading Fee')}
+          nameIcon={
+            isXrpl ? (
+              <IconWrapper onClick={() => navigate(`fee-voting`)}>
+                <IconNext width={20} height={20} fill={COLOR.NEUTRAL[60]} />
+              </IconWrapper>
+            ) : undefined
+          }
+          value={formattedFees}
+        />
       </InnerWrapper>
     </Wrapper>
   );
@@ -118,10 +130,15 @@ const Wrapper = tw.div`
 const InnerWrapper = tw.div`
   flex flex-1 gap-16
 `;
+const IconWrapper = tw.div`
+  p-6 flex-center clickable
+`;
 
 interface PoolInfoCardProps {
   name: string;
   value: string;
+
+  nameIcon?: ReactNode;
 
   subValue?: string;
   subValueIcon?: ReactNode;
@@ -133,6 +150,7 @@ interface PoolInfoCardProps {
 }
 const PoolInfoCard = ({
   name,
+  nameIcon,
   value,
   subValue,
   subValueIcon = <MoaiIcon src={imageMoai2} />,
@@ -142,7 +160,10 @@ const PoolInfoCard = ({
 }: PoolInfoCardProps) => {
   return (
     <PoolInfoCardWrapper>
-      <Name>{name}</Name>
+      <Name>
+        {name}
+        {nameIcon}
+      </Name>
       <ValueWrapper data-tooltip-id={hoverable ? TOOLTIP_ID.APR : undefined}>
         <Value>{value}</Value>
         {(subValue || subValue2) && (
@@ -172,7 +193,7 @@ const PoolInfoCardWrapper = tw.div`
 `;
 
 const Name = tw.div`
-  font-m-14 text-neutral-80
+  font-m-14 text-neutral-80 flex items-center justify-between
   md:(font-m-16)
 `;
 
