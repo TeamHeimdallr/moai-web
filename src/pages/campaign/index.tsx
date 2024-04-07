@@ -9,6 +9,7 @@ import { POPUP_ID } from '~/types';
 import { CampaignConnectWalletPopup } from './components/connect-wallet-popup';
 import LandingPage from './pages/landing';
 import ParticipatePage from './pages/participate';
+import { Helmet } from './meta';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,6 +20,7 @@ const CampaignPage = () => {
 
   return (
     <>
+      <Helmet />
       <Routes>
         <Route
           path="/participate"
