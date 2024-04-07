@@ -18,6 +18,7 @@ import { getNetworkAbbr } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import { useTableRewards } from '../hooks/components/use-table-rewards-waveN';
+import { useRewardSelectWaveIdStore } from '../states';
 
 const RewardWaveN = () => {
   useGAPage();
@@ -40,6 +41,7 @@ const RewardWaveN = () => {
   } = useTableRewards();
 
   const { selectedNetwork } = useNetwork();
+  const { selectedWaveId } = useRewardSelectWaveIdStore();
   const currentNetworkAbbr = getNetworkAbbr(selectedNetwork);
 
   const { t, i18n } = useTranslation();
@@ -53,8 +55,8 @@ const RewardWaveN = () => {
     }
   );
 
-  const { currentWave } = data || {};
-  const { lastUpdated } = currentWave || {};
+  const { waves } = data || {};
+  const lastUpdated = waves?.find(wave => wave.id === selectedWaveId)?.lastUpdated;
 
   const date = new Date(lastUpdated || new Date());
   const formattedDate = isKo
