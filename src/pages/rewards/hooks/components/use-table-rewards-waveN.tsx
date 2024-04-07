@@ -6,7 +6,6 @@ import tw from 'twin.macro';
 import { toHex } from 'viem';
 
 import { useGetRewardsListInfinityQuery } from '~/api/api-server/rewards/get-reward-list-waveN';
-import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
 
 import { COLOR } from '~/assets/colors';
 
@@ -21,6 +20,8 @@ import { getNetworkAbbr, getNetworkFull, truncateAddress } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { NETWORK } from '~/types';
 
+import { useRewardSelectWaveIdStore } from '../../states';
+
 export const useTableRewards = () => {
   const { network } = useParams();
   const { selectedNetwork, isFpass, isXrp } = useNetwork();
@@ -33,14 +34,7 @@ export const useTableRewards = () => {
 
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
-  const { data: wave } = useGetWaveQuery(
-    { params: { networkAbbr: currentNetworkAbbr } },
-    {
-      enabled: selectedNetwork === NETWORK.THE_ROOT_NETWORK,
-      staleTime: 20 * 1000,
-    }
-  );
-  const { currentWave } = wave || {};
+  const { selectedWaveId } = useRewardSelectWaveIdStore();
 
   const {
     data: rewardListData,
@@ -54,11 +48,11 @@ export const useTableRewards = () => {
       queries: {
         take: 20,
         walletAddress: evmAddress,
-        wave: currentWave?.waveId,
+        wave: selectedWaveId,
       },
     },
     {
-      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!currentWave?.waveId,
+      enabled: currentNetwork === NETWORK.THE_ROOT_NETWORK && !!selectedWaveId,
       staleTime: 20 * 1000,
     }
   );

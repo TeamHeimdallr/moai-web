@@ -17,6 +17,8 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr, getNetworkFull } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
+import { useRewardSelectWaveIdStore } from '../states';
+
 export const RewardReferral = () => {
   const { t } = useTranslation();
 
@@ -29,6 +31,7 @@ export const RewardReferral = () => {
 
   const { open: openBindReferral } = usePopup(POPUP_ID.REWARD_BIND_REFERRAL);
   const { open: openBoundReferral } = usePopup(POPUP_ID.REWARD_BOUND_REFERRAL);
+  const { selectedWaveId } = useRewardSelectWaveIdStore();
 
   const { evm, fpass } = useConnectedWallet();
   const evmAddress = isFpass ? fpass.address : evm?.address || '';
@@ -40,7 +43,8 @@ export const RewardReferral = () => {
       staleTime: 20 * 1000,
     }
   );
-  const { currentWave } = wave || {};
+  const { waves } = wave || {};
+  const currentWave = waves?.find(wave => wave.id === selectedWaveId);
 
   const { data: refereesData } = useGetRewardsRefereesQuery(
     {
