@@ -8,7 +8,7 @@ import tw, { css, styled } from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import { usePrepareContractWrite } from 'wagmi';
 
-import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
+import { useUserFeeTokenBalance } from '~/api/api-contract/balance/user-fee-token-balance';
 import { useSwap } from '~/api/api-contract/swap/swap';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useSorQuery } from '~/api/api-server/sor/batch-swap';
@@ -16,9 +16,10 @@ import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { EVM_VAULT_ADDRESS, SCANNER_URL, THOUSAND } from '~/constants';
+import { EVM_VAULT_ADDRESS, ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
+import { FeeProxySelector } from '~/components/fee-proxy-selector';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings';
 import { Popup } from '~/components/popup';
@@ -43,6 +44,7 @@ import {
   useSwapNetworkFeeErrorStore,
 } from '~/states/contexts/network-fee-error/network-fee-error';
 import { useSlippageStore } from '~/states/data';
+import { useFeeTokenStore } from '~/states/data/fee-proxy';
 import { IPool, NETWORK, SwapKind } from '~/types';
 import { POPUP_ID } from '~/types/components';
 
@@ -70,8 +72,9 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   const { error: swapGasError, setError: setSwapGasError } = useSwapNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
-  const { userXrpBalance: xrp } = useUserXrpBalances();
-  const xrpBalance = xrp?.balance || 0;
+  const { userFeeTokenBalanace: userFeeToken } = useUserFeeTokenBalance();
+
+  const userFeeTokenBalance = userFeeToken?.balance || 0;
 
   const queryClient = useQueryClient();
 
@@ -88,6 +91,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
   const { close } = usePopup(POPUP_ID.SWAP);
   const { slippage: slippageRaw } = useSlippageStore();
+  const { feeToken, setFeeToken, isNativeFee } = useFeeTokenStore();
 
   const [estimatedSwapFee, setEstimatedSwapFee] = useState<number | undefined>();
   const [estimatedFromTokenApproveFee, setEstimatedFromTokenApproveFee] = useState<
@@ -384,7 +388,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             fromTokenValue,
             toToken: toToken?.symbol,
             toTokenValue,
-            xrpBalance,
+            userFeeTokenBalance,
             estimatedSwapFee,
           },
         });
@@ -400,7 +404,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             fromTokenValue,
             toToken: toToken?.symbol,
             toTokenValue,
-            xrpBalance,
+            userFeeTokenBalance,
             estimatedToTokenApproveFee,
           },
         });
@@ -417,7 +421,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             fromTokenValue,
             toToken: toToken?.symbol,
             toTokenValue,
-            xrpBalance,
+            userFeeTokenBalance,
             estimatedSwapFee,
           },
         });
@@ -433,7 +437,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             fromTokenValue,
             toToken: toToken?.symbol,
             toTokenValue,
-            xrpBalance,
+            userFeeTokenBalance,
             estimatedFromTokenApproveFee,
           },
         });
@@ -486,19 +490,24 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
   useEffect(() => {
     if (!estimateSwapFee || !swapEnabled || step !== 2) return;
 
+    setEstimatedSwapFee(0);
+
     const estimateSwapFeeAsync = async () => {
       const fee = await estimateSwapFee?.();
       setEstimatedSwapFee(fee ?? 3.9262);
     };
     estimateSwapFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swapEnabled, step]);
+  }, [swapEnabled, step, feeToken]);
 
   useEffect(() => {
     if (step !== 1) return;
     if (isXrp && !toApproveEnabled) return;
     if (!isXrp && !fromApproveEnabled) return;
 
+    if (!isXrp) {
+      setEstimatedFromTokenApproveFee(0);
+    }
     const estimateApproveFeeAsync = async () => {
       if (isXrp) {
         const fee = await estimateToTokenApproveFee?.();
@@ -510,7 +519,15 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     };
     estimateApproveFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isXrp, toApproveEnabled, fromApproveEnabled, step]);
+  }, [isXrp, toApproveEnabled, fromApproveEnabled, step, feeToken]);
+
+  useEffect(() => {
+    setFeeToken({
+      name: 'XRP',
+      assetId: ROOT_ASSET_ID.XRP,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNetwork]);
 
   const estimatedFee = !isXrp
     ? step === 1
@@ -519,14 +536,16 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     : (step === 1 ? 0.0001 : 0.0001) || '3.9262';
 
   // TODO change after fee proxy
-  const validMaxXrpAmount =
-    fromToken?.symbol === 'XRP' ? numFromInput + Number(estimatedFee || 3.9262) < xrpBalance : true;
+  const validMaxFeeTokenAmount =
+    fromToken?.symbol === feeToken.name
+      ? numFromInput + Number(estimatedFee || 3.9262) < userFeeTokenBalance
+      : true;
 
   const gasError =
-    xrpBalance <= Number(estimatedFee || 3.9262) ||
+    userFeeTokenBalance <= Number(estimatedFee || 3.9262) ||
     swapGasError ||
     approveGasError ||
-    !validMaxXrpAmount;
+    !validMaxFeeTokenAmount;
 
   return (
     <Popup
@@ -542,6 +561,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
           />
         </ButtonWrapper>
       }
+      setting={isRoot && isFpass && <FeeProxySelector />}
     >
       <Wrapper style={{ gap: isIdle ? 24 : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
@@ -662,13 +682,17 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                   <GasFeeInnerWrapper>
                     <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                     <GasFeeTitleValue>
-                      {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : t('calculating...')}
+                      {estimatedFee
+                        ? `~${formatNumber(estimatedFee)} ${feeToken.name}`
+                        : t('calculating...')}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
                   <GasFeeInnerWrapper>
                     <GasFeeCaption error={gasError}>
                       {gasError
-                        ? t(`Not enough balance to pay for Gas Fee.`)
+                        ? isNativeFee
+                          ? t(`Not enough balance to pay for Gas Fee.`)
+                          : t(`fee-proxy-error-message`, { token: feeToken.name })
                         : t(`May change when network is busy`)}
                     </GasFeeCaption>
                   </GasFeeInnerWrapper>

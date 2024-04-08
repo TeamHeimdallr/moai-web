@@ -19,6 +19,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
   button?: ReactNode;
   icon?: ReactNode;
+  setting?: ReactNode;
 
   disableClose?: boolean;
   maxWidth?: number;
@@ -32,6 +33,7 @@ export const Popup = ({
   children,
   button,
   icon,
+  setting,
   disableClose,
   maxWidth,
   zIndex,
@@ -57,7 +59,13 @@ export const Popup = ({
               {title}
             </TitleWrapper>
 
-            <ButtonIconLarge onClick={handleClose} icon={<IconCancel fill={COLOR.NEUTRAL[60]} />} />
+            <Buttons>
+              {setting}
+              <ButtonIconLarge
+                onClick={handleClose}
+                icon={<IconCancel fill={COLOR.NEUTRAL[60]} />}
+              />
+            </Buttons>
           </Header>
 
           <ContentWrapper>{children}</ContentWrapper>
@@ -128,3 +136,4 @@ const Footer = styled.div<FooterProps>(({ button }) => [
   button ? tw`px-24 pb-20` : tw`pb-24`,
 ]);
 const ButtonWrapper = tw.div`flex-center px-24 w-full`;
+const Buttons = tw.div`flex`;

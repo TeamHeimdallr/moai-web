@@ -9,7 +9,6 @@ import { Address, formatUnits, parseEther, parseUnits } from 'viem';
 import * as yup from 'yup';
 
 import { useRepayPrepare } from '~/api/api-contract/_evm/lending/repay-substrate';
-import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -78,11 +77,6 @@ export const LendingRepayInputGroup = () => {
       isRepay: true,
     },
   });
-
-  const { userXrpBalance: xrp } = useUserXrpBalances();
-  const xrpBalance = xrp?.balance || 0;
-
-  const userTokenBalance = xrpBalance || 0;
 
   const currentHealthFactorColor = calculateHealthFactorColor(currentHealthFactor);
   const nextHealthFactorColor = calculateHealthFactorColor(nextHealthFactor);
@@ -235,7 +229,6 @@ export const LendingRepayInputGroup = () => {
           currentHealthFactor={currentHealthFactor}
           nextHealthFactor={nextHealthFactor}
           debt={debt}
-          userTokenBalance={userTokenBalance}
           refetchBalance={() => {}}
           handleSuccess={() => {}}
         />

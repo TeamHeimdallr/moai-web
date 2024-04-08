@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { formatUnits, parseUnits, toHex } from 'viem';
 
-import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
+import { useUserFeeTokenBalance } from '~/api/api-contract/balance/user-fee-token-balance';
 import { useWithdrawLiquidity } from '~/api/api-contract/pool/withdraw-liquidity';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
@@ -15,9 +15,10 @@ import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-a
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL, THOUSAND } from '~/constants';
+import { ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
+import { FeeProxySelector } from '~/components/fee-proxy-selector';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings';
 import { Popup } from '~/components/popup';
@@ -40,6 +41,7 @@ import {
   useApproveNetworkFeeErrorStore,
   useWithdrawLiquidityNetworkFeeErrorStore,
 } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useFeeTokenStore } from '~/states/data/fee-proxy';
 import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -111,13 +113,15 @@ const _WithdrawLiquidityPopup = ({
   const [estimatedToken2ApproveFee, setEstimatedToken2ApproveFee] = useState<number | undefined>();
 
   const currentNetwork = getNetworkFull(networkParam) ?? selectedNetwork;
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const { error: withdrawLiquidityGasError, setError: setWithdrawLiquidityGasError } =
     useWithdrawLiquidityNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
-  const { userXrpBalance: xrp } = useUserXrpBalances();
-  const xrpBalance = xrp?.balance || 0;
+  const { userFeeTokenBalanace: userFeeToken } = useUserFeeTokenBalance();
+  const userFeeTokenBalance = userFeeToken?.balance || 0;
+  const { feeToken, setFeeToken, isNativeFee } = useFeeTokenStore();
 
   const { close } = usePopup(POPUP_ID.WITHDRAW_LP);
 
@@ -362,7 +366,7 @@ const _WithdrawLiquidityPopup = ({
             component: 'withdraw-liquidity-popup',
             token1Amount,
             token2Amount,
-            xrpBalance,
+            userFeeTokenBalance,
             estimatedWithdrawLiquidityFee,
           },
         });
@@ -377,7 +381,7 @@ const _WithdrawLiquidityPopup = ({
                 component: 'withdraw-liquidity-popup',
                 token1Amount,
                 token2Amount,
-                xrpBalance,
+                userFeeTokenBalance,
                 estimatedWithdrawLiquidityFee,
               },
             });
@@ -391,7 +395,7 @@ const _WithdrawLiquidityPopup = ({
                 component: 'withdraw-liquidity-popup',
                 token1Amount,
                 token2Amount,
-                xrpBalance,
+                userFeeTokenBalance,
                 estimatedToken1ApproveFee,
               },
             });
@@ -407,7 +411,7 @@ const _WithdrawLiquidityPopup = ({
                 component: 'withdraw-liquidity-popup',
                 token1Amount,
                 token2Amount,
-                xrpBalance,
+                userFeeTokenBalance,
                 estimatedWithdrawLiquidityFee,
               },
             });
@@ -421,7 +425,7 @@ const _WithdrawLiquidityPopup = ({
                 component: 'withdraw-liquidity-popup',
                 token1Amount,
                 token2Amount,
-                xrpBalance,
+                userFeeTokenBalance,
                 estimatedToken2ApproveFee,
               },
             });
@@ -443,7 +447,7 @@ const _WithdrawLiquidityPopup = ({
               component: 'withdraw-liquidity-popup',
               token1Amount,
               token2Amount,
-              xrpBalance,
+              userFeeTokenBalance,
               estimatedToken1ApproveFee,
             },
           });
@@ -458,7 +462,7 @@ const _WithdrawLiquidityPopup = ({
               component: 'withdraw-liquidity-popup',
               token1Amount,
               token2Amount,
-              xrpBalance,
+              userFeeTokenBalance,
               estimatedToken2ApproveFee,
             },
           });
@@ -473,7 +477,7 @@ const _WithdrawLiquidityPopup = ({
           component: 'withdraw-liquidity-popup',
           token1Amount,
           token2Amount,
-          xrpBalance,
+          userFeeTokenBalance,
           estimatedWithdrawLiquidityFee,
         },
       });
@@ -525,13 +529,14 @@ const _WithdrawLiquidityPopup = ({
     )
       return;
 
+    setEstimatedWithdrawLiquidityFee(0);
     const estimateWithdrawLiquidityFeeAsync = async () => {
       const fee = await estimateWithdrawLiquidityFee?.();
       setEstimatedWithdrawLiquidityFee(fee ?? 4.2);
     };
     estimateWithdrawLiquidityFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [withdrawLiquidityEnabled, tokenLength, isXrp, allowance1, allowance2]);
+  }, [withdrawLiquidityEnabled, tokenLength, isXrp, allowance1, allowance2, feeToken]);
 
   useEffect(() => {
     if (!isXrp) return;
@@ -573,7 +578,15 @@ const _WithdrawLiquidityPopup = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, isXrp, token1ApproveEnabled, token2ApproveEnabled]);
+  }, [step, isXrp, token1ApproveEnabled, token2ApproveEnabled, feeToken]);
+
+  useEffect(() => {
+    setFeeToken({
+      name: 'XRP',
+      assetId: ROOT_ASSET_ID.XRP,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNetwork]);
 
   const estimatedFee = isXrp
     ? tokenLength === 1
@@ -590,7 +603,9 @@ const _WithdrawLiquidityPopup = ({
     : estimatedWithdrawLiquidityFee || '';
 
   const gasError =
-    xrpBalance <= Number(estimatedFee || 4.2) || withdrawLiquidityGasError || approveGasError;
+    userFeeTokenBalance <= Number(estimatedFee || 4.2) ||
+    withdrawLiquidityGasError ||
+    approveGasError;
 
   return (
     <Popup
@@ -606,6 +621,7 @@ const _WithdrawLiquidityPopup = ({
           />
         </ButtonWrapper>
       }
+      setting={isRoot && isFpass && <FeeProxySelector />}
     >
       <Wrapper style={{ gap: isIdle ? 24 : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
@@ -703,13 +719,17 @@ const _WithdrawLiquidityPopup = ({
                 <GasFeeInnerWrapper>
                   <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                   <GasFeeTitleValue>
-                    {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : t('calculating...')}
+                    {estimatedFee
+                      ? `~${formatNumber(estimatedFee)} ${feeToken.name}`
+                      : t('calculating...')}
                   </GasFeeTitleValue>
                 </GasFeeInnerWrapper>
                 <GasFeeInnerWrapper>
                   <GasFeeCaption error={gasError}>
                     {gasError
-                      ? t(`Not enough balance to pay for Gas Fee.`)
+                      ? isNativeFee
+                        ? t(`Not enough balance to pay for Gas Fee.`)
+                        : t(`fee-proxy-error-message`, { token: feeToken.name })
                       : t(`May change when network is busy`)}
                   </GasFeeCaption>
                 </GasFeeInnerWrapper>
