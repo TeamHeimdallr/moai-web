@@ -7,7 +7,7 @@ import { Address } from 'viem';
 
 import { useEnterOrExitMarketPrepare } from '~/api/api-contract/_evm/lending/enter-exit-market-substrate';
 import { useGetHypotheticalAccount } from '~/api/api-contract/_evm/lending/get-hypothetical-account';
-import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
+import { useUserFeeTokenBalance } from '~/api/api-contract/balance/user-fee-token-balance';
 import { useEnterOrExitMarket } from '~/api/api-contract/lending/enter-exit-market';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
@@ -15,10 +15,11 @@ import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-accou
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL, THOUSAND } from '~/constants';
+import { ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
+import { FeeProxySelector } from '~/components/fee-proxy-selector';
 import { List } from '~/components/lists';
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
@@ -32,6 +33,7 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { DATE_FORMATTER, formatNumber, getNetworkFull } from '~/utils';
 import { calcHealthFactor } from '~/utils/util-lending';
 import { useEnterOrExitMarketNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useFeeTokenStore } from '~/states/data/fee-proxy';
 import { NETWORK, POPUP_ID } from '~/types';
 
 interface Params {
@@ -57,11 +59,12 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const { evm, fpass } = useConnectedWallet();
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const walletAddress = isFpass ? fpass.address : evm.address;
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
-  const { userXrpBalance: xrp } = useUserXrpBalances();
-  const xrpBalance = xrp?.balance || 0;
+  const { feeToken, setFeeToken, isNativeFee } = useFeeTokenStore();
 
-  const userTokenBalance = xrpBalance || 0;
+  const { userFeeTokenBalanace: userFeeToken } = useUserFeeTokenBalance();
+  const userFeeTokenBalance = userFeeToken?.balance || 0;
 
   const isEnable = type === 'enable';
   const popupId = isEnable
@@ -126,7 +129,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   const isSuccess = enterOrExitSuccess && !!txData;
   const isError = enterOrExitError;
   const estimatedFee = estimatedEnterOrExitMarketFee;
-  const gasError = (userTokenBalance || 0) <= Number(estimatedFee || 2) || enterOrExitGasError;
+  const gasError = (userFeeTokenBalance || 0) <= Number(estimatedFee || 2) || enterOrExitGasError;
 
   const buttonText = useMemo(() => {
     if (isLoading) return t('Confirm in wallet');
@@ -167,7 +170,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
         currentStatus: isEnable ? 'disable' : 'enable',
         estimatedFee,
         walletAddress,
-        xrpBalance,
+        userFeeTokenBalance,
       },
     });
     await writeAsync?.();
@@ -190,13 +193,15 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
   useEffect(() => {
     if (marketAddress == '0x0') return;
 
+    setEstimatedEnterOrExitMarketFee(0);
+
     const enterOrExitEstimateFeeAsync = async () => {
       const fee = await enterOrExitEstimateFee?.();
       setEstimatedEnterOrExitMarketFee(fee || 1);
     };
     enterOrExitEstimateFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [feeToken]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -211,6 +216,14 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    setFeeToken({
+      name: 'XRP',
+      assetId: ROOT_ASSET_ID.XRP,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNetwork]);
 
   return (
     <Popup
@@ -233,6 +246,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
           />
         </ButtonWrapper>
       }
+      setting={isRoot && isFpass && <FeeProxySelector />}
     >
       <Wrapper ref={ref}>
         {!isIdle && isSuccess && (
@@ -318,13 +332,17 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
               <GasFeeInnerWrapper>
                 <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                 <GasFeeTitleValue>
-                  {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : t('calculating...')}
+                  {estimatedFee
+                    ? `~${formatNumber(estimatedFee)} ${feeToken.name}`
+                    : t('calculating...')}
                 </GasFeeTitleValue>
               </GasFeeInnerWrapper>
               <GasFeeInnerWrapper>
                 <GasFeeCaption error={gasError}>
                   {gasError
-                    ? t(`Not enough balance to pay for Gas Fee.`)
+                    ? isNativeFee
+                      ? t(`Not enough balance to pay for Gas Fee.`)
+                      : t(`fee-proxy-error-message`, { token: feeToken.name })
                     : t(`May change when network is busy`)}
                 </GasFeeCaption>
               </GasFeeInnerWrapper>

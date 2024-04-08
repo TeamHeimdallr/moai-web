@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { Address, parseUnits } from 'viem';
-import { useBalance } from 'wagmi';
 
+import { useUserFeeTokenBalance } from '~/api/api-contract/balance/user-fee-token-balance';
 import { useLendingRepay } from '~/api/api-contract/lending/repay';
 import { useApprove } from '~/api/api-contract/token/approve';
 
@@ -19,9 +19,10 @@ import {
   IconTime,
 } from '~/assets/icons';
 
-import { MILLION, SCANNER_URL, TRILLION } from '~/constants';
+import { MILLION, ROOT_ASSET_ID, SCANNER_URL, TRILLION } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
+import { FeeProxySelector } from '~/components/fee-proxy-selector';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings/step';
 import { Popup } from '~/components/popup';
@@ -38,12 +39,12 @@ import {
   useApproveNetworkFeeErrorStore,
   useLendingRepayNetworkFeeErrorStore,
 } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useFeeTokenStore } from '~/states/data/fee-proxy';
 import { IToken, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
   tokenIn?: IToken & { amount: number; mTokenAddress: Address };
 
-  userTokenBalance?: number;
   currentHealthFactor?: number;
   nextHealthFactor?: number;
   debt?: number;
@@ -57,7 +58,6 @@ interface Props {
 export const LendingRepayPopup = ({
   tokenIn,
 
-  userTokenBalance,
   currentHealthFactor,
   nextHealthFactor,
   debt,
@@ -76,14 +76,20 @@ export const LendingRepayPopup = ({
   const { network } = useParams();
   const currentNetwork = getNetworkFull(network);
 
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
+
+  const { feeToken, setFeeToken, isNativeFee } = useFeeTokenStore();
+
   const navigate = useNavigate();
 
   const { t } = useTranslation();
 
-  const { isEvm, isFpass } = useNetwork();
+  const { isEvm, isFpass, selectedNetwork } = useNetwork();
   const { evm, fpass } = useConnectedWallet();
   const walletAddress = isFpass ? fpass.address : evm.address;
-  const { data: nativeBalance } = useBalance({ address: walletAddress as Address });
+
+  const { userFeeTokenBalanace: userFeeToken } = useUserFeeTokenBalance();
+  const userFeeTokenBalance = userFeeToken?.balance || 0;
 
   const { close } = usePopup(POPUP_ID.LENDING_REPAY);
 
@@ -185,7 +191,7 @@ export const LendingRepayPopup = ({
         mTokenAddress,
         estimatedFee,
         walletAddress,
-        xrpBalance: nativeBalance,
+        userFeeTokenBalance,
       },
     });
     await writeAsync?.();
@@ -227,27 +233,39 @@ export const LendingRepayPopup = ({
 
   useEffect(() => {
     if (step !== 1 || (amount || 0) <= 0) return;
+
+    setEstimatedTokenApproveFee(0);
     const estimateApproveFeeAsync = async () => {
       const fee = await estimateTokenApproveFee?.();
       setEstimatedTokenApproveFee(fee || 1);
     };
     estimateApproveFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, step]);
+  }, [amount, step, feeToken]);
 
   useEffect(() => {
     if (step !== 2 || (amount || 0) <= 0) return;
+
+    setEstimatedLendingRepayFee(0);
     const estimateLendingRepayFeeAsync = async () => {
       const fee = await estimateLendingRepayFee?.();
       setEstimatedLendingRepayFee(fee || 1);
     };
     estimateLendingRepayFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, step]);
+  }, [amount, step, feeToken]);
+
+  useEffect(() => {
+    setFeeToken({
+      name: 'XRP',
+      assetId: ROOT_ASSET_ID.XRP,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNetwork]);
 
   const estimatedFee = step === 1 ? estimatedTokenApproveFee : estimatedLendingRepayFee;
   const gasError =
-    (userTokenBalance || 0) <= Number(estimatedFee || 4) || lendingGasError || approveGasError;
+    (userFeeTokenBalance || 0) <= Number(estimatedFee || 4) || lendingGasError || approveGasError;
 
   return (
     <Popup
@@ -266,6 +284,7 @@ export const LendingRepayPopup = ({
           />
         </ButtonWrapper>
       }
+      setting={isRoot && isFpass && <FeeProxySelector />}
     >
       <Wrapper style={{ gap: isIdle ? (isMD ? 24 : 20) : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
@@ -379,13 +398,17 @@ export const LendingRepayPopup = ({
                   <GasFeeInnerWrapper>
                     <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                     <GasFeeTitleValue>
-                      {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : t('calculating...')}
+                      {estimatedFee
+                        ? `~${formatNumber(estimatedFee)} ${feeToken.name}`
+                        : t('calculating...')}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
                   <GasFeeInnerWrapper>
                     <GasFeeCaption error={gasError}>
                       {gasError
-                        ? t(`Not enough balance to pay for Gas Fee.`)
+                        ? isNativeFee
+                          ? t(`Not enough balance to pay for Gas Fee.`)
+                          : t(`fee-proxy-error-message`, { token: feeToken.name })
                         : t(`May change when network is busy`)}
                     </GasFeeCaption>
                   </GasFeeInnerWrapper>
