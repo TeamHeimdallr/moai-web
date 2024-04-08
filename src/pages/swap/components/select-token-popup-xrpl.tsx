@@ -10,7 +10,6 @@ interface Props {
   type: 'from' | 'to';
 
   userAllTokenBalances: (IToken & { balance: number })[];
-  tokenPrice: number;
 
   hasNextPage?: boolean;
   fetchNextPage?: () => void;
@@ -18,7 +17,6 @@ interface Props {
 export const SelectTokenPopupXrpl = ({
   type,
   userAllTokenBalances,
-  tokenPrice,
   hasNextPage,
   fetchNextPage,
 }: Props) => {
@@ -30,7 +28,6 @@ export const SelectTokenPopupXrpl = ({
     ) : (
       <SelectFromTokenPopupXrpl
         userAllTokenBalances={userAllTokenBalances}
-        tokenPrice={tokenPrice}
         hasNextPage={hasNextPage}
         fetchNextPage={fetchNextPage}
         showAddToken={() => setAddToken(true)}
@@ -41,7 +38,6 @@ export const SelectTokenPopupXrpl = ({
   ) : (
     <SelectToTokenPopupXrpl
       userAllTokenBalances={userAllTokenBalances}
-      tokenPrice={tokenPrice}
       hasNextPage={hasNextPage}
       fetchNextPage={fetchNextPage}
       showAddToken={() => setAddToken(true)}
