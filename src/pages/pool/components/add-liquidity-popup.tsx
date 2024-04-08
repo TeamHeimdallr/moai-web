@@ -7,7 +7,7 @@ import tw, { styled } from 'twin.macro';
 import { parseUnits, toHex } from 'viem';
 import { useQueryClient } from 'wagmi';
 
-import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
+import { useUserFeeTokenBalance } from '~/api/api-contract/balance/user-fee-token-balance';
 import { useAddLiquidity } from '~/api/api-contract/pool/add-liquiditiy';
 import { useApprove } from '~/api/api-contract/token/approve';
 import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-amm';
@@ -15,9 +15,10 @@ import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-a
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL, THOUSAND } from '~/constants';
+import { ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
+import { FeeProxySelector } from '~/components/fee-proxy-selector';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings/step';
 import { Popup } from '~/components/popup';
@@ -41,6 +42,7 @@ import {
   useAddLiquidityNetworkFeeErrorStore,
   useApproveNetworkFeeErrorStore,
 } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useFeeTokenStore } from '~/states/data/fee-proxy';
 import { IPool, ITokenComposition, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -95,9 +97,6 @@ const _AddLiquidityPopup = ({
     useAddLiquidityNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
-  const { userXrpBalance: xrp } = useUserXrpBalances();
-  const xrpBalance = xrp?.balance || 0;
-
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -110,12 +109,17 @@ const _AddLiquidityPopup = ({
   const { selectedNetwork } = useNetwork();
   const { isMD } = useMediaQuery();
 
+  const { userFeeTokenBalanace: userFeeToken } = useUserFeeTokenBalance();
+  const userFeeTokenBalance = userFeeToken?.balance || 0;
+  const { feeToken, setFeeToken, isNativeFee } = useFeeTokenStore();
+
   const [estimatedAddLiquidityFee, setEstimatedAddLiquidityFee] = useState<number | undefined>();
   const [estimatedToken1ApproveFee, setEstimatedToken1ApproveFee] = useState<number | undefined>();
   const [estimatedToken2ApproveFee, setEstimatedToken2ApproveFee] = useState<number | undefined>();
   const [estimatedToken3ApproveFee, setEstimatedToken3ApproveFee] = useState<number | undefined>();
 
   const currentNetwork = getNetworkFull(networkParam) ?? selectedNetwork;
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const { close } = usePopup(POPUP_ID.ADD_LP);
 
@@ -392,7 +396,7 @@ const _AddLiquidityPopup = ({
               component: 'add-liquidity-popup',
               token1Amount,
               token2Amount,
-              xrpBalance,
+              userFeeTokenBalance,
               estimatedAddLiquidityFee,
               bptOut,
             },
@@ -407,7 +411,7 @@ const _AddLiquidityPopup = ({
               component: 'add-liquidity-popup',
               token1Amount,
               token2Amount,
-              xrpBalance,
+              userFeeTokenBalance,
               estimatedToken3ApproveFee,
               bptOut,
             },
@@ -424,7 +428,7 @@ const _AddLiquidityPopup = ({
                 component: 'add-liquidity-popup',
                 token1Amount,
                 token2Amount,
-                xrpBalance,
+                userFeeTokenBalance,
                 estimatedAddLiquidityFee,
                 bptOut,
               },
@@ -439,7 +443,7 @@ const _AddLiquidityPopup = ({
                 component: 'add-liquidity-popup',
                 token1Amount,
                 token2Amount,
-                xrpBalance,
+                userFeeTokenBalance,
                 estimatedToken1ApproveFee,
                 bptOut,
               },
@@ -456,7 +460,7 @@ const _AddLiquidityPopup = ({
                 component: 'add-liquidity-popup',
                 token1Amount,
                 token2Amount,
-                xrpBalance,
+                userFeeTokenBalance,
                 estimatedAddLiquidityFee,
                 bptOut,
               },
@@ -471,7 +475,7 @@ const _AddLiquidityPopup = ({
                 component: 'add-liquidity-popup',
                 token1Amount,
                 token2Amount,
-                xrpBalance,
+                userFeeTokenBalance,
                 estimatedToken2ApproveFee,
                 bptOut,
               },
@@ -494,7 +498,7 @@ const _AddLiquidityPopup = ({
               component: 'add-liquidity-popup',
               token1Amount,
               token2Amount,
-              xrpBalance,
+              userFeeTokenBalance,
               estimatedAddLiquidityFee,
               bptOut,
             },
@@ -510,7 +514,7 @@ const _AddLiquidityPopup = ({
               component: 'add-liquidity-popup',
               token1Amount,
               token2Amount,
-              xrpBalance,
+              userFeeTokenBalance,
               estimatedAddLiquidityFee,
               bptOut,
             },
@@ -526,7 +530,7 @@ const _AddLiquidityPopup = ({
           component: 'add-liquidity-popup',
           token1Amount,
           token2Amount,
-          xrpBalance,
+          userFeeTokenBalance,
           estimatedAddLiquidityFee,
           bptOut,
         },
@@ -592,13 +596,14 @@ const _AddLiquidityPopup = ({
     )
       return;
 
+    setEstimatedAddLiquidityFee(0);
     const estimateAddLiquidityFeeAsync = async () => {
       const fee = await estimateAddLiquidityFee?.();
       setEstimatedAddLiquidityFee(fee ?? 4.6);
     };
     estimateAddLiquidityFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addLiquidityEnabled, tokenLength, step]);
+  }, [addLiquidityEnabled, tokenLength, step, feeToken]);
 
   useEffect(() => {
     const estimateApproveFeeAsync = async (n: number) => {
@@ -655,7 +660,15 @@ const _AddLiquidityPopup = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, isXrp, token1ApproveEnabled, token2ApproveEnabled, token3ApproveEnabled]);
+  }, [step, isXrp, token1ApproveEnabled, token2ApproveEnabled, token3ApproveEnabled, feeToken]);
+
+  useEffect(() => {
+    setFeeToken({
+      name: 'XRP',
+      assetId: ROOT_ASSET_ID.XRP,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNetwork]);
 
   const estimatedFee = !isXrp
     ? tokenLength === 1
@@ -673,19 +686,18 @@ const _AddLiquidityPopup = ({
     ? 0.0001
     : 0.0001;
 
-  // TODO change after fee proxy
-  const validMaxXrpAmount =
-    tokensIn?.[0]?.symbol === 'XRP'
-      ? token1Amount + Number(estimatedFee || 4.6) < xrpBalance
-      : tokensIn?.[1]?.symbol === 'XRP'
-      ? token2Amount + Number(estimatedFee || 4.6) < xrpBalance
+  const validMaxFeeTokenAmount =
+    tokensIn?.[0]?.symbol === feeToken.name
+      ? token1Amount + Number(estimatedFee || 4.6) < userFeeTokenBalance
+      : tokensIn?.[1]?.symbol === feeToken.name
+      ? token2Amount + Number(estimatedFee || 4.6) < userFeeTokenBalance
       : true;
 
   const gasError =
-    xrpBalance <= Number(estimatedFee || 4.6) ||
+    userFeeTokenBalance <= Number(estimatedFee || 4.6) ||
     addLiquidityGasError ||
     approveGasError ||
-    !validMaxXrpAmount;
+    !validMaxFeeTokenAmount;
 
   return (
     <Popup
@@ -701,6 +713,7 @@ const _AddLiquidityPopup = ({
           />
         </ButtonWrapper>
       }
+      setting={isRoot && isFpass && <FeeProxySelector />}
     >
       <Wrapper style={{ gap: isIdle ? (isMD ? 24 : 20) : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
@@ -781,13 +794,17 @@ const _AddLiquidityPopup = ({
                 <GasFeeInnerWrapper>
                   <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                   <GasFeeTitleValue>
-                    {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : t('calculating...')}
+                    {estimatedFee
+                      ? `~${formatNumber(estimatedFee)} ${feeToken.name}`
+                      : t('calculating...')}
                   </GasFeeTitleValue>
                 </GasFeeInnerWrapper>
                 <GasFeeInnerWrapper>
                   <GasFeeCaption error={gasError}>
                     {gasError
-                      ? t(`Not enough balance to pay for Gas Fee.`)
+                      ? isNativeFee
+                        ? t(`Not enough balance to pay for Gas Fee.`)
+                        : t(`fee-proxy-error-message`, { token: feeToken.name })
                       : t(`May change when network is busy`)}
                   </GasFeeCaption>
                 </GasFeeInnerWrapper>
