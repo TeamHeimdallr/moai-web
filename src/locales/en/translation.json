@@ -740,5 +740,6 @@
 
   "approve-lp-farm-message": "Approve LP token for farming",
 
-  "Pay gas fee with": "Pay gas fee with"
+  "Pay gas fee with": "Pay gas fee with",
+  "fee-proxy-error-message": "Gas fee payment with {{ token }} is currently unavailable. Please try other assets."
 }

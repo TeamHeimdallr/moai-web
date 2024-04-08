@@ -34,7 +34,7 @@ interface Props {
   feeToken: FeeToken;
   enabled?: boolean;
 }
-export const useFeeProxy = ({
+export const useFeeProxyOld = ({
   targetAddress,
   encodedData,
   feeToken,

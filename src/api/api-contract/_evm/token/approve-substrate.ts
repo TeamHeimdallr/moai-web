@@ -5,7 +5,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { NetworkName } from '@therootnetwork/api';
 import { BigNumber } from 'ethers';
-import { Address, encodeFunctionData, formatUnits, parseEther } from 'viem';
+import { Address, encodeFunctionData, formatUnits, parseEther, parseUnits } from 'viem';
 import { useContractRead, usePublicClient } from 'wagmi';
 
 import { createExtrinsicPayload } from '~/api/api-contract/_evm/substrate/create-extrinsic-payload';
@@ -16,10 +16,14 @@ import { IS_MAINNET } from '~/constants';
 
 import { useNetwork, useNetworkId } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull } from '~/utils';
+import { getNetworkFull, getTokenDecimal } from '~/utils';
 import { useApproveNetworkFeeErrorStore } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useFeeTokenStore } from '~/states/data/fee-proxy';
+import { NETWORK } from '~/types';
 
 import { ERC20_TOKEN_ABI } from '~/abi';
+
+import { estimateFeeProxy } from '../fee-proxy/estimate-fee-proxy';
 
 type Extrinsic = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
@@ -41,6 +45,7 @@ export const useApprove = ({
   enabled,
 }: Props) => {
   const { setError } = useApproveNetworkFeeErrorStore();
+  const { isNativeFee, feeToken } = useFeeTokenStore();
 
   const { network } = useParams();
   const { selectedNetwork, isFpass } = useNetwork();
@@ -103,6 +108,11 @@ export const useApprove = ({
         args: [spender, parseEther(Number.MAX_SAFE_INTEGER.toString())],
       });
 
+      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
+      const remainder = gasCostInEth.mod(10 ** 12);
+      const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         tokenAddress,
@@ -115,19 +125,36 @@ export const useApprove = ({
         []
       );
 
-      const extrinsic = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
+      const extrinsicRaw = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
+
+      const { maxPayment } = await estimateFeeProxy({
+        api,
+        extrinsic: extrinsicRaw,
+        caller: signer ?? '',
+        feeToken,
+        estimateGasCost: gasCostInXRP,
+        enabled: isFpass && !!feeToken && !isNativeFee,
+      });
+
+      if (!isNativeFee && !maxPayment) {
+        throw new Error('Insufficient Fee Proxy balance');
+      }
+
+      const feeProxyAmount = parseUnits(
+        (maxPayment || 0)?.toFixed(),
+        getTokenDecimal(NETWORK.THE_ROOT_NETWORK, feeToken.name)
+      );
+
+      const extrinsic = isNativeFee
+        ? extrinsicRaw
+        : api.tx.feeProxy.callWithFeePreferences(feeToken.assetId, feeProxyAmount, extrinsicRaw);
+
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
-
-      const maxFeePerGas = feeHistory.baseFeePerGas[0];
-      const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
-      const remainder = gasCostInEth.mod(10 ** 12);
-      const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
       const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
-
       const evmFee = Number(formatUnits(gasCostInXrpPriority, 6));
 
-      return fee + evmFee;
+      return isNativeFee ? fee + evmFee : maxPayment;
     } catch (err) {
       console.log('estimation fee error');
     }
@@ -165,6 +192,11 @@ export const useApprove = ({
         args: [spender, parseEther(Number.MAX_SAFE_INTEGER.toString())],
       });
 
+      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
+      const remainder = gasCostInEth.mod(10 ** 12);
+      const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
+
       const evmCall = api.tx.evm.call(
         walletAddress,
         tokenAddress,
@@ -177,7 +209,29 @@ export const useApprove = ({
         []
       );
 
-      const extrinsic = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
+      const extrinsicRaw = api.tx.futurepass.proxyExtrinsic(walletAddress, evmCall) as Extrinsic;
+
+      const { maxPayment } = await estimateFeeProxy({
+        api,
+        extrinsic: extrinsicRaw,
+        caller: signer ?? '',
+        feeToken,
+        estimateGasCost: gasCostInXRP,
+        enabled: isFpass && !!feeToken && !isNativeFee,
+      });
+
+      if (!isNativeFee && !maxPayment) {
+        throw { code: 1010 };
+      }
+
+      const feeProxyAmount = parseUnits(
+        (maxPayment || 0)?.toFixed(),
+        getTokenDecimal(NETWORK.THE_ROOT_NETWORK, feeToken.name)
+      );
+
+      const extrinsic = isNativeFee
+        ? extrinsicRaw
+        : api.tx.feeProxy.callWithFeePreferences(feeToken.assetId, feeProxyAmount, extrinsicRaw);
 
       const [payload, ethPayload] = await createExtrinsicPayload(
         api as ApiPromise,

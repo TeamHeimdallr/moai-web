@@ -8,22 +8,22 @@ import { IconSetting } from '~/assets/icons';
 
 import { ROOT_ASSET_ID } from '~/constants';
 
+import { useFeeTokenStore } from '~/states/data/fee-proxy';
+
 import { ButtonIconLarge } from '../buttons';
 
 export interface FeeToken {
   name: string;
   assetId: number;
 }
-interface Props {
-  handleSelect: (feeToken: FeeToken) => void;
-  selectedToken: FeeToken;
-}
-export const FeeProxySelector = ({ handleSelect, selectedToken }: Props) => {
+export const FeeProxySelector = () => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [opened, open] = useState(false);
   const toggle = () => open(!opened);
   useOnClickOutside(ref, () => open(false));
+
+  const { feeToken, setFeeToken } = useFeeTokenStore();
 
   const feeTokens: FeeToken[] = [
     {
@@ -42,10 +42,6 @@ export const FeeProxySelector = ({ handleSelect, selectedToken }: Props) => {
       name: 'SYLO',
       assetId: ROOT_ASSET_ID.SYLO,
     },
-    {
-      name: 'USDC',
-      assetId: ROOT_ASSET_ID.USDC,
-    },
   ];
 
   return (
@@ -61,8 +57,8 @@ export const FeeProxySelector = ({ handleSelect, selectedToken }: Props) => {
               {feeTokens?.map(token => (
                 <FeeOption
                   key={token.name}
-                  selected={selectedToken.assetId === token.assetId}
-                  onClick={() => handleSelect(token)}
+                  selected={feeToken.assetId === token.assetId}
+                  onClick={() => setFeeToken(token)}
                 >
                   {`${token.name}`}
                 </FeeOption>

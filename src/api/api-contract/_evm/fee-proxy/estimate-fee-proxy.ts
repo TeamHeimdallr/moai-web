@@ -64,7 +64,7 @@ export async function estimateFeeProxy({
     return { maxPayment: maxPayment };
   } catch (err) {
     console.log(err);
-    console.log('estimation fee error');
+    console.log('maxpayment fee proxy error');
   }
   return { maxPayment: undefined };
 }
