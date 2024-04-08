@@ -4,17 +4,19 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 import { Address, parseUnits } from 'viem';
-import { useBalance, useWalletClient } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 
+import { useUserFeeTokenBalance } from '~/api/api-contract/balance/user-fee-token-balance';
 import { useLendingSupply } from '~/api/api-contract/lending/supply';
 import { useApprove } from '~/api/api-contract/token/approve';
 
 import { COLOR } from '~/assets/colors';
 import { IconAddToken, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL, THOUSAND, TRILLION } from '~/constants';
+import { ROOT_ASSET_ID, SCANNER_URL, THOUSAND, TRILLION } from '~/constants';
 
 import { ButtonPrimaryLarge, ButtonPrimaryMediumIconLeading } from '~/components/buttons';
+import { FeeProxySelector } from '~/components/fee-proxy-selector';
 import { List } from '~/components/lists';
 import { LoadingStep } from '~/components/loadings/step';
 import { Popup } from '~/components/popup';
@@ -32,6 +34,7 @@ import {
   useApproveNetworkFeeErrorStore,
   useLendingSupplyNetworkFeeErrorStore,
 } from '~/states/contexts/network-fee-error/network-fee-error';
+import { useFeeTokenStore } from '~/states/data/fee-proxy';
 import { IToken, NETWORK, POPUP_ID } from '~/types';
 
 interface Props {
@@ -66,6 +69,10 @@ export const LendingSupplyPopup = ({
     useLendingSupplyNetworkFeeErrorStore();
   const { error: approveGasError, setError: setApproveGasError } = useApproveNetworkFeeErrorStore();
 
+  const { feeToken, setFeeToken, isNativeFee } = useFeeTokenStore();
+  const { userFeeTokenBalanace: userFeeToken } = useUserFeeTokenBalance();
+  const userFeeTokenBalance = userFeeToken?.balance || 0;
+
   const { network, address: addressParams } = useParams();
   const currentNetwork = getNetworkFull(network);
 
@@ -73,12 +80,13 @@ export const LendingSupplyPopup = ({
 
   const { t } = useTranslation();
 
-  const { isEvm, isFpass } = useNetwork();
+  const { isEvm, isFpass, selectedNetwork } = useNetwork();
   const { evm, fpass } = useConnectedWallet();
   const walletAddress = isFpass ? fpass.address : evm.address;
-  const { data: nativeBalance } = useBalance({ address: walletAddress as Address });
 
   const { close } = usePopup(POPUP_ID.LENDING_SUPPLY);
+
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
   const { isMD } = useMediaQuery();
 
@@ -182,7 +190,7 @@ export const LendingSupplyPopup = ({
         mTokenAddress,
         estimatedFee,
         walletAddress,
-        xrpBalance: nativeBalance,
+        userFeeTokenBalance,
       },
     });
     await writeAsync?.();
@@ -225,34 +233,36 @@ export const LendingSupplyPopup = ({
   useEffect(() => {
     if (step !== 1 || (amount || 0) <= 0) return;
 
+    setEstimatedTokenApproveFee(0);
     const estimateApproveFeeAsync = async () => {
       const fee = await estimateTokenApproveFee?.();
       setEstimatedTokenApproveFee(fee || 1);
     };
     estimateApproveFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, step]);
+  }, [amount, step, feeToken]);
 
   useEffect(() => {
     if (step !== 2 || (amount || 0) <= 0) return;
 
+    setEstimatedLendingSupplyFee(0);
     const estimateLendingSupplyFeeAsync = async () => {
       const fee = await estimateLendingSupplyFee?.();
       setEstimatedLendingSupplyFee(fee || 1);
     };
     estimateLendingSupplyFeeAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, step]);
+  }, [amount, step, feeToken]);
 
   const estimatedFee = step === 1 ? estimatedTokenApproveFee : estimatedLendingSupplyFee;
-  const validMaxXrpAmount =
-    symbol === 'XRP' ? (amount || 0) + Number(estimatedFee || 4) < (balance || 0) : true;
+  const validMaxFeeTokenAmount =
+    symbol === feeToken.name ? (amount || 0) + Number(estimatedFee || 4) < (balance || 0) : true;
 
   const gasError =
     (balance || 0) <= Number(estimatedFee || 4) ||
     lendingGasError ||
     approveGasError ||
-    !validMaxXrpAmount;
+    !validMaxFeeTokenAmount;
 
   const handleAddToken = async (address: Address, symbol: string) => {
     if (!address || !symbol) return;
@@ -270,6 +280,14 @@ export const LendingSupplyPopup = ({
     });
   };
 
+  useEffect(() => {
+    setFeeToken({
+      name: 'XRP',
+      assetId: ROOT_ASSET_ID.XRP,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNetwork]);
+
   return (
     <Popup
       id={POPUP_ID.LENDING_SUPPLY}
@@ -284,6 +302,7 @@ export const LendingSupplyPopup = ({
           />
         </ButtonWrapper>
       }
+      setting={isRoot && isFpass && <FeeProxySelector />}
     >
       <Wrapper style={{ gap: isIdle ? (isMD ? 24 : 20) : 40 }} ref={ref}>
         {!isIdle && isSuccess && (
@@ -371,13 +390,17 @@ export const LendingSupplyPopup = ({
                   <GasFeeInnerWrapper>
                     <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                     <GasFeeTitleValue>
-                      {estimatedFee ? `~${formatNumber(estimatedFee)} XRP` : t('calculating...')}
+                      {estimatedFee
+                        ? `~${formatNumber(estimatedFee)} ${feeToken.name}`
+                        : t('calculating...')}
                     </GasFeeTitleValue>
                   </GasFeeInnerWrapper>
                   <GasFeeInnerWrapper>
                     <GasFeeCaption error={gasError}>
                       {gasError
-                        ? t(`Not enough balance to pay for Gas Fee.`)
+                        ? isNativeFee
+                          ? t(`Not enough balance to pay for Gas Fee.`)
+                          : t(`fee-proxy-error-message`, { token: feeToken.name })
                         : t(`May change when network is busy`)}
                     </GasFeeCaption>
                   </GasFeeInnerWrapper>
