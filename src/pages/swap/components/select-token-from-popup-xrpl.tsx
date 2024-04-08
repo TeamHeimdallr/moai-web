@@ -33,7 +33,6 @@ import { useSwapStore } from '../states';
 
 interface Props {
   userAllTokenBalances: (IToken & { balance: number })[];
-  tokenPrice: number;
 
   hasNextPage?: boolean;
   fetchNextPage?: () => void;
@@ -42,7 +41,6 @@ interface Props {
 }
 export const SelectFromTokenPopupXrpl = ({
   userAllTokenBalances,
-  tokenPrice,
   hasNextPage,
   fetchNextPage,
 
@@ -204,7 +202,7 @@ export const SelectFromTokenPopupXrpl = ({
                   type={'selectable'}
                   balance={`${formatNumber(token?.balance || 0, 4, 'floor', MILLION, 0)}`}
                   value={`$${`${formatNumber(
-                    (token?.balance || 0) * (token.price || tokenPrice || 0),
+                    (token?.balance || 0) * (token.price || 0),
                     2,
                     'floor',
                     MILLION,

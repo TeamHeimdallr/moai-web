@@ -26,9 +26,8 @@ import { useSwapStore } from '../states';
 
 interface Props {
   userAllTokenBalances: (IToken & { balance: number })[];
-  tokenPrice: number;
 }
-export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props) => {
+export const SelectFromTokenPopup = ({ userAllTokenBalances }: Props) => {
   const { ref } = useGAInView({ name: 'swap-from-token-popup' });
   const { gaAction } = useGAAction();
 
@@ -119,11 +118,7 @@ export const SelectFromTokenPopup = ({ userAllTokenBalances, tokenPrice }: Props
                   balance={
                     token.balance ? `${formatNumber(token.balance, 4, 'floor', THOUSAND, 0)}` : '0'
                   }
-                  value={`$${
-                    token.price
-                      ? `${formatNumber(token.balance * (token.price || tokenPrice))}`
-                      : '0'
-                  }`}
+                  value={`$${token.price ? `${formatNumber(token.balance * token.price)}` : '0'}`}
                   selected={fromToken?.symbol === token.symbol}
                   onClick={() => {
                     gaAction({

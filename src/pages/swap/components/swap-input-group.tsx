@@ -449,13 +449,10 @@ const _SwapInputGroup = () => {
       </Wrapper>
 
       {walletAddress && selectTokenFromPopupOpened && (
-        <SelectFromTokenPopup
-          userAllTokenBalances={userAllTokenBalances}
-          tokenPrice={fromTokenPrice}
-        />
+        <SelectFromTokenPopup userAllTokenBalances={userAllTokenBalances} />
       )}
       {walletAddress && selectTokenToPopupOpened && (
-        <SelectToTokenPopup userAllTokenBalances={userAllTokenBalances} tokenPrice={toTokenPrice} />
+        <SelectToTokenPopup userAllTokenBalances={userAllTokenBalances} />
       )}
 
       {walletAddress && swapPopupOpened && !isPrepareError && !isSingleSwapPrepareError && (

@@ -237,7 +237,6 @@ const _SwapInputGroup = () => {
         <SelectTokenPopupXrpl
           type="from"
           userAllTokenBalances={userAllTokenBalances}
-          tokenPrice={fromTokenPrice}
           hasNextPage={hasNextPage}
           fetchNextPage={fetchNextPage}
         />
@@ -246,7 +245,6 @@ const _SwapInputGroup = () => {
         <SelectTokenPopupXrpl
           type="to"
           userAllTokenBalances={userAllTokenBalances}
-          tokenPrice={toTokenPrice}
           hasNextPage={hasNextPage}
           fetchNextPage={fetchNextPage}
         />
