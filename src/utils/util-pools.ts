@@ -23,6 +23,15 @@ export const calcBptOutAmountAndPriceImpact = ({
     };
   }
 
+  // TODO: check if this is correct
+  if (balances.some(v => !v)) {
+    const bptOut = Math.sqrt((amountsIn?.[0] || 0) * (amountsIn?.[1] || 0));
+    return {
+      bptOut,
+      priceImpact: 0,
+    };
+  }
+
   // BPT = Balance Pool Token = LP Token
   // BPT out, so we round down overall.
   const balanceRatiosWithFee: number[] = new Array<number>(amountsIn.length);

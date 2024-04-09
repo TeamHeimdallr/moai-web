@@ -43,7 +43,7 @@ export const useCalculateWithdrawLiquidity = ({ bptIn }: WithdrawPriceImpactProp
 
   const isStable = STABLE_POOL_IDS[
     getNetworkFull(network as string) ?? NETWORK.THE_ROOT_NETWORK
-  ].includes((id || '') as string);
+  ]?.includes((id || '') as string);
 
   const { actualSupply } = useGetActualSupplyStable({
     poolAddress: poolAddress as Address,

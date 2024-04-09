@@ -1,7 +1,21 @@
 import { hexToString } from 'viem';
 import { AMMInfoResponse, Amount, Currency, dropsToXrp, xrpToDrops } from 'xrpl';
 
-import { IToken } from '~/types';
+import { IPoolTokenList, IToken } from '~/types';
+
+export const tokenListToAmmAsset = (token?: IPoolTokenList | null): Currency => {
+  if (!token)
+    return {
+      currency: '',
+      issuer: '',
+    };
+
+  if (token.symbol === 'XRP') return { currency: 'XRP' };
+  return {
+    currency: token.currency || '',
+    issuer: token.address || '',
+  };
+};
 
 export const tokenToAmmAsset = (token?: IToken): Currency => {
   if (!token)
@@ -14,6 +28,24 @@ export const tokenToAmmAsset = (token?: IToken): Currency => {
   return {
     currency: token.currency,
     issuer: token.address,
+  };
+};
+
+export const tokenToAmmAssetWithValue = (token?: IToken & { amount: number }): Amount => {
+  if (!token)
+    return {
+      currency: '',
+      issuer: '',
+      value: '0',
+    };
+
+  if (token.symbol === 'XRP')
+    return { currency: 'XRP', issuer: '', value: xrpToDrops(token.amount) };
+
+  return {
+    currency: token.currency,
+    issuer: token.address,
+    value: token.amount.toString(),
   };
 };
 

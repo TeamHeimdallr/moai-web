@@ -31,8 +31,8 @@ interface Props {
 export const useAddLiquidity = ({ poolId, tokens, enabled }: Props) => {
   const publicClient = usePublicClient();
 
-  const poolTokenAddress = poolId.slice(0, 42) as Address;
-  const isStable = STABLE_POOL_IDS[NETWORK.THE_ROOT_NETWORK].includes(poolId);
+  const poolTokenAddress = poolId?.slice(0, 42) as Address;
+  const isStable = STABLE_POOL_IDS?.[NETWORK.THE_ROOT_NETWORK]?.includes(poolId);
   const tokensWithoutBpt = tokens.map(t => t);
   if (isStable && tokens.length <= 2) {
     const bptToken = {

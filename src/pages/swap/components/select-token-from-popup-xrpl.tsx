@@ -13,7 +13,7 @@ import { useSearchTokensQuery } from '~/api/api-server/token/search-tokens';
 import { COLOR } from '~/assets/colors';
 import { IconDown, IconPlus } from '~/assets/icons';
 
-import { MILLION } from '~/constants';
+import { ASSET_URL, MILLION } from '~/constants';
 
 import { ButtonPrimarySmallIconLeading } from '~/components/buttons/primary/small-icon-leading';
 import { InputSearch } from '~/components/inputs';
@@ -186,7 +186,7 @@ export const SelectFromTokenPopupXrpl = ({
                 <TokenList
                   key={`${token.network}-${token.symbol}`}
                   title={token.symbol}
-                  image={token.image}
+                  image={token.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   description={
                     token.issuerOrganization ? (
                       <Issuer>
@@ -201,13 +201,17 @@ export const SelectFromTokenPopupXrpl = ({
                   }
                   type={'selectable'}
                   balance={`${formatNumber(token?.balance || 0, 4, 'floor', MILLION, 0)}`}
-                  value={`$${`${formatNumber(
-                    (token?.balance || 0) * (token.price || 0),
-                    2,
-                    'floor',
-                    MILLION,
-                    2
-                  )}`}`}
+                  value={
+                    token.price
+                      ? `$${`${formatNumber(
+                          (token?.balance || 0) * (token.price || 0),
+                          2,
+                          'floor',
+                          MILLION,
+                          2
+                        )}`}`
+                      : `-`
+                  }
                   disabled={token.symbol === toToken?.symbol}
                   selected={fromToken?.symbol === token.symbol}
                   onClick={() => {

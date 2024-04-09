@@ -1,4 +1,4 @@
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
@@ -9,7 +9,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   type?: 'error' | 'warning';
 
   title: string;
-  description?: string;
+  description?: ReactNode;
 }
 export const AlertMessage = ({ type = 'error', title, description, ...rest }: Props) => {
   return (
@@ -19,7 +19,11 @@ export const AlertMessage = ({ type = 'error', title, description, ...rest }: Pr
       </IconWrapper>
       <TextWrapper>
         <Title>{title}</Title>
-        {description && <Description>{description}</Description>}
+        {description && typeof description === 'string' ? (
+          <Description>{description}</Description>
+        ) : (
+          description
+        )}
       </TextWrapper>
     </Wrapper>
   );
