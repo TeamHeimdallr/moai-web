@@ -7,7 +7,7 @@ interface Props {
   includeLpToken?: boolean;
 }
 export const useUserAllTokenBalances = (props?: Props) => {
-  const { includeLpToken } = props || {};
+  const { includeLpToken = true } = props || {};
 
   const { isEvm } = useNetwork();
 
