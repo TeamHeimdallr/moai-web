@@ -771,5 +771,21 @@
   "Pool creation failed": "Pool creation failed",
   "xrpl-pool-creation-fail-message": "Pool creation has failed. Please try again.",
 
-  "Go to pool page": "Go to pool page"
+  "Go to pool page": "Go to pool page",
+
+  "Vote confirmed!": "Vote confirmed!",
+  "vote-success-message": "Your vote was successfully submitted and the transaction fee was changed.",
+  "Vote failed": "Vote failed",
+  "vote-fail-message": "Your vote submission has failed. Please try again.",
+
+  "Fee Voting": "Fee Voting",
+  "Voter": "Voter",
+  "Weight": "Weight",
+  "Trading fee voting": "Trading fee voting",
+  "Current trading fee": "Current trading fee",
+  "Your proposed fee": "Your proposed fee",
+  "Your weight": "Your weight",
+  "Expected fee after vote": "Expected fee after vote",
+  "Vote": "Vote",
+  "Trading fee": "Trading fee"
 }

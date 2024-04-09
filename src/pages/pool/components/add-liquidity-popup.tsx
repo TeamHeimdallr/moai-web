@@ -758,7 +758,7 @@ const _AddLiquidityPopup = ({
               type="large"
               title={`${formatNumber(bptOut, 4, 'floor', THOUSAND, 0)}`}
               subTitle={`${lpToken?.symbol || ''}`}
-              description={`$${formatNumber(bptOut * lpTokenPrice)}`}
+              description={lpTokenPrice ? `$${formatNumber(bptOut * lpTokenPrice)}` : undefined}
               image={
                 <Jazzicon
                   diameter={36}

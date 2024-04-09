@@ -155,7 +155,7 @@ export const useTableLiquidityProvision = () => {
               }))}
             />
           ),
-          value: <TableColumn value={`$${formatNumber(value)}`} align="flex-end" />,
+          value: <TableColumn value={value ? `$${formatNumber(value)}` : '-'} align="flex-end" />,
           time: (
             <TableColumnLink
               token={translatedTime}

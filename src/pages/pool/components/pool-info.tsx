@@ -88,11 +88,11 @@ export const PoolInfo = () => {
       : Infinity;
   const formattedFarmApr = isLpFarmExisted ? `${_formattedFarmApr}%` : '';
 
-  const formattedValue = value ? `$${formatNumber(value)}` : '$0';
-  const formattedVolume = volume ? `$${formatNumber(volume)}` : '$0';
+  const formattedValue = value ? `$${formatNumber(value)}` : '-';
+  const formattedVolume = volume ? `$${formatNumber(volume)}` : '-';
 
-  const formattedApr = apr ? `${formatNumber(apr)}%` : '0%'; // swap apr
-  const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100)}%` : '0%';
+  const formattedApr = apr ? `${formatNumber(apr)}%` : '-'; // swap apr
+  const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100)}%` : '-';
 
   return (
     <Wrapper ref={ref}>
@@ -104,8 +104,8 @@ export const PoolInfo = () => {
         <PoolInfoCard
           name={t('APR')}
           value={formattedApr}
-          subValue={`+ ${t('Moai Points')}`}
-          subValue2={formattedFarmApr ? `+ ${formattedFarmApr}` : ''}
+          subValue={isRoot ? `+ ${t('Moai Points')}` : undefined}
+          subValue2={isRoot ? (formattedFarmApr ? `+ ${formattedFarmApr}` : '') : undefined}
         />
         <PoolInfoCard
           name={t('Trading Fee')}

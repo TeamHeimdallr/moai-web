@@ -765,5 +765,21 @@
   "Pool creation failed": "풀 생성에 실패했습니다.",
   "xrpl-pool-creation-fail-message": "풀 생성에 실패했습니다. 다시 시도해주세요.",
 
-  "Go to pool page": "풀 화면으로 바로가기"
+  "Go to pool page": "풀 화면으로 바로가기",
+
+  "Vote confirmed!": "투표가 완료되었습니다.",
+  "vote-success-message": "투표가 성공적으로 제출되어 거래 수수료가 변경되었습니다.",
+  "Vote failed": "투표에 실패했습니다.",
+  "vote-fail-message": "투표 제출에 실패했습니다. 다시 시도해주세요.",
+
+  "Fee Voting": "거래 수수료 투표",
+  "Voter": "투표자",
+  "Weight": "가중치",
+  "Trading fee voting": "거래 수수료 투표하기",
+  "Current trading fee": "현재 거래 수수료",
+  "Your proposed fee": "제안 수수료",
+  "Your weight": "내 가중치",
+  "Expected fee after vote": "투표 후 예상 수수료",
+  "Vote": "투표하기",
+  "Trading fee": "거래 수수료"
 }
