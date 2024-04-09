@@ -8,18 +8,26 @@ import tw from 'twin.macro';
 import * as yup from 'yup';
 
 import { useAmmInfoByAccount } from '~/api/api-contract/_xrpl/amm/amm-info';
+import { useAmmVote } from '~/api/api-contract/_xrpl/amm/amm-vote';
 import { useUserLpTokenBalance } from '~/api/api-contract/_xrpl/balance/lp-token-balance';
+import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { COLOR } from '~/assets/colors';
+
+import { SCANNER_URL } from '~/constants';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 
+import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { parseComma } from '~/utils';
+import { parseComma, tokenToAmmAsset } from '~/utils';
+import { NETWORK, POPUP_ID } from '~/types';
 
 import { InputPercentage } from '../../add-pool/components/input-percentage';
+
+import { VotingPopup } from './voting-popup';
 
 const name = 'INPUTS_PERCENTAGE2';
 export const Voting = () => {
@@ -32,6 +40,15 @@ export const Voting = () => {
   const { address } = xrp;
 
   const [weightError, setWeightError] = useState(false);
+
+  const { opened, open, close } = usePopup(POPUP_ID.XRPL_FEE_VOTING);
+
+  const { data: poolData } = useGetPoolQuery(
+    { params: { networkAbbr: 'xrpl', poolId: id || '' } },
+    { enabled: isXrp && !!id, staleTime: Infinity }
+  );
+  const { pool } = poolData || {};
+  const { compositions } = pool || {};
 
   const { data: ammData } = useAmmInfoByAccount({ account: id || '', enabled: isXrp && !!id });
   const { amm } = ammData || {};
@@ -66,13 +83,14 @@ export const Voting = () => {
   const { watch, formState } = methods;
 
   const value = watch(name);
+  const proposed = Number(parseComma(value || '0'));
   const errorMessage = formState.errors?.[name]?.message;
 
   const handleAddLiquidity = () => {
     navigate(`/pools/xrpl/${id}/deposit`);
   };
 
-  const calculateWeight = () => {
+  const calculateTradingFee = () => {
     if (weightError || !sortedVoteSlots) return formattedTradingFee;
     const proposed = Number(parseComma(value || '0'));
 
@@ -86,63 +104,100 @@ export const Voting = () => {
       (acc, cur) => acc + (cur.vote_weight / 1000) * (cur.trading_fee / 1000),
       0
     );
-    return strip(weightRatioSum / weightSum).toFixed(3);
+    return Number(strip(weightRatioSum / weightSum).toFixed(3));
   };
+
+  const { writeAsync, txData, blockTimestamp, isIdle, isLoading, isSuccess, isError } = useAmmVote({
+    asset: tokenToAmmAsset(compositions?.[0]),
+    asset2: tokenToAmmAsset(compositions?.[1]),
+    trandingFee: proposed * 1000,
+  });
 
   useEffect(() => {
     if (currentUserLp < lastVoterLp) setWeightError(true);
     else setWeightError(false);
   }, [currentUserLp, lastVoterLp]);
 
+  useEffect(() => {
+    if (!isIdle && txData && (isSuccess || isError)) {
+      open();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isIdle, isError, isSuccess, txData]);
+
   return (
-    <FormProvider {...methods}>
-      <Wrapper>
-        <Title>{t('Trading fee voting')}</Title>
-        {address && weightError && (
-          <AlertMessage
-            title={t('Insufficient weight')}
-            description={
-              <Warning>
-                Your current vote weight is lower than lowest vote slot. Please{' '}
-                <Link onClick={handleAddLiquidity}>add liquidity</Link> to get more weight.
-              </Warning>
-            }
-          />
-        )}
-        <ContentWrapper>
-          <Text>
-            <Label>{t('Current trading fee:')}</Label>
-            {tradingFee ? `${formattedTradingFee}%` : '-%'}
-          </Text>
+    <>
+      <FormProvider {...methods}>
+        <Wrapper>
+          <Title>{t('Trading fee voting')}</Title>
+          {address && weightError && (
+            <AlertMessage
+              title={t('Insufficient weight')}
+              description={
+                <Warning>
+                  Your current vote weight is lower than lowest vote slot. Please{' '}
+                  <Link onClick={handleAddLiquidity}>add liquidity</Link> to get more weight.
+                </Warning>
+              }
+            />
+          )}
+          <ContentWrapper>
+            <Text>
+              <Label>{t('Current trading fee')}:</Label>
+              {tradingFee ? `${formattedTradingFee}%` : '-%'}
+            </Text>
 
-          <InputPercentage
-            style={{ width: '100%' }}
-            name={name}
-            label={
-              <LabelWrapper>
-                {t('Your proposed fee')}
-                <span style={{ fontSize: '14px', color: COLOR.NEUTRAL[60] }}>{t('Up to 1%')}</span>
-              </LabelWrapper>
-            }
-            placeholder="0"
-            error={!!errorMessage}
-            errorMessage={errorMessage}
-          />
+            <InputPercentage
+              style={{ width: '100%' }}
+              name={name}
+              label={
+                <LabelWrapper>
+                  {t('Your proposed fee')}
+                  <span style={{ fontSize: '14px', color: COLOR.NEUTRAL[60] }}>
+                    {t('Up to 1%')}
+                  </span>
+                </LabelWrapper>
+              }
+              placeholder="0"
+              error={!!errorMessage}
+              errorMessage={errorMessage}
+            />
 
-          <Summary>
-            <Value>
-              {t('Your weight')}
-              <span>{`${formattedCurrentWeight}%`}</span>
-            </Value>
-            <Value>
-              {t('Expected fee after vote')}
-              <span>{`${weightError ? formattedTradingFee : calculateWeight()}%`}</span>
-            </Value>
-          </Summary>
-        </ContentWrapper>
-        <ButtonPrimaryLarge text={t('Vote')} disabled={weightError} />
-      </Wrapper>
-    </FormProvider>
+            <Summary>
+              <Value>
+                {t('Your weight')}
+                <span>{`${formattedCurrentWeight}%`}</span>
+              </Value>
+              <Value>
+                {t('Expected fee after vote')}
+                <span>{`${weightError ? formattedTradingFee : calculateTradingFee()}%`}</span>
+              </Value>
+            </Summary>
+          </ContentWrapper>
+          <ButtonPrimaryLarge
+            text={t('Vote')}
+            disabled={weightError}
+            isLoading={isLoading}
+            onClick={writeAsync}
+          />
+        </Wrapper>
+      </FormProvider>
+
+      {opened && (
+        <VotingPopup
+          status={isError ? 'error' : 'success'}
+          currentTradingFee={formattedTradingFee}
+          nextTradingFee={calculateTradingFee()}
+          proposedFee={proposed}
+          txDate={new Date(blockTimestamp)}
+          handleSuccess={() => close()}
+          handleTryAgain={() => close()}
+          goToScanner={() => {
+            window.open(`${SCANNER_URL[NETWORK.XRPL]}/transactions/${txData?.hash}`);
+          }}
+        />
+      )}
+    </>
   );
 };
 
