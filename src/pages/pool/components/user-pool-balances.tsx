@@ -80,7 +80,7 @@ export const UserPoolBalances = () => {
     <Wrapper ref={ref}>
       <Header>
         {t('My liquidity')}
-        <Balance>${formatNumber(userLpTokenValue || 0)}</Balance>
+        {!!userLpTokenValue && <Balance>${formatNumber(userLpTokenValue || 0)}</Balance>}
       </Header>
       <Divider />
       <TokenLists>
@@ -101,7 +101,9 @@ export const UserPoolBalances = () => {
       <Footer>
         <FooterBalanceWrapper>
           {t('Wallet balance')}
-          <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0)}`}</FooterBalance>
+          {!!userPoolTokenTotalValue && (
+            <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0)}`}</FooterBalance>
+          )}
         </FooterBalanceWrapper>
         <ButtonWrapper>
           {address ? (

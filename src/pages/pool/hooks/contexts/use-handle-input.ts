@@ -46,10 +46,34 @@ export const useHandleInput = ({ pool, formState, inputValues, setInputValues }:
   const handleChangeAuto = ({ token, value, idx }: InputChange) => {
     if (!token) return;
 
+    const currentToken = compositions?.find(c => c.symbol === token.symbol);
+    const remainToken = compositions?.find(c => c.symbol !== token.symbol);
+    const hasPrice = !!token?.price && !!remainToken?.price;
+
+    if (!hasPrice) {
+      if (compositions?.some(c => !c.balance)) {
+        setInputValues([value || 0, value || 0]);
+        return;
+      }
+
+      if (idx === 0)
+        setInputValues([
+          value || 0,
+          ((remainToken?.balance || 0) / (currentToken?.balance || 1)) * (value || 0),
+        ]);
+      if (idx === 1)
+        setInputValues([
+          ((remainToken?.balance || 0) / (currentToken?.balance || 1)) * (value || 0),
+          value || 0,
+        ]);
+      return;
+    }
+
     const changingPoolTokenBalance =
       compositions?.find(c => c.symbol === token.symbol)?.balance || 0;
     const remainPoolTokenBalance = compositions?.find(c => c.symbol !== token.symbol)?.balance || 0;
 
+    // TODO: value, price가 없는 경우 1:1로 계산
     const expectedRemainedTokenValue = changingPoolTokenBalance
       ? strip((remainPoolTokenBalance * (value || 0)) / changingPoolTokenBalance)
       : 0;

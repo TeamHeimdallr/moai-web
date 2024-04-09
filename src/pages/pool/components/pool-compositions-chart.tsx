@@ -22,6 +22,7 @@ export const PoolCompositionsChart = ({ data, poolId }: Props) => {
     value: d.currentWeight || 0,
   }));
 
+  const nullPrice = data?.some(d => !d.price);
   const totalValue = data?.reduce((acc, cur) => acc + (cur?.value || 0), 0) || 0;
 
   const width = isMD ? 190 : 144;
@@ -81,10 +82,12 @@ export const PoolCompositionsChart = ({ data, poolId }: Props) => {
           </Group>
         </svg>
       </ChartWrapper>
-      <TotalValue>
-        <Amount>${formatNumber(totalValue)}</Amount>
-        <ValueTitle>{t('Pool Value')}</ValueTitle>
-      </TotalValue>
+      {!nullPrice && (
+        <TotalValue>
+          <Amount>${formatNumber(totalValue)}</Amount>
+          <ValueTitle>{t('Pool Value')}</ValueTitle>
+        </TotalValue>
+      )}
     </Wrapper>
   );
 };
