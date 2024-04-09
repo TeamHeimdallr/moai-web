@@ -13,7 +13,7 @@ import {
   useClaimPrepare,
 } from '~/api/api-contract/_evm/campaign/claim-substrate';
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
-import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-token-balances';
+import { useUserFeeTokenBalance } from '~/api/api-contract/balance/user-fee-token-balance';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
@@ -83,10 +83,8 @@ const _LayoutVoyage = () => {
   const walletAddress = isFpass ? fpass?.address : isEvm ? evm?.address : xrp?.address;
   const evmAddress = isFpass ? fpass?.address : evm?.address;
 
-  const { userAllTokenBalances } = useUserAllTokenBalances();
-
-  const userXrp = userAllTokenBalances?.find(t => t.symbol === 'XRP');
-  const userXrpBalance = userXrp?.balance || 0;
+  const { userFeeTokenBalanace: userFeeToken } = useUserFeeTokenBalance();
+  const userXrpBalance = userFeeToken?.balance || 0;
 
   const {
     amountFarmedInBPT,

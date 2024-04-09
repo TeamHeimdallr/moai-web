@@ -111,7 +111,7 @@ const _SwapInputGroup = () => {
     (fromToken?.symbol === 'USDT' && toToken?.symbol === 'USDC');
 
   const { userAllTokenBalances: userAllTokenBalancesWithLpToken, refetch: refetchBalance } =
-    useUserAllTokenBalances();
+    useUserAllTokenBalances({ includeLpToken: false });
   const userAllTokenBalances = useMemo(
     () => userAllTokenBalancesWithLpToken?.filter(t => !t.isLpToken),
     [userAllTokenBalancesWithLpToken]
