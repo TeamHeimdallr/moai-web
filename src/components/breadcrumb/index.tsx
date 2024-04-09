@@ -1,4 +1,5 @@
 import { Fragment, HTMLAttributes } from 'react';
+import { useTranslation } from 'react-i18next';
 import tw, { styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
@@ -18,12 +19,14 @@ interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'css'> {
   type?: 'large' | 'small';
 }
 export const Breadcrumb = ({ items, handleClick, ...rest }: Props) => {
+  const { t } = useTranslation();
+
   return (
     <Wrapper {...rest}>
       {items.map(({ key, text, selected }, idx: number) => (
         <Fragment key={key}>
           <Item selected={selected} onClick={() => handleClick({ key, text, selected })}>
-            {text}
+            {t(text)}
           </Item>
 
           {idx < items.length - 1 && <IconNext width={16} height={16} fill={COLOR.NEUTRAL[40]} />}
