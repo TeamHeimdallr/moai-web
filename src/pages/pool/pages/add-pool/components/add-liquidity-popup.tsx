@@ -213,7 +213,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
                 <TokenList
                   type="large"
                   title={`${formatNumber(amount, 6, 'floor', THOUSAND, 0)} ${symbol}`}
-                  description={price ? `$${formatNumber(amount * (price || 0))}` : undefined}
+                  description={price ? `$${formatNumber(amount * (price || 0))}` : '-'}
                   image={image}
                   leftAlign
                 />
@@ -228,7 +228,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
               type="large"
               title={`${formatNumber(bptOut, 4, 'floor', THOUSAND, 0)}`}
               subTitle={lpTokenSymbol}
-              description={lpTokenValue ? `$${formatNumber(lpTokenValue)}` : undefined}
+              description={lpTokenValue ? `$${formatNumber(lpTokenValue)}` : '-'}
               image={
                 <Jazzicon
                   diameter={36}
@@ -251,7 +251,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
             <List title={t(`Summary`)}>
               <Summary>
                 <SummaryTextTitle>{t('Total value')}</SummaryTextTitle>
-                <SummaryText>{lpTokenValue ? `$${formatNumber(lpTokenValue)}` : '-$'}</SummaryText>
+                <SummaryText>{lpTokenValue ? `$${formatNumber(lpTokenValue)}` : '-'}</SummaryText>
               </Summary>
               <Divider />
               <GasFeeWrapper>
@@ -275,7 +275,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
                 <GasFeeTitleValue>
                   {!accountInfo1Loading && accountInfo1TransferRate
                     ? `${formatNumber(accountInfo1TransferRate)}%`
-                    : '-%'}
+                    : '-'}
                 </GasFeeTitleValue>
               </InfoWrapper>
 
@@ -284,7 +284,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
                 <GasFeeTitleValue>
                   {!accountInfo2Loading && accountInfo2TransferRate
                     ? `${formatNumber(accountInfo2TransferRate)}%`
-                    : '-%'}
+                    : '-'}
                 </GasFeeTitleValue>
               </InfoWrapper>
             </List>
