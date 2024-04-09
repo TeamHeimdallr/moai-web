@@ -201,13 +201,17 @@ export const SelectFromTokenPopupXrpl = ({
                   }
                   type={'selectable'}
                   balance={`${formatNumber(token?.balance || 0, 4, 'floor', MILLION, 0)}`}
-                  value={`$${`${formatNumber(
-                    (token?.balance || 0) * (token.price || 0),
-                    2,
-                    'floor',
-                    MILLION,
-                    2
-                  )}`}`}
+                  value={
+                    token.price
+                      ? `$${`${formatNumber(
+                          (token?.balance || 0) * (token.price || 0),
+                          2,
+                          'floor',
+                          MILLION,
+                          2
+                        )}`}`
+                      : `-`
+                  }
                   disabled={token.symbol === toToken?.symbol}
                   selected={fromToken?.symbol === token.symbol}
                   onClick={() => {

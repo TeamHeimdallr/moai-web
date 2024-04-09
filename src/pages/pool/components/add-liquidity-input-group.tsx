@@ -241,7 +241,7 @@ const _AddLiquidityInputGroup = () => {
                     )
                   }
                   tokenName={token.symbol}
-                  tokenValue={tokenValue}
+                  tokenValue={token?.price ? tokenValue : undefined}
                   balance={token.balance}
                   handleChange={value => handleChange({ token, value, idx })}
                   handleTokenClick={openSelectTokenPopup}
