@@ -173,7 +173,7 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
   }
 
   const blocktime = 4; // TRN's blocktime
-  const poolsWithFarm = pools?.map((pool, i) => {
+  const poolsWithFarm = pools?.map((pool, i: number) => {
     const deposited = Number(formatUnits((depositedData?.[i]?.result || 0n) as bigint, 18));
     const totalDeposited = Number(
       formatUnits((totalDepositedData?.[i]?.result || 0n) as bigint, 18)

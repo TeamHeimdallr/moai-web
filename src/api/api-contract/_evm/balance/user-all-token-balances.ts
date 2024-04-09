@@ -17,7 +17,12 @@ import { COMPOSABLE_STABLE_POOL_ABI } from '~/abi/composable-stable-pool';
 /**
  * @description Get all token handling in moai finance balances for user
  */
-export const useUserAllTokenBalances = () => {
+interface Props {
+  includeLpToken?: boolean;
+}
+export const useUserAllTokenBalances = (props: Props) => {
+  const { includeLpToken } = props || {};
+
   const { network } = useParams();
   const { selectedNetwork, isEvm, isFpass } = useNetwork();
   const { evm, fpass } = useConnectedWallet();
@@ -38,53 +43,48 @@ export const useUserAllTokenBalances = () => {
     },
     { staleTime: 60 * 1000 }
   );
-  const { tokens } = tokensData || {};
+  const { tokens: _tokens } = tokensData || {};
+  const tokens = _tokens?.filter(t => (includeLpToken ? true : !t.isLpToken)) as IToken[];
 
   const evmNetwork = [NETWORK.EVM_SIDECHAIN, NETWORK.THE_ROOT_NETWORK];
   const tokenAddresses =
     tokens?.filter(t => evmNetwork.includes(t.network) && !!t.address)?.map(t => t.address) || [];
 
   const { data: tokenTotalSupplyData, refetch: lpTokenRefetch } = useContractReads({
-    contracts: tokenAddresses.flatMap(address => {
+    contracts: tokenAddresses.map(address => {
       const isStable = !!STABLE_POOL_ADDRESS?.[currentNetwork]?.find(
         (add: string) => add.toLocaleLowerCase() === address.toLocaleLowerCase()
       );
 
-      return [
-        {
-          address: address as Address,
-          abi: (isStable ? COMPOSABLE_STABLE_POOL_ABI : ERC20_TOKEN_ABI) as Abi,
-          functionName: isStable ? 'getActualSupply' : 'totalSupply',
-          chainId,
-        },
-      ];
+      return {
+        address: address as Address,
+        abi: (isStable ? COMPOSABLE_STABLE_POOL_ABI : ERC20_TOKEN_ABI) as Abi,
+        functionName: isStable ? 'getActualSupply' : 'totalSupply',
+        chainId,
+      };
     }),
     staleTime: 1000 * 3,
-    enabled: tokenAddresses.length > 0 && !!chainId && !!walletAddress && isEvm,
+    enabled: tokenAddresses.length > 0 && !!chainId && !!walletAddress && isEvm && includeLpToken,
   });
 
   const { data: tokenBalancesData, refetch: tokenBalanceRefetch } = useContractReads({
-    contracts: tokenAddresses.flatMap(address => [
-      {
-        address: address as Address,
-        abi: ERC20_TOKEN_ABI as Abi,
-        functionName: 'balanceOf',
-        args: [walletAddress as Address],
-        chainId,
-      },
-    ]),
+    contracts: tokenAddresses.map(address => ({
+      address: address as Address,
+      abi: ERC20_TOKEN_ABI as Abi,
+      functionName: 'balanceOf',
+      args: [walletAddress as Address],
+      chainId,
+    })),
     staleTime: 1000 * 3,
     enabled: tokenAddresses.length > 0 && !!chainId && !!walletAddress && isEvm,
   });
   const { data: tokenDecimalsData } = useContractReads({
-    contracts: tokenAddresses.flatMap(address => [
-      {
-        address: address as Address,
-        abi: ERC20_TOKEN_ABI as Abi,
-        functionName: 'decimals',
-        chainId,
-      },
-    ]),
+    contracts: tokenAddresses.map(address => ({
+      address: address as Address,
+      abi: ERC20_TOKEN_ABI as Abi,
+      functionName: 'decimals',
+      chainId,
+    })),
     cacheTime: Infinity,
     staleTime: Infinity,
     enabled: tokenAddresses.length > 0 && !!chainId && !!walletAddress && isEvm,
