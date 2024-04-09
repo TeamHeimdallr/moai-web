@@ -189,6 +189,7 @@ export const useUserPoolTokenBalances = (props?: Props) => {
     tokenBalancesRefetch();
   };
 
+  // TODO: token id, composition id 이상하게 섞여있음
   return {
     pool,
     lpToken,
