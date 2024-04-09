@@ -111,7 +111,7 @@ const _AddLiquidityInputGroup = () => {
                   control={control}
                   token={<Token token={token.symbol} image imageUrl={token.image} />}
                   tokenName={token.symbol}
-                  tokenValue={tokenValue === 0 ? undefined : tokenValue}
+                  tokenValue={!token.price ? undefined : tokenValue}
                   balance={token.balance}
                   slider={inputValues[idx] > 0}
                   value={inputValues[idx]}
@@ -131,16 +131,26 @@ const _AddLiquidityInputGroup = () => {
             <TotalInnerWrapper>
               <TotalText>{t(`Total value`)}</TotalText>
               <TotalValueWrapper>
-                {totalValue !== undefined && (
-                  <TotalValue>{`$${formatNumber(totalValue, 2, 'floor', TRILLION, 2)}`}</TotalValue>
+                {totalValue ? (
+                  <>
+                    <TotalValue>{`$${formatNumber(
+                      totalValue,
+                      2,
+                      'floor',
+                      TRILLION,
+                      2
+                    )}`}</TotalValue>
+                    <ButtonPrimarySmall
+                      text={maxed ? t('Maxed') : t('Max')}
+                      onClick={handleMax}
+                      style={{ width: 'auto' }}
+                      isBlack
+                      disabled={!!maxed}
+                    />
+                  </>
+                ) : (
+                  <TotalValue>-</TotalValue>
                 )}
-                <ButtonPrimarySmall
-                  text={maxed ? t('Maxed') : t('Max')}
-                  onClick={handleMax}
-                  style={{ width: 'auto' }}
-                  isBlack
-                  disabled={!!maxed}
-                />
               </TotalValueWrapper>
             </TotalInnerWrapper>
           </Total>
