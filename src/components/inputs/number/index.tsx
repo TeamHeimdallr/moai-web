@@ -226,11 +226,11 @@ export const InputNumber = ({
                       disabled={handledValue === currentBalance}
                     />
                   )}
-                  {tokenValue !== undefined && (
-                    <TokenUSDValue>
-                      ${formatNumber(tokenValue || 0, 2, 'floor', MILLION, 2)}
-                    </TokenUSDValue>
-                  )}
+                  <TokenUSDValue>
+                    {tokenValue !== undefined
+                      ? `$${formatNumber(tokenValue || 0, 2, 'floor', MILLION, 2)}`
+                      : '-'}
+                  </TokenUSDValue>
                 </BalanceWrapper>
                 {slider && (
                   <SliderWrapper sliderActive={sliderActive} error={!!errorMessage}>
