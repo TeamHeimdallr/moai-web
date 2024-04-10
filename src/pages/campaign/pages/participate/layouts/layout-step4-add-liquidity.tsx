@@ -156,7 +156,7 @@ const _AddLiquidity = () => {
   const approveError = error?.message?.includes('Approved');
   const reserveError = error?.message?.includes('Not enough supported ROOT liquidity');
 
-  const isError = isErrorRaw && !approveError;
+  const _isError = isErrorRaw && !approveError;
 
   const schema = yup.object().shape({
     input: yup.number().min(0).max(xrpBalance, t('Exceeds wallet balance')).required(),
@@ -182,8 +182,9 @@ const _AddLiquidity = () => {
   const estimatedFee = allowance ? estimatedAddLiquidityFee : estimatedApproveFee;
   const enoughBalance = xrpBalance > (inputValue || 0) + (estimatedFee || 0);
 
-  const invalid =
-    isError || !estimatedFee || !enoughBalance || (inputValueRaw || 0n) <= 0n || !acceptLockup;
+  const invalid = true; // end campaign
+  // isError || !estimatedFee || !enoughBalance || (inputValueRaw || 0n) <= 0n || !acceptLockup;
+
   const invalidWithLoading =
     invalid ||
     isLoading ||

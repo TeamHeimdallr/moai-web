@@ -3,7 +3,7 @@ import { useContractRead } from 'wagmi';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
-import { CAMPAIGN_ADDRESS, POOL_ID } from '~/constants';
+import { CAMPAIGN_ADDRESS, CAMPAIGN_REWARD_ADDRESS, POOL_ID } from '~/constants';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -11,6 +11,7 @@ import { NETWORK } from '~/types';
 
 import { BALANCER_LP_ABI } from '~/abi';
 import { CAMPAIGN_ABI } from '~/abi/campaign';
+import { CAMPAIGN_REWARD_ABI } from '~/abi/campaign-reward';
 
 export const useUserCampaignInfo = () => {
   const { isEvm, isFpass } = useNetwork();
@@ -58,8 +59,19 @@ export const useUserCampaignInfo = () => {
     enabled: !!poolAddress && isEvm,
   });
 
+  const { data: unclaimedRootRewardData } = useContractRead({
+    address: CAMPAIGN_REWARD_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
+    abi: CAMPAIGN_REWARD_ABI as Abi,
+    functionName: 'unclaimedRewards',
+    args: [walletAddress],
+
+    staleTime: 1000 * 3,
+    enabled: !!poolAddress && isEvm,
+  });
+
   const amountFarmedInBPTRaw = (data?.[0]?.['amountFarmed'] || 0n) as bigint;
-  const unclaimedRootRewardRaw = (data?.[0]?.['unclaimedRewards'] || 0n) as bigint;
+  // const unclaimedRootRewardRaw = (data?.[0]?.['unclaimedRewards'] || 0n) as bigint;
+  const unclaimedRootRewardRaw = (unclaimedRootRewardData || 0n) as bigint;
   const depositedTime = Number(data?.[0]['depositedTime'] ?? 0);
 
   const amountFarmedInBPT = Number(formatUnits(amountFarmedInBPTRaw, 18));
@@ -67,7 +79,7 @@ export const useUserCampaignInfo = () => {
 
   const amountFarmedInXrp = totalXrpValue / xrpPrice;
 
-  const unclaimedRootReward = Number(formatUnits(unclaimedRootRewardRaw, 18));
+  const unclaimedRootReward = Number(formatUnits(unclaimedRootRewardRaw as bigint, 18));
   const lpTokenTotalSupply = Number(formatUnits((lpTokenTotalSupplyData || 0n) as bigint, 18));
 
   const r = lpTokenTotalSupply ? unclaimedRootReward / lpTokenTotalSupply : 0;
