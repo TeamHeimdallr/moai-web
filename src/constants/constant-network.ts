@@ -76,6 +76,12 @@ export const CAMPAIGN_ADDRESS: Record<string, string> = {
     : '0x20E0fa7A8a1C22De73601cd6731Bb59c13B04916',
 };
 
+export const CAMPAIGN_REWARD_ADDRESS: Record<string, string> = {
+  [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET
+    ? '0xB61b7Af7e9a188BD162f5cE1aFD939dde05e2826'
+    : '0x6ca22266d295AB1019C38d200F4912806C8b22a8',
+};
+
 export const UNITROLLER_ADDRESS: Record<string, string> = {
   [NETWORK.THE_ROOT_NETWORK]: IS_MAINNET
     ? '0xCB8e9eDb7DEc4e01eac5F8e669b089ff02EEcf59'

@@ -8,11 +8,11 @@ import { debounce } from 'lodash-es';
 import tw, { styled } from 'twin.macro';
 
 import { useCampaignInfo } from '~/api/api-contract/_evm/campaign/campaign-info';
-import { useClaim } from '~/api/api-contract/_evm/campaign/claim';
+import { useClaim } from '~/api/api-contract/_evm/campaign/reward-claim';
 import {
   useClaim as useClaimSubstrate,
   useClaimPrepare,
-} from '~/api/api-contract/_evm/campaign/claim-substrate';
+} from '~/api/api-contract/_evm/campaign/reward-claim-substrate';
 import { useUserCampaignInfo } from '~/api/api-contract/_evm/campaign/user-campaign-info.ts';
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 import { useUserXrpBalances } from '~/api/api-contract/balance/user-xrp-balances';
