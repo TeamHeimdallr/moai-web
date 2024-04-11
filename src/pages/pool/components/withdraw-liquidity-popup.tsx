@@ -621,7 +621,7 @@ const _WithdrawLiquidityPopup = ({
           />
         </ButtonWrapper>
       }
-      setting={isRoot && isFpass && <FeeProxySelector />}
+      setting={isRoot && isFpass && isIdle && <FeeProxySelector />}
     >
       <Wrapper style={{ gap: isIdle ? 24 : 40 }} ref={ref}>
         {!isIdle && isSuccess && (

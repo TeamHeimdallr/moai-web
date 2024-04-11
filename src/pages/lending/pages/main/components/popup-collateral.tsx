@@ -246,7 +246,7 @@ export const PopupCollateral = ({ type, handleSuccess }: Props) => {
           />
         </ButtonWrapper>
       }
-      setting={isRoot && isFpass && <FeeProxySelector />}
+      setting={isRoot && isFpass && isIdle && <FeeProxySelector />}
     >
       <Wrapper ref={ref}>
         {!isIdle && isSuccess && (
