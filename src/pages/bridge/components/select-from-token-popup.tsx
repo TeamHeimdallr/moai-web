@@ -37,11 +37,7 @@ export const SelectFromTokenPopup = ({ tokens, currentToken }: Props) => {
   useOnClickOutside(ref, () => close());
 
   return (
-    <Popup
-      id={POPUP_ID.BRIDGE_SELECT_TOKEN}
-      title={t('Select token')}
-      style={{ backgroundColor: COLOR.NEUTRAL[10] }}
-    >
+    <Popup id={POPUP_ID.BRIDGE_SELECT_TOKEN} title={t('Select token')}>
       <Wrapper ref={ref}>
         <ContentContainer>
           <TokenLists>

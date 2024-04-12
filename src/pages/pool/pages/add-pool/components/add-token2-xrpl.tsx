@@ -7,7 +7,6 @@ import { isValidAddress, isValidClassicAddress, isValidXAddress } from 'xrpl';
 import { useCreateTokenXrplMutate } from '~/api/api-server/token/create-token-xrpl';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
-import { COLOR } from '~/assets/colors';
 import { IconBack } from '~/assets/icons';
 
 import { AlertMessage } from '~/components/alerts';
@@ -91,7 +90,6 @@ export const AddTokenXrpl = ({ showTokens }: Props) => {
     <Popup
       id={POPUP_ID.XRPL_ADD_POOL_SELECT_TOKEN2}
       title={t('Add token')}
-      style={{ backgroundColor: COLOR.NEUTRAL[10] }}
       icon={<ButtonIconLarge icon={<IconBack />} onClick={() => showTokens?.()} />}
     >
       <Wrapper>
