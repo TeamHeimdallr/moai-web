@@ -263,7 +263,7 @@ export const BridgePopup = ({ amount, value }: Props) => {
               <SuccessIconWrapper>
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
-              <ResultTitle>{t('Bridge Reqeust Success!')}</ResultTitle>
+              <ResultTitle>{t('Bridge Request Success!')}</ResultTitle>
               <ResultSubtitle>{t('bridge-request-success-message')}</ResultSubtitle>
             </ResultWrapper>
             <List title={t(`You're expected to receive bridge`)}>
