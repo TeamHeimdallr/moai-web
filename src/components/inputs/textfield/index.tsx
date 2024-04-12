@@ -12,7 +12,7 @@ export const InputTextField = ({ id, label, error, errorMessage, ...rest }: Prop
   const [focus, setFocus] = useState(false);
 
   return (
-    <Wrapper focused={focus}>
+    <Wrapper focused={focus} error={error}>
       {label && <Label htmlFor={id}>{label}</Label>}
       <InnerWrapper>
         <Input
