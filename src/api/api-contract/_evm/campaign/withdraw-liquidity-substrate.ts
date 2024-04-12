@@ -105,8 +105,8 @@ export const useWithdrawLiquidity = ({ bptIn, enabled }: Props) => {
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
       const remainder = gasCostInEth.mod(10 ** 12);
       const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
-      // const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
-      const gasCostInXrpPriority = gasCostInXRP.toBigInt();
+      const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+      // const gasCostInXrpPriority = gasCostInXRP.toBigInt();
 
       const evmFee = Number(formatUnits(gasCostInXrpPriority, 6));
 
