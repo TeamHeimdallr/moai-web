@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import ScrollContainer from 'react-indiana-drag-scroll';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import tw, { css, styled } from 'twin.macro';
@@ -159,6 +160,7 @@ export const SelectToken1PopupXrpl = ({ showAddToken }: Props) => {
             {recentlySelectedTokens && recentlySelectedTokens.length > 0 && (
               <RecommendInnerWrapper>
                 {t('Recent')}
+
                 <RecommendList>
                   {recentlySelectedTokens?.map(token => (
                     <Token
@@ -295,7 +297,7 @@ const RecommendWrapper = tw.div`
 const RecommendInnerWrapper = tw.div`
   flex flex-col gap-8 font-r-14 text-neutral-40
 `;
-const RecommendList = tw.div`
+const RecommendList = tw(ScrollContainer)`
   flex gap-8 w-full overflow-x-auto scrollbar-hide
 `;
 
