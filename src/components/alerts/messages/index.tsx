@@ -6,17 +6,16 @@ import { COLOR } from '~/assets/colors';
 import { IconAlert } from '~/assets/icons';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  type?: 'error' | 'warning';
+  type?: 'error' | 'warning' | 'info';
 
   title: string;
   description?: ReactNode;
+  icon?: ReactNode;
 }
-export const AlertMessage = ({ type = 'error', title, description, ...rest }: Props) => {
+export const AlertMessage = ({ type = 'error', title, description, icon, ...rest }: Props) => {
   return (
     <Wrapper type={type} {...rest}>
-      <IconWrapper>
-        <IconAlert />
-      </IconWrapper>
+      <IconWrapper>{icon ? icon : <IconAlert />}</IconWrapper>
       <TextWrapper>
         <Title>{title}</Title>
         {description && typeof description === 'string' ? (
@@ -30,7 +29,7 @@ export const AlertMessage = ({ type = 'error', title, description, ...rest }: Pr
 };
 
 interface WrapperProps {
-  type: 'error' | 'warning';
+  type: 'error' | 'warning' | 'info';
 }
 const Wrapper = styled.div<WrapperProps>(({ type }) => [
   tw`flex items-start gap-4 p-8 rounded-8`,
@@ -52,6 +51,16 @@ const Wrapper = styled.div<WrapperProps>(({ type }) => [
         width: 16px;
         height: 16px;
         fill: ${COLOR.ORANGE[50]};
+      }
+    `,
+
+  type === 'info' && tw`bg-neutral-20 text-neutral-90`,
+  type === 'info' &&
+    css`
+      & svg {
+        width: 16px;
+        height: 16px;
+        fill: ${COLOR.NEUTRAL[90]};
       }
     `,
 ]);
