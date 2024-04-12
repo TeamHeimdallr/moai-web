@@ -690,8 +690,8 @@
   "Points": "Points",
 
   "Bridge preview": "Bridge preview",
-  "Bridge Reqeust Success!": "Bridge Reqeust Success!",
-  "bridge-request-success-message": "Successfully requested the bridge. Bridge transaction takes 15 minutes. Please wail until you receive your XRP to the Metamask or Futurepass.",
+  "Bridge Request Success!": "Bridge Request Success!",
+  "bridge-request-success-message": "Successfully requested the bridge. Bridge transaction takes 15 minutes to 24 hours according to the amount of asset. Please wait until you receive your XRP to the Metamask or Futurepass.",
   "You're expected to receive bridge": "You're expected to receive",
   "Return to bridge page": "Return to bridge page",
   "Bridge failed": "Bridge failed",
