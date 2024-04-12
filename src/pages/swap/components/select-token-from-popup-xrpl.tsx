@@ -127,11 +127,7 @@ export const SelectFromTokenPopupXrpl = ({
   };
 
   return (
-    <Popup
-      id={POPUP_ID.SWAP_SELECT_TOKEN_FROM}
-      title={t('Select token')}
-      style={{ backgroundColor: COLOR.NEUTRAL[10] }}
-    >
+    <Popup id={POPUP_ID.SWAP_SELECT_TOKEN_FROM} title={t('Select token')}>
       <Wrapper ref={ref}>
         <SearchWrapper>
           <InputSearch

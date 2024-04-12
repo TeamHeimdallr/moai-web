@@ -153,11 +153,7 @@ export const FilterTokenPopupXrpl = ({ showAddToken }: Props) => {
   };
 
   return (
-    <Popup
-      id={POPUP_ID.XRPL_POOL_FILTER}
-      title={t('Select token')}
-      style={{ backgroundColor: COLOR.NEUTRAL[10] }}
-    >
+    <Popup id={POPUP_ID.XRPL_POOL_FILTER} title={t('Select token')}>
       <Wrapper ref={ref}>
         <SearchWrapper>
           <InputSearch
