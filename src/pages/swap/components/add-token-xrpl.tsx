@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import tw from 'twin.macro';
+import { isValidAddress, isValidClassicAddress, isValidXAddress } from 'xrpl';
 
 import { useCreateTokenXrplMutate } from '~/api/api-server/token/create-token-xrpl';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
@@ -56,14 +57,21 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
   const errorMessage = tokenExist
     ? t('add-token-already-exist')
     : createTokenErrorMessage === 'invalid currency or issuer address'
-    ? t('add-token-invalid-token')
+    ? t('Something went wrong')
     : t('Something went wrong');
 
   const errorDescription = tokenExist
     ? t('add-token-already-exist-description')
     : createTokenErrorMessage === 'invalid currency or issuer address'
-    ? t('add-token-invalid-token-description')
+    ? t('add-token-unknown-error')
     : t('add-token-unknown-error');
+
+  const invalidTokenCurrency = !!currency && currency.length !== 3 && currency.length !== 40;
+  const invalidTokenIssuer =
+    !!issuer &&
+    !isValidAddress(issuer) &&
+    !isValidClassicAddress(issuer) &&
+    !isValidXAddress(issuer);
 
   const createToken = async () => {
     if (tokenExist || !enableToFetch) return;
@@ -96,12 +104,16 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
         <InputTextField
           id="input-currency"
           label={t('Currency code (case-sensitive)')}
+          error={invalidTokenCurrency}
+          errorMessage={t('Invalid code')}
           placeholder={t('enter-code-xrpl')}
           onChange={e => setCurrency(e.target.value)}
         />
         <InputTextField
           id="input-issuer"
           label={t('Issuer')}
+          error={invalidTokenIssuer}
+          errorMessage={t('Invalid issuer')}
           placeholder={t('enter-issuer-xrpl')}
           onChange={e => setIssuer(e.target.value)}
         />

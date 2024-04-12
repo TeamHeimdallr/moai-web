@@ -711,8 +711,12 @@
   "enter-code-xrpl": "티커를 입력하세요.",
   "Issuer": "발행자",
   "enter-issuer-xrpl": "발행자를 입력하세요.",
+
   "add-token-already-exist": "이미 추가된 토큰입니다.",
   "add-token-already-exist-description": "목록에서 토큰을 검색하세요.",
+
+  "add-token-invalid-token": "문제가 발생했습니다.",
+  "add-token-unknown-error": "토큰 심볼과 발행자를 확인하고 다시 시도해보세요. 문제가 지속되면, 고객지원팀에 문의해주세요.",
 
   "Farming Incentives": "파밍 인센티브",
   "Farmed LP Tokens": "파밍한 LP 토큰",
