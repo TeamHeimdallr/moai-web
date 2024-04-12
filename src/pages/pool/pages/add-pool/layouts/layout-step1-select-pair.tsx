@@ -116,7 +116,7 @@ export const SelectPair = () => {
               {token1.symbol}
             </SelectedToken>
           ) : (
-            t('Select Token')
+            t('Select token')
           )}
           <ButtonIconSmall icon={<IconDown />} />
         </SelectToken>
@@ -127,7 +127,7 @@ export const SelectPair = () => {
               {token2.symbol}
             </SelectedToken>
           ) : (
-            t('Select Token')
+            t('Select token')
           )}
           <ButtonIconSmall icon={<IconDown />} />
         </SelectToken>
