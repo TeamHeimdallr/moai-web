@@ -262,7 +262,7 @@ const SearchWrapper = tw.div`
 `;
 const ContentContainer = styled.div(() => [
   tw`
-    px-12 flex flex-col gap-24 overflow-auto h-552
+    px-12 flex flex-col gap-24 overflow-auto h-444
     `,
   css`
     scroll-behavior: smooth;
