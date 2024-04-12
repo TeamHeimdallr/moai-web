@@ -164,6 +164,7 @@ const TokenWrapper = tw.div`
 `;
 const SelectToken = tw.div`
   flex-1 py-16 pl-10 pr-8 flex-center gap-4 bg-neutral-20 rounded-10 font-r-16 text-neutral-100 clickable
+  hover:(bg-neutral-30)
 `;
 
 const SelectedToken = tw.div`
