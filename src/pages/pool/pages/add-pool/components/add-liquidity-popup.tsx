@@ -1,11 +1,9 @@
 import { Fragment, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import objectHash from 'object-hash';
 import tw, { styled } from 'twin.macro';
-import { toHex } from 'viem';
 
 import { useAccountInfo } from '~/api/api-contract/_xrpl/account/account-info';
 import { useAmmCreate } from '~/api/api-contract/_xrpl/amm/amm-create';
@@ -16,7 +14,7 @@ import { useCreatePoolXrplMutate } from '~/api/api-server/pools/create-pool';
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { SCANNER_URL, THOUSAND } from '~/constants';
+import { ASSET_URL, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -229,12 +227,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
               title={`${formatNumber(bptOut, 4, 'floor', THOUSAND, 0)}`}
               subTitle={lpTokenSymbol}
               description={lpTokenValue ? `$${formatNumber(lpTokenValue)}` : '-'}
-              image={
-                <Jazzicon
-                  diameter={36}
-                  seed={jsNumberForAddress(toHex(lpTokenSymbol || '', { size: 42 }))}
-                />
-              }
+              image={`${ASSET_URL}/tokens/token-unknown.png`}
               leftAlign={true}
             />
           </List>

@@ -6,7 +6,7 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { IconLink } from '~/assets/icons';
 
-import { SCANNER_URL } from '~/constants';
+import { ASSET_URL, SCANNER_URL } from '~/constants';
 
 import { ButtonIconMedium } from '~/components/buttons/icon';
 import { Token } from '~/components/token';
@@ -65,7 +65,7 @@ export const PoolHeader = () => {
             const { symbol, image } = token;
             return (
               <Badge key={symbol + idx} style={{ left: idx * 28 }}>
-                <Image src={image} />
+                <Image src={image || `${ASSET_URL}/tokens/token-unknown.png`} />
               </Badge>
             );
           })}
