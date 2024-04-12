@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { differenceInDays, format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
@@ -32,6 +32,8 @@ const RewardsPage = () => {
     callCallbackUnmounted: true,
   });
 
+  const [hoveredWaveId, setHoveredWaveId] = useState<number | null>(null);
+
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
 
@@ -62,7 +64,11 @@ const RewardsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentWave?.waveId]);
 
-  const { startAt, endAt } = currentWave || {};
+  const { startAt: currentStartAt } = currentWave || {};
+  const currentWaveStartDate = new Date(currentStartAt || new Date());
+
+  const hoveredWave = waves?.find(w => w.waveId === hoveredWaveId);
+  const { startAt, endAt } = hoveredWave || {};
 
   const startAtDate = new Date(startAt || new Date());
   const endAtDate = new Date(endAt || new Date());
@@ -81,7 +87,7 @@ const RewardsPage = () => {
     if (!currentWave) return;
 
     const now = new Date();
-    const diff = differenceInDays(now, startAtDate);
+    const diff = differenceInDays(now, currentWaveStartDate);
 
     return currentWave.waveId === waveId && diff <= 10;
   };
@@ -110,6 +116,8 @@ const RewardsPage = () => {
                         key={waveId}
                         selected={waveId === selectedWaveId}
                         onClick={() => selectWaveId(waveId)}
+                        onMouseEnter={() => setHoveredWaveId(waveId)}
+                        onMouseLeave={() => setHoveredWaveId(null)}
                         data-tooltip-id={waveId >= 1 ? TOOLTIP_ID.REWARD_WAVE_INFO : undefined}
                       >
                         {t('Wave', { phase: waveId })}
@@ -131,7 +139,7 @@ const RewardsPage = () => {
         </InnerWrapper>
         <Footer />
       </Wrapper>
-      <Tooltip place="bottom" id={TOOLTIP_ID.REWARD_WAVE_INFO}>
+      <Tooltip place="bottom" id={TOOLTIP_ID.REWARD_WAVE_INFO} hidden={!hoveredWave}>
         <TooltipContent>{`${formattedStartAt}\n${formattedEndAt}.`}</TooltipContent>
       </Tooltip>
       {opened && <RewardsNetworkAlertPopup />}
