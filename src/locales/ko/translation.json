@@ -735,6 +735,7 @@
   "unfarm-failed-message": "LP 토큰 파밍 해제에 실패했습니다. 다시 시도해주세요.",
   "Total value to unfarm": "총 파밍 해제 가치",
   "Your total share": "총 지분",
+  "farm-reward-info": "리워드는 LP를 추가 파밍하거나 파밍 해제 시 받을 수 있습니다.",
 
   "approve-lp-farm-message": "파밍을 위해 LP 토큰 승인하기",
 

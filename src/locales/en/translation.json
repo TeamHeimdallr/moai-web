@@ -740,6 +740,7 @@
   "unfarm-failed-message": "Unfarm has failed. Please try again.",
   "Total value to unfarm": "Total value to unfarm",
   "Your total share": "Your total share",
+  "farm-reward-info": "Reward will be claimed once farming more LP or unfarm.",
 
   "approve-lp-farm-message": "Approve LP token for farming",
 

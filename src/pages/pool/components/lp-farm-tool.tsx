@@ -10,10 +10,11 @@ import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-t
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
-import { IconDown, IconFarming, IconTokenRoot } from '~/assets/icons';
+import { IconDown, IconFarming, IconInfo, IconTokenRoot } from '~/assets/icons';
 
 import { LP_FARM_ADDRESS_WITH_POOL_ID, TRILLION } from '~/constants';
 
+import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
 
 import { useGAAction } from '~/hooks/analaystics/ga-action';
@@ -185,6 +186,7 @@ export const LpFarmTool = () => {
                       <Value>{`$${formatNumber(pendingValue)}`}</Value>
                     </RewardBalanceWrapper>
                   </RewardAmount>
+                  <AlertMessage type="info" title={t('farm-reward-info')} icon={<IconInfo />} />
                 </RewardWarpper>
               )}
             </ContentWrapper>
