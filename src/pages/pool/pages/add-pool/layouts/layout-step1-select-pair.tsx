@@ -144,7 +144,7 @@ export const SelectPair = () => {
       )}
       <ButtonPrimaryLarge
         text={t('Next')}
-        disabled={isFetchingAmmData || isFetchingAmmDataDB || poolExist}
+        disabled={isFetchingAmmData || isFetchingAmmDataDB || poolExist || !token1 || !token2}
         onClick={goNext}
       />
 
