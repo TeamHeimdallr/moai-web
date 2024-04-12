@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { IconBack, IconNext } from '~/assets/icons';
@@ -14,6 +15,7 @@ import { useStep } from '../hooks/use-step';
 export const StepButton = () => {
   const { gaAction } = useGAAction();
 
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { step, goNext, goPrev, prevEnabled, nextEnabled } = useStep();
 
@@ -27,6 +29,11 @@ export const StepButton = () => {
   };
 
   const handlePrev = () => {
+    if (step === 1) {
+      navigate(-1);
+      return;
+    }
+
     gaAction({
       action: 'xrpl-app-pool-prev',
       data: { component: 'xrpl-app-pool', currentStep: step, nextStep: step - 1 },

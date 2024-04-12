@@ -31,7 +31,7 @@ export const useStep = () => {
 
   const isInitial = step === MIN_STEP && stepStatus1.status !== 'done' && !xrp.address;
 
-  const prevEnabled = !isInitial && step !== MIN_STEP;
+  const prevEnabled = true;
   const nextEnabled = useMemo(() => {
     if (isInitial) return false;
     if (step === MAX_STEP) return false;
