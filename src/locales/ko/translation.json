@@ -759,6 +759,7 @@
 
   "Exceeds 1%": "1%를 초과하였습니다.",
   "Total value": "총 가치",
+  "Confirm pool creation in wallet": "지갑 서명을 완료해주세요.",
   "Create a pool": "풀 만들기",
   "Create a pool preview": "풀 생성 미리보기",
   "pool-created-expected-to-receive": "수령 예정 풀 토큰",

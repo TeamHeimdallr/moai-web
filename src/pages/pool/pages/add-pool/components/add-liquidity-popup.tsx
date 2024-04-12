@@ -124,7 +124,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
       return t('Try again');
     }
 
-    if (isLoading) return t('Confirm pool creationl in wallet');
+    if (isLoading) return t('Confirm pool creation in wallet');
     return t('Create a pool');
   }, [isIdle, isLoading, isSuccess, t]);
 
