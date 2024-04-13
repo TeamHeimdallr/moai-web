@@ -17,12 +17,13 @@ export const PoolCompositionsChart = ({ data, poolId }: Props) => {
   const { t } = useTranslation();
   const { isMD } = useMediaQuery();
 
+  const nullPrice = data?.some(d => !d.price);
+
   const chartData = data.map(d => ({
     id: d.symbol,
-    value: d.currentWeight || 0,
+    value: nullPrice ? 0.5 : d.currentWeight || 0.5,
   }));
 
-  const nullPrice = data?.some(d => !d.price);
   const totalValue = data?.reduce((acc, cur) => acc + (cur?.value || 0), 0) || 0;
 
   const width = isMD ? 190 : 144;
