@@ -29,7 +29,12 @@ export const VotingSlots = () => {
               enableSelected
             />
           ) : (
-            <TableMobile data={mobileTableData} columns={mobileTableColumn} type="lighter" />
+            <TableMobile
+              data={mobileTableData}
+              columns={mobileTableColumn}
+              type="lighter"
+              enableSelected
+            />
           ))}
       </TableWrapper>
     </Wrapper>
