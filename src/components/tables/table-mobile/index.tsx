@@ -6,6 +6,8 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
+import { useConnectedWallet } from '~/hooks/wallets';
+
 interface Data {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   meta?: any;
@@ -29,6 +31,8 @@ interface Props {
   emptyText?: string;
   overflow?: string;
 
+  enableSelected?: boolean;
+
   handleMoreClick?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleClick?: (meta: any) => void;
@@ -44,10 +48,12 @@ export const TableMobile = ({
 
   skeletonHeight,
   overflow,
+  enableSelected,
 
   handleMoreClick,
   handleClick,
 }: Props) => {
+  const { currentAddress } = useConnectedWallet();
   const { t } = useTranslation();
 
   const isEmpty = !data || data.length === 0;
@@ -67,22 +73,34 @@ export const TableMobile = ({
       ) : isEmpty ? (
         <EmptyWrapper>{emptyText || 'No result'}</EmptyWrapper>
       ) : (
-        data.map(({ meta, rows, dataRows, bottomRows }, i) => (
-          <ContentWrapper key={i} onClick={() => handleClick?.(meta)} className={meta?.className}>
-            {rows.map((row, i) => (
-              <Row key={i}>{row}</Row>
-            ))}
-            <DataRowWrapper>
-              {dataRows.map(({ label, value }, i) => (
-                <DataRow key={i}>
-                  <DataLabel>{typeof label === 'string' ? t(label) : label}</DataLabel>
-                  <DataValue>{value}</DataValue>
-                </DataRow>
+        data.map(({ meta, rows, dataRows, bottomRows }, i) => {
+          const account = meta?.account;
+          // TODO: refactor, this is only for xrpl
+          const selected =
+            enableSelected && !!currentAddress && !!account && account === currentAddress;
+
+          return (
+            <ContentWrapper
+              key={i}
+              onClick={() => handleClick?.(meta)}
+              className={meta?.className}
+              selected={selected}
+            >
+              {rows.map((row, i) => (
+                <Row key={i}>{row}</Row>
               ))}
-            </DataRowWrapper>
-            {bottomRows && bottomRows.map((row, i) => <Row key={i}>{row}</Row>)}
-          </ContentWrapper>
-        ))
+              <DataRowWrapper>
+                {dataRows.map(({ label, value }, i) => (
+                  <DataRow key={i}>
+                    <DataLabel>{typeof label === 'string' ? t(label) : label}</DataLabel>
+                    <DataValue>{value}</DataValue>
+                  </DataRow>
+                ))}
+              </DataRowWrapper>
+              {bottomRows && bottomRows.map((row, i) => <Row key={i}>{row}</Row>)}
+            </ContentWrapper>
+          );
+        })
       )}
       {!isEmpty && hasMore && (
         <More onClick={handleMoreClick}>
@@ -126,15 +144,24 @@ const EmptyWrapper = tw.div`
 
 interface ContentWrapperProps {
   height?: number;
+  selected?: boolean;
 }
 
-const ContentWrapper = styled.div<ContentWrapperProps>(({ height }) => [
+const ContentWrapper = styled.div<ContentWrapperProps>(({ height, selected }) => [
   tw`
     flex flex-col gap-16 px-20 py-20
   `,
   height &&
     css`
       height: ${height}px;
+    `,
+  selected && tw`py-19 px-19 border-1 border-solid border-primary-50 rounded-12`,
+  // TODO: remove hardcode
+  selected &&
+    css`
+      & .voter {
+        color: ${COLOR.PRIMARY[50]};
+      }
     `,
 ]);
 

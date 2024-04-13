@@ -136,7 +136,9 @@ export const useTableFeeVoting = () => {
             <RowWrapper key={i}>
               <TableColumn value={i + 1} align="flex-start" />
               <TableColumnIconText
+                align="flex-end"
                 text={truncateAddress(d.account, 4)}
+                className="voter"
                 icon={
                   <Jazzicon
                     diameter={24}
