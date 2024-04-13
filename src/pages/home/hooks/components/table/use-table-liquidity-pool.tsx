@@ -6,7 +6,7 @@ import { uniqBy } from 'lodash-es';
 import { useUserLpFarmsDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
 import { useGetPoolsInfinityQuery } from '~/api/api-server/pools/get-pools';
 
-import { MILLION, TRILLION } from '~/constants';
+import { IS_MAINNET, MILLION, TRILLION } from '~/constants';
 
 import { NetworkChip } from '~/components/network-chip';
 import {
@@ -28,7 +28,7 @@ import {
   useTableLiquidityPoolSortStore,
   useTablePoolCompositionSelectTokenStore,
 } from '~/states/components';
-import { IPoolList } from '~/types';
+import { IPoolList, NETWORK } from '~/types';
 
 export const useTableLiquidityPool = () => {
   const navigate = useNavigate();
@@ -45,6 +45,11 @@ export const useTableLiquidityPool = () => {
 
   const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
 
+  // TODO: remove this
+  const url = window.location.href;
+  const isXrpl = currentNetwork === NETWORK.XRPL;
+  const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
+
   const getFilter = () => {
     // show all pool 의 경우 xrpl에서는 whitelist만 보여줌. 다른 네트워크에서는 전체 풀을 보여줌
     if (showAllPools) return undefined;
@@ -58,14 +63,17 @@ export const useTableLiquidityPool = () => {
     // xrpl인 경우 선택된 토큰이 있으면 whitelist와 관계없이 선택된 토큰이 포함된 풀을 보여줌
     return `network:eq:${currentNetworkAbbr}`;
   };
-  const { data, hasNextPage, fetchNextPage } = useGetPoolsInfinityQuery({
-    queries: {
-      take: 10,
-      filter: getFilter(),
-      sort: sort ? `${sort.key}:${sort.order}` : undefined,
-      tokens: selectedTokens.length > 0 ? selectedTokens.map(t => t.symbol).join(',') : undefined,
+  const { data, hasNextPage, fetchNextPage } = useGetPoolsInfinityQuery(
+    {
+      queries: {
+        take: 10,
+        filter: getFilter(),
+        sort: sort ? `${sort.key}:${sort.order}` : undefined,
+        tokens: selectedTokens.length > 0 ? selectedTokens.map(t => t.symbol).join(',') : undefined,
+      },
     },
-  });
+    { enabled: isXrpl ? isXrplPrivate : true }
+  );
   const pools = useMemo(
     () => (data?.pages?.flatMap(page => page.pools) || []) as IPoolList[],
     [data?.pages]
@@ -81,7 +89,7 @@ export const useTableLiquidityPool = () => {
     () =>
       poolWithFarm.map(d => {
         // pool에 xrp가 있는 경우, xrp를 기준으로 가격정보를 보여줌. xrp가 없는 경우 '-'로 표시
-        const hasXrp = !!d.compositions.find(t => t.symbol === 'XRP');
+        const hasPrice = isXrpl ? !!d.compositions.find(t => t.symbol === 'XRP') : true;
 
         return {
           meta: {
@@ -99,19 +107,19 @@ export const useTableLiquidityPool = () => {
           ),
           poolValue: (
             <TableColumn
-              value={hasXrp ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
+              value={hasPrice ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
               align="flex-end"
             />
           ),
           volume: (
             <TableColumn
-              value={hasXrp ? `$${formatNumber(d.volume, 2, 'floor', MILLION)}` : '-'}
+              value={hasPrice ? `$${formatNumber(d.volume, 2, 'floor', MILLION)}` : '-'}
               align="flex-end"
             />
           ),
           apr: (
             <TableColumnApr
-              value={hasXrp ? `${formatNumber(d.apr)}%` : '-'}
+              value={hasPrice ? `${formatNumber(d.apr)}%` : '-'}
               value2={
                 isFinite(d.farmApr)
                   ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
@@ -123,7 +131,7 @@ export const useTableLiquidityPool = () => {
           ),
         };
       }),
-    [poolWithFarm, showAllPools]
+    [poolWithFarm, showAllPools, isXrpl]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -182,7 +190,7 @@ export const useTableLiquidityPool = () => {
     () =>
       poolWithFarm.map(d => {
         // pool에 xrp가 있는 경우, xrp를 기준으로 가격정보를 보여줌. xrp가 없는 경우 '-'로 표시
-        const hasXrp = !!d.compositions.find(t => t.symbol === 'XRP');
+        const hasPrice = isXrpl ? !!d.compositions.find(t => t.symbol === 'XRP') : true;
 
         return {
           meta: {
@@ -205,7 +213,7 @@ export const useTableLiquidityPool = () => {
               label: 'Pool value',
               value: (
                 <TableColumn
-                  value={hasXrp ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
+                  value={hasPrice ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
                   align="flex-end"
                 />
               ),
@@ -214,7 +222,7 @@ export const useTableLiquidityPool = () => {
               label: 'Volume (24h)',
               value: (
                 <TableColumn
-                  value={hasXrp ? `$${formatNumber(d.volume, 2, 'floor', MILLION)}` : '-'}
+                  value={hasPrice ? `$${formatNumber(d.volume, 2, 'floor', MILLION)}` : '-'}
                   align="flex-end"
                 />
               ),
@@ -223,7 +231,7 @@ export const useTableLiquidityPool = () => {
               label: 'APR',
               value: (
                 <TableColumnApr
-                  value={hasXrp ? `${formatNumber(d.apr)}%` : '-'}
+                  value={hasPrice ? `${formatNumber(d.apr)}%` : '-'}
                   value2={
                     isFinite(d.farmApr)
                       ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
@@ -237,7 +245,7 @@ export const useTableLiquidityPool = () => {
           ],
         };
       }),
-    [poolWithFarm, showAllPools]
+    [poolWithFarm, showAllPools, isXrpl]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

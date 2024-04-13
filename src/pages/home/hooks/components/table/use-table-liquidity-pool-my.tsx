@@ -8,7 +8,7 @@ import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-tok
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 import { useGetPoolsQuery } from '~/api/api-server/pools/get-pools';
 
-import { MILLION, TRILLION } from '~/constants';
+import { IS_MAINNET, MILLION, TRILLION } from '~/constants';
 
 import {
   TableColumn,
@@ -24,7 +24,7 @@ import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
 import { formatNumber } from '~/utils/util-number';
 import { useTableMyLiquidityPoolSortStore } from '~/states/components';
-import { IMyPoolList } from '~/types';
+import { IMyPoolList, NETWORK } from '~/types';
 
 export const useTableMyLiquidityPool = () => {
   const [poolsRaw, setPools] = useState<IMyPoolList[]>();
@@ -47,6 +47,12 @@ export const useTableMyLiquidityPool = () => {
   );
   const allPools = allPoolsData?.pools;
 
+  // TODO: remove this
+  const url = window.location.href;
+  const isXrpl = selectedNetwork === NETWORK.XRPL;
+  const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
+
+  // const isXrplPrivate = url.includes('localhost');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const _poolWithDeposited = useUserLpFarmsDeposited({ pools: allPools as any });
   const poolWithDeposited = _poolWithDeposited
@@ -101,7 +107,7 @@ export const useTableMyLiquidityPool = () => {
   const isRequestEqual = isEqual(previous, poolWithDeposited);
 
   useEffect(() => {
-    if (!currentAddress) {
+    if (!currentAddress || !isXrplPrivate) {
       setPools([]);
       return;
     }
@@ -122,7 +128,7 @@ export const useTableMyLiquidityPool = () => {
 
     fetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [networkAbbr, currentAddress, isRequestEqual, sort?.key, sort?.order]);
+  }, [networkAbbr, currentAddress, isRequestEqual, sort?.key, sort?.order, isXrplPrivate]);
 
   const pools = useMemo(
     () => (poolsRaw?.slice(0, currentTake) || []) as IMyPoolList[],
@@ -139,7 +145,7 @@ export const useTableMyLiquidityPool = () => {
     () =>
       poolWithFarm?.map(d => {
         // pool에 xrp가 있는 경우, xrp를 기준으로 가격정보를 보여줌. xrp가 없는 경우 '-'로 표시
-        const hasXrp = !!d.compositions.find(t => t.symbol === 'XRP');
+        const hasPrice = isXrpl ? !!d.compositions.find(t => t.symbol === 'XRP') : true;
 
         return {
           meta: {
@@ -155,19 +161,19 @@ export const useTableMyLiquidityPool = () => {
           ),
           balance: (
             <TableColumn
-              value={hasXrp ? `$${formatNumber(d.balance, 2, 'floor', MILLION)}` : '-'}
+              value={hasPrice ? `$${formatNumber(d.balance, 2, 'floor', MILLION)}` : '-'}
               align="flex-end"
             />
           ),
           poolValue: (
             <TableColumn
-              value={hasXrp ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
+              value={hasPrice ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
               align="flex-end"
             />
           ),
           apr: (
             <TableColumnApr
-              value={hasXrp ? `${formatNumber(d.apr)}%` : '-'}
+              value={hasPrice ? `${formatNumber(d.apr)}%` : '-'}
               value2={
                 isFinite(d.farmApr)
                   ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
@@ -179,7 +185,7 @@ export const useTableMyLiquidityPool = () => {
           ),
         };
       }),
-    [poolWithFarm]
+    [isXrpl, poolWithFarm]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -221,7 +227,7 @@ export const useTableMyLiquidityPool = () => {
     () =>
       poolWithFarm.map(d => {
         // pool에 xrp가 있는 경우, xrp를 기준으로 가격정보를 보여줌. xrp가 없는 경우 '-'로 표시
-        const hasXrp = !!d.compositions.find(t => t.symbol === 'XRP');
+        const hasPrice = isXrpl ? !!d.compositions.find(t => t.symbol === 'XRP') : true;
 
         return {
           meta: {
@@ -239,7 +245,7 @@ export const useTableMyLiquidityPool = () => {
               label: 'Pool value',
               value: (
                 <TableColumn
-                  value={hasXrp ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
+                  value={hasPrice ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
                   align="flex-end"
                 />
               ),
@@ -248,7 +254,7 @@ export const useTableMyLiquidityPool = () => {
               label: 'My Balance',
               value: (
                 <TableColumn
-                  value={hasXrp ? `$${formatNumber(d.balance, 2, 'floor', MILLION)}` : '-'}
+                  value={hasPrice ? `$${formatNumber(d.balance, 2, 'floor', MILLION)}` : '-'}
                   align="flex-end"
                 />
               ),
@@ -257,7 +263,7 @@ export const useTableMyLiquidityPool = () => {
               label: 'My APR',
               value: (
                 <TableColumnApr
-                  value={hasXrp ? `${formatNumber(d.apr)}%` : '-'}
+                  value={hasPrice ? `${formatNumber(d.apr)}%` : '-'}
                   value2={
                     isFinite(d.farmApr)
                       ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
@@ -271,7 +277,7 @@ export const useTableMyLiquidityPool = () => {
           ],
         };
       }),
-    [poolWithFarm]
+    [isXrpl, poolWithFarm]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
