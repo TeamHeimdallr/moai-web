@@ -120,7 +120,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
 
   const buttonText = useMemo(() => {
     if (!isIdle) {
-      if (isSuccess) return t('Return to pool page');
+      if (isSuccess) return t('Go to pool page');
       return t('Try again');
     }
 
@@ -172,6 +172,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
     <Popup
       id={POPUP_ID.XRPL_ADD_LIQUIDITY_POPUP}
       title={isIdle ? t('Create a pool preview') : ''}
+      handleClose={created ? () => navigate(`/pools/xrpl/${created}`) : undefined}
       button={
         <ButtonWrapper onClick={() => handleButtonClick()}>
           <ButtonPrimaryLarge
