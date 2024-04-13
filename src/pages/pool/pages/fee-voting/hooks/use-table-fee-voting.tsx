@@ -7,6 +7,7 @@ import tw from 'twin.macro';
 import { toHex } from 'viem';
 
 import { useAmmInfoByAccount } from '~/api/api-contract/_xrpl/amm/amm-info';
+import { useUsersLpTokenBalance } from '~/api/api-contract/_xrpl/balance/lp-token-balance';
 
 import {
   TableColumn,
@@ -28,16 +29,31 @@ export const useTableFeeVoting = () => {
 
   const { data: ammData } = useAmmInfoByAccount({ account: id || '', enabled: isXrp && !!id });
   const { amm } = ammData || {};
-  const { vote_slots: votingSlots } = amm || {};
+  const { vote_slots: votingSlots, lp_token: lpToken } = amm || {};
+  const { value: lpTokenValue } = lpToken || {};
 
   const { sort, setSort } = useTableFeeVotingSortStore();
 
+  const { data: voterLp } = useUsersLpTokenBalance({
+    lpToken: lpToken?.issuer || '',
+    users: votingSlots?.map(slot => slot.account) || [],
+  });
+  const voterLpWeight = voterLp?.map(voter => {
+    const voteSlot = votingSlots?.find(slot => slot.account === voter.account);
+
+    return {
+      ...voter,
+      tradingFee: Number(voteSlot?.trading_fee || 0) / 1000,
+      weight: voter.balance ? (voter.balance / Number(lpTokenValue || 0)) * 100 : 0,
+    };
+  });
+
   const sortedVotingSlots = useMemo(
     () =>
-      votingSlots?.sort((a, b) =>
-        sort?.order === 'desc' ? b.vote_weight - a.vote_weight : a.vote_weight - b.vote_weight
+      voterLpWeight?.sort((a, b) =>
+        sort?.order === 'desc' ? b.weight - a.weight : a.weight - b.weight
       ),
-    [sort?.order, votingSlots]
+    [sort?.order, voterLpWeight]
   );
 
   const tableData = useMemo(
@@ -50,6 +66,7 @@ export const useTableFeeVoting = () => {
           rank: <TableColumn value={i + 1} align="flex-start" />,
           voter: (
             <TableColumnIconText
+              className="voter"
               text={truncateAddress(d.account, 4)}
               icon={
                 <Jazzicon
@@ -60,8 +77,10 @@ export const useTableFeeVoting = () => {
               address
             />
           ),
-          fee: <TableColumn value={`${strip(d.trading_fee / 1000)}%`} align="flex-end" />,
-          weight: <TableColumn value={`${strip(d.vote_weight / 1000)}%`} align="flex-end" />,
+          fee: (
+            <TableColumn value={`${Number(strip(d.tradingFee).toFixed(3))}%`} align="flex-end" />
+          ),
+          weight: <TableColumn value={`${strip(d.weight).toFixed(3)}%`} align="flex-end" />,
         };
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

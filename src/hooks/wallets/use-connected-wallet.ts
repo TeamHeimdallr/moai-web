@@ -18,6 +18,7 @@ import { NETWORK, POPUP_ID } from '~/types';
 
 import { usePopup } from '../components';
 import { useXrpl } from '../contexts';
+import { useNetwork } from '../contexts/use-network';
 
 import { useFuturepassOf } from './use-futurepass-of';
 import {
@@ -53,8 +54,10 @@ interface UseConnectedWallet {
   anyAddress: string | undefined;
   currentAddress: string | undefined;
 }
-export const useConnectedWallet = (network?: NETWORK): UseConnectedWallet => {
+export const useConnectedWallet = (_network?: NETWORK): UseConnectedWallet => {
   const { selectedWallet: selectedWalletTRN } = useTheRootNetworkSwitchWalletStore();
+  const { selectedNetwork } = useNetwork();
+  const network = _network || selectedNetwork;
 
   const { evm, fpass } = useConnectedEvmWallet();
   const xrp = useConnectedXrplWallet();

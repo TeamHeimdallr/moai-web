@@ -56,7 +56,7 @@ const FeeVotingPage = () => {
                 { key: 'fee-voting', text: 'Fee Voting', selected: true },
               ]}
               handleClick={item => {
-                if (item.key === 'pool') navigate(`/pools`);
+                if (item.key === 'pool') navigate(`/`);
                 if (item.key === 'pool-detail') navigate(`/pools/${currentNetworkAbbr}/${id}`);
                 return;
               }}
