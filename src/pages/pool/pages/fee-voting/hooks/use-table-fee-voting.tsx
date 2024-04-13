@@ -150,11 +150,16 @@ export const useTableFeeVoting = () => {
           dataRows: [
             {
               label: 'Fee',
-              value: <TableColumn value={`${strip(d.trading_fee / 1000)}%`} align="flex-end" />,
+              value: (
+                <TableColumn
+                  value={`${Number(strip(d.tradingFee).toFixed(3))}%`}
+                  align="flex-end"
+                />
+              ),
             },
             {
               label: 'Weight',
-              value: <TableColumn value={`${strip(d.vote_weight / 1000)}%`} align="flex-end" />,
+              value: <TableColumn value={`${strip(d.weight).toFixed(3)}%`} align="flex-end" />,
             },
           ],
         };
