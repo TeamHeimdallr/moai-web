@@ -73,6 +73,7 @@ const _AddLiquidityInputGroup = () => {
 
   const ableToAddLiquidityTokens = userTokenBalances.filter(token => token.balance > 0);
   const isValidToAddLiquidity = ableToAddLiquidityTokens.length > 0;
+  const inputError = !!formState.errors.input1?.message || !!formState.errors.input2?.message;
 
   const totalValue = userTokenBalances.some(t => !t.price)
     ? undefined
@@ -94,6 +95,10 @@ const _AddLiquidityInputGroup = () => {
   const handleMax = () => {
     setValue('input1', userTokenBalances?.[0]?.balance || 0);
     setValue('input2', userTokenBalances?.[1]?.balance || 0);
+  };
+  const handleCreatePool = () => {
+    if (!isValidToAddLiquidity || inputError || !_input1 || !_input2) return;
+    popupOpen();
   };
 
   return (
@@ -157,7 +162,11 @@ const _AddLiquidityInputGroup = () => {
         </ContentWrapper>
       </InnerWrapper>
 
-      <ButtonPrimaryLarge text={t('Create a pool')} onClick={() => popupOpen()} disabled={false} />
+      <ButtonPrimaryLarge
+        text={t('Create a pool')}
+        onClick={handleCreatePool}
+        disabled={!isValidToAddLiquidity || inputError || !_input1 || !_input2}
+      />
 
       {popupOpened && <AddLiquidityPopup tokensIn={tokensIn} />}
     </Wrapper>

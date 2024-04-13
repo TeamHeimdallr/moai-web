@@ -25,6 +25,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   maxWidth?: number;
 
   zIndex?: number;
+  handleClose?: () => void;
 }
 
 export const Popup = ({
@@ -35,6 +36,7 @@ export const Popup = ({
   icon,
   setting,
   disableClose,
+  handleClose: handleCloseProp,
   maxWidth,
   zIndex,
   ...rest
@@ -45,6 +47,7 @@ export const Popup = ({
 
   const handleClose = () => {
     if (disableClose) return;
+    handleCloseProp?.();
     close();
   };
   useOnClickOutside(popupRef, handleClose);
