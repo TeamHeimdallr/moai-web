@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import tw from 'twin.macro';
 import { isValidAddress, isValidClassicAddress, isValidXAddress } from 'xrpl';
@@ -59,11 +59,20 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
     ? t('Something went wrong')
     : t('Something went wrong');
 
-  const errorDescription = tokenExist
-    ? t('add-token-already-exist-description')
-    : createTokenErrorMessage === 'invalid currency or issuer address'
-    ? t('add-token-unknown-error')
-    : t('add-token-unknown-error');
+  const errorDescription = tokenExist ? (
+    t('add-token-already-exist-description')
+  ) : (
+    <ErrorMessageWrapper>
+      <Trans i18nKey="add-token-unknown-error">
+        _
+        <Link
+          onClick={() =>
+            window.open('https://discord.com/channels/1174206838238101604/1174287471090081824')
+          }
+        />
+      </Trans>
+    </ErrorMessageWrapper>
+  );
 
   const invalidTokenCurrency = !!currency && currency.length !== 3 && currency.length !== 40;
   const invalidTokenIssuer =
@@ -129,4 +138,9 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
 
 const Wrapper = tw.div`
   pt-4 px-24 flex flex-col gap-24
+`;
+
+const ErrorMessageWrapper = tw.div``;
+const Link = tw.span`
+  underline clickable
 `;

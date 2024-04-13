@@ -717,7 +717,8 @@
   "add-token-invalid-token": "Currency code, Issuer is not valid.",
   "add-token-invalid-token-description": "No token was found. Please check again.",
 
-  "add-token-unknown-error": "Please check your currency code, issuer and try again. If the issue persists, contact to our support team.",
+  "add-token-unknown-error": "Please check your currency code, issuer and try again. If the issue persists, <1>contact</1> to our support team.",
+  "contact": "contact",
 
   "Farming Incentives": "Farming Incentives",
   "Farmed LP Tokens": "Farmed LP Tokens",
