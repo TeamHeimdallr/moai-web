@@ -716,7 +716,8 @@
   "add-token-already-exist-description": "목록에서 토큰을 검색하세요.",
 
   "add-token-invalid-token": "문제가 발생했습니다.",
-  "add-token-unknown-error": "토큰 심볼과 발행자를 확인하고 다시 시도해보세요. 문제가 지속되면, 고객지원팀에 문의해주세요.",
+  "add-token-unknown-error": "토큰 심볼과 발행자를 확인하고 다시 시도해보세요. 문제가 지속되면, 고객지원팀에 <1>문의</1>해주세요.",
+  "contact": "문의",
 
   "Farming Incentives": "파밍 인센티브",
   "Farmed LP Tokens": "파밍한 LP 토큰",
