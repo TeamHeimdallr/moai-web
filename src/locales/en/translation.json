@@ -790,5 +790,9 @@
   "Your weight": "Your weight",
   "Expected fee after vote": "Expected fee after vote",
   "Vote": "Vote",
-  "Trading fee": "Trading fee"
+  "Trading fee": "Trading fee",
+
+  "No Reliable Price": "No Reliable Price",
+  "reliable-pool-value": "Pool Value",
+  "Not enough data to estimate": "Not enough data to estimate"
 }

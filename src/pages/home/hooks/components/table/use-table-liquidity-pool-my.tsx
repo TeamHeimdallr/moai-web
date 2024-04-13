@@ -137,40 +137,48 @@ export const useTableMyLiquidityPool = () => {
 
   const tableData = useMemo(
     () =>
-      poolWithFarm?.map(d => ({
-        meta: {
-          id: d.id,
-          poolId: d.poolId,
-          network: d.network,
-        },
-        compositions: (
-          <TableColumnToken
-            tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
-            disableSelectedToken
-          />
-        ),
-        balance: (
-          <TableColumn
-            value={`$${formatNumber(d.balance, 2, 'floor', MILLION)}`}
-            align="flex-end"
-          />
-        ),
-        poolValue: (
-          <TableColumn value={`$${formatNumber(d.value, 2, 'floor', MILLION)}`} align="flex-end" />
-        ),
-        apr: (
-          <TableColumnApr
-            value={`${formatNumber(d.apr)}%`}
-            value2={
-              isFinite(d.farmApr)
-                ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
-                : undefined
-            }
-            network={d.network}
-            align="flex-end"
-          />
-        ),
-      })),
+      poolWithFarm?.map(d => {
+        // pool에 xrp가 있는 경우, xrp를 기준으로 가격정보를 보여줌. xrp가 없는 경우 '-'로 표시
+        const hasXrp = !!d.compositions.find(t => t.symbol === 'XRP');
+
+        return {
+          meta: {
+            id: d.id,
+            poolId: d.poolId,
+            network: d.network,
+          },
+          compositions: (
+            <TableColumnToken
+              tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+              disableSelectedToken
+            />
+          ),
+          balance: (
+            <TableColumn
+              value={hasXrp ? `$${formatNumber(d.balance, 2, 'floor', MILLION)}` : '-'}
+              align="flex-end"
+            />
+          ),
+          poolValue: (
+            <TableColumn
+              value={hasXrp ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
+              align="flex-end"
+            />
+          ),
+          apr: (
+            <TableColumnApr
+              value={hasXrp ? `${formatNumber(d.apr)}%` : '-'}
+              value2={
+                isFinite(d.farmApr)
+                  ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+                  : undefined
+              }
+              network={d.network}
+              align="flex-end"
+            />
+          ),
+        };
+      }),
     [poolWithFarm]
   );
 
@@ -211,53 +219,58 @@ export const useTableMyLiquidityPool = () => {
 
   const mobileTableData = useMemo(
     () =>
-      poolWithFarm.map(d => ({
-        meta: {
-          poolId: d.poolId,
-          network: getNetworkAbbr(d.network),
-        },
-        rows: [
-          <TableColumnToken
-            key={d.id}
-            tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
-          />,
-        ],
-        dataRows: [
-          {
-            label: 'Pool value',
-            value: (
-              <TableColumn
-                value={`$${formatNumber(d.value, 2, 'floor', MILLION)}`}
-                align="flex-end"
-              />
-            ),
+      poolWithFarm.map(d => {
+        // pool에 xrp가 있는 경우, xrp를 기준으로 가격정보를 보여줌. xrp가 없는 경우 '-'로 표시
+        const hasXrp = !!d.compositions.find(t => t.symbol === 'XRP');
+
+        return {
+          meta: {
+            poolId: d.poolId,
+            network: getNetworkAbbr(d.network),
           },
-          {
-            label: 'My Balance',
-            value: (
-              <TableColumn
-                value={`$${formatNumber(d.balance, 2, 'floor', MILLION)}`}
-                align="flex-end"
-              />
-            ),
-          },
-          {
-            label: 'My APR',
-            value: (
-              <TableColumnApr
-                value={`${formatNumber(d.apr)}%`}
-                value2={
-                  isFinite(d.farmApr)
-                    ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
-                    : undefined
-                }
-                network={d.network}
-                align="flex-end"
-              />
-            ),
-          },
-        ],
-      })),
+          rows: [
+            <TableColumnToken
+              key={d.id}
+              tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+            />,
+          ],
+          dataRows: [
+            {
+              label: 'Pool value',
+              value: (
+                <TableColumn
+                  value={hasXrp ? `$${formatNumber(d.value, 2, 'floor', MILLION)}` : '-'}
+                  align="flex-end"
+                />
+              ),
+            },
+            {
+              label: 'My Balance',
+              value: (
+                <TableColumn
+                  value={hasXrp ? `$${formatNumber(d.balance, 2, 'floor', MILLION)}` : '-'}
+                  align="flex-end"
+                />
+              ),
+            },
+            {
+              label: 'My APR',
+              value: (
+                <TableColumnApr
+                  value={hasXrp ? `${formatNumber(d.apr)}%` : '-'}
+                  value2={
+                    isFinite(d.farmApr)
+                      ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+                      : undefined
+                  }
+                  network={d.network}
+                  align="flex-end"
+                />
+              ),
+            },
+          ],
+        };
+      }),
     [poolWithFarm]
   );
 
