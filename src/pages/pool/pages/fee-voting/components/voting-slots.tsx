@@ -26,6 +26,7 @@ export const VotingSlots = () => {
               columns={tableColumns}
               ratio={['48px', 1, 1, 1]}
               type="lighter"
+              enableSelected
             />
           ) : (
             <TableMobile data={mobileTableData} columns={mobileTableColumn} type="lighter" />

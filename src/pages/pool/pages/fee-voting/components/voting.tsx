@@ -9,7 +9,10 @@ import * as yup from 'yup';
 
 import { useAmmInfoByAccount } from '~/api/api-contract/_xrpl/amm/amm-info';
 import { useAmmVote } from '~/api/api-contract/_xrpl/amm/amm-vote';
-import { useUserLpTokenBalance } from '~/api/api-contract/_xrpl/balance/lp-token-balance';
+import {
+  useUserLpTokenBalance,
+  useUsersLpTokenBalance,
+} from '~/api/api-contract/_xrpl/balance/lp-token-balance';
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { COLOR } from '~/assets/colors';
@@ -55,15 +58,26 @@ export const Voting = () => {
   const { trading_fee: tradingFee, lp_token: lpToken, vote_slots: voteSlots } = amm || {};
 
   const { value: lpTokenValue } = lpToken || {};
-  const sortedVoteSlots = voteSlots?.sort((a, b) => b.vote_weight - a.vote_weight);
+
+  const { data: voterLp } = useUsersLpTokenBalance({
+    lpToken: lpToken?.issuer || '',
+    users: voteSlots?.map(slot => slot.account) || [],
+  });
+  const voterLpWeight = voterLp?.map(voter => {
+    const voteSlot = voteSlots?.find(slot => slot.account === voter.account);
+
+    return {
+      ...voter,
+      tradingFee: Number(voteSlot?.trading_fee || 0) / 1000,
+      weight: voter.balance ? (voter.balance / Number(lpTokenValue || 0)) * 100 : 0,
+    };
+  });
+
+  const sortedVoteSlots = voterLpWeight?.sort((a, b) => b.weight - a.weight);
   const lastVoteSlot = sortedVoteSlots?.[sortedVoteSlots.length - 1];
 
   const formattedTradingFee = strip((tradingFee || 0) / 1000);
 
-  const { data: lastVoterLp } = useUserLpTokenBalance({
-    lpToken: lpToken?.issuer || '',
-    user: lastVoteSlot?.account || '',
-  });
   const { data: currentUserLp } = useUserLpTokenBalance({
     lpToken: lpToken?.issuer || '',
     user: address || '',
@@ -96,14 +110,11 @@ export const Voting = () => {
 
     const newList = [
       ...sortedVoteSlots.slice(0, sortedVoteSlots.length - 1),
-      { vote_weight: currentWeight * 1000, trading_fee: proposed * 1000 },
+      { account: address, balance: currentUserLp, weight: currentWeight, tradingFee: proposed },
     ];
 
-    const weightSum = newList.reduce((acc, cur) => acc + cur.vote_weight / 1000, 0);
-    const weightRatioSum = newList.reduce(
-      (acc, cur) => acc + (cur.vote_weight / 1000) * (cur.trading_fee / 1000),
-      0
-    );
+    const weightSum = newList.reduce((acc, cur) => acc + cur.weight, 0);
+    const weightRatioSum = newList.reduce((acc, cur) => acc + cur.weight * cur.tradingFee, 0);
     return Number(strip(weightRatioSum / weightSum).toFixed(3));
   };
 
@@ -114,9 +125,13 @@ export const Voting = () => {
   });
 
   useEffect(() => {
-    if (currentUserLp < lastVoterLp) setWeightError(true);
+    if (
+      !currentUserLp ||
+      (currentUserLp < lastVoteSlot.balance && (sortedVoteSlots?.length || 0) === 8)
+    )
+      setWeightError(true);
     else setWeightError(false);
-  }, [currentUserLp, lastVoterLp]);
+  }, [currentUserLp, lastVoteSlot.balance, sortedVoteSlots?.length]);
 
   useEffect(() => {
     if (!isIdle && txData && (isSuccess || isError)) {
