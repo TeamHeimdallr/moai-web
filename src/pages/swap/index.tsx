@@ -24,6 +24,10 @@ const SwapPage = () => {
 
   const { selectedNetwork } = useNetwork();
 
+  const url = window.location.href;
+  const isXrpl = selectedNetwork === NETWORK.XRPL;
+  const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
+
   return (
     <Wrapper ref={ref}>
       <GnbWrapper banner={!!bannerOpened}>
@@ -34,13 +38,12 @@ const SwapPage = () => {
           <Title>{t('Swap')}</Title>
 
           <SwapWrapper>
-            {/* TODO: Change after XRPL AMM MAINNET Launched */}
             {/* TODO: AMM remove this */}
-            {selectedNetwork === NETWORK.XRPL ? (
-              IS_MAINNET ? (
-                <SwapInputGroup />
-              ) : (
+            {isXrpl ? (
+              isXrplPrivate ? (
                 <SwapInputGroupXrpl />
+              ) : (
+                <SwapInputGroup />
               )
             ) : (
               <SwapInputGroup />
