@@ -45,7 +45,7 @@ export const useTableLiquidityPool = () => {
 
   const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
 
-  // TODO: remove this
+  // TODO: AMM remove this
   const url = window.location.href;
   const isXrpl = currentNetwork === NETWORK.XRPL;
   const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));

@@ -47,12 +47,11 @@ export const useTableMyLiquidityPool = () => {
   );
   const allPools = allPoolsData?.pools;
 
-  // TODO: remove this
+  // TODO: AMM remove this
   const url = window.location.href;
   const isXrpl = selectedNetwork === NETWORK.XRPL;
   const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
 
-  // const isXrplPrivate = url.includes('localhost');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const _poolWithDeposited = useUserLpFarmsDeposited({ pools: allPools as any });
   const poolWithDeposited = _poolWithDeposited

@@ -35,6 +35,7 @@ const SwapPage = () => {
 
           <SwapWrapper>
             {/* TODO: Change after XRPL AMM MAINNET Launched */}
+            {/* TODO: AMM remove this */}
             {selectedNetwork === NETWORK.XRPL ? (
               IS_MAINNET ? (
                 <SwapInputGroup />

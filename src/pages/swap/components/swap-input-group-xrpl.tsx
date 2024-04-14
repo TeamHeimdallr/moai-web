@@ -53,7 +53,7 @@ const _SwapInputGroup = () => {
   const { xrp } = useConnectedWallet();
   const walletAddress = useMemo(() => xrp?.address || '', [xrp]);
 
-  // TODO: remove this
+  // TODO: AMM remove this
   const url = window.location.href;
   const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
 
