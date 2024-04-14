@@ -73,7 +73,7 @@ export const useFeeProxy = ({
 
       const estimatedGas = await publicClient.estimateContractGas(estimateContractGasParameters);
 
-      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const maxFeePerGas = feeHistory.baseFeePerGas[0] || 7500000000000n;
       const gasCostInEth = BigNumber.from(estimatedGas).mul(Number(maxFeePerGas).toFixed());
       const remainder = gasCostInEth.mod(10 ** 12);
       const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
@@ -84,7 +84,7 @@ export const useFeeProxy = ({
         encodedData,
         0,
         estimatedGas,
-        feeHistory.baseFeePerGas[0],
+        feeHistory.baseFeePerGas[0] || 7500000000000n,
         0,
         null,
         []
