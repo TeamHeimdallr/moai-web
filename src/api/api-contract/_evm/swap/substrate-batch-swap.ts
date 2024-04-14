@@ -125,7 +125,7 @@ export const useBatchSwap = ({
         account: walletAddress as Address,
       });
 
-      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const maxFeePerGas = feeHistory.baseFeePerGas[0] || 7500000000000n;
       const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
       const remainder = gasCostInEth.mod(10 ** 12);
       const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
@@ -136,7 +136,7 @@ export const useBatchSwap = ({
         encodedData,
         0,
         gas,
-        feeHistory.baseFeePerGas[0],
+        feeHistory.baseFeePerGas[0] || 7500000000000n,
         0,
         null,
         []
@@ -208,7 +208,7 @@ export const useBatchSwap = ({
         account: walletAddress as Address,
       });
 
-      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const maxFeePerGas = feeHistory.baseFeePerGas[0] || 7500000000000n;
       const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
       const remainder = gasCostInEth.mod(10 ** 12);
       const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
@@ -219,7 +219,7 @@ export const useBatchSwap = ({
         encodedData,
         0,
         gas,
-        feeHistory.baseFeePerGas[0],
+        feeHistory.baseFeePerGas[0] || 7500000000000n,
         0,
         null,
         []

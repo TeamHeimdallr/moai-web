@@ -103,7 +103,7 @@ export const useBridgeEthToRoot = ({ amount, destination, tokenId, enabled }: Pr
       value: token?.symbol === 'ETH' ? amount + parseEther('0.0003') : parseEther('0.0003'),
     });
 
-    const maxFeePerGas = feeHistory.baseFeePerGas[0];
+    const maxFeePerGas = feeHistory.baseFeePerGas[0] || 7500000000000n;
     const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
     const remainder = gasCostInEth.mod(10 ** 12);
     const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);

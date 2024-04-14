@@ -87,7 +87,7 @@ export const useRepay = ({ token, enabled, isMax }: Props) => {
         account: walletAddress as Address,
       });
 
-      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const maxFeePerGas = feeHistory.baseFeePerGas[0] || 7500000000000n;
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
       const remainder = gasCostInEth.mod(10 ** 12);
       const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
@@ -98,7 +98,7 @@ export const useRepay = ({ token, enabled, isMax }: Props) => {
         encodedData,
         0,
         evmGas, // around 18k
-        feeHistory.baseFeePerGas[0],
+        feeHistory.baseFeePerGas[0] || 7500000000000n,
         0,
         null,
         []
@@ -171,7 +171,7 @@ export const useRepay = ({ token, enabled, isMax }: Props) => {
         account: walletAddress as Address,
       });
 
-      const maxFeePerGas = feeHistory.baseFeePerGas[0];
+      const maxFeePerGas = feeHistory.baseFeePerGas[0] || 7500000000000n;
       const gasCostInEth = BigNumber.from(evmGas).mul(Number(maxFeePerGas).toFixed());
       const remainder = gasCostInEth.mod(10 ** 12);
       const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
@@ -182,7 +182,7 @@ export const useRepay = ({ token, enabled, isMax }: Props) => {
         encodedData,
         0,
         evmGas,
-        feeHistory.baseFeePerGas[0],
+        feeHistory.baseFeePerGas[0] || 7500000000000n,
         0,
         null,
         []
