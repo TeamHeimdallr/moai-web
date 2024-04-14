@@ -8,6 +8,8 @@ import tw, { css, styled } from 'twin.macro';
 import { COLOR } from '~/assets/colors';
 import { IconDown } from '~/assets/icons';
 
+import { useConnectedWallet } from '~/hooks/wallets';
+
 interface ReactTableProps<T extends object> {
   data: T[];
   columns: ColumnDef<T, ReactNode>[];
@@ -24,6 +26,7 @@ interface ReactTableProps<T extends object> {
   slim?: boolean;
 
   disableHover?: boolean;
+  enableSelected?: boolean;
 
   handleMoreClick?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,10 +48,13 @@ export const Table = <T extends object>({
   slim,
 
   disableHover,
+  enableSelected,
 
   handleMoreClick,
   handleRowClick,
 }: ReactTableProps<T>) => {
+  const { currentAddress } = useConnectedWallet();
+
   const table = useReactTable({
     data,
     columns,
@@ -91,31 +97,40 @@ export const Table = <T extends object>({
         <EmptyText>{emptyText ?? 'No result'}</EmptyText>
       ) : (
         <Body>
-          {table.getRowModel().rows.map(
-            (row, i) =>
-              row && (
-                <BodyInnerWrapper
-                  key={row.id + i}
-                  ratio={tableRatio}
-                  type={type}
-                  slim={slim}
-                  disableHover={disableHover}
-                  rounded={!hasMore && !isLoading}
-                  onClick={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    handleRowClick?.(row.getValue('meta'));
-                  }}
+          {table.getRowModel().rows.map((row, i) => {
+            if (!row) return;
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const meta = row.getValue('meta') as any;
+            const account = meta?.account;
+            // TODO: refactor, this is only for xrpl
+            const selected =
+              enableSelected && !!currentAddress && !!account && account === currentAddress;
+
+            return (
+              <BodyInnerWrapper
+                key={row.id + i}
+                ratio={tableRatio}
+                type={type}
+                slim={slim}
+                disableHover={disableHover}
+                rounded={!hasMore && !isLoading}
+                selected={selected}
+                onClick={() => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  className={(row.getValue('meta') as any)?.className}
-                >
-                  {row.getVisibleCells().map((cell, i) => (
-                    <Fragment key={cell.id + i}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </Fragment>
-                  ))}
-                </BodyInnerWrapper>
-              )
-          )}
+                  handleRowClick?.(row.getValue('meta'));
+                }}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                className={(row.getValue('meta') as any)?.className}
+              >
+                {row.getVisibleCells().map((cell, i) => (
+                  <Fragment key={cell.id + i}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Fragment>
+                ))}
+              </BodyInnerWrapper>
+            );
+          })}
           {hasMore && (
             <More onClick={handleMoreClick}>
               {t('Load more')}
@@ -172,21 +187,33 @@ interface BTRProps {
 
   slim?: boolean;
   disableHover?: boolean;
+  selected?: boolean;
 }
-const BodyInnerWrapper = styled.div<BTRProps>(({ rounded, ratio, type, slim, disableHover }) => [
-  tw`
+const BodyInnerWrapper = styled.div<BTRProps>(
+  ({ rounded, ratio, type, slim, disableHover, selected }) => [
+    tw`
     grid w-full h-full px-24 py-20 gap-16
   `,
-  rounded && tw`last:(rounded-b-10)`,
-  slim && tw`gap-8`,
-  !disableHover && (type === 'lighter' ? tw`hover:bg-neutral-17` : tw`hover:bg-neutral-15`),
-  !disableHover && tw`clickable`,
-  css`
-    & {
-      grid-template-columns: ${ratio};
-    }
-  `,
-]);
+    rounded && tw`last:(rounded-b-10)`,
+    slim && tw`gap-8`,
+    !disableHover && (type === 'lighter' ? tw`hover:bg-neutral-17` : tw`hover:bg-neutral-15`),
+    !disableHover && tw`clickable`,
+    selected && tw`py-19 px-23 border-1 border-solid border-primary-50 rounded-12`,
+    css`
+      & {
+        grid-template-columns: ${ratio};
+      }
+    `,
+
+    // TODO: remove hardcode
+    selected &&
+      css`
+        & .voter {
+          color: ${COLOR.PRIMARY[50]};
+        }
+      `,
+  ]
+);
 
 interface DividerProps {
   type?: 'darker' | 'lighter';

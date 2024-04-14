@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import ScrollContainer from 'react-indiana-drag-scroll';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import tw, { css, styled } from 'twin.macro';
@@ -13,7 +14,7 @@ import { useSearchTokensQuery } from '~/api/api-server/token/search-tokens';
 import { COLOR } from '~/assets/colors';
 import { IconDown, IconPlus } from '~/assets/icons';
 
-import { MILLION } from '~/constants';
+import { ASSET_URL, MILLION } from '~/constants';
 
 import { ButtonPrimarySmallIconLeading } from '~/components/buttons/primary/small-icon-leading';
 import { InputSearch } from '~/components/inputs';
@@ -127,11 +128,7 @@ export const SelectFromTokenPopupXrpl = ({
   };
 
   return (
-    <Popup
-      id={POPUP_ID.SWAP_SELECT_TOKEN_FROM}
-      title={t('Select token')}
-      style={{ backgroundColor: COLOR.NEUTRAL[10] }}
-    >
+    <Popup id={POPUP_ID.SWAP_SELECT_TOKEN_FROM} title={t('Select token')}>
       <Wrapper ref={ref}>
         <SearchWrapper>
           <InputSearch
@@ -186,7 +183,7 @@ export const SelectFromTokenPopupXrpl = ({
                 <TokenList
                   key={`${token.network}-${token.symbol}`}
                   title={token.symbol}
-                  image={token.image}
+                  image={token.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   description={
                     token.issuerOrganization ? (
                       <Issuer>
@@ -201,13 +198,17 @@ export const SelectFromTokenPopupXrpl = ({
                   }
                   type={'selectable'}
                   balance={`${formatNumber(token?.balance || 0, 4, 'floor', MILLION, 0)}`}
-                  value={`$${`${formatNumber(
-                    (token?.balance || 0) * (token.price || 0),
-                    2,
-                    'floor',
-                    MILLION,
-                    2
-                  )}`}`}
+                  value={
+                    token.price
+                      ? `$${`${formatNumber(
+                          (token?.balance || 0) * (token.price || 0),
+                          2,
+                          'floor',
+                          MILLION,
+                          2
+                        )}`}`
+                      : `-`
+                  }
                   disabled={token.symbol === toToken?.symbol}
                   selected={fromToken?.symbol === token.symbol}
                   onClick={() => {
@@ -285,7 +286,7 @@ const RecommendWrapper = tw.div`
 const RecommendInnerWrapper = tw.div`
   flex flex-col gap-8 font-r-14 text-neutral-40
 `;
-const RecommendList = tw.div`
+const RecommendList = tw(ScrollContainer)`
   flex gap-8 w-full overflow-x-auto scrollbar-hide
 `;
 

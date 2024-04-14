@@ -162,6 +162,9 @@
   "Our team is working on this issue. Please try again later!": "Our team is working on this issue. Please try again later!",
   "Go Back": "Go Back",
 
+  "Back": "Back",
+  "Next": "Next",
+
   "Slippage tolerance": "Slippage tolerance",
   "or enter manually": "or enter manually",
   "Copied!": "Copied!",
@@ -687,8 +690,8 @@
   "Points": "Points",
 
   "Bridge preview": "Bridge preview",
-  "Bridge Reqeust Success!": "Bridge Reqeust Success!",
-  "bridge-request-success-message": "Successfully requested the bridge. Bridge transaction takes 15 minutes. Please wail until you receive your XRP to the Metamask or Futurepass.",
+  "Bridge Request Success!": "Bridge Request Success!",
+  "bridge-request-success-message": "Successfully requested the bridge. Bridge transaction takes 15 minutes to 24 hours according to the amount of asset. Please wait until you receive your XRP to the Metamask or Futurepass.",
   "You're expected to receive bridge": "You're expected to receive",
   "Return to bridge page": "Return to bridge page",
   "Bridge failed": "Bridge failed",
@@ -704,7 +707,7 @@
 
   "Validating": "Validating",
   "Currency code (case-sensitive)": "Currency code (case-sensitive)",
-  "enter-code-xrpl": "Enter Code",
+  "enter-code-xrpl": "Enter code",
   "Issuer": "Issuer",
   "enter-issuer-xrpl": "Enter issuer",
 
@@ -714,7 +717,8 @@
   "add-token-invalid-token": "Currency code, Issuer is not valid.",
   "add-token-invalid-token-description": "No token was found. Please check again.",
 
-  "add-token-unknown-error": "Please check your currency code, issuer and try again. If the issue persists, contact to our support team.",
+  "add-token-unknown-error": "Please check your currency code, issuer and try again. If the issue persists, <1>contact</1> to our support team.",
+  "contact": "contact",
 
   "Farming Incentives": "Farming Incentives",
   "Farmed LP Tokens": "Farmed LP Tokens",
@@ -737,9 +741,58 @@
   "unfarm-failed-message": "Unfarm has failed. Please try again.",
   "Total value to unfarm": "Total value to unfarm",
   "Your total share": "Your total share",
+  "farm-reward-info": "Reward will be claimed once farming more LP or unfarm.",
 
   "approve-lp-farm-message": "Approve LP token for farming",
 
   "Pay gas fee with": "Pay gas fee with",
-  "fee-proxy-error-message": "Gas fee payment with {{ token }} is currently unavailable. Please try other assets."
+  "fee-proxy-error-message": "Gas fee payment with {{ token }} is currently unavailable. Please try other assets.",
+
+  "Select Token": "Select Token",
+
+  "xrpl-add-pool-step-title-1": "Select a pair",
+  "xrpl-add-pool-step-title-2": "Set initial trading fee",
+  "xrpl-add-pool-step-title-3": "Set inital liquidity",
+
+  "Same pool exist": "Same pool exist",
+  "Go to the pool": "Go to the pool",
+
+  "Inital trading fee": "Inital trading fee",
+  "Up to 1%": "Up to 1%",
+
+  "Exceeds 1%": "Exceeds 1%",
+  "Total value": "Total value",
+  "Confirm pool creation in wallet": "Confirm pool creation in wallet",
+  "Create a pool": "Create a pool",
+  "Create a pool preview": "Create a pool preview",
+  "pool-created-expected-to-receive": "You're expected to receive",
+  "transfer fee": "{{ token }} transfer fee",
+
+  "Pool creation confirmed!": "Pool creation confirmed!",
+  "xrpl-pool-creation-success-message": "Successfully created the {{ token }} Pool and added liquidity.",
+
+  "Pool creation failed": "Pool creation failed",
+  "xrpl-pool-creation-fail-message": "Pool creation has failed. Please try again.",
+
+  "Go to pool page": "Go to pool page",
+
+  "Vote confirmed!": "Vote confirmed!",
+  "vote-success-message": "Your vote was successfully submitted and the transaction fee was changed.",
+  "Vote failed": "Vote failed",
+  "vote-fail-message": "Your vote submission has failed. Please try again.",
+
+  "Fee Voting": "Fee Voting",
+  "Voter": "Voter",
+  "Weight": "Weight",
+  "Trading fee voting": "Trading fee voting",
+  "Current trading fee": "Current trading fee",
+  "Your proposed fee": "Your proposed fee",
+  "Your weight": "Your weight",
+  "Expected fee after vote": "Expected fee after vote",
+  "Vote": "Vote",
+  "Trading fee": "Trading fee",
+
+  "No Reliable Price": "No Reliable Price",
+  "reliable-pool-value": "Pool Value",
+  "Not enough data to estimate": "Not enough data to estimate"
 }

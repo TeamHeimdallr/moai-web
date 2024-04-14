@@ -15,7 +15,7 @@ import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-a
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
+import { ASSET_URL, ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { FeeProxySelector } from '~/components/fee-proxy-selector';
@@ -663,12 +663,16 @@ const _WithdrawLiquidityPopup = ({
                 0
               )}%)`}
               image={
-                <Jazzicon
-                  diameter={36}
-                  seed={jsNumberForAddress(
-                    isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
-                  )}
-                />
+                isXrp ? (
+                  `${ASSET_URL}/tokens/token-unknown.png`
+                ) : (
+                  <Jazzicon
+                    diameter={36}
+                    seed={jsNumberForAddress(
+                      isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
+                    )}
+                  />
+                )
               }
               leftAlign
             />

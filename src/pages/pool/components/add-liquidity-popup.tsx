@@ -15,7 +15,7 @@ import { useGetPoolVaultAmmQuery } from '~/api/api-server/pools/get-pool-vault-a
 import { COLOR } from '~/assets/colors';
 import { IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
+import { ASSET_URL, ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonPrimaryLarge } from '~/components/buttons';
 import { FeeProxySelector } from '~/components/fee-proxy-selector';
@@ -744,7 +744,7 @@ const _AddLiquidityPopup = ({
                   type="large"
                   title={`${formatNumber(amount, 6, 'floor', THOUSAND, 0)} ${symbol}`}
                   description={`$${formatNumber(amount * (price || 0))}`}
-                  image={image}
+                  image={image || `${ASSET_URL}/tokens/token-unknown.png`}
                   leftAlign
                 />
                 {idx !== tokensIn.length - 1 && <Divider />}
@@ -758,14 +758,18 @@ const _AddLiquidityPopup = ({
               type="large"
               title={`${formatNumber(bptOut, 4, 'floor', THOUSAND, 0)}`}
               subTitle={`${lpToken?.symbol || ''}`}
-              description={`$${formatNumber(bptOut * lpTokenPrice)}`}
+              description={lpTokenPrice ? `$${formatNumber(bptOut * lpTokenPrice)}` : undefined}
               image={
-                <Jazzicon
-                  diameter={36}
-                  seed={jsNumberForAddress(
-                    isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
-                  )}
-                />
+                isXrp ? (
+                  `${ASSET_URL}/tokens/token-unknown.png`
+                ) : (
+                  <Jazzicon
+                    diameter={36}
+                    seed={jsNumberForAddress(
+                      isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
+                    )}
+                  />
+                )
               }
               leftAlign={true}
             />

@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { useGetLiquidityProvisionsInfinityQuery } from '~/api/api-server/pools/get-liquidity-provisions';
+import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { COLOR } from '~/assets/colors';
 import { IconMinus, IconPlus } from '~/assets/icons';
@@ -42,7 +43,6 @@ export const useTableLiquidityProvision = () => {
   const { currentAddress } = useConnectedWallet(currentNetwork);
 
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
-
   const isMyProvision = selectedTab === 'my-provision';
 
   const {
@@ -87,6 +87,23 @@ export const useTableLiquidityProvision = () => {
       staleTime: 1000,
     }
   );
+
+  const { data } = useGetPoolQuery(
+    {
+      params: {
+        networkAbbr: network as string,
+        poolId: id as string,
+      },
+    },
+    {
+      enabled: !!network && !!id,
+      staleTime: Infinity,
+    }
+  );
+
+  const { pool } = data || {};
+  const { compositions } = pool || {};
+  const hasPrice = compositions?.every(c => !!c.price);
 
   const liquidityProvisionData = isMyProvision
     ? myLiquidityProvisionData
@@ -155,7 +172,12 @@ export const useTableLiquidityProvision = () => {
               }))}
             />
           ),
-          value: <TableColumn value={`$${formatNumber(value)}`} align="flex-end" />,
+          value: (
+            <TableColumn
+              value={value && hasPrice ? `$${formatNumber(value)}` : '-'}
+              align="flex-end"
+            />
+          ),
           time: (
             <TableColumnLink
               token={translatedTime}
@@ -166,7 +188,7 @@ export const useTableLiquidityProvision = () => {
           ),
         };
       }),
-    [currentNetwork, isRoot, isXrp, liquidityProvisions, t]
+    [currentNetwork, isRoot, isXrp, liquidityProvisions, hasPrice, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -267,7 +289,12 @@ export const useTableLiquidityProvision = () => {
           dataRows: [
             {
               label: 'Value',
-              value: <TableColumn value={`$${formatNumber(value)}`} align="flex-end" />,
+              value: (
+                <TableColumn
+                  value={value && hasPrice ? `$${formatNumber(value)}` : '-'}
+                  align="flex-end"
+                />
+              ),
             },
             {
               label: 'Time',
@@ -276,7 +303,7 @@ export const useTableLiquidityProvision = () => {
           ],
         };
       }),
-    [currentNetwork, isRoot, isXrp, liquidityProvisions, t]
+    [currentNetwork, hasPrice, isRoot, isXrp, liquidityProvisions, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

@@ -2,10 +2,11 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
 import { logger } from '~/states/middleware/logger';
+import { IPoolTokenList } from '~/types';
 
 interface State {
-  selectedTokens: string[];
-  setSelectedTokens: (selectedTokens: string[]) => void;
+  selectedTokens: IPoolTokenList[];
+  setSelectedTokens: (selectedTokens: IPoolTokenList[]) => void;
 }
 
 /**
@@ -17,7 +18,7 @@ export const useTablePoolCompositionSelectTokenStore = create<State>()(
     logger(set => ({
       name: 'TABLE_POOL_COMPOSITION_SELECT_TOKEN_STORE',
       selectedTokens: [],
-      setSelectedTokens: (selectedTokens: string[]) => set({ selectedTokens }),
+      setSelectedTokens: (selectedTokens: IPoolTokenList[]) => set({ selectedTokens }),
     }))
   )
 );

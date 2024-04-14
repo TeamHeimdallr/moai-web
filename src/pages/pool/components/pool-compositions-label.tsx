@@ -28,7 +28,7 @@ export const TokenCompositionLabel = ({ composition, idx }: Props) => {
         <TokenBalance>
           {formatNumber(balance, 4, 'floor', THOUSAND, 4)} {symbol}
         </TokenBalance>
-        <TokenValue>${formatNumber(value)}</TokenValue>
+        {!!value && <TokenValue>${formatNumber(value)}</TokenValue>}
       </TokenValueWrapper>
     </Wrapper>
   );
@@ -36,7 +36,7 @@ export const TokenCompositionLabel = ({ composition, idx }: Props) => {
 
 const Wrapper = tw.div`
   flex flex-col items-center gap-8 flex-1
-  md:(flex-initial)
+  md:(flex-initial min-w-200)
 `;
 const TokenSymbolWrapper = tw.div`
   flex items-center gap-5

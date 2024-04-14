@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import tw from 'twin.macro';
+import { isValidAddress, isValidClassicAddress, isValidXAddress } from 'xrpl';
 
 import { useCreateTokenXrplMutate } from '~/api/api-server/token/create-token-xrpl';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
-import { COLOR } from '~/assets/colors';
 import { IconBack } from '~/assets/icons';
 
 import { AlertMessage } from '~/components/alerts';
@@ -56,14 +56,30 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
   const errorMessage = tokenExist
     ? t('add-token-already-exist')
     : createTokenErrorMessage === 'invalid currency or issuer address'
-    ? t('add-token-invalid-token')
+    ? t('Something went wrong')
     : t('Something went wrong');
 
-  const errorDescription = tokenExist
-    ? t('add-token-already-exist-description')
-    : createTokenErrorMessage === 'invalid currency or issuer address'
-    ? t('add-token-invalid-token-description')
-    : t('add-token-unknown-error');
+  const errorDescription = tokenExist ? (
+    t('add-token-already-exist-description')
+  ) : (
+    <ErrorMessageWrapper>
+      <Trans i18nKey="add-token-unknown-error">
+        _
+        <Link
+          onClick={() =>
+            window.open('https://discord.com/channels/1174206838238101604/1174287471090081824')
+          }
+        />
+      </Trans>
+    </ErrorMessageWrapper>
+  );
+
+  const invalidTokenCurrency = !!currency && currency.length !== 3 && currency.length !== 40;
+  const invalidTokenIssuer =
+    !!issuer &&
+    !isValidAddress(issuer) &&
+    !isValidClassicAddress(issuer) &&
+    !isValidXAddress(issuer);
 
   const createToken = async () => {
     if (tokenExist || !enableToFetch) return;
@@ -89,19 +105,22 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
     <Popup
       id={popupId}
       title={t('Add token')}
-      style={{ backgroundColor: COLOR.NEUTRAL[10] }}
       icon={<ButtonIconLarge icon={<IconBack />} onClick={() => showTokens?.()} />}
     >
       <Wrapper>
         <InputTextField
           id="input-currency"
           label={t('Currency code (case-sensitive)')}
+          error={invalidTokenCurrency}
+          errorMessage={t('Invalid code')}
           placeholder={t('enter-code-xrpl')}
           onChange={e => setCurrency(e.target.value)}
         />
         <InputTextField
           id="input-issuer"
           label={t('Issuer')}
+          error={invalidTokenIssuer}
+          errorMessage={t('Invalid issuer')}
           placeholder={t('enter-issuer-xrpl')}
           onChange={e => setIssuer(e.target.value)}
         />
@@ -119,4 +138,9 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
 
 const Wrapper = tw.div`
   pt-4 px-24 flex flex-col gap-24
+`;
+
+const ErrorMessageWrapper = tw.div``;
+const Link = tw.span`
+  underline clickable
 `;

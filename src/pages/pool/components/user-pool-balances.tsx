@@ -6,7 +6,7 @@ import { toHex } from 'viem';
 
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
-import { IS_MAINNET } from '~/constants';
+import { ASSET_URL, IS_MAINNET } from '~/constants';
 
 import { FuturepassCreatePopup } from '~/components/account/futurepass-create-popup';
 import { ButtonPrimaryLarge, ButtonPrimaryMedium } from '~/components/buttons/primary';
@@ -80,18 +80,22 @@ export const UserPoolBalances = () => {
     <Wrapper ref={ref}>
       <Header>
         {t('My liquidity')}
-        <Balance>${formatNumber(userLpTokenValue || 0)}</Balance>
+        {!!userLpTokenValue && <Balance>${formatNumber(userLpTokenValue || 0)}</Balance>}
       </Header>
       <Divider />
       <TokenLists>
         <TokenList
           image={
-            <Jazzicon
-              diameter={36}
-              seed={jsNumberForAddress(
-                isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
-              )}
-            />
+            isXrp ? (
+              `${ASSET_URL}/tokens/token-unknown.png`
+            ) : (
+              <Jazzicon
+                diameter={36}
+                seed={jsNumberForAddress(
+                  isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
+                )}
+              />
+            )
           }
           title={lpToken?.symbol || lpTokenSymbol}
           balance={formatNumber(userLpTokenBalance || 0, 4, 'floor', 0)}
@@ -101,7 +105,9 @@ export const UserPoolBalances = () => {
       <Footer>
         <FooterBalanceWrapper>
           {t('Wallet balance')}
-          <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0)}`}</FooterBalance>
+          {!!userPoolTokenTotalValue && (
+            <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0)}`}</FooterBalance>
+          )}
         </FooterBalanceWrapper>
         <ButtonWrapper>
           {address ? (

@@ -16,7 +16,7 @@ import { useSorQuery } from '~/api/api-server/sor/batch-swap';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { EVM_VAULT_ADDRESS, ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
+import { ASSET_URL, EVM_VAULT_ADDRESS, ROOT_ASSET_ID, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { FeeProxySelector } from '~/components/fee-proxy-selector';
@@ -616,7 +616,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                 <TokenList
                   title={`${formatNumber(fromInput, 6, 'floor', THOUSAND, 0)} ${fromToken?.symbol}`}
                   description={`$${formatNumber(fromTokenValue)}`}
-                  image={fromToken?.image}
+                  image={fromToken?.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   type="large"
                   leftAlign
                 />
@@ -629,7 +629,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
                 <TokenList
                   title={`${formatNumber(toInput, 6, 'floor', THOUSAND, 0)} ${toToken?.symbol}`}
                   description={`$${formatNumber(toTokenValue)}`}
-                  image={toToken?.image}
+                  image={toToken?.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   type="large"
                   leftAlign
                 />

@@ -39,11 +39,7 @@ export const AddLiquiditySelectTokenPopup = ({ userPoolTokenBalances, compositio
     close();
   };
   return (
-    <Popup
-      id={POPUP_ID.ADD_LIQUIDITY_SELECT_TOKEN}
-      title={t('Select token')}
-      style={{ backgroundColor: COLOR.NEUTRAL[10] }}
-    >
+    <Popup id={POPUP_ID.ADD_LIQUIDITY_SELECT_TOKEN} title={t('Select token')}>
       <Wrapper ref={ref}>
         <ContentContainer>
           <TokenLists>

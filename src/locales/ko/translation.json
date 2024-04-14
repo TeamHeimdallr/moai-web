@@ -163,6 +163,9 @@
   "Our team is working on this issue. Please try again later!": "모아이팀은 문제를 해결하고 있습니다. 잠시 후 다시 시도해주세요!",
   "Go Back": "이전 페이지로",
 
+  "Back": "이전",
+  "Next": "다음",
+
   "Slippage tolerance": "슬리피지 허용 범위",
   "or enter manually": "직접 입력하기",
   "Copied!": "복사되었습니다!",
@@ -688,8 +691,8 @@
   "Points": "포인트",
 
   "Bridge preview": "브릿지 미리보기",
-  "Bridge Reqeust Success!": "브릿지를 요청했습니다.",
-  "bridge-request-success-message": "브릿지 요청에 성공했습니다. 브릿지는 15분 정도 소요됩니다. The Root Network의 Metamask나 FuturePass에서 토큰이 확인될 때까지 기다려주세요.",
+  "Bridge Request Success!": "브릿지를 요청했습니다.",
+  "bridge-request-success-message": "브릿지 요청에 성공했습니다. 브릿지는 거래량에 따라 15분에서 24시간까지 소요됩니다. The Root Network의 Metamask나 FuturePass에서 XRP가 확인될 때까지 기다려주세요.",
   "You're expected to receive bridge": "수령 예정 토큰",
   "Return to bridge page": "브릿지 화면으로 돌아가기",
   "Bridge failed": "브릿지에 실패했습니다.",
@@ -708,8 +711,13 @@
   "enter-code-xrpl": "티커를 입력하세요.",
   "Issuer": "발행자",
   "enter-issuer-xrpl": "발행자를 입력하세요.",
+
   "add-token-already-exist": "이미 추가된 토큰입니다.",
   "add-token-already-exist-description": "목록에서 토큰을 검색하세요.",
+
+  "add-token-invalid-token": "문제가 발생했습니다.",
+  "add-token-unknown-error": "토큰 심볼과 발행자를 확인하고 다시 시도해보세요. 문제가 지속되면, 고객지원팀에 <1>문의</1>해주세요.",
+  "contact": "문의",
 
   "Farming Incentives": "파밍 인센티브",
   "Farmed LP Tokens": "파밍한 LP 토큰",
@@ -732,9 +740,57 @@
   "unfarm-failed-message": "LP 토큰 파밍 해제에 실패했습니다. 다시 시도해주세요.",
   "Total value to unfarm": "총 파밍 해제 가치",
   "Your total share": "총 지분",
+  "farm-reward-info": "리워드는 LP를 추가 파밍하거나 파밍 해제 시 받을 수 있습니다.",
 
   "approve-lp-farm-message": "파밍을 위해 LP 토큰 승인하기",
 
   "Pay gas fee with": "지불할 가스비 선택",
-  "fee-proxy-error-message": "{{ token }} 는 현재 가스비로 지불 할 수 없습니다."
+  "fee-proxy-error-message": "{{ token }} 는 현재 가스비로 지불 할 수 없습니다.",
+
+  "Select Token": "토큰 선택",
+  "xrpl-add-pool-step-title-1": "토큰을 선택하세요.",
+  "xrpl-add-pool-step-title-2": "초기 거래 수수료 정하기",
+  "xrpl-add-pool-step-title-3": "초기 유동량 설정하기",
+
+  "Same pool exist": "동일한 풀이 존재합니다.",
+  "Go to the pool": "해당 풀 화면으로 바로가기",
+
+  "Inital trading fee": "초기 거래 수수료",
+  "Up to 1%": "최대 1%",
+
+  "Exceeds 1%": "1%를 초과하였습니다.",
+  "Total value": "총 가치",
+  "Confirm pool creation in wallet": "지갑 서명을 완료해주세요.",
+  "Create a pool": "풀 만들기",
+  "Create a pool preview": "풀 생성 미리보기",
+  "pool-created-expected-to-receive": "수령 예정 풀 토큰",
+  "transfer fee": "{{ token }} 송금 수수료",
+
+  "Pool creation confirmed!": "풀 생성을 완료했습니다.",
+  "xrpl-pool-creation-success-message": "{{ token }} 풀을 성공적으로 생성하고 유동성을 추가했습니다.",
+
+  "Pool creation failed": "풀 생성에 실패했습니다.",
+  "xrpl-pool-creation-fail-message": "풀 생성에 실패했습니다. 다시 시도해주세요.",
+
+  "Go to pool page": "풀 화면으로 바로가기",
+
+  "Vote confirmed!": "투표가 완료되었습니다.",
+  "vote-success-message": "투표가 성공적으로 제출되어 거래 수수료가 변경되었습니다.",
+  "Vote failed": "투표에 실패했습니다.",
+  "vote-fail-message": "투표 제출에 실패했습니다. 다시 시도해주세요.",
+
+  "Fee Voting": "거래 수수료 투표",
+  "Voter": "투표자",
+  "Weight": "가중치",
+  "Trading fee voting": "거래 수수료 투표하기",
+  "Current trading fee": "현재 거래 수수료",
+  "Your proposed fee": "제안 수수료",
+  "Your weight": "내 가중치",
+  "Expected fee after vote": "투표 후 예상 수수료",
+  "Vote": "투표하기",
+  "Trading fee": "거래 수수료",
+
+  "No Reliable Price": "No Reliable Price",
+  "reliable-pool-value": "Pool Value",
+  "Not enough data to estimate": "추정할 수 있는 데이터가 없습니다"
 }

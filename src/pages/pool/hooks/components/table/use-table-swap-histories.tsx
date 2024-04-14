@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 import { toHex } from 'viem';
 
+import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetSwapHistoriesInfinityQuery } from '~/api/api-server/pools/get-swap-histories';
 
 import { SCANNER_URL } from '~/constants';
@@ -56,6 +57,23 @@ export const useTableSwapHistories = () => {
       staleTime: 1000,
     }
   );
+
+  const { data } = useGetPoolQuery(
+    {
+      params: {
+        networkAbbr: network as string,
+        poolId: id as string,
+      },
+    },
+    {
+      enabled: !!network && !!id,
+      staleTime: Infinity,
+    }
+  );
+
+  const { pool } = data || {};
+  const { compositions } = pool || {};
+  const hasPrice = compositions?.every(c => !!c.price);
 
   const swapHistories = useMemo(
     () => swapHistoriesData?.pages?.flatMap(page => page.swapHistories) || [],
@@ -126,7 +144,12 @@ export const useTableSwapHistories = () => {
                   }))}
                 />
               ),
-              value: <TableColumn value={`$${formatNumber(value)}`} align="flex-end" />,
+              value: (
+                <TableColumn
+                  value={value && hasPrice ? `$${formatNumber(value)}` : '-'}
+                  align="flex-end"
+                />
+              ),
               time: (
                 <TableColumnLink
                   token={translatedTime}
@@ -138,7 +161,7 @@ export const useTableSwapHistories = () => {
             };
           })
         : [],
-    [currentNetwork, isRoot, isXrp, swapHistories, t]
+    [currentNetwork, hasPrice, isRoot, isXrp, swapHistories, t]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -245,7 +268,12 @@ export const useTableSwapHistories = () => {
           dataRows: [
             {
               label: 'Value',
-              value: <TableColumn value={`$${formatNumber(value, 4)}`} align="flex-end" />,
+              value: (
+                <TableColumn
+                  value={value && hasPrice ? `$${formatNumber(value)}` : '-'}
+                  align="flex-end"
+                />
+              ),
             },
             {
               label: 'Time',
@@ -261,7 +289,7 @@ export const useTableSwapHistories = () => {
           ],
         };
       }),
-    [currentNetwork, isRoot, isXrp, swapHistories, t]
+    [currentNetwork, hasPrice, isRoot, isXrp, swapHistories, t]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import tw from 'twin.macro';
 import { formatUnits } from 'viem';
 
@@ -10,10 +10,13 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
 import { COLOR } from '~/assets/colors';
-import { IconFarming } from '~/assets/icons';
+import { IconFarming, IconNext, IconQuestion } from '~/assets/icons';
 import { imageMoai2 } from '~/assets/images';
 
 import { LP_FARM_ADDRESS_WITH_POOL_ID, TRILLION } from '~/constants';
+
+import { ButtonIconMedium } from '~/components/buttons';
+import { Tooltip } from '~/components/tooltips/base';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -25,8 +28,10 @@ export const PoolInfo = () => {
   const { network, id } = useParams();
   const { selectedNetwork } = useNetwork();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const isRoot = selectedNetwork === NETWORK.THE_ROOT_NETWORK;
+  const isXrpl = selectedNetwork === NETWORK.XRPL;
 
   const queryEnabled = !!network && !!id;
   const { data } = useGetPoolQuery(
@@ -86,27 +91,76 @@ export const PoolInfo = () => {
       : Infinity;
   const formattedFarmApr = isLpFarmExisted ? `${_formattedFarmApr}%` : '';
 
-  const formattedValue = value ? `$${formatNumber(value)}` : '$0';
-  const formattedVolume = volume ? `$${formatNumber(volume)}` : '$0';
+  const formattedValue = value ? `$${formatNumber(value)}` : '-';
+  const formattedVolume = volume ? `$${formatNumber(volume)}` : '-';
 
-  const formattedApr = apr ? `${formatNumber(apr)}%` : '0%'; // swap apr
-  const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100)}%` : '0%';
+  const formattedApr = apr ? `${formatNumber(apr)}%` : '-'; // swap apr
+  const formattedFees = tradingFee ? `${formatNumber(tradingFee * 100)}%` : '-';
 
   return (
     <Wrapper ref={ref}>
       <InnerWrapper>
-        <PoolInfoCard name={t('Pool Value')} value={formattedValue} />
-        <PoolInfoCard name={t('Volume (24h)')} value={formattedVolume} />
+        <PoolInfoCard
+          name={t('Pool Value')}
+          value={formattedValue}
+          valueIcon={
+            isXrpl &&
+            !value && (
+              <ButtonIconMedium
+                icon={<IconQuestion />}
+                data-tooltip-id={TOOLTIP_ID.XRPL_NO_ESTIMATE_VALUE}
+              />
+            )
+          }
+        />
+        <PoolInfoCard
+          name={t('Volume (24h)')}
+          value={formattedVolume}
+          valueIcon={
+            isXrpl &&
+            !value && (
+              <ButtonIconMedium
+                icon={<IconQuestion />}
+                data-tooltip-id={TOOLTIP_ID.XRPL_NO_ESTIMATE_VALUE}
+              />
+            )
+          }
+        />
       </InnerWrapper>
       <InnerWrapper>
         <PoolInfoCard
           name={t('APR')}
           value={formattedApr}
-          subValue={`+ ${t('Moai Points')}`}
-          subValue2={formattedFarmApr ? `+ ${formattedFarmApr}` : ''}
+          valueIcon={
+            isXrpl &&
+            !value && (
+              <ButtonIconMedium
+                icon={<IconQuestion />}
+                data-tooltip-id={TOOLTIP_ID.XRPL_NO_ESTIMATE_VALUE}
+              />
+            )
+          }
+          subValue={isRoot ? `+ ${t('Moai Points')}` : undefined}
+          subValue2={isRoot ? (formattedFarmApr ? `+ ${formattedFarmApr}` : '') : undefined}
         />
-        <PoolInfoCard name={t('Trading Fee')} value={formattedFees} />
+        <PoolInfoCard
+          name={t('Trading Fee')}
+          nameIcon={
+            isXrpl ? (
+              <IconWrapper onClick={() => navigate(`fee-voting`)}>
+                <IconNext width={20} height={20} fill={COLOR.NEUTRAL[60]} />
+              </IconWrapper>
+            ) : undefined
+          }
+          value={formattedFees}
+        />
       </InnerWrapper>
+
+      <TooltipWrapper>
+        <Tooltip id={TOOLTIP_ID.XRPL_NO_ESTIMATE_VALUE} place="bottom">
+          {t('Not enough data to estimate')}
+        </Tooltip>
+      </TooltipWrapper>
     </Wrapper>
   );
 };
@@ -118,10 +172,20 @@ const Wrapper = tw.div`
 const InnerWrapper = tw.div`
   flex flex-1 gap-16
 `;
+const IconWrapper = tw.div`
+  p-6 flex-center clickable
+`;
+
+const TooltipWrapper = tw.div`
+  absolute
+`;
 
 interface PoolInfoCardProps {
   name: string;
   value: string;
+  valueIcon?: ReactNode;
+
+  nameIcon?: ReactNode;
 
   subValue?: string;
   subValueIcon?: ReactNode;
@@ -131,9 +195,12 @@ interface PoolInfoCardProps {
 
   hoverable?: boolean;
 }
+// NOTE: need to refactor
 const PoolInfoCard = ({
   name,
+  nameIcon,
   value,
+  valueIcon,
   subValue,
   subValueIcon = <MoaiIcon src={imageMoai2} />,
   subValue2,
@@ -142,9 +209,15 @@ const PoolInfoCard = ({
 }: PoolInfoCardProps) => {
   return (
     <PoolInfoCardWrapper>
-      <Name>{name}</Name>
+      <Name>
+        {name}
+        {nameIcon}
+      </Name>
       <ValueWrapper data-tooltip-id={hoverable ? TOOLTIP_ID.APR : undefined}>
-        <Value>{value}</Value>
+        <Value>
+          {value}
+          {valueIcon}
+        </Value>
         {(subValue || subValue2) && (
           <SubValueOuterWrapper>
             {subValue && (
@@ -172,7 +245,7 @@ const PoolInfoCardWrapper = tw.div`
 `;
 
 const Name = tw.div`
-  font-m-14 text-neutral-80
+  font-m-14 text-neutral-80 flex items-center justify-between
   md:(font-m-16)
 `;
 
@@ -181,7 +254,7 @@ const ValueWrapper = tw.div`
 `;
 
 const Value = tw.div`
-  font-m-18 text-neutral-100
+  flex gap-2 items-center font-m-18 text-neutral-100
   md:(font-m-20)
 `;
 

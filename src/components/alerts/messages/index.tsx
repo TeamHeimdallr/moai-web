@@ -1,4 +1,4 @@
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import { css } from '@emotion/react';
 import tw, { styled } from 'twin.macro';
 
@@ -6,27 +6,30 @@ import { COLOR } from '~/assets/colors';
 import { IconAlert } from '~/assets/icons';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  type?: 'error' | 'warning';
+  type?: 'error' | 'warning' | 'info';
 
   title: string;
-  description?: string;
+  description?: ReactNode;
+  icon?: ReactNode;
 }
-export const AlertMessage = ({ type = 'error', title, description, ...rest }: Props) => {
+export const AlertMessage = ({ type = 'error', title, description, icon, ...rest }: Props) => {
   return (
     <Wrapper type={type} {...rest}>
-      <IconWrapper>
-        <IconAlert />
-      </IconWrapper>
+      <IconWrapper>{icon ? icon : <IconAlert />}</IconWrapper>
       <TextWrapper>
         <Title>{title}</Title>
-        {description && <Description>{description}</Description>}
+        {description && typeof description === 'string' ? (
+          <Description>{description}</Description>
+        ) : (
+          description
+        )}
       </TextWrapper>
     </Wrapper>
   );
 };
 
 interface WrapperProps {
-  type: 'error' | 'warning';
+  type: 'error' | 'warning' | 'info';
 }
 const Wrapper = styled.div<WrapperProps>(({ type }) => [
   tw`flex items-start gap-4 p-8 rounded-8`,
@@ -48,6 +51,16 @@ const Wrapper = styled.div<WrapperProps>(({ type }) => [
         width: 16px;
         height: 16px;
         fill: ${COLOR.ORANGE[50]};
+      }
+    `,
+
+  type === 'info' && tw`bg-neutral-20 text-neutral-90`,
+  type === 'info' &&
+    css`
+      & svg {
+        width: 16px;
+        height: 16px;
+        fill: ${COLOR.NEUTRAL[90]};
       }
     `,
 ]);

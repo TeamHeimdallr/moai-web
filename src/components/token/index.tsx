@@ -6,6 +6,10 @@ import { toHex } from 'viem';
 
 import { COLOR } from '~/assets/colors';
 
+import { ASSET_URL } from '~/constants';
+
+import { useNetwork } from '~/hooks/contexts/use-network';
+
 interface Props extends HTMLAttributes<HTMLDivElement> {
   token: string;
 
@@ -41,7 +45,9 @@ export const Token = ({
   disabled,
   ...rest
 }: Props) => {
+  const { isXrp } = useNetwork();
   const seed = address || token || title || '';
+
   return (
     <Wrapper
       type={type}
@@ -55,6 +61,12 @@ export const Token = ({
       {image &&
         (imageUrl ? (
           <TokenImageWrapper src={imageUrl} title={token} type={type} />
+        ) : isXrp ? (
+          <TokenImageWrapper
+            src={`${ASSET_URL}/tokens/token-unknown.png`}
+            title={token}
+            type={type}
+          />
         ) : (
           <Jazzicon
             diameter={type === 'large' ? 24 : 20}

@@ -5,7 +5,9 @@ import { useMaintanence } from '~/hooks/utils/use-maintanence';
 
 import { PoolDetailSkeleton } from './components/skeleton-detail';
 import PoolDetailAddLiquidity from './pages/add-liquidity';
+import AddPoolPage from './pages/add-pool';
 import PoolDetail from './pages/detail';
+import FeeVotingPage from './pages/fee-voting';
 import PoolDetailWithdrawLiquidity from './pages/withdraw-liquidity';
 
 const PoolDetailPage = () => {
@@ -14,6 +16,11 @@ const PoolDetailPage = () => {
   return (
     <Routes>
       <Route
+        path="/:network/add"
+        element={getMaintanence('/pools/:network/add', <AddPoolPage />)}
+      />
+
+      <Route
         path="/:network/:id"
         element={getMaintanence(
           '/pools/:network/:id',
@@ -21,6 +28,10 @@ const PoolDetailPage = () => {
             <PoolDetail />
           </Suspense>
         )}
+      />
+      <Route
+        path="/:network/:id/fee-voting"
+        element={getMaintanence('/pools/:network/:id/fee-voting', <FeeVotingPage />)}
       />
       <Route
         path="/:network/:id/deposit"

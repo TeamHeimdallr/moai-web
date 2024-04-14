@@ -113,3 +113,14 @@ export const useTableLendingAssetsToBorrowSortStore = create<State>()(
     }))
   )
 );
+
+export const useTableFeeVotingSortStore = create<State>()(
+  immer(
+    logger(set => ({
+      name: 'TABLE_FEE_VOTING_STORE',
+      sort: { key: 'weight', order: 'desc' },
+      setSort: (sort: ITableSort) => set({ sort }),
+      resetSort: () => set({ sort: undefined }),
+    }))
+  )
+);

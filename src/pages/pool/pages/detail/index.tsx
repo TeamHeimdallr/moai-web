@@ -1,6 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 
+import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
+
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
@@ -39,6 +41,22 @@ const PoolDetailMainPage = () => {
   const currentNetwork = networkFull ?? selectedNetwork;
   const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
 
+  const { data } = useGetPoolQuery(
+    {
+      params: {
+        networkAbbr: network as string,
+        poolId: id as string,
+      },
+    },
+    {
+      enabled: !!network && !!id,
+      staleTime: 1000,
+    }
+  );
+  const { pool } = data || {};
+  const { compositions } = pool || {};
+  const nullPrice = compositions?.some(c => !c.price);
+
   const { opened } = usePopup(POPUP_ID.WALLET_ALERT);
 
   const now = new Date();
@@ -58,7 +76,7 @@ const PoolDetailMainPage = () => {
               <LeftContentWrapper>
                 <PoolInfo />
                 <PoolCompositions />
-                <PoolInfoChart />
+                {!nullPrice && <PoolInfoChart />}
                 <PoolLiquidityProvisions />
                 <PoolSwapHistories />
                 <PotentialRisks />

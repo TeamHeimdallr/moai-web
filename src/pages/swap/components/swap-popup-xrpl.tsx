@@ -14,7 +14,7 @@ import { useApprove } from '~/api/api-contract/token/approve';
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconCancel, IconCheck, IconLink, IconTime } from '~/assets/icons';
 
-import { MILLION, SCANNER_URL, THOUSAND } from '~/constants';
+import { ASSET_URL, MILLION, SCANNER_URL, THOUSAND } from '~/constants';
 
 import { ButtonChipSmall, ButtonPrimaryLarge } from '~/components/buttons';
 import { List } from '~/components/lists';
@@ -173,7 +173,7 @@ const _SwapPopup = ({ refetchBalance }: Props) => {
 
   const fromTokenActualAmount = Number(formatUnits(txData?.swapAmountFrom ?? 0n, 6));
   const toTokenActualAmount = Number(
-    formatAmountToNumber(txData?.meta?.DeliveredAmount ?? '0', 'dropToXrp')
+    formatAmountToNumber(txData?.meta?.delivered_amount ?? '0', 'dropToXrp')
   );
 
   const toTokenFinalValue = toTokenActualAmount * toTokenPrice;
@@ -339,7 +339,7 @@ const _SwapPopup = ({ refetchBalance }: Props) => {
                 <IconCheck width={40} height={40} />
               </SuccessIconWrapper>
               <SuccessTitle>{t('Swap confirmed!')}</SuccessTitle>
-              {fromTokenActualAmount && toTokenActualAmount && (
+              {!!fromTokenActualAmount && !!toTokenActualAmount && (
                 <SuccessSubTitle>
                   {t('swap-success-message', {
                     fromValue: fromTokenActualAmount,
@@ -360,8 +360,8 @@ const _SwapPopup = ({ refetchBalance }: Props) => {
                   MILLION,
                   0
                 )} ${toToken?.symbol}`}
-                description={`$${formatNumber(toTokenFinalValue)}`}
-                image={toToken?.image}
+                description={toTokenFinalValue ? `$${formatNumber(toTokenFinalValue)}` : '-'}
+                image={toToken?.image || `${ASSET_URL}/tokens/token-unknown.png`}
                 type="large"
                 leftAlign
               />
@@ -383,8 +383,8 @@ const _SwapPopup = ({ refetchBalance }: Props) => {
               <List title={`${t('Effective price')}: ${effectivePrice}`}>
                 <TokenList
                   title={`${formatNumber(fromInput, 6, 'floor', MILLION, 0)} ${fromToken?.symbol}`}
-                  description={`$${formatNumber(fromTokenValue)}`}
-                  image={fromToken?.image}
+                  description={fromTokenPrice ? `$${formatNumber(fromTokenValue)}` : '-'}
+                  image={fromToken?.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   type="large"
                   leftAlign
                 />
@@ -396,8 +396,8 @@ const _SwapPopup = ({ refetchBalance }: Props) => {
                 </IconWrapper>
                 <TokenList
                   title={`${formatNumber(toInput, 6, 'floor', MILLION, 0)} ${toToken?.symbol}`}
-                  description={`$${formatNumber(toTokenValue)}`}
-                  image={toToken?.image}
+                  description={toTokenPrice ? `$${formatNumber(toTokenValue)}` : '-'}
+                  image={toToken?.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   type="large"
                   leftAlign
                 />
