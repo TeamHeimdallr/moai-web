@@ -379,6 +379,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
 
     if (isXrp) {
       if (allowanceToToken) {
+        await swap?.();
         gaAction({
           action: 'swap',
           data: {
@@ -392,7 +393,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             estimatedSwapFee,
           },
         });
-        return await swap?.();
+        return;
       } else {
         gaAction({
           action: 'approve-token',
@@ -412,6 +413,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       }
     } else {
       if (allowanceFromToken) {
+        await swap?.();
         gaAction({
           action: 'swap',
           data: {
@@ -425,7 +427,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
             estimatedSwapFee,
           },
         });
-        return await swap?.();
+        return;
       } else {
         gaAction({
           action: 'approve-token',

@@ -102,7 +102,11 @@ export const useTableLiquidityPool = () => {
           ) : null,
           compositions: (
             <TableColumnToken
-              tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+              tokens={d.compositions.map(t => ({
+                symbol: t.symbol,
+                image: t.image,
+                issuer: t.issuerOrganization,
+              }))}
             />
           ),
           poolValue: (
@@ -205,7 +209,11 @@ export const useTableLiquidityPool = () => {
             ),
             <TableColumnToken
               key={d.id}
-              tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+              tokens={d.compositions.map(t => ({
+                symbol: t.symbol,
+                image: t.image,
+                issuer: t.issuerOrganization,
+              }))}
             />,
           ],
           dataRows: [

@@ -15,7 +15,7 @@ import { imageMoai2 } from '~/assets/images';
 
 import { LP_FARM_ADDRESS_WITH_POOL_ID, TRILLION } from '~/constants';
 
-import { ButtonIconMedium } from '~/components/buttons';
+import { ButtonIconMedium, ButtonIconSmall } from '~/components/buttons';
 import { Tooltip } from '~/components/tooltips/base';
 
 import { useGAInView } from '~/hooks/analaystics/ga-in-view';
@@ -145,11 +145,10 @@ export const PoolInfo = () => {
         />
         <PoolInfoCard
           name={t('Trading Fee')}
-          nameIcon={
+          subValue={isXrpl ? t('Trading fee voting') : undefined}
+          subValueIcon={
             isXrpl ? (
-              <IconWrapper onClick={() => navigate(`fee-voting`)}>
-                <IconNext width={20} height={20} fill={COLOR.NEUTRAL[60]} />
-              </IconWrapper>
+              <ButtonIconSmall icon={<IconNext />} onClick={() => navigate(`fee-voting`)} />
             ) : undefined
           }
           value={formattedFees}
@@ -171,9 +170,6 @@ const Wrapper = tw.div`
 `;
 const InnerWrapper = tw.div`
   flex flex-1 gap-16
-`;
-const IconWrapper = tw.div`
-  p-6 flex-center clickable
 `;
 
 const TooltipWrapper = tw.div`

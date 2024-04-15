@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
-import tw from 'twin.macro';
+import tw, { css, styled } from 'twin.macro';
 import { formatUnits, parseUnits } from 'viem';
 import * as yup from 'yup';
 
@@ -14,7 +14,7 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { IconSetting } from '~/assets/icons';
 
-import { THOUSAND } from '~/constants';
+import { ASSET_URL, THOUSAND } from '~/constants';
 
 import { Slippage } from '~/components/account';
 import { AlertMessage } from '~/components/alerts';
@@ -143,7 +143,20 @@ const _WithdrawLiquidityInputGroup = () => {
           <InputNumber
             name={'input1'}
             control={control}
-            token={<Token token={lpToken?.symbol || ''} image address={lpToken?.address} />}
+            token={
+              <Token
+                token={lpToken?.symbol || ''}
+                image
+                imageUrl={
+                  <LpWrapper images={[compositions?.[0]?.image, compositions?.[1]?.image]}>
+                    <div />
+                    <div />
+                  </LpWrapper>
+                }
+                address={lpToken?.address}
+                clickable={false}
+              />
+            }
             tokenName={lpToken?.symbol || ''}
             tokenValue={withdrawTokenValue}
             balance={userLpTokenBalance || 0}
@@ -175,7 +188,7 @@ const _WithdrawLiquidityInputGroup = () => {
                     type="large"
                     title={`${formatNumber(amount, 4, 'floor', THOUSAND, 0)} ${symbol}`}
                     description={`$${formatNumber(amount * (price || 0))}`}
-                    image={image}
+                    image={image || `${ASSET_URL}/tokens/token-unknown.png`}
                     leftAlign
                   />
                   {i !== (compositions?.length || 0) - 1 && <Divider />}
@@ -288,3 +301,35 @@ const PriceImpaceWrapper = tw.div`
 `;
 
 const PriceImpact = tw.div``;
+
+interface LpWrapperProps {
+  images: (string | undefined)[];
+}
+const LpWrapper = styled.div<LpWrapperProps>(({ images }) => [
+  tw`relative w-40 h-24`,
+  css`
+    & > div {
+      width: 24px;
+      height: 24px;
+
+      border-radius: 100%;
+
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    & > div:first-of-type {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-image: url(${images[0] || `${ASSET_URL}/tokens/token-unknown.png`});
+    }
+    & > div:last-of-type {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 1;
+      background-image: url(${images[1] || `${ASSET_URL}/tokens/token-unknown.png`});
+    }
+  `,
+]);

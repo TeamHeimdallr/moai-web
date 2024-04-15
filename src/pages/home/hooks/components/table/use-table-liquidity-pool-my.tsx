@@ -154,7 +154,11 @@ export const useTableMyLiquidityPool = () => {
           },
           compositions: (
             <TableColumnToken
-              tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+              tokens={d.compositions.map(t => ({
+                symbol: t.symbol,
+                image: t.image,
+                issuer: t.issuerOrganization,
+              }))}
               disableSelectedToken
             />
           ),
@@ -236,7 +240,11 @@ export const useTableMyLiquidityPool = () => {
           rows: [
             <TableColumnToken
               key={d.id}
-              tokens={d.compositions.map(t => ({ symbol: t.symbol, image: t.image }))}
+              tokens={d.compositions.map(t => ({
+                symbol: t.symbol,
+                image: t.image,
+                issuer: t.issuerOrganization,
+              }))}
             />,
           ],
           dataRows: [

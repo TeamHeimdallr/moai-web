@@ -74,7 +74,6 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
     </ErrorMessageWrapper>
   );
 
-  const invalidTokenCurrency = !!currency && currency.length !== 3 && currency.length !== 40;
   const invalidTokenIssuer =
     !!issuer &&
     !isValidAddress(issuer) &&
@@ -95,7 +94,7 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
   useEffect(() => {
     reset();
     const validIssuer = !!issuer && (issuer.length === 33 || issuer.length === 34);
-    const validCurrency = !!currency && (currency.length === 3 || currency.length === 40);
+    const validCurrency = !!currency;
 
     setEnableToFetch(validIssuer && validCurrency);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -111,7 +110,6 @@ export const AddTokenXrpl = ({ type, showTokens }: Props) => {
         <InputTextField
           id="input-currency"
           label={t('Currency code (case-sensitive)')}
-          error={invalidTokenCurrency}
           errorMessage={t('Invalid code')}
           placeholder={t('enter-code-xrpl')}
           onChange={e => setCurrency(e.target.value)}

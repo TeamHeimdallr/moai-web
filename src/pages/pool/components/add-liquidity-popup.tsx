@@ -1,10 +1,9 @@
 import { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
-import tw, { styled } from 'twin.macro';
-import { parseUnits, toHex } from 'viem';
+import tw, { css, styled } from 'twin.macro';
+import { parseUnits } from 'viem';
 import { useQueryClient } from 'wagmi';
 
 import { useUserFeeTokenBalance } from '~/api/api-contract/balance/user-fee-token-balance';
@@ -389,6 +388,7 @@ const _AddLiquidityPopup = ({
     if (tokenLength === 1) {
       if (isXrp) {
         if (allowance3) {
+          await writeAsync?.();
           gaAction({
             action: 'add-liquidity',
             data: {
@@ -401,7 +401,7 @@ const _AddLiquidityPopup = ({
               bptOut,
             },
           });
-          return await writeAsync?.();
+          return;
         } else {
           gaAction({
             action: 'approve-token',
@@ -453,6 +453,7 @@ const _AddLiquidityPopup = ({
         }
         if (token2Amount > 0 && token1Amount <= 0) {
           if (allowance2) {
+            await writeAsync?.();
             gaAction({
               action: 'add-liquidity',
               data: {
@@ -465,7 +466,7 @@ const _AddLiquidityPopup = ({
                 bptOut,
               },
             });
-            return await writeAsync?.();
+            return;
           } else {
             gaAction({
               action: 'approve-token',
@@ -523,6 +524,7 @@ const _AddLiquidityPopup = ({
         }
       }
 
+      await writeAsync?.();
       gaAction({
         action: 'add-liquidity',
         data: {
@@ -535,7 +537,6 @@ const _AddLiquidityPopup = ({
           bptOut,
         },
       });
-      return await writeAsync?.();
     }
   };
 
@@ -752,7 +753,7 @@ const _AddLiquidityPopup = ({
             ))}
           </List>
         )}
-        {!isIdle && isSuccess && (
+        {(isIdle || isSuccess) && (
           <List title={t(`You're expected to receive`)}>
             <TokenList
               type="large"
@@ -760,16 +761,10 @@ const _AddLiquidityPopup = ({
               subTitle={`${lpToken?.symbol || ''}`}
               description={lpTokenPrice ? `$${formatNumber(bptOut * lpTokenPrice)}` : undefined}
               image={
-                isXrp ? (
-                  `${ASSET_URL}/tokens/token-unknown.png`
-                ) : (
-                  <Jazzicon
-                    diameter={36}
-                    seed={jsNumberForAddress(
-                      isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
-                    )}
-                  />
-                )
+                <LpWrapper images={[tokensIn?.[0]?.image, tokensIn?.[1]?.image]}>
+                  <div />
+                  <div />
+                </LpWrapper>
               }
               leftAlign={true}
             />
@@ -799,7 +794,7 @@ const _AddLiquidityPopup = ({
                   <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                   <GasFeeTitleValue>
                     {estimatedFee
-                      ? `~${formatNumber(estimatedFee)} ${feeToken.name}`
+                      ? `~${formatNumber(estimatedFee, 6, 'floor', THOUSAND, 0)} ${feeToken.name}`
                       : t('calculating...')}
                   </GasFeeTitleValue>
                 </GasFeeInnerWrapper>
@@ -925,4 +920,35 @@ const GasFeeCaption = styled.div<GasFeeCaptionProps>(({ error }) => [
     font-r-12 text-neutral-60 flex-1
   `,
   error && tw`text-red-50`,
+]);
+interface LpWrapperProps {
+  images: (string | undefined)[];
+}
+const LpWrapper = styled.div<LpWrapperProps>(({ images }) => [
+  tw`relative w-64 h-36`,
+  css`
+    & > div {
+      width: 36px;
+      height: 36px;
+
+      border-radius: 100%;
+
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    & > div:first-of-type {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-image: url(${images[0] || `${ASSET_URL}/tokens/token-unknown.png`});
+    }
+    & > div:last-of-type {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 1;
+      background-image: url(${images[1] || `${ASSET_URL}/tokens/token-unknown.png`});
+    }
+  `,
 ]);
