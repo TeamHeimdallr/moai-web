@@ -105,29 +105,28 @@ const _AddLiquidityInputGroup = () => {
     <Wrapper>
       <InnerWrapper>
         <ContentWrapper>
-          {isValidToAddLiquidity &&
-            userTokenBalances.map((token, idx) => {
-              const tokenValue = (token?.price || 0) * (inputValues[idx] || 0);
+          {userTokenBalances.map((token, idx) => {
+            const tokenValue = (token?.price || 0) * (inputValues[idx] || 0);
 
-              return (
-                <InputNumber
-                  key={token.symbol + idx}
-                  name={`input${idx + 1}`}
-                  control={control}
-                  token={<Token token={token.symbol} image imageUrl={token.image} />}
-                  tokenName={token.symbol}
-                  tokenValue={!token.price ? undefined : tokenValue}
-                  balance={token.balance}
-                  slider={inputValues[idx] > 0}
-                  value={inputValues[idx]}
-                  setValue={setValue}
-                  formState={formState}
-                  maxButton
-                  blurAll={inputBlurAll}
-                  blured={inputBlured}
-                />
-              );
-            })}
+            return (
+              <InputNumber
+                key={token.symbol + idx}
+                name={`input${idx + 1}`}
+                control={control}
+                token={<Token token={token.symbol} image imageUrl={token.image} />}
+                tokenName={token.symbol}
+                tokenValue={!token.price ? undefined : tokenValue}
+                balance={token.balance}
+                slider={inputValues[idx] > 0}
+                value={inputValues[idx]}
+                setValue={setValue}
+                formState={formState}
+                maxButton
+                blurAll={inputBlurAll}
+                blured={inputBlured}
+              />
+            );
+          })}
         </ContentWrapper>
 
         <ContentWrapper>

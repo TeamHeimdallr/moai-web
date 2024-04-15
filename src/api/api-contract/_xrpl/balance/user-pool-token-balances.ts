@@ -151,6 +151,13 @@ export const useUserPoolTokenBalances = (props?: Props) => {
       if (composition.symbol === 'XRP') return;
 
       const balance = _tokenBalances?.find(b => b.address === composition.address)?.balance || 0;
+      if (balance < 0.000001) {
+        return {
+          ...composition,
+          balance: 0,
+          balanceRaw: 0n,
+        };
+      }
       return {
         ...composition,
         balance,
