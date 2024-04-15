@@ -238,7 +238,17 @@ export const useConnectedXrplWallet = () => {
           const res = (await gemSubmitTransaction({
             transaction: tx,
           })) as SubmitTransactionResponse;
-          return res?.result;
+          const hash = res?.result?.hash;
+
+          // TODO: error handling
+          if (!hash) return res?.result;
+
+          const txResult = await xrplClient.request({
+            command: 'tx',
+            transaction: hash,
+          });
+
+          return txResult?.result;
         },
       }
     : isXrpDcentConnected

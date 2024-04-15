@@ -3,7 +3,7 @@ import tw, { css, styled } from 'twin.macro';
 
 import { COLOR } from '~/assets/colors';
 
-import { THOUSAND } from '~/constants';
+import { ASSET_URL, THOUSAND } from '~/constants';
 
 import { Popup } from '~/components/popup';
 import { TokenList } from '~/components/token-list';
@@ -51,7 +51,7 @@ export const AddLiquiditySelectTokenPopup = ({ userPoolTokenBalances, compositio
                 <TokenList
                   key={`${token.network}-${token.symbol}`}
                   title={token.symbol}
-                  image={token.image}
+                  image={token.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   type={'selectable'}
                   balance={balance ? `${formatNumber(balance, 4, 'floor', THOUSAND, 0)}` : '0'}
                   value={`$${token.price ? `${formatNumber(balance * token.price)}` : '0'}`}
