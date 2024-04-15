@@ -16,6 +16,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   title?: string;
   address?: string;
   percentage?: number;
+  issuer?: string;
 
   image?: boolean;
   imageUrl?: string;
@@ -37,6 +38,7 @@ export const Token = ({
   percentage,
   image = true,
   imageUrl,
+  issuer,
   icon,
   iconWrapper = true,
   type = 'large',
@@ -75,6 +77,7 @@ export const Token = ({
         ))}
       <TextWrapper>
         <TokenText type={type}>{title ? title : token}</TokenText>
+        {issuer && <Percentage>{issuer}</Percentage>}
         {percentage && <Percentage>{percentage}%</Percentage>}
         {icon && iconWrapper ? <IconWrapper>{icon}</IconWrapper> : icon}
       </TextWrapper>

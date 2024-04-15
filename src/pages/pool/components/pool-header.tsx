@@ -43,6 +43,7 @@ export const PoolHeader = () => {
   const { pool } = data || {};
   const { lpToken, compositions } = pool || {};
   const { address: lpTokenAddress } = lpToken || {};
+  console.log(compositions);
 
   const handleLink = () => {
     const url = `${SCANNER_URL[currentNetwork]}/${
@@ -80,7 +81,14 @@ export const PoolHeader = () => {
           <Token
             key={`${composition.symbol}-${i}`}
             token={composition.symbol}
-            percentage={Number(formatNumber(composition.weight, 2))}
+            issuer={
+              isXrp
+                ? composition.issuerOrganization
+                  ? `${composition.issuerOrganization}, 50%`
+                  : `50%`
+                : undefined
+            }
+            percentage={isXrp ? undefined : Number(formatNumber(composition.weight, 2))}
             image
             imageUrl={composition.image}
             type="small"

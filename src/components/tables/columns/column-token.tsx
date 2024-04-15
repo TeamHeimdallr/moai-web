@@ -11,6 +11,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   tokens: {
     symbol: string;
     image?: string;
+    issuer?: string;
   }[];
   isNew?: boolean;
   disableSelectedToken?: boolean;
@@ -28,6 +29,7 @@ export const TableColumnToken = ({ tokens, isNew, disableSelectedToken, ...rest 
           token={token.symbol}
           image={true}
           imageUrl={token.image}
+          issuer={token.issuer}
           selected={!disableSelectedToken && !!selectedTokens?.find(t => t.symbol === token.symbol)}
           type={isMD ? 'large' : 'small'}
         />
