@@ -43,7 +43,6 @@ export const PoolHeader = () => {
   const { pool } = data || {};
   const { lpToken, compositions } = pool || {};
   const { address: lpTokenAddress } = lpToken || {};
-  console.log(compositions);
 
   const handleLink = () => {
     const url = `${SCANNER_URL[currentNetwork]}/${
