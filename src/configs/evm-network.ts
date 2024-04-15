@@ -15,12 +15,16 @@ export const theRootNetwork: Chain = defineChain(
         },
         rpcUrls: {
           public: {
-            http: ['https://mainnet.rpc-moai-finance.xyz/archive'],
-            webSocket: ['wss://mainnet.rpc-moai-finance.xyz/ws'],
+            // http: ['https://mainnet.rpc-moai-finance.xyz/archive'],
+            // webSocket: ['wss://mainnet.rpc-moai-finance.xyz/ws'],
+            http: ['https://root.rootnet.live/archive'],
+            webSocket: ['wss://root.rootnet.live/archive/ws'],
           },
           default: {
-            http: ['https://mainnet.rpc-moai-finance.xyz/archive'],
-            webSocket: ['wss://mainnet.rpc-moai-finance.xyz/ws'],
+            // http: ['https://mainnet.rpc-moai-finance.xyz/archive'],
+            // webSocket: ['wss://mainnet.rpc-moai-finance.xyz/ws'],
+            http: ['https://root.rootnet.live/archive'],
+            webSocket: ['wss://root.rootnet.live/archive/ws'],
           },
         },
         blockExplorers: {
