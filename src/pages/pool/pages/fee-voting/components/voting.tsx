@@ -113,9 +113,12 @@ export const Voting = () => {
       { account: address, balance: currentUserLp, weight: currentWeight, tradingFee: proposed },
     ];
 
-    const weightSum = newList.reduce((acc, cur) => acc + cur.weight, 0);
-    const weightRatioSum = newList.reduce((acc, cur) => acc + cur.weight * cur.tradingFee, 0);
-    return Number(strip(weightRatioSum / weightSum).toFixed(3));
+    const weightSum = newList.reduce((acc, cur) => acc + (cur?.weight || 0), 0);
+    const weightRatioSum = newList.reduce(
+      (acc, cur) => acc + (cur?.weight || 0) * (cur?.tradingFee || 0),
+      0
+    );
+    return weightSum ? Number(strip(weightRatioSum / weightSum).toFixed(3)) : 0;
   };
 
   const { writeAsync, txData, blockTimestamp, isIdle, isLoading, isSuccess, isError } = useAmmVote({
@@ -127,11 +130,11 @@ export const Voting = () => {
   useEffect(() => {
     if (
       !currentUserLp ||
-      (currentUserLp < lastVoteSlot.balance && (sortedVoteSlots?.length || 0) === 8)
+      (currentUserLp < lastVoteSlot?.balance && (sortedVoteSlots?.length || 0) === 8)
     )
       setWeightError(true);
     else setWeightError(false);
-  }, [currentUserLp, lastVoteSlot.balance, sortedVoteSlots?.length]);
+  }, [currentUserLp, lastVoteSlot?.balance, sortedVoteSlots?.length]);
 
   useEffect(() => {
     if (!isIdle && txData && (isSuccess || isError)) {
