@@ -106,7 +106,7 @@ export const useTableMyLiquidityPool = () => {
   const isRequestEqual = isEqual(previous, poolWithDeposited);
 
   useEffect(() => {
-    if (!currentAddress || !isXrplPrivate) {
+    if (!currentAddress || (isXrpl && !isXrplPrivate)) {
       setPools([]);
       return;
     }
@@ -127,7 +127,7 @@ export const useTableMyLiquidityPool = () => {
 
     fetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [networkAbbr, currentAddress, isRequestEqual, sort?.key, sort?.order, isXrplPrivate]);
+  }, [networkAbbr, currentAddress, isRequestEqual, sort?.key, sort?.order, isXrplPrivate, isXrpl]);
 
   const pools = useMemo(
     () => (poolsRaw?.slice(0, currentTake) || []) as IMyPoolList[],
