@@ -220,6 +220,7 @@ const _SwapPopup = ({ refetchBalance }: Props) => {
     }
 
     if (allowanceToToken) {
+      await swap?.();
       gaAction({
         action: 'swap',
         data: {
@@ -233,7 +234,7 @@ const _SwapPopup = ({ refetchBalance }: Props) => {
           estimatedSwapFee,
         },
       });
-      return await swap?.();
+      return;
     } else {
       gaAction({
         action: 'approve-token',

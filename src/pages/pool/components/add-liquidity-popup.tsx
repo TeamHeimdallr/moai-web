@@ -388,6 +388,7 @@ const _AddLiquidityPopup = ({
     if (tokenLength === 1) {
       if (isXrp) {
         if (allowance3) {
+          await writeAsync?.();
           gaAction({
             action: 'add-liquidity',
             data: {
@@ -400,7 +401,7 @@ const _AddLiquidityPopup = ({
               bptOut,
             },
           });
-          return await writeAsync?.();
+          return;
         } else {
           gaAction({
             action: 'approve-token',
@@ -452,6 +453,7 @@ const _AddLiquidityPopup = ({
         }
         if (token2Amount > 0 && token1Amount <= 0) {
           if (allowance2) {
+            await writeAsync?.();
             gaAction({
               action: 'add-liquidity',
               data: {
@@ -464,7 +466,7 @@ const _AddLiquidityPopup = ({
                 bptOut,
               },
             });
-            return await writeAsync?.();
+            return;
           } else {
             gaAction({
               action: 'approve-token',
@@ -522,6 +524,7 @@ const _AddLiquidityPopup = ({
         }
       }
 
+      await writeAsync?.();
       gaAction({
         action: 'add-liquidity',
         data: {
@@ -534,7 +537,6 @@ const _AddLiquidityPopup = ({
           bptOut,
         },
       });
-      return await writeAsync?.();
     }
   };
 

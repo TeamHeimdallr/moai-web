@@ -358,6 +358,7 @@ const _WithdrawLiquidityPopup = ({
     // single token deposit
     if (tokenLength === 1) {
       if (!isXrp) {
+        await writeAsync?.();
         gaAction({
           action: 'withdraw-liquidity',
           data: {
@@ -369,10 +370,11 @@ const _WithdrawLiquidityPopup = ({
             estimatedWithdrawLiquidityFee,
           },
         });
-        return await writeAsync?.();
+        return;
       } else {
         if (token1Amount > 0 && token2Amount <= 0) {
           if (allowance1) {
+            await writeAsync?.();
             gaAction({
               action: 'withdraw-liquidity',
               data: {
@@ -384,7 +386,7 @@ const _WithdrawLiquidityPopup = ({
                 estimatedWithdrawLiquidityFee,
               },
             });
-            return await writeAsync?.();
+            return;
           } else {
             gaAction({
               action: 'approve-token',
@@ -403,6 +405,7 @@ const _WithdrawLiquidityPopup = ({
         }
         if (token2Amount > 0 && token1Amount <= 0) {
           if (allowance2) {
+            await writeAsync?.();
             gaAction({
               action: 'withdraw-liquidity',
               data: {
@@ -414,7 +417,7 @@ const _WithdrawLiquidityPopup = ({
                 estimatedWithdrawLiquidityFee,
               },
             });
-            return await writeAsync?.();
+            return;
           } else {
             gaAction({
               action: 'approve-token',
@@ -469,6 +472,7 @@ const _WithdrawLiquidityPopup = ({
         }
       }
 
+      await writeAsync?.();
       gaAction({
         action: 'withdraw-liquidity',
         data: {
@@ -480,7 +484,7 @@ const _WithdrawLiquidityPopup = ({
           estimatedWithdrawLiquidityFee,
         },
       });
-      return await writeAsync?.();
+      return;
     }
   };
 
