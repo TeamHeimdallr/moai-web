@@ -1,11 +1,10 @@
 import { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import tw, { styled } from 'twin.macro';
-import { formatUnits, parseUnits, toHex } from 'viem';
+import tw, { css, styled } from 'twin.macro';
+import { formatUnits, parseUnits } from 'viem';
 
 import { useUserFeeTokenBalance } from '~/api/api-contract/balance/user-fee-token-balance';
 import { useWithdrawLiquidity } from '~/api/api-contract/pool/withdraw-liquidity';
@@ -663,22 +662,16 @@ const _WithdrawLiquidityPopup = ({
                 0
               )}%)`}
               image={
-                isXrp ? (
-                  `${ASSET_URL}/tokens/token-unknown.png`
-                ) : (
-                  <Jazzicon
-                    diameter={36}
-                    seed={jsNumberForAddress(
-                      isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
-                    )}
-                  />
-                )
+                <LpWrapper images={[tokensOut?.[0]?.image, tokensOut?.[1]?.image]}>
+                  <div />
+                  <div />
+                </LpWrapper>
               }
               leftAlign
             />
           </List>
         )}
-        {!isIdle && isSuccess && (
+        {(isIdle || isSuccess) && (
           <List title={t(`You're expected to receive`)}>
             {tokensOut?.map(({ symbol, currentWeight, amount, image, price }, i) => (
               <Fragment key={`${symbol}-${i}`}>
@@ -692,7 +685,7 @@ const _WithdrawLiquidityPopup = ({
                     THOUSAND,
                     0
                   )}%)`}
-                  image={image}
+                  image={image || `${ASSET_URL}/tokens/token-unknown.png`}
                   leftAlign
                 />
                 {i !== (tokensOut?.length || 0) - 1 && <Divider />}
@@ -846,4 +839,36 @@ const GasFeeCaption = styled.div<GasFeeCaptionProps>(({ error }) => [
     font-r-12 text-neutral-60 flex-1
   `,
   error && tw`text-red-50`,
+]);
+
+interface LpWrapperProps {
+  images: (string | undefined)[];
+}
+const LpWrapper = styled.div<LpWrapperProps>(({ images }) => [
+  tw`relative w-64 h-36`,
+  css`
+    & > div {
+      width: 36px;
+      height: 36px;
+
+      border-radius: 100%;
+
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    & > div:first-of-type {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-image: url(${images[0] || `${ASSET_URL}/tokens/token-unknown.png`});
+    }
+    & > div:last-of-type {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 1;
+      background-image: url(${images[1] || `${ASSET_URL}/tokens/token-unknown.png`});
+    }
+  `,
 ]);

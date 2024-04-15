@@ -19,7 +19,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   issuer?: string;
 
   image?: boolean;
-  imageUrl?: string;
+  imageUrl?: string | ReactNode;
   icon?: ReactNode;
   iconWrapper?: boolean;
 
@@ -61,6 +61,7 @@ export const Token = ({
       {...rest}
     >
       {image &&
+        (typeof imageUrl === 'string' || typeof imageUrl === 'undefined') &&
         (imageUrl ? (
           <TokenImageWrapper src={imageUrl} title={token} type={type} />
         ) : isXrp ? (
@@ -75,6 +76,7 @@ export const Token = ({
             seed={jsNumberForAddress(seed?.length < 42 ? toHex(seed, { size: 42 }) : seed)}
           />
         ))}
+      {image && typeof imageUrl === 'object' && imageUrl}
       <TextWrapper>
         <TokenText type={type}>{title ? title : token}</TokenText>
         {issuer && <Percentage>{issuer}</Percentage>}

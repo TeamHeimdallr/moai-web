@@ -1,8 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useNavigate, useParams } from 'react-router-dom';
-import tw from 'twin.macro';
-import { toHex } from 'viem';
+import { css } from '@emotion/react';
+import tw, { styled } from 'twin.macro';
 
 import { useUserPoolTokenBalances } from '~/api/api-contract/balance/user-pool-token-balances';
 
@@ -33,7 +32,7 @@ export const UserPoolBalances = () => {
   const { network, id } = useParams();
   const { t } = useTranslation();
 
-  const { selectedNetwork, isFpass, isEvm, isXrp } = useNetwork();
+  const { selectedNetwork, isFpass, isEvm } = useNetwork();
   const { open, opened } = usePopup(POPUP_ID.CONNECT_WALLET);
 
   const { evm, xrp, fpass } = useConnectedWallet();
@@ -86,16 +85,10 @@ export const UserPoolBalances = () => {
       <TokenLists>
         <TokenList
           image={
-            isXrp ? (
-              `${ASSET_URL}/tokens/token-unknown.png`
-            ) : (
-              <Jazzicon
-                diameter={36}
-                seed={jsNumberForAddress(
-                  isXrp ? toHex(lpToken?.address || '', { size: 42 }) : lpToken?.address || ''
-                )}
-              />
-            )
+            <LpWrapper images={[compositions?.[0]?.image, compositions?.[1]?.image]}>
+              <div />
+              <div />
+            </LpWrapper>
           }
           title={lpToken?.symbol || lpTokenSymbol}
           balance={formatNumber(userLpTokenBalance || 0, 4, 'floor', 0)}
@@ -191,3 +184,35 @@ const ButtonWrapper = tw.div`
 const Divider = tw.div`
   flex h-1 bg-neutral-15
 `;
+
+interface LpWrapperProps {
+  images: (string | undefined)[];
+}
+const LpWrapper = styled.div<LpWrapperProps>(({ images }) => [
+  tw`relative w-64 h-36`,
+  css`
+    & > div {
+      width: 36px;
+      height: 36px;
+
+      border-radius: 100%;
+
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    & > div:first-of-type {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-image: url(${images[0] || `${ASSET_URL}/tokens/token-unknown.png`});
+    }
+    & > div:last-of-type {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 1;
+      background-image: url(${images[1] || `${ASSET_URL}/tokens/token-unknown.png`});
+    }
+  `,
+]);
