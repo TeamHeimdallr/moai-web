@@ -724,7 +724,7 @@ const _WithdrawLiquidityPopup = ({
                   <GasFeeTitle>{t(`Gas fee`)}</GasFeeTitle>
                   <GasFeeTitleValue>
                     {estimatedFee
-                      ? `~${formatNumber(estimatedFee)} ${feeToken.name}`
+                      ? `~${formatNumber(estimatedFee, 6, 'floor', THOUSAND, 0)}  ${feeToken.name}`
                       : t('calculating...')}
                   </GasFeeTitleValue>
                 </GasFeeInnerWrapper>
