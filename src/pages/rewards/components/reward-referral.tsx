@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import copy from 'copy-to-clipboard';
@@ -9,7 +9,9 @@ import { useGetRewardsReferralCodeQuery } from '~/api/api-server/rewards/get-ref
 import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
 import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
 
-import { ButtonPrimarySmall } from '~/components/buttons';
+import { IconCopy } from '~/assets/icons';
+
+import { ButtonIconSmall, ButtonPrimarySmall } from '~/components/buttons';
 
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
@@ -19,6 +21,8 @@ import { NETWORK, POPUP_ID } from '~/types';
 
 import { useRewardSelectWaveIdStore } from '../states';
 
+import { RewardReferralSharePopup } from './reward-referral-share-popup';
+
 export const RewardReferral = () => {
   const { t } = useTranslation();
 
@@ -27,10 +31,14 @@ export const RewardReferral = () => {
   const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
   const currentNetworkAbbr = getNetworkAbbr(currentNetwork);
 
-  const [buttonText, setButtonText] = useState('Share code');
+  const [text, setText] = useState('');
 
   const { open: openBindReferral } = usePopup(POPUP_ID.REWARD_BIND_REFERRAL);
   const { open: openBoundReferral } = usePopup(POPUP_ID.REWARD_BOUND_REFERRAL);
+  const { opened: referralShareOpened, open: openReferralShare } = usePopup(
+    POPUP_ID.REWARD_REFERRAL_SHARE
+  );
+
   const { selectedWaveId } = useRewardSelectWaveIdStore();
 
   const { evm, fpass } = useConnectedWallet();
@@ -91,14 +99,17 @@ export const RewardReferral = () => {
   const { referral } = myWaveInfo || {};
 
   const { code } = codeData || {};
+
   const handleCopy = () => {
     copy(code || '');
 
-    setButtonText('Copied!');
-    setTimeout(() => {
-      setButtonText('Share code');
-    }, 2000);
+    setText('Copied!');
+    setTimeout(() => setText(code || ''), 2000);
   };
+
+  useEffect(() => {
+    setText(code || '');
+  }, [code]);
 
   return (
     <Wrapper>
@@ -109,7 +120,10 @@ export const RewardReferral = () => {
             <Label>{t('My Referees')}</Label>
           </ContentWrapper>
           <ContentWrapper>
-            <Value>{code}</Value>
+            <Value>
+              {t(text)}
+              <ButtonIconSmall icon={<IconCopy />} onClick={handleCopy} />
+            </Value>
             <Value>{referees || '-'}</Value>
           </ContentWrapper>
         </UpperInnerWrapper>
@@ -125,7 +139,7 @@ export const RewardReferral = () => {
             <BottomDescription>{t('reward-referral-share-description')}</BottomDescription>
           </BottomTitleWrapper>
           <BottomButtonWrapper>
-            <ButtonPrimarySmall text={t(buttonText)} onClick={handleCopy} />
+            <ButtonPrimarySmall text={t('Share link')} onClick={() => openReferralShare()} />
           </BottomButtonWrapper>
         </BottomContentWrapper>
         {!referral && (
@@ -140,6 +154,7 @@ export const RewardReferral = () => {
           </BottomContentWrapper>
         )}
       </BottomWrapper>
+      {referralShareOpened && <RewardReferralSharePopup code={code || ''} />}
     </Wrapper>
   );
 };

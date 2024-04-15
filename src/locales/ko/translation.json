@@ -658,11 +658,14 @@
   "My Referral Code": "나의 레퍼럴 코드",
   "My Referees": "추천받은 사람",
 
-  "reward-referral-share-title": "레퍼럴 코드 공유하기",
+  "reward-referral-share-title": "레퍼럴 링크 공유하기",
   "reward-referral-share-description": "친구를 초대하면 포인트 수익의 10% 추가 포인트를 받을 수 있습니다.",
   "Share code": "코드 공유하기",
   "reward-referral-bind-title": "레퍼럴 등록하기",
   "reward-referral-bind-description": "레퍼럴 코드를 등록하여 10% 포인트를 추가로 적립하세요!",
+  "Share referral link": "레퍼럴 링크 공유하기",
+  "Share link": "링크 공유하기",
+  "Copy to share": "복사하기",
 
   "Bind referrer": "레퍼럴 등록하기",
 

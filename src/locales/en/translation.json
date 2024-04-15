@@ -657,7 +657,7 @@
   "My Referral Code": "My Referral Code",
   "My Referees": "My Referees",
 
-  "reward-referral-share-title": "Share your code with friends!",
+  "reward-referral-share-title": "Share referral link with friends!",
   "reward-referral-share-description": "Invite friends to receive 10% bonus points of their earnings.",
   "Share code": "Share code",
   "reward-referral-bind-title": "Bind referrer",
@@ -669,6 +669,9 @@
   "Bound Referrer": "Bound Referrer",
   "bind-referrer-popup-description": "Enter a referral code to earn an additional 5% points. Please note that you can only bind once.",
   "bound-referrer-popup-description": "You have bound the referrer of the following code. You earn an additional 5% points.",
+  "Share referral link": "Share referral link",
+  "Share link": "Share link",
+  "Copy to share": "Copy to share",
 
   "Referral code": "Referral code",
   "Enter code": "Enter code",
