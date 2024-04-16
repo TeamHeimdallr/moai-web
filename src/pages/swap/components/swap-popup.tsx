@@ -123,7 +123,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
       },
     },
     {
-      enabled: (isRoot || isXrpEvm) && !!fromToken && !!toToken && !swapOptimizedPathPool,
+      enabled: (isRoot || isXrpEvm) && !!fromToken && !!toToken,
       staleTime: 2000,
     }
   );
@@ -210,7 +210,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     ? toInputFromSinglePoolStable
     : toInputFromSinglePoolNormal;
 
-  const toInput = toInputFromSor || toInputFromSinglePool || 0;
+  const toInput = Math.max(toInputFromSor, toInputFromSinglePool || 0);
   const numToInput = Number(toInput) || 0;
   const swapRatio =
     fromInput && toInput
@@ -279,6 +279,7 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     fromInput: numFromInput,
     toToken: toToken,
     toInput: numToInput,
+    batchSwapSelected: !!swapInfoData && toInputFromSor > (toInputFromSinglePool || 0),
     enabled: swapEnabled,
   });
 

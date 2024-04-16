@@ -123,6 +123,24 @@ const _SwapInputGroup = () => {
     fromToken?.network === currentNetwork &&
     toToken?.network === currentNetwork;
 
+  const { data: swapInfoData } = useSorQuery(
+    {
+      queries: {
+        network: currentNetwork,
+        from: fromToken?.address || '',
+        to: toToken?.address || '',
+        amount: parseUnits(
+          (Number(fromInput) || 0).toFixed(18),
+          getTokenDecimal(currentNetwork, fromToken?.symbol)
+        ).toString(),
+      },
+    },
+    {
+      enabled: (isRoot || isXrpEvm) && !!fromToken && !!toToken,
+      staleTime: 1000 * 3,
+    }
+  );
+
   const {
     data: swapOptimizedPathPoolData,
     isFetching: isSorFallbackLoading,
@@ -142,23 +160,6 @@ const _SwapInputGroup = () => {
   );
   const { pool: swapOptimizedPathPool } = swapOptimizedPathPoolData || {};
 
-  const { data: swapInfoData } = useSorQuery(
-    {
-      queries: {
-        network: currentNetwork,
-        from: fromToken?.address || '',
-        to: toToken?.address || '',
-        amount: parseUnits(
-          (Number(fromInput) || 0).toFixed(18),
-          getTokenDecimal(currentNetwork, fromToken?.symbol)
-        ).toString(),
-      },
-    },
-    {
-      enabled: (isRoot || isXrpEvm) && !!fromToken && !!toToken && isSorFallbackError,
-      staleTime: 1000 * 3,
-    }
-  );
   const swapsRaw = swapInfoData?.data.swaps ?? [];
   const swaps = swapsRaw.map(({ poolId, assetInIndex, assetOutIndex, amount, userData }) => [
     poolId,
@@ -263,7 +264,7 @@ const _SwapInputGroup = () => {
     ? toInputFromSinglePoolStable
     : toInputFromSinglePoolNormal;
 
-  const toInput = toInputFromSor || toInputFromSinglePool || 0;
+  const toInput = Math.max(toInputFromSor, toInputFromSinglePool || 0);
   const swapRatio =
     fromInput && toInput
       ? (toInput || 0) / (Number(fromInput || 0) === 0 ? 0.0001 : Number(fromInput || 0))
@@ -305,7 +306,7 @@ const _SwapInputGroup = () => {
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],
-    proxyEnabled: !!swapInfoData && !!validToSwap && !swapOptimizedPathPool,
+    proxyEnabled: !!swapInfoData && !!validToSwap,
   });
 
   const singleSwap = [
@@ -327,7 +328,7 @@ const _SwapInputGroup = () => {
     poolId: swapOptimizedPathPool?.poolId || '',
     singleSwap,
     fundManagement: [walletAddress, false, walletAddress, false],
-    enabled: !!validToSwap && !!swapOptimizedPathPool,
+    enabled: !!validToSwap && !!swapOptimizedPathPool && !swapInfoData && !data,
   });
 
   const errorMessage = prepareError?.message || singleSwapPrepareError?.message || '';
