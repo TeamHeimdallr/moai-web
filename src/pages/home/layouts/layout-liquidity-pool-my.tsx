@@ -16,6 +16,7 @@ import { useMediaQuery } from '~/hooks/utils';
 import { getNetworkAbbr } from '~/utils';
 import { NETWORK, POPUP_ID } from '~/types';
 
+import { CampaignBanner } from '../components/campaign-banner';
 import { useTableMyLiquidityPool } from '../hooks/components/table/use-table-liquidity-pool-my';
 
 interface Meta {
@@ -97,6 +98,9 @@ const _MyLiquidityLayout = () => {
           handleClick={meta => handleMobileRowClick(meta.network, meta.poolId)}
         />
       )}
+
+      {/* TODO: delete 2024.05.10 */}
+      <CampaignBanner />
     </Wrapper>
   );
 };
