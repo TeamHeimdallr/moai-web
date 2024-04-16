@@ -38,7 +38,6 @@ export const RewardReferral = () => {
   const { opened: referralShareOpened, open: openReferralShare } = usePopup(
     POPUP_ID.REWARD_REFERRAL_SHARE
   );
-
   const { selectedWaveId } = useRewardSelectWaveIdStore();
 
   const { evm, fpass } = useConnectedWallet();

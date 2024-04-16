@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { differenceInDays, format } from 'date-fns';
 import tw, { styled } from 'twin.macro';
 
+import { useGetRewardsWaveNInfoQuery } from '~/api/api-server/rewards/get-reward-info-waveN';
 import { useGetWaveQuery } from '~/api/api-server/rewards/get-waves';
 
 import { BadgeGnbNew } from '~/components/badges/new-gnb';
@@ -15,6 +17,7 @@ import { usePopup } from '~/hooks/components';
 import { useForceNetwork, useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
 import { getNetworkAbbr } from '~/utils';
+import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { NETWORK, POPUP_ID, TOOLTIP_ID } from '~/types';
 
 import { RewardMyInfo } from './components/reward-my-info-waveN';
@@ -32,6 +35,9 @@ const RewardsPage = () => {
     callCallbackUnmounted: true,
   });
 
+  const [searchParams] = useSearchParams();
+  const referralFromParams = searchParams.get('referral');
+
   const [hoveredWaveId, setHoveredWaveId] = useState<number | null>(null);
 
   const { t, i18n } = useTranslation();
@@ -40,11 +46,16 @@ const RewardsPage = () => {
   const { isFpass, selectedNetwork } = useNetwork();
   const currentNetworkAbbr = getNetworkAbbr(selectedNetwork);
 
+  const { open: openBindReferral } = usePopup(POPUP_ID.REWARD_BIND_REFERRAL);
   const { opened } = usePopup(POPUP_ID.REWARD_NETWORK_ALERT);
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
 
+  const { setWalletConnectorType } = useWalletConnectorTypeStore();
+  const { open: openWalletConnect } = usePopup(POPUP_ID.CONNECT_WALLET);
+
   const { evm, fpass } = useConnectedWallet();
   const evmAddress = isFpass ? fpass.address : evm?.address || '';
+  const isConnecting = evm?.isConnecting || false;
 
   const { data } = useGetWaveQuery(
     { params: { networkAbbr: currentNetworkAbbr } },
@@ -56,6 +67,19 @@ const RewardsPage = () => {
 
   const { currentWave, waves } = data || {};
   const legacy = !currentWave || currentWave?.waveId === 0;
+
+  const { data: myWaveInfo } = useGetRewardsWaveNInfoQuery(
+    {
+      params: { networkAbbr: currentNetworkAbbr },
+      queries: { walletAddress: evmAddress, wave: currentWave?.waveId },
+    },
+    {
+      enabled:
+        selectedNetwork === NETWORK.THE_ROOT_NETWORK && !!evmAddress && !!currentWave?.waveId,
+      staleTime: 20 * 1000,
+    }
+  );
+  const { referral } = myWaveInfo || {};
 
   const { selectWaveId, selectedWaveId } = useRewardSelectWaveIdStore();
 
@@ -91,6 +115,19 @@ const RewardsPage = () => {
 
     return currentWave.waveId === waveId && diff <= 10;
   };
+
+  useEffect(() => {
+    // search params이 없거나 referral이 이미 있는 경우
+    if (!referralFromParams || referral || isConnecting) return;
+    if (!evmAddress) {
+      setWalletConnectorType({ network: selectedNetwork });
+      openWalletConnect();
+      return;
+    }
+
+    openBindReferral();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [referralFromParams, isConnecting, referral, evmAddress, selectedNetwork]);
 
   return (
     <>
