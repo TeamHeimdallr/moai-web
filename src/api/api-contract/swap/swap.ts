@@ -22,9 +22,18 @@ interface Props {
 
   toToken?: IToken;
   toInput?: number;
+  batchSwapSelected?: boolean;
   enabled?: boolean;
 }
-export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }: Props) => {
+export const useSwap = ({
+  id,
+  fromToken,
+  fromInput,
+  toToken,
+  toInput,
+  batchSwapSelected,
+  enabled,
+}: Props) => {
   const { network } = useParams();
   const { selectedNetwork, isXrp, isFpass } = useNetwork();
   const { slippage: slippageRaw } = useSlippageStore();
@@ -58,7 +67,7 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],
-    enabled: enabled && !isFpass && !id,
+    enabled: enabled && !isFpass && !!batchSwapSelected,
   });
 
   const resEvmFpass = useBatchSwapFpass({
@@ -79,7 +88,7 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
         getTokenDecimal(currentNetwork, toToken?.symbol)
       ),
     ],
-    proxyEnabled: enabled && isFpass && !id,
+    proxyEnabled: enabled && isFpass && !!batchSwapSelected,
   });
 
   const resEvmSingleSwap = useSwapEvm({
@@ -137,17 +146,16 @@ export const useSwap = ({ id, fromToken, fromInput, toToken, toInput, enabled }:
     if (isXrp) return resXrp;
     if (isRoot) {
       if (isFpass) {
-        // can be single swap
-        if (id) return resFpassSingleSwap;
-        return resEvmFpass;
+        if (batchSwapSelected) return resEvmFpass;
+        return resFpassSingleSwap;
       }
 
-      if (id) return resEvmSingleSwap;
-      return resEvm;
+      if (batchSwapSelected) return resEvm;
+      return resEvmSingleSwap;
     }
 
-    if (id) return resEvmSingleSwap;
-    return resEvm;
+    if (batchSwapSelected) return resEvm;
+    return resEvmSingleSwap;
   };
 
   return getRes();
