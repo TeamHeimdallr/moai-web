@@ -1,5 +1,5 @@
 import { useQueries, useQuery } from '@tanstack/react-query';
-import { uniqBy } from 'lodash-es';
+import { uniqWith } from 'lodash-es';
 import { formatUnits } from 'viem';
 import { AccountInfoResponse, GatewayBalancesResponse } from 'xrpl';
 
@@ -100,7 +100,10 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
     })
     ?.flat();
 
-  const userTokenBalances = uniqBy(userTokenBalancesNotUniq, 'address');
+  const userTokenBalances = uniqWith(
+    userTokenBalancesNotUniq,
+    (a, b) => `${a.currency}-${a.address}` === `${b.currency}-${b.address}`
+  );
   const tokenBalances = (tokens
     ?.map(t => {
       if (t.symbol === 'XRP') return;
