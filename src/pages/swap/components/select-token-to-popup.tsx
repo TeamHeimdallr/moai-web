@@ -66,17 +66,19 @@ export const SelectToTokenPopup = ({ userAllTokenBalances }: Props) => {
   const handleSelect = async (token: IToken) => {
     if (token.symbol === fromToken?.symbol) return;
 
-    await createRecentlySelectedTokens({
-      network: currentNetwork,
-      walletAddress,
-      tokenId: token.id,
-    });
-    queryClient.invalidateQueries(recentlySelectedTokensQueryKey);
+    if (walletAddress) {
+      await createRecentlySelectedTokens({
+        network: currentNetwork,
+        walletAddress,
+        tokenId: token.id,
+      });
+      queryClient.invalidateQueries(recentlySelectedTokensQueryKey);
 
-    gaAction({
-      action: 'recent-selected-token',
-      data: { page: 'swap', type: 'to', token: token.symbol },
-    });
+      gaAction({
+        action: 'recent-selected-token',
+        data: { page: 'swap', type: 'to', token: token.symbol },
+      });
+    }
 
     setToToken(token);
     close();

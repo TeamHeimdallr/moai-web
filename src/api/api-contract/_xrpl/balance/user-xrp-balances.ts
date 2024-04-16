@@ -42,12 +42,17 @@ export const useUserXrpBalances = () => {
       staleTime: 1000 * 3,
     }
   );
-
+  const xrpTokenBalance = xrpTokenBalanceData?.result?.account_data?.Balance;
+  const ownerCount = xrpTokenBalanceData?.result?.account_data?.OwnerCount;
   const xrpBalance = {
     ...xrpToken,
-    balance: Number(
-      formatUnits(BigInt(xrpTokenBalanceData?.result?.account_data?.Balance || 0), 6)
-    ),
+    balance:
+      Number(
+        // substract reserve (10XRP + owner count * 2XRP)
+        formatUnits(BigInt(xrpTokenBalance || 0), 6)
+      ) -
+      10 -
+      (ownerCount || 0) * 2,
     totalSupply: 0,
   };
 

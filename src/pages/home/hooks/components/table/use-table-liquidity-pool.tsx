@@ -89,7 +89,8 @@ export const useTableLiquidityPool = () => {
     () =>
       poolWithFarm.map(d => {
         // pool에 xrp가 있는 경우, xrp를 기준으로 가격정보를 보여줌. xrp가 없는 경우 '-'로 표시
-        const hasPrice = isXrpl ? !!d.compositions.find(t => t.symbol === 'XRP') : true;
+        const hasPrice =
+          d.network === NETWORK.XRPL ? !!d.compositions.find(t => t.symbol === 'XRP') : true;
 
         return {
           meta: {
@@ -135,7 +136,7 @@ export const useTableLiquidityPool = () => {
           ),
         };
       }),
-    [poolWithFarm, showAllPools, isXrpl]
+    [poolWithFarm, showAllPools]
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -194,7 +195,8 @@ export const useTableLiquidityPool = () => {
     () =>
       poolWithFarm.map(d => {
         // pool에 xrp가 있는 경우, xrp를 기준으로 가격정보를 보여줌. xrp가 없는 경우 '-'로 표시
-        const hasPrice = isXrpl ? !!d.compositions.find(t => t.symbol === 'XRP') : true;
+        const hasPrice =
+          d.network === NETWORK.XRPL ? !!d.compositions.find(t => t.symbol === 'XRP') : true;
 
         return {
           meta: {
@@ -253,7 +255,7 @@ export const useTableLiquidityPool = () => {
           ],
         };
       }),
-    [poolWithFarm, showAllPools, isXrpl]
+    [poolWithFarm, showAllPools]
   );
 
   const mobileTableColumn = useMemo<ReactNode>(
