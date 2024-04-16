@@ -58,7 +58,7 @@ interface WrapperProps {
 }
 const Wrapper = styled.button<WrapperProps>(({ isLoading, buttonType }) => [
   tw`
-    gap-6 pl-16 pr-10 py-9 min-h-40 inline-flex-center rounded-10 clickable font-m-14 bg-primary-60 text-neutral-0 transition-colors w-full
+    relative gap-6 pl-16 pr-10 py-9 min-h-40 inline-flex-center rounded-10 clickable font-m-14 bg-primary-60 text-neutral-0 transition-colors w-full
 
     hover:(bg-primary-50 text-neutral-0)
 
@@ -92,11 +92,13 @@ const Wrapper = styled.button<WrapperProps>(({ isLoading, buttonType }) => [
       &:hover .icon svg {
         fill: ${COLOR.NEUTRAL[0]};
       }
+      &:disabled .icon svg {
+        fill: ${COLOR.NEUTRAL[40]};
+      }
     `,
   buttonType === 'outlined' &&
     tw`
       py-8 bg-transparent border-solid pl-15 pr-9 border-1 border-primary-60 text-primary-60
-
       disabled:(border-none pl-16 py-9 pr-10 non-clickable)
     `,
   isLoading &&
@@ -105,8 +107,11 @@ const Wrapper = styled.button<WrapperProps>(({ isLoading, buttonType }) => [
 
       & .icon svg {
         fill: ${COLOR.PRIMARY[60]};
+        width: 20px;
+        height: 20px;
       }
-      & .icon svg {
+      &:hover .icon svg {
+        fill: ${COLOR.PRIMARY[60]};
         width: 20px;
         height: 20px;
       }
