@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useQueries, useQuery } from '@tanstack/react-query';
-import { uniqBy } from 'lodash-es';
+import { uniqWith } from 'lodash-es';
 import { formatUnits, parseUnits } from 'viem';
 import { AccountInfoResponse, GatewayBalancesResponse } from 'xrpl';
 
@@ -124,9 +124,11 @@ export const useUserPoolTokenBalances = (props?: Props) => {
   const lpTokenPrice = lpTokenTotalSupply ? Number((pool?.value || 0) / lpTokenTotalSupply) : 0;
   const lpTokenValue = lpTokenBalance * lpTokenPrice;
 
-  const xrpTokenBalance = Number(
-    formatUnits(BigInt(xrpTokenBalanceData?.result?.account_data?.Balance || 0), 6)
-  );
+  const ownerCount = xrpTokenBalanceData?.result?.account_data?.OwnerCount;
+  const xrpTokenBalance =
+    Number(formatUnits(BigInt(xrpTokenBalanceData?.result?.account_data?.Balance || 0), 6)) -
+    10 -
+    (ownerCount || 0) * 2;
   const tokenBalancesNotUniq = tokenBalancesData
     ?.flatMap(d => {
       const res: (ITokenComposition & { balance: number })[] = [];
@@ -145,7 +147,10 @@ export const useUserPoolTokenBalances = (props?: Props) => {
     })
     .flat();
 
-  const _tokenBalances = uniqBy(tokenBalancesNotUniq, 'address');
+  const _tokenBalances = uniqWith(
+    tokenBalancesNotUniq,
+    (a, b) => `${a.currency}-${a.address}` === `${b.currency}-${b.address}`
+  );
   const tokenBalances = compositions
     ?.map(composition => {
       if (composition.symbol === 'XRP') return;
