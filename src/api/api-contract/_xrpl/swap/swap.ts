@@ -1,6 +1,6 @@
 import { parseUnits, toHex } from 'viem';
 import { useMutation } from 'wagmi';
-import { xrpToDrops } from 'xrpl';
+import { Payment, xrpToDrops } from 'xrpl';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -70,9 +70,10 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
     ...deliverMin,
     Destination: address,
     Fee: '100',
+    SourceTag: 60006000,
     Flags: connectedConnector === 'dcent' ? toHex(131072 + 2147483648) : 131072,
     Sequence: connectedConnector === 'dcent' ? sequence : undefined,
-  };
+  } as Payment;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitTx = async () => await xrp.submitTransaction(txRequest as any);

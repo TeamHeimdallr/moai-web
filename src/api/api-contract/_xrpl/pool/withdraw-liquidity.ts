@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { parseUnits, toHex } from 'viem';
+import { AMMWithdraw } from 'xrpl';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -72,9 +73,10 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
     Account: address,
     ...txAssets,
     Fee: '100',
+    SourceTag: 60006000,
     Flags: connectedConnector === 'dcent' ? toHex(1048576 + 2147483648) : 1048576,
     Sequence: connectedConnector === 'dcent' ? sequence : undefined,
-  };
+  } as AMMWithdraw;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitTx = async () => await xrp.submitTransaction(txRequest as any);
