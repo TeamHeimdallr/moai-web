@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 import { formatUnits } from 'viem';
 
 import { useUserLpFarmDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
@@ -152,6 +152,8 @@ export const PoolInfo = () => {
             ) : undefined
           }
           value={formattedFees}
+          hover
+          onClick={() => navigate('fee-voting')}
         />
       </InnerWrapper>
 
@@ -176,7 +178,7 @@ const TooltipWrapper = tw.div`
   absolute
 `;
 
-interface PoolInfoCardProps {
+interface PoolInfoCardProps extends HTMLAttributes<HTMLDivElement> {
   name: string;
   value: string;
   valueIcon?: ReactNode;
@@ -190,6 +192,7 @@ interface PoolInfoCardProps {
   subValueIcon2?: ReactNode;
 
   hoverable?: boolean;
+  hover?: boolean;
 }
 // NOTE: need to refactor
 const PoolInfoCard = ({
@@ -202,9 +205,11 @@ const PoolInfoCard = ({
   subValue2,
   subValueIcon2 = <IconFarming width={16} height={16} fill={COLOR.GREEN[50]} />,
   hoverable,
+  hover,
+  ...rest
 }: PoolInfoCardProps) => {
   return (
-    <PoolInfoCardWrapper>
+    <PoolInfoCardWrapper hover={hover} {...rest}>
       <Name>
         {name}
         {nameIcon}
@@ -234,11 +239,18 @@ const PoolInfoCard = ({
     </PoolInfoCardWrapper>
   );
 };
-const PoolInfoCardWrapper = tw.div`
-  w-full flex flex-1 flex-col items-start bg-neutral-10 rounded-12
+
+interface PoolInfoCardWrapperProps {
+  hover?: boolean;
+}
+const PoolInfoCardWrapper = styled.div<PoolInfoCardWrapperProps>(({ hover }) => [
+  tw`
+  w-full flex flex-1 flex-col items-start bg-neutral-10 rounded-12 transition-colors
   py-16 px-20 gap-12
   md:(py-20 px-24 gap-16)
-`;
+`,
+  hover && tw`hover:(bg-neutral-15 clickable)`,
+]);
 
 const Name = tw.div`
   font-m-14 text-neutral-80 flex items-center justify-between

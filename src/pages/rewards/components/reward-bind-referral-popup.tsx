@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import tw from 'twin.macro';
 
 import { usePostCreateReferral } from '~/api/api-server/rewards/create-referral';
@@ -23,6 +24,9 @@ interface Props {
 export const RewardBindReferralPopup = ({ walletAddress, waveId, networkAbbr }: Props) => {
   const { ref } = useGAInView({ name: 'bind-referral' });
   const { gaAction } = useGAAction();
+
+  const [searchParams] = useSearchParams();
+  const referralFromParams = searchParams.get('referral');
 
   const { close } = usePopup(POPUP_ID.REWARD_BIND_REFERRAL);
   const { t } = useTranslation();
@@ -62,6 +66,12 @@ export const RewardBindReferralPopup = ({ walletAddress, waveId, networkAbbr }: 
       data: { walletAddress, code: value || '', wave: waveId },
     });
   };
+
+  useEffect(() => {
+    if (referralFromParams) {
+      setValue(referralFromParams);
+    }
+  }, [referralFromParams]);
 
   useEffect(() => {
     if (!data) return;
@@ -113,6 +123,7 @@ export const RewardBindReferralPopup = ({ walletAddress, waveId, networkAbbr }: 
               label={t('Referral code')}
               error={error}
               errorMessage={t(errorMessage || '')}
+              defaultValue={referralFromParams || ''}
               onChange={handleChange}
             />
           </>
