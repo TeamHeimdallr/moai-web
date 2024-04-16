@@ -110,7 +110,7 @@ const BadgeWrapper = tw.div`
   flex inline-flex items-center relative h-40
 `;
 const Badge = tw.div`
-  w-40 h-40 absolute flex-center
+  w-40 h-40 absolute flex-center rounded-full
 `;
 const Image = tw(LazyLoadImage)`
   w-40 h-40 object-cover flex-center

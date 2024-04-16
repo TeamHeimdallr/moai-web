@@ -143,7 +143,7 @@ interface TokenImageWrapperProps {
   type?: 'large' | 'small';
 }
 const TokenImageWrapper = styled(LazyLoadImage)<TokenImageWrapperProps>(({ type }) => [
-  tw`flex-shrink-0 flex-center`,
+  tw`flex-shrink-0 flex-center rounded-full`,
   type === 'large' && tw`w-24 h-24`,
   type === 'small' && tw`w-20 h-20`,
 ]);
