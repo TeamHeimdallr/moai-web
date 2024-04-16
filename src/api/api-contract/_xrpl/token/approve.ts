@@ -52,6 +52,7 @@ export const useApprove = ({ currency, issuer, amount, enabled }: Props) => {
     TransactionType: 'TrustSet',
     Account: address,
     Fee: '100',
+    SourceTag: 60006000,
     Flags: connectedConnector === 'dcent' ? toHex(262144 + 2147483648) : 262144,
     Sequence: connectedConnector === 'dcent' ? sequence : undefined,
     LimitAmount: {

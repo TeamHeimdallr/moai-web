@@ -1,6 +1,6 @@
 import { parseUnits } from 'viem';
 import { useMutation } from 'wagmi';
-import { convertStringToHex, xrpToDrops } from 'xrpl';
+import { convertStringToHex, Payment, xrpToDrops } from 'xrpl';
 
 import { XRPL_BRIDGE_ADDRESS } from '~/constants';
 
@@ -28,6 +28,7 @@ export const useBridgeXrplToRoot = ({ amount, destination, enabled }: Props) => 
     Amount: xrpToDrops(amount.toString()),
     Fee: '100',
     Sequence: connectedConnector === 'dcent' ? sequence : undefined,
+    SourceTag: 60006000,
     Memos: [
       {
         Memo: {
@@ -36,7 +37,7 @@ export const useBridgeXrplToRoot = ({ amount, destination, enabled }: Props) => 
         },
       },
     ],
-  };
+  } as Payment;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitTx = async () => await xrp.submitTransaction(txRequest as any);

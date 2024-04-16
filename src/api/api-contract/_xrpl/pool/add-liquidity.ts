@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { parseUnits, toHex } from 'viem';
+import { AMMDeposit } from 'xrpl';
 
 import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
@@ -119,17 +120,19 @@ export const useAddLiquidity = ({ poolId, token1, token2, enabled }: Props) => {
     Account: address,
     ...txAssets,
     Fee: '100',
+    SourceTag: 60006000,
     Flags: connectedConnector === 'dcent' ? toHex(1048576 + 2147483648) : 1048576,
     Sequence: connectedConnector === 'dcent' ? sequence : undefined,
-  };
+  } as AMMDeposit;
   const txRequestSingleAsset = {
     TransactionType: 'AMMDeposit',
     Account: address,
     ...txAssets,
     Fee: '100',
+    SourceTag: 60006000,
     Flags: connectedConnector === 'dcent' ? toHex(524288 + 2147483648) : 524288,
     Sequence: connectedConnector === 'dcent' ? sequence : undefined,
-  };
+  } as AMMDeposit;
   const txRequest = isSingle ? txRequestSingleAsset : txRequestTwoAssets;
 
   const submitTx = async () => {

@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { Currency } from 'xrpl';
+import { AMMVote, Currency } from 'xrpl';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
@@ -22,8 +22,9 @@ export const useAmmVote = ({ asset, asset2, trandingFee, enabled = true }: Props
     Asset: asset,
     Asset2: asset2,
     Flags: 2147483648,
+    SourceTag: 60006000,
     TradingFee: trandingFee,
-  };
+  } as AMMVote;
 
   const submitTx = async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
