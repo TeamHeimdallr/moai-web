@@ -6,7 +6,7 @@ import { uniqBy } from 'lodash-es';
 import { useUserLpFarmsDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
 import { useGetPoolsInfinityQuery } from '~/api/api-server/pools/get-pools';
 
-import { IS_MAINNET, MILLION, TRILLION } from '~/constants';
+import { ASSET_URL, IS_MAINNET, MILLION, TRILLION } from '~/constants';
 
 import { NetworkChip } from '~/components/network-chip';
 import {
@@ -105,7 +105,7 @@ export const useTableLiquidityPool = () => {
             <TableColumnToken
               tokens={d.compositions.map(t => ({
                 symbol: t.symbol,
-                image: t.image,
+                image: t.image || `${ASSET_URL}/tokens/token-unknown.png`,
                 issuer: t.issuerOrganization,
               }))}
             />

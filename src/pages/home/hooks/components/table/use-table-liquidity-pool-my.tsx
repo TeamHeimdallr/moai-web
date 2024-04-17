@@ -8,7 +8,7 @@ import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-tok
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 import { useGetPoolsQuery } from '~/api/api-server/pools/get-pools';
 
-import { IS_MAINNET, MILLION, TRILLION } from '~/constants';
+import { ASSET_URL, IS_MAINNET, MILLION, TRILLION } from '~/constants';
 
 import {
   TableColumn,
@@ -157,7 +157,7 @@ export const useTableMyLiquidityPool = () => {
             <TableColumnToken
               tokens={d.compositions.map(t => ({
                 symbol: t.symbol,
-                image: t.image,
+                image: t.image || `${ASSET_URL}/tokens/token-unknown.png`,
                 issuer: t.issuerOrganization,
               }))}
               disableSelectedToken
