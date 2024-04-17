@@ -123,14 +123,19 @@ export const useUserAllTokenBalances = () => {
 
       const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
       for (const key in assets) {
-        const composition = tokens?.find(token => token.address === key);
-        const [asset] = assets[key];
+        const asset = assets[key];
 
-        const totalSupply =
-          lpTokenTotalSupplyRaw?.find(supply => supply.currency === asset?.currency)?.supply || 0;
+        asset?.forEach(a => {
+          const composition = tokens?.find(
+            token => token.address === key && token.currency === a?.currency
+          );
 
-        if (asset && composition)
-          res.push({ ...composition, balance: Number(asset?.value || 0), totalSupply });
+          const totalSupply =
+            lpTokenTotalSupplyRaw?.find(supply => supply.currency === a?.currency)?.supply || 0;
+
+          if (asset && composition)
+            res.push({ ...composition, balance: Math.abs(Number(a?.value || 0)), totalSupply });
+        });
       }
 
       return res;
@@ -145,8 +150,12 @@ export const useUserAllTokenBalances = () => {
     ?.map(t => {
       if (t.symbol === 'XRP') return;
 
-      const balance = userTokenBalances?.find(b => b.address === t.address)?.balance || 0;
-      const totalSupply = userTokenBalances?.find(b => b.address === t.address)?.totalSupply || 0;
+      const balance =
+        userTokenBalances?.find(b => b.address === t.address && b.currency === t.currency)
+          ?.balance || 0;
+      const totalSupply =
+        userTokenBalances?.find(b => b.address === t.address && b.currency === t.currency)
+          ?.totalSupply || 0;
       return {
         ...t,
         balance,

@@ -12,17 +12,25 @@ import { IToken, NETWORK } from '~/types';
 
 type TokenBalance = IToken & { balance: number; totalSupply: number };
 interface Props {
-  addresses: string[];
+  targetTokens: {
+    issuer: string;
+    currency: string;
+  }[];
 }
-export const useUserTokenBalances = ({ addresses }: Props) => {
+export const useUserTokenBalances = ({ targetTokens }: Props) => {
   const { isXrp } = useNetwork();
 
   const { client, isConnected } = useXrpl();
   const { xrp } = useConnectedWallet();
   const { address: walletAddress } = xrp;
 
+  const addresses = targetTokens.map(t => t.issuer);
+  const currencies = targetTokens.map(t => t.currency);
+
   const { data: tokensData } = useGetTokensQuery(
-    { queries: { filter: `address:in:${addresses.join(',')}`, take: 100 } },
+    {
+      queries: { filter: `address:in:${addresses.join(',')}_currency:in:${currencies}`, take: 100 },
+    },
     { staleTime: 10 * 1000, enabled: !!addresses && addresses.length > 0 }
   );
   const { tokens } = tokensData || {};
@@ -89,11 +97,16 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
 
       const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
       for (const key in assets) {
-        const composition = tokens?.find(token => token.address === key);
-        const [asset] = assets[key];
+        const asset = assets[key];
 
-        if (asset && composition)
-          res.push({ ...composition, balance: Number(asset?.value || 0), totalSupply: 0 });
+        asset?.forEach(a => {
+          const composition = tokens?.find(
+            token => token.address === key && token.currency === a?.currency
+          );
+
+          if (asset && composition)
+            res.push({ ...composition, balance: Math.abs(Number(a?.value || 0)), totalSupply: 0 });
+        });
       }
 
       return res;
@@ -108,8 +121,12 @@ export const useUserTokenBalances = ({ addresses }: Props) => {
     ?.map(t => {
       if (t.symbol === 'XRP') return;
 
-      const balance = userTokenBalances?.find(b => b.address === t.address)?.balance || 0;
-      const totalSupply = userTokenBalances?.find(b => b.address === t.address)?.totalSupply || 0;
+      const balance =
+        userTokenBalances?.find(b => b.address === t.address && b.currency === t.currency)
+          ?.balance || 0;
+      const totalSupply =
+        userTokenBalances?.find(b => b.address === t.address && b.currency === t.currency)
+          ?.totalSupply || 0;
       return {
         ...t,
         balance,

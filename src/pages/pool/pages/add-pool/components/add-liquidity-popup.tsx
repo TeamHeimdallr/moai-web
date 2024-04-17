@@ -213,7 +213,7 @@ export const AddLiquidityPopup = ({ tokensIn }: Props) => {
                   type="large"
                   title={`${formatNumber(amount, 6, 'floor', THOUSAND, 0)} ${symbol}`}
                   description={price ? `$${formatNumber(amount * (price || 0))}` : '-'}
-                  image={image}
+                  image={image || `${ASSET_URL}/tokens/token-unknown.png`}
                   leftAlign
                 />
                 {idx !== tokensIn.length - 1 && <Divider />}

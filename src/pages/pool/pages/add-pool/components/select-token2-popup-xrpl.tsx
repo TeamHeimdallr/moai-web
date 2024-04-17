@@ -67,7 +67,8 @@ export const SelectToken2PopupXrpl = ({ showAddToken }: Props) => {
   );
   const { tokens: searchedTokens } = searchedTokensData || {};
   const { userTokenBalances: searchedTokensWithBalance } = useUserTokenBalances({
-    addresses: searchedTokens?.map(t => t.address) || [],
+    targetTokens:
+      searchedTokens?.map(t => ({ issuer: t?.address || '', currency: t?.currency || '' })) || [],
   });
 
   const { data: trendingToknesData } = useGetTrendingTokensQuery(
