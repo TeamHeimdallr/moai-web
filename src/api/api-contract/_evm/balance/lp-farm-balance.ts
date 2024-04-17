@@ -133,21 +133,22 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
 
   const farmAddressMap = LP_FARM_ADDRESS_WITH_POOL_ID?.[NETWORK.THE_ROOT_NETWORK];
 
+  // TODO: 0x0 handling
   const { data: rewardPerBlockDataRaw } = useContractReads({
     scopeKey: 'LP_FARM_REWARD_PER_BLOCK',
     contracts: pools?.map(pool => ({
-      address: farmAddressMap?.[pool.poolId] as Address,
+      address: (farmAddressMap?.[pool.poolId] || '0x0') as Address,
       abi: LP_FARM_ABI as Abi,
       functionName: 'rewardPerBlock',
     })),
-    staleTime: Infinity,
+    staleTime: 1000 * 10,
     enabled: !!pools && !ended,
   });
 
   const { data: depositedData } = useContractReads({
     scopeKey: 'LP_FARM_DEPOSITED',
     contracts: pools?.map(pool => ({
-      address: farmAddressMap?.[pool.poolId] as Address,
+      address: (farmAddressMap?.[pool.poolId] || '0x0') as Address,
       abi: LP_FARM_ABI as Abi,
       functionName: 'deposited',
       args: [0, walletAddress as Address],
@@ -162,7 +163,7 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
       address: pool.address as Address,
       abi: ERC20_TOKEN_ABI as Abi,
       functionName: 'balanceOf',
-      args: [farmAddressMap?.[pool.poolId] as Address],
+      args: [(farmAddressMap?.[pool.poolId] || '0x0') as Address],
     })),
     staleTime: 1000 * 10,
     enabled: !!pools && !ended,
@@ -184,6 +185,9 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
       (365 * 24 * 60 * 60 * Number(formatUnits(rewardPerBlockData, 6)) * (rootToken?.price || 0)) /
       blocktime;
     const lpTokenPrice = tokens?.find(t => t.address === pool.address)?.price || 0;
+    // if (pool.network === 'THE_ROOT_NETWORK') {
+    //   console.log(totalDeposited, lpTokenPrice, rewardValuesInYear);
+    // }
     const totalDepositedValue = totalDeposited * lpTokenPrice;
     const farmApr =
       totalDepositedValue !== 0 ? (100 * rewardValuesInYear) / totalDepositedValue : Infinity;
