@@ -18,7 +18,7 @@ export const RewardReferralSharePopup = ({ code }: Props) => {
 
   const data =
     '#GMOAI Introducing you to Universal Gateway to the Multi-chain Liquidity @MoaiFinance🗿 \n\n' +
-    `Get 10% more points with this link: ${BASE_URL_WITHOUT_HTTPS}/rewards?referral=${code}\n\n` +
+    `Get 5% more points with this link: ${BASE_URL_WITHOUT_HTTPS}/rewards?referral=${code}\n\n` +
     '$XRP $ROOT';
 
   const [buttonText, setButtonText] = useState('Copy to share');
