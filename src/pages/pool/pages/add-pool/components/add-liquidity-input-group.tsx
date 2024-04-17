@@ -47,7 +47,8 @@ const _AddLiquidityInputGroup = () => {
   const { token1, token2 } = useXrplPoolAddTokenPairStore();
 
   const { userTokenBalances } = useUserTokenBalances({
-    addresses: [token1, token2]?.map(t => t?.address || '') || [],
+    targetTokens:
+      [token1, token2]?.map(t => ({ issuer: t?.address || '', currency: t?.currency || '' })) || [],
   });
 
   const schema = yup.object().shape({

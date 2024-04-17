@@ -135,12 +135,17 @@ export const useUserPoolTokenBalances = (props?: Props) => {
 
       const assets = (d.data as GatewayBalancesResponse)?.result?.assets;
       for (const key in assets) {
-        const composition = compositions?.find(
-          token => token.address.toLocaleLowerCase() === key.toLocaleLowerCase()
-        );
-        const [asset] = assets[key];
+        const asset = assets[key];
+        asset?.forEach(a => {
+          const composition = compositions?.find(
+            token =>
+              token.address.toLocaleLowerCase() === key.toLocaleLowerCase() &&
+              token.currency === a?.currency
+          );
 
-        if (asset && composition) res.push({ ...composition, balance: Number(asset?.value || 0) });
+          if (asset && composition)
+            res.push({ ...composition, balance: Math.abs(Number(a?.value || 0)) });
+        });
       }
 
       return res;
