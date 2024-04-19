@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { last } from 'lodash-es';
 import { strip } from 'number-precision';
 import tw, { css, styled } from 'twin.macro';
 import { Address, formatUnits, parseEther, parseUnits } from 'viem';
@@ -179,11 +178,12 @@ const _SwapInputGroup = () => {
     staleTime: 1000 * 10,
   });
 
+  const tokenOutIndex = assets.findIndex(a => a.toLowerCase() === toToken?.address.toLowerCase());
+  const deltaFromSor = (data?.result || []) as bigint[];
+  const tokenOutFromSor =
+    tokenOutIndex < 0 || deltaFromSor.length < tokenOutIndex + 1 ? 0n : deltaFromSor[tokenOutIndex];
   const toInputFromSor = -Number(
-    formatUnits(
-      last((data?.result || []) as bigint[]) || 0n,
-      getTokenDecimal(currentNetwork, toToken?.symbol)
-    )
+    formatUnits(tokenOutFromSor || 0n, getTokenDecimal(currentNetwork, toToken?.symbol))
   );
 
   /* swap optimized path pool의 해당 토큰 balance와 price */
