@@ -125,10 +125,11 @@ export const useUserPoolTokenBalances = (props?: Props) => {
   const lpTokenValue = lpTokenBalance * lpTokenPrice;
 
   const ownerCount = xrpTokenBalanceData?.result?.account_data?.OwnerCount;
-  const xrpTokenBalance =
+  const _xrpTokenBalance =
     Number(formatUnits(BigInt(xrpTokenBalanceData?.result?.account_data?.Balance || 0), 6)) -
     10 -
     (ownerCount || 0) * 2;
+  const xrpTokenBalance = _xrpTokenBalance <= 0 ? 0 : _xrpTokenBalance;
   const tokenBalancesNotUniq = tokenBalancesData
     ?.flatMap(d => {
       const res: (ITokenComposition & { balance: number })[] = [];

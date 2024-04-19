@@ -98,9 +98,7 @@ export const UserPoolBalances = () => {
       <Footer>
         <FooterBalanceWrapper>
           {t('Wallet balance')}
-          {!!userPoolTokenTotalValue && (
-            <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0)}`}</FooterBalance>
-          )}
+          <FooterBalance>{`$${formatNumber(userPoolTokenTotalValue || 0)}`}</FooterBalance>
         </FooterBalanceWrapper>
         <ButtonWrapper>
           {address ? (
