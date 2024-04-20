@@ -90,7 +90,9 @@ export const useBatchSwap = ({
     userData,
   ]);
   const assets = data?.data.tokenAddresses ?? [];
-  const internalSwapLength = swaps.length - 1;
+  const internalSwapLength = (
+    assets?.filter(a => !(a === fromToken.toLowerCase() || a === toToken.toLowerCase())) || []
+  ).length;
   const limits = [limit[0], ...Array.from({ length: internalSwapLength }).map(() => 0n), limit[1]];
 
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
@@ -173,6 +175,7 @@ export const useBatchSwap = ({
 
       return isNativeFee ? fee + evmFee : maxPayment;
     } catch (err) {
+      console.log(err);
       console.log('estimation fee error');
     }
   };
@@ -353,7 +356,9 @@ export const useBatchSwapPrepare = ({
     userData,
   ]);
   const assets = data?.data.tokenAddresses ?? [];
-  const internalSwapLength = swaps.length - 1;
+  const internalSwapLength = (
+    assets?.filter(a => !(a === fromToken.toLowerCase() || a === toToken.toLowerCase())) || []
+  ).length;
   const limits = [limit[0], ...Array.from({ length: internalSwapLength }).map(() => 0n), limit[1]];
 
   /* call prepare hook for check evm tx success */
