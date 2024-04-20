@@ -344,6 +344,7 @@ const _SwapInputGroup = () => {
 
   const sorFallbackError = isSorFallbackError && isXrp && fromToken && toToken;
 
+  // TODO: BAL#507 slippage error handling
   const errorTitle = t(
     isRoot || isXrpEvm
       ? poolImpactError || sorError
