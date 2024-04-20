@@ -20,6 +20,8 @@ interface Props {
   fromToken?: IToken;
   fromInput?: number;
 
+  limits?: bigint[];
+
   toToken?: IToken;
   toInput?: number;
   batchSwapSelected?: boolean;
@@ -31,6 +33,7 @@ export const useSwap = ({
   fromInput,
   toToken,
   toInput,
+  limits = [0n, 0n],
   batchSwapSelected,
   enabled,
 }: Props) => {
@@ -57,16 +60,17 @@ export const useSwap = ({
       getTokenDecimal(currentNetwork, fromToken?.symbol)
     ),
     fundManagement: [evmFpassAddress, false, evmFpassAddress, false],
-    limit: [
-      parseUnits(
-        `${(fromInput || 0).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, fromToken?.symbol)
-      ),
-      -parseUnits(
-        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, toToken?.symbol)
-      ),
-    ],
+    limit: limits,
+    // limit: [
+    //   parseUnits(
+    //     `${(fromInput || 0).toFixed(18)}`,
+    //     getTokenDecimal(currentNetwork, fromToken?.symbol)
+    //   ),
+    //   -parseUnits(
+    //     `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
+    //     getTokenDecimal(currentNetwork, toToken?.symbol)
+    //   ),
+    // ],
     enabled: enabled && !isFpass && !!batchSwapSelected,
   });
 
@@ -78,16 +82,17 @@ export const useSwap = ({
       getTokenDecimal(currentNetwork, fromToken?.symbol)
     ),
     fundManagement: [evmFpassAddress, false, evmFpassAddress, false],
-    limit: [
-      parseUnits(
-        `${(fromInput || 0).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, fromToken?.symbol)
-      ),
-      -parseUnits(
-        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, toToken?.symbol)
-      ),
-    ],
+    limit: limits,
+    // limit: [
+    //   parseUnits(
+    //     `${(fromInput || 0).toFixed(18)}`,
+    //     getTokenDecimal(currentNetwork, fromToken?.symbol)
+    //   ),
+    //   -parseUnits(
+    //     `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
+    //     getTokenDecimal(currentNetwork, toToken?.symbol)
+    //   ),
+    // ],
     proxyEnabled: enabled && isFpass && !!batchSwapSelected,
   });
 

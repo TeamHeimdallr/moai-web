@@ -45,7 +45,7 @@ export const useBatchSwap = ({
   toToken,
   swapAmount,
   fundManagement,
-  limit = [BigInt(10)],
+  limit,
   deadline = 2000000000,
   proxyEnabled,
 }: Props) => {
@@ -90,11 +90,6 @@ export const useBatchSwap = ({
     userData,
   ]);
   const assets = data?.data.tokenAddresses ?? [];
-  const internalSwapLength = (
-    assets?.filter(a => !(a === fromToken.toLowerCase() || a === toToken.toLowerCase())) || []
-  ).length;
-  const limits = [limit[0], ...Array.from({ length: internalSwapLength }).map(() => 0n), limit[1]];
-
   const [blockTimestamp, setBlockTimestamp] = useState<number>(0);
 
   const estimateFee = async () => {
@@ -115,7 +110,7 @@ export const useBatchSwap = ({
           ? encodeFunctionData({
               abi: BALANCER_VAULT_ABI,
               functionName: 'batchSwap',
-              args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+              args: [SwapKind.GivenIn, swaps, assets, fundManagement, limit, deadline],
             })
           : '0x0';
 
@@ -123,7 +118,7 @@ export const useBatchSwap = ({
         address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
         abi: BALANCER_VAULT_ABI,
         functionName: 'batchSwap',
-        args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+        args: [SwapKind.GivenIn, swaps, assets, fundManagement, limit, deadline],
         account: walletAddress as Address,
       });
 
@@ -199,7 +194,7 @@ export const useBatchSwap = ({
           ? encodeFunctionData({
               abi: BALANCER_VAULT_ABI,
               functionName: 'batchSwap',
-              args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+              args: [SwapKind.GivenIn, swaps, assets, fundManagement, limit, deadline],
             })
           : '0x0';
 
@@ -207,7 +202,7 @@ export const useBatchSwap = ({
         address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
         abi: BALANCER_VAULT_ABI,
         functionName: 'batchSwap',
-        args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+        args: [SwapKind.GivenIn, swaps, assets, fundManagement, limit, deadline],
         account: walletAddress as Address,
       });
 
@@ -323,7 +318,7 @@ export const useBatchSwapPrepare = ({
   toToken,
   swapAmount,
   fundManagement,
-  limit = [BigInt(10)],
+  limit = [0n, 0n],
   deadline = 2000000000,
   proxyEnabled,
 }: Props) => {
@@ -356,10 +351,6 @@ export const useBatchSwapPrepare = ({
     userData,
   ]);
   const assets = data?.data.tokenAddresses ?? [];
-  const internalSwapLength = (
-    assets?.filter(a => !(a === fromToken.toLowerCase() || a === toToken.toLowerCase())) || []
-  ).length;
-  const limits = [limit[0], ...Array.from({ length: internalSwapLength }).map(() => 0n), limit[1]];
 
   /* call prepare hook for check evm tx success */
   const {
@@ -372,7 +363,7 @@ export const useBatchSwapPrepare = ({
     abi: BALANCER_VAULT_ABI,
     functionName: 'batchSwap',
     account: walletAddress as Address,
-    args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+    args: [SwapKind.GivenIn, swaps, assets, fundManagement, limit, deadline],
     enabled: proxyEnabled && isEvm && isFpass && !!walletAddress,
   });
 

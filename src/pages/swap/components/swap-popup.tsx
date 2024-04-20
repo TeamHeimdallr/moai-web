@@ -279,6 +279,11 @@ const _SwapPopup = ({ swapOptimizedPathPool, refetchBalance }: Props) => {
     fromInput: numFromInput,
     toToken: toToken,
     toInput: numToInput,
+    limits: data?.result
+      ? (data?.result as bigint[])?.map((res, i) =>
+          i === 0 ? BigInt(res) : (BigInt(res) * BigInt((1 - slippage) * 100)) / 100n
+        )
+      : [0n, 0n],
     batchSwapSelected: !!swapInfoData && toInputFromSor > (toInputFromSinglePool || 0),
     enabled: swapEnabled,
   });

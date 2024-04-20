@@ -264,7 +264,11 @@ const _SwapInputGroup = () => {
     ? toInputFromSinglePoolStable
     : toInputFromSinglePoolNormal;
 
-  const toInput = Math.max(toInputFromSor, toInputFromSinglePool || 0);
+  // Math.max를 하게되면, sor을 통해 나온값에 대해 limit값이 달라질 수 있음.
+  // TODO: single swap, batch swap 중에 더 큰 값으로 스왑 되도록 수정
+  // const toInput = Math.max(toInputFromSor, toInputFromSinglePool || 0);
+  const toInput = toInputFromSor || toInputFromSinglePool || 0;
+
   const swapRatio =
     fromInput && toInput
       ? (toInput || 0) / (Number(fromInput || 0) === 0 ? 0.0001 : Number(fromInput || 0))
@@ -296,16 +300,21 @@ const _SwapInputGroup = () => {
       getTokenDecimal(currentNetwork, fromToken?.symbol)
     ),
     fundManagement: [walletAddress, false, walletAddress, false],
-    limit: [
-      parseUnits(
-        `${(Number(fromInput) || 0).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, fromToken?.symbol)
-      ),
-      -parseUnits(
-        `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
-        getTokenDecimal(currentNetwork, toToken?.symbol)
-      ),
-    ],
+    limit: data?.result
+      ? (data?.result as bigint[])?.map((res, i) =>
+          i === 0 ? BigInt(res) : (BigInt(res) * BigInt((1 - slippage) * 100)) / 100n
+        )
+      : [0n, 0n],
+    //  [
+    //   parseUnits(
+    //     `${(Number(fromInput) || 0).toFixed(18)}`,
+    //     getTokenDecimal(currentNetwork, fromToken?.symbol)
+    //   ),
+    //   -parseUnits(
+    //     `${((toInput || 0) * (1 - slippage / 100)).toFixed(18)}`,
+    //     getTokenDecimal(currentNetwork, toToken?.symbol)
+    //   ),
+    // ],
     proxyEnabled: !!swapInfoData && !!validToSwap,
   });
 
