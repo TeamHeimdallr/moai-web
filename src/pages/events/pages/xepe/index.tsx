@@ -36,7 +36,8 @@ export const XepePage = () => {
   const { mutateAsync, reset, data, error: serverError } = useCheckXepeEligibilityMutate();
 
   const errorMessage = formState.errors.input?.message || '';
-  const serverErrorMessage = serverError?.message;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const serverErrorMessage = (serverError?.response?.data as any)?.message || serverError?.message;
 
   const handleCheck = async () => {
     if (isValidAddress(value) || isValidClassicAddress(value)) {
@@ -55,11 +56,11 @@ export const XepePage = () => {
   }, [value]);
 
   useEffect(() => {
-    if (serverError && serverError.message) {
-      setError('input', { message: serverError.message });
+    if (serverError && serverErrorMessage) {
+      setError('input', { message: serverErrorMessage });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serverError]);
+  }, [serverError, serverErrorMessage]);
 
   const isEligible = data?.eligible;
 
