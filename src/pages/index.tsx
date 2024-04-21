@@ -16,6 +16,7 @@ import { useXummWalletClient } from '~/hooks/wallets/use-xumm-wallet-client';
 import { NETWORK, POPUP_ID } from '~/types';
 
 import BridgeRootPage from './bridge';
+import EventPage from './events';
 import FaucetPage from './faucet';
 import Home from './home';
 import Landing from './landing';
@@ -63,6 +64,7 @@ const Page = () => {
             {(isRoot || isXrpl) && (
               <Route path="/bridge" element={getMaintanence('/bridge', <BridgeRootPage />)} />
             )}
+            <Route path="/events/*" element={getMaintanence('/events', <EventPage />)} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </>

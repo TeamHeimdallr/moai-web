@@ -63,6 +63,8 @@ interface InputProps {
 const Input = styled.input<InputProps>(({ error }) => [
   tw`
     w-full h-32 bg-neutral-15 text-neutral-100 font-m-24 caret-primary-50 border-none
+    placeholder:(text-neutral-60)
+    disabled:(text-neutral-60)
   `,
   error && tw`text-red-50`,
 ]);

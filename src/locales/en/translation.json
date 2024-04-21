@@ -797,5 +797,9 @@
 
   "No Reliable Price": "No Reliable Price",
   "reliable-pool-value": "Pool Value",
-  "Not enough data to estimate": "Not enough data to estimate"
+  "Not enough data to estimate": "Not enough data to estimate",
+
+  "Ended campaign": "Ended campaign",
+  "Campaign has concluded! Claim your rewards.": "Campaign has concluded! Claim your rewards.",
+  "Claim rewards": "Claim rewards"
 }

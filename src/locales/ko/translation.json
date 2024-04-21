@@ -795,5 +795,9 @@
 
   "No Reliable Price": "No Reliable Price",
   "reliable-pool-value": "Pool Value",
-  "Not enough data to estimate": "추정할 수 있는 데이터가 없습니다"
+  "Not enough data to estimate": "추정할 수 있는 데이터가 없습니다",
+
+  "Ended campaign": "종료된 캠페인",
+  "Campaign has concluded! Claim your rewards.": "캠페인이 종료되었습니다! 리워드를 수령하세요.",
+  "Claim rewards": "리워드 수령하기"
 }
