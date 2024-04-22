@@ -103,3 +103,7 @@ export const formatNumber = (
 
   return formattedNumber;
 };
+
+export const xrplForceDecimal = (num: number) => {
+  return Math.floor(num * 100) / 100;
+};

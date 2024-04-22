@@ -109,9 +109,14 @@ export const useUserAllTokenBalances = () => {
             Number(
               // substract reserve (10XRP + owner count * 2XRP)
               formatUnits(BigInt(xrpTokenBalance || 0), 6)
-            ) -
-            10 -
-            (ownerCount || 0) * 2,
+            ) === 0
+              ? 0
+              : Number(
+                  // substract reserve (10XRP + owner count * 2XRP)
+                  formatUnits(BigInt(xrpTokenBalance || 0), 6)
+                ) -
+                10 -
+                (ownerCount || 0) * 2,
           totalSupply: 0,
         },
       ] as IToken & TokenBalance[])

@@ -4,6 +4,7 @@ import { Payment, xrpToDrops } from 'xrpl';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { xrplForceDecimal } from '~/utils';
 import { useSlippageStore } from '~/states/data';
 import { IToken } from '~/types';
 
@@ -28,12 +29,12 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
   const slippage = Number(slippageRaw || 0);
   const amount =
     toToken.symbol === 'XRP'
-      ? { Amount: xrpToDrops(toInput.toFixed(6)) }
+      ? { Amount: xrpToDrops(xrplForceDecimal(toInput || 0).toFixed(6)) }
       : {
           Amount: {
             currency: toToken.currency,
             issuer: toToken.address,
-            value: toInput.toFixed(6),
+            value: xrplForceDecimal(toInput || 0).toString(),
           },
         };
 
@@ -44,18 +45,18 @@ export const useSwap = ({ fromToken, fromInput, toToken, toInput, enabled }: Pro
           DeliverMin: {
             currency: toToken.currency,
             issuer: toToken.address,
-            value: (toInput * (1 - slippage / 100)).toFixed(6),
+            value: xrplForceDecimal((toInput || 0) * (1 - slippage / 100)).toString(),
           },
         };
 
   const sendMax =
     fromToken.symbol === 'XRP'
-      ? { SendMax: xrpToDrops(fromInput.toFixed(6)) }
+      ? { SendMax: xrpToDrops(xrplForceDecimal(fromInput || 0).toFixed(6)) }
       : {
           SendMax: {
             currency: fromToken.currency,
             issuer: fromToken.address,
-            value: fromInput.toFixed(6),
+            value: xrplForceDecimal(fromInput || 0).toString(),
           },
         };
 

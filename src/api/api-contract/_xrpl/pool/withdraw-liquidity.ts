@@ -4,7 +4,7 @@ import { AMMWithdraw } from 'xrpl';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getTokenDecimal } from '~/utils';
+import { getTokenDecimal, xrplForceDecimal } from '~/utils';
 import { ITokenComposition, NETWORK } from '~/types';
 
 import { useAccountInfo } from '../account/account-info';
@@ -27,11 +27,10 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
 
     if (xrp) {
       const asset1 = { currency: 'XRP' };
-      const amount1 = Number(
-        Number(
-          parseUnits((xrp.amount || 0).toFixed(6), getTokenDecimal(NETWORK.XRPL, 'XRP')).toString()
-        ).toFixed(6)
-      ).toString(); // max decimal is 6
+      const amount1 = parseUnits(
+        xrplForceDecimal(xrp?.amount || 0).toString(),
+        getTokenDecimal(NETWORK.XRPL, 'XRP')
+      ).toString();
 
       const remain = tokens.filter(t => t.currency !== 'XRP')?.[0];
       const asset2 = {
@@ -40,7 +39,7 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
       };
       const amount2 = {
         ...asset2,
-        value: Number(Number(remain.amount || 0).toFixed(6)).toString(),
+        value: xrplForceDecimal(remain?.amount || 0).toString(),
       };
 
       return {
@@ -52,9 +51,9 @@ export const useWithdrawLiquidity = ({ token1, token2, enabled }: Props) => {
     }
 
     const asset1 = { issuer: token1?.address || '', currency: token1?.currency || '' };
-    const amount1 = { ...asset1, value: Number(Number(token1?.amount || 0).toFixed(6)).toString() };
+    const amount1 = { ...asset1, value: xrplForceDecimal(token1?.amount || 0).toString() };
     const asset2 = { issuer: token2?.address || '', currency: token2?.currency || '' };
-    const amount2 = { ...asset2, value: Number(Number(token2?.amount || 0).toFixed(6)).toString() };
+    const amount2 = { ...asset2, value: xrplForceDecimal(token1?.amount || 0).toString() };
 
     return {
       Amount: amount1,
