@@ -84,10 +84,12 @@ export const useTableSwapHistories = () => {
     () =>
       swapHistories
         ? swapHistories?.map(d => {
-            const valueDoubleVol = d.swapHistoryTokens.reduce((acc, cur) => {
-              const amount = cur.amounts;
-              return (acc += (cur.price || 0) * amount);
-            }, 0);
+            const valueDoubleVol = d.value
+              ? d.value
+              : d.swapHistoryTokens.reduce((acc, cur) => {
+                  const amount = cur.amounts;
+                  return (acc += (cur.price || 0) * amount);
+                }, 0);
 
             // TODO: remove /2 when server updated
             const value = valueDoubleVol / 2;
