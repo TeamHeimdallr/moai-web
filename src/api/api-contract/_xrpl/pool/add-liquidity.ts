@@ -7,7 +7,7 @@ import { useGetPoolQuery } from '~/api/api-server/pools/get-pool';
 
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkAbbr, getNetworkFull, getTokenDecimal } from '~/utils';
+import { getNetworkAbbr, getNetworkFull, getTokenDecimal, xrplForceDecimal } from '~/utils';
 import { ITokenComposition, NETWORK } from '~/types';
 
 import { useAccountInfo } from '../account/account-info';
@@ -47,11 +47,10 @@ export const useAddLiquidity = ({ poolId, token1, token2, enabled }: Props) => {
 
     if (xrp) {
       const asset1 = { currency: 'XRP' };
-      const amount1 = Number(
-        Number(
-          parseUnits((xrp?.amount || 0).toFixed(6), getTokenDecimal(NETWORK.XRPL, 'XRP')).toString()
-        ).toFixed(5)
-      ).toString(); // max decimal is 6
+      const amount1 = parseUnits(
+        xrplForceDecimal(xrp?.amount || 0).toString(),
+        getTokenDecimal(NETWORK.XRPL, 'XRP')
+      ).toString();
 
       const remain = tokens.filter(t => t.currency !== 'XRP')?.[0];
       const remainToken = compositions?.filter(t => t.currency !== 'XRP')?.[0];
@@ -61,7 +60,7 @@ export const useAddLiquidity = ({ poolId, token1, token2, enabled }: Props) => {
       };
       const amount2 = {
         ...asset2,
-        value: Number(Number(remain?.amount || 0).toFixed(5)).toString(),
+        value: xrplForceDecimal(remain?.amount || 0).toString(),
       };
 
       if (isSingle) {
@@ -86,12 +85,12 @@ export const useAddLiquidity = ({ poolId, token1, token2, enabled }: Props) => {
       issuer: compositions?.[0]?.address || '',
       currency: compositions?.[0]?.currency || '',
     };
-    const amount1 = { ...asset1, value: Number(Number(token1?.amount || 0).toFixed(5)).toString() };
+    const amount1 = { ...asset1, value: xrplForceDecimal(token1?.amount || 0).toString() };
     const asset2 = {
       issuer: compositions?.[1]?.address ?? '',
       currency: compositions?.[1]?.currency || '',
     };
-    const amount2 = { ...asset2, value: Number(Number(token2?.amount || 0).toFixed(5)).toString() };
+    const amount2 = { ...asset2, value: xrplForceDecimal(token2?.amount || 0).toString() };
 
     if (isSingle) {
       const token = tokens.find(t => t?.amount > 0);

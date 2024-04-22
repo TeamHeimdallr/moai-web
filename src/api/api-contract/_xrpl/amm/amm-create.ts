@@ -19,6 +19,7 @@ export const useAmmCreate = ({ asset, asset2, trandingFee, enabled = true }: Pro
   const tx = {
     TransactionType: 'AMMCreate',
     Account: address,
+    // TODO: decimal 6강제 고정
     Amount: asset,
     Amount2: asset2,
     Fee: '2000000',
