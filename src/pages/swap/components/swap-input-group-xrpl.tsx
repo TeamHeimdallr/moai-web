@@ -12,7 +12,7 @@ import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-tok
 import { COLOR } from '~/assets/colors';
 import { IconArrowDown, IconDown } from '~/assets/icons';
 
-import { IS_MAINNET, MILLION } from '~/constants';
+import { MILLION } from '~/constants';
 
 import { AlertMessage } from '~/components/alerts';
 import { ButtonPrimaryLarge } from '~/components/buttons';
@@ -52,10 +52,6 @@ const _SwapInputGroup = () => {
 
   const { xrp } = useConnectedWallet();
   const walletAddress = useMemo(() => xrp?.address || '', [xrp]);
-
-  // TODO: AMM remove this
-  const url = window.location.href;
-  const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
 
   const {
     fromToken,
@@ -175,7 +171,7 @@ const _SwapInputGroup = () => {
               slider
               handleChange={setFromInput}
               handleTokenClick={() => {
-                if (isXrplPrivate) openSelectTokenFromPopup();
+                openSelectTokenFromPopup();
               }}
               name={'from'}
               control={control}
@@ -207,7 +203,7 @@ const _SwapInputGroup = () => {
               value={toInput}
               focus={false}
               handleTokenClick={() => {
-                if (isXrplPrivate) openSelectTokenToPopup();
+                openSelectTokenToPopup();
               }}
               name={'to'}
               control={control}
@@ -238,7 +234,7 @@ const _SwapInputGroup = () => {
           text={t('Preview')}
           disabled={!validToSwap}
           onClick={() => {
-            if (isXrplPrivate) openSwapPopup();
+            openSwapPopup();
           }}
         />
       </Wrapper>
