@@ -8,7 +8,7 @@ import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-tok
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 import { useGetPoolsQuery } from '~/api/api-server/pools/get-pools';
 
-import { ASSET_URL, IS_MAINNET, MILLION, TRILLION } from '~/constants';
+import { ASSET_URL, MILLION, TRILLION } from '~/constants';
 
 import {
   TableColumn,
@@ -46,11 +46,6 @@ export const useTableMyLiquidityPool = () => {
     { enabled: !!networkAbbr }
   );
   const allPools = allPoolsData?.pools;
-
-  // TODO: AMM remove this
-  const url = window.location.href;
-  const isXrpl = selectedNetwork === NETWORK.XRPL;
-  const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const _poolWithDeposited = useUserLpFarmsDeposited({ pools: allPools as any });
@@ -106,7 +101,7 @@ export const useTableMyLiquidityPool = () => {
   const isRequestEqual = isEqual(previous, poolWithDeposited);
 
   useEffect(() => {
-    if (!currentAddress || (isXrpl && !isXrplPrivate)) {
+    if (!currentAddress) {
       setPools([]);
       return;
     }
@@ -127,7 +122,7 @@ export const useTableMyLiquidityPool = () => {
 
     fetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [networkAbbr, currentAddress, isRequestEqual, sort?.key, sort?.order, isXrplPrivate, isXrpl]);
+  }, [networkAbbr, currentAddress, isRequestEqual, sort?.key, sort?.order]);
 
   const pools = useMemo(
     () => (poolsRaw?.slice(0, currentTake) || []) as IMyPoolList[],

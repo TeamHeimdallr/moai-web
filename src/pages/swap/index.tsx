@@ -1,8 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import tw, { css, styled } from 'twin.macro';
 
-import { IS_MAINNET } from '~/constants';
-
 import { Footer } from '~/components/footer';
 import { Gnb } from '~/components/gnb';
 
@@ -23,10 +21,7 @@ const SwapPage = () => {
   const { opened: bannerOpened } = usePopup(POPUP_ID.WALLET_ALERT);
 
   const { selectedNetwork } = useNetwork();
-
-  const url = window.location.href;
   const isXrpl = selectedNetwork === NETWORK.XRPL;
-  const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
 
   return (
     <Wrapper ref={ref}>
@@ -37,18 +32,7 @@ const SwapPage = () => {
         <ContentWrapper>
           <Title>{t('Swap')}</Title>
 
-          <SwapWrapper>
-            {/* TODO: AMM remove this */}
-            {isXrpl ? (
-              isXrplPrivate ? (
-                <SwapInputGroupXrpl />
-              ) : (
-                <SwapInputGroup />
-              )
-            ) : (
-              <SwapInputGroup />
-            )}
-          </SwapWrapper>
+          <SwapWrapper>{isXrpl ? <SwapInputGroupXrpl /> : <SwapInputGroup />}</SwapWrapper>
         </ContentWrapper>
       </InnerWrapper>
       <Footer />

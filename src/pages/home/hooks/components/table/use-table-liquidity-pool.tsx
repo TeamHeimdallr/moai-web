@@ -6,7 +6,7 @@ import { uniqBy } from 'lodash-es';
 import { useUserLpFarmsDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
 import { useGetPoolsInfinityQuery } from '~/api/api-server/pools/get-pools';
 
-import { ASSET_URL, IS_MAINNET, MILLION, TRILLION } from '~/constants';
+import { ASSET_URL, MILLION, TRILLION } from '~/constants';
 
 import { NetworkChip } from '~/components/network-chip';
 import {
@@ -45,11 +45,6 @@ export const useTableLiquidityPool = () => {
 
   const { selectedTokens } = useTablePoolCompositionSelectTokenStore();
 
-  // TODO: AMM remove this
-  const url = window.location.href;
-  const isXrpl = currentNetwork === NETWORK.XRPL;
-  const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
-
   const getFilter = () => {
     // show all pool 의 경우 xrpl에서는 whitelist만 보여줌. 다른 네트워크에서는 전체 풀을 보여줌
     if (showAllPools) return undefined;
@@ -72,7 +67,7 @@ export const useTableLiquidityPool = () => {
         tokens: selectedTokens.length > 0 ? selectedTokens.map(t => t.symbol).join(',') : undefined,
       },
     },
-    { enabled: isXrpl ? isXrplPrivate : true }
+    { enabled: true }
   );
   const pools = useMemo(
     () => (data?.pages?.flatMap(page => page.pools) || []) as IPoolList[],

@@ -10,7 +10,7 @@ import { useGetTrendingTokensQuery } from '~/api/api-server/token/get-trending-t
 
 import { IconSearch } from '~/assets/icons';
 
-import { ASSET_URL, IS_MAINNET } from '~/constants';
+import { ASSET_URL } from '~/constants';
 
 import { ButtonPrimaryMedium, ButtonPrimaryMediumIconLeading } from '~/components/buttons';
 import { ButtonChipFilter } from '~/components/buttons/chip/filter';
@@ -62,10 +62,6 @@ const _LiquidityPoolLayout = () => {
 
   const networkAbbr = getNetworkAbbr(selectedNetwork);
   const xrpWalletAddress = xrp?.address || '';
-
-  // TODO: AMM remove this
-  const url = window.location.href;
-  const isXrplPrivate = !IS_MAINNET || (IS_MAINNET && url.includes('mainnet-th'));
 
   const { data: trendingToknesData } = useGetTrendingTokensQuery(
     { params: { networkAbbr } },
@@ -242,7 +238,7 @@ const _LiquidityPoolLayout = () => {
             />
           ))}
         </BadgeWrapper>
-        {selectedNetwork === NETWORK.XRPL && isXrplPrivate && (
+        {selectedNetwork === NETWORK.XRPL && (
           <ButtonInnerWrapper>
             <ButtonPrimaryMediumIconLeading
               text={t('Filter by token')}
