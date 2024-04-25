@@ -78,8 +78,6 @@ export const useBatchSwap = ({
     userData,
   ]);
   const assets = sorData?.data.tokenAddresses ?? [];
-  const internalSwapLength = swaps.length - 1;
-  const limits = [limit[0], ...Array.from({ length: internalSwapLength }).map(() => 0n), limit[1]];
 
   const {
     config,
@@ -91,7 +89,7 @@ export const useBatchSwap = ({
     abi: BALANCER_VAULT_ABI,
     functionName: 'batchSwap',
     account: walletAddress as Address,
-    args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+    args: [SwapKind.GivenIn, swaps, assets, fundManagement, limit, deadline],
     enabled: enabled && isEvm && !!walletAddress && (isRoot || isXrpEvm),
   });
 
@@ -131,7 +129,7 @@ export const useBatchSwap = ({
       address: EVM_VAULT_ADDRESS[selectedNetwork] as Address,
       abi: BALANCER_VAULT_ABI,
       functionName: 'batchSwap',
-      args: [SwapKind.GivenIn, swaps, assets, fundManagement, limits, deadline],
+      args: [SwapKind.GivenIn, swaps, assets, fundManagement, limit, deadline],
       account: walletAddress as Address,
     });
 
