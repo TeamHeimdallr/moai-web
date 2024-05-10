@@ -214,10 +214,13 @@ export const useTableSwapHistories = () => {
   const mobileTableData = useMemo(
     () =>
       swapHistories.map((d, i) => {
-        const value = d.swapHistoryTokens.reduce((acc, cur) => {
+        const valueDoubleVol = d.swapHistoryTokens.reduce((acc, cur) => {
           const amount = cur.amounts;
           return (acc += (cur.price || 0) * amount);
         }, 0);
+
+        // TODO: remove /2 when server updated
+        const value = valueDoubleVol / 2;
 
         const tokens = ([
           d.swapHistoryTokens?.find(t => t.type === SWAP_HISTORY_TOKEN_TYPE.FROM),
