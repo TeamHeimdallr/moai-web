@@ -170,7 +170,11 @@ export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps)
   });
 
   if (ended) {
-    return pools?.map(pool => ({ ...pool, farmApr: 0 }));
+    return pools?.map((pool, i: number) => ({
+      ...pool,
+      deposited: Number(formatUnits((depositedData?.[i]?.result || 0n) as bigint, 18)),
+      farmApr: 0,
+    }));
   }
 
   const blocktime = 4; // TRN's blocktime
