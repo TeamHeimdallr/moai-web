@@ -31,6 +31,7 @@ export const LpFarmTool = () => {
   const { ref } = useGAInView({ name: 'pool-detail-lp-farm' });
   const { gaAction } = useGAAction();
 
+  const ended = true; // TODO: ended
   const [opened, open] = useState(false);
 
   const { opened: unfarmPopupOpened, open: unfarmPopupOpen } = usePopup(POPUP_ID.LP_UNFARM);
@@ -99,10 +100,11 @@ export const LpFarmTool = () => {
       (rootToken?.price || 0)) /
     blocktime;
   const totalDepositedValue = totalDeposited * lpTokenPrice;
-  const formatedApr =
-    totalDepositedValue !== 0
-      ? formatNumber((100 * rewardValuesInYear) / totalDepositedValue, 0, 'round', TRILLION, 0)
-      : Infinity;
+  const formatedApr = ended
+    ? 0
+    : totalDepositedValue !== 0
+    ? formatNumber((100 * rewardValuesInYear) / totalDepositedValue, 0, 'round', TRILLION, 0)
+    : Infinity;
   // TODO: if currentblock > endblock => apr = 0
   const depositedValue = deposited * lpTokenPrice;
   const userLpTokenBalanceValue = userLpTokenBalance * lpTokenPrice;

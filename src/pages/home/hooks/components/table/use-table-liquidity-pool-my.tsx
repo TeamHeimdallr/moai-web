@@ -8,7 +8,7 @@ import { useUserAllTokenBalances } from '~/api/api-contract/balance/user-all-tok
 import { useGetMyPoolsQuery } from '~/api/api-server/pools/get-my-pools';
 import { useGetPoolsQuery } from '~/api/api-server/pools/get-pools';
 
-import { ASSET_URL, MILLION, TRILLION } from '~/constants';
+import { ASSET_URL, MILLION } from '~/constants';
 
 import {
   TableColumn,
@@ -173,11 +173,11 @@ export const useTableMyLiquidityPool = () => {
           apr: (
             <TableColumnApr
               value={hasPrice ? `${formatNumber(d.apr)}%` : '-'}
-              value2={
-                isFinite(d.farmApr)
-                  ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
-                  : undefined
-              }
+              // value2={
+              //   isFinite(d.farmApr)
+              //     ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+              //     : undefined
+              // }
               network={d.network}
               align="flex-end"
             />
@@ -268,11 +268,11 @@ export const useTableMyLiquidityPool = () => {
               value: (
                 <TableColumnApr
                   value={hasPrice ? `${formatNumber(d.apr)}%` : '-'}
-                  value2={
-                    isFinite(d.farmApr)
-                      ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
-                      : undefined
-                  }
+                  // value2={
+                  //   isFinite(d.farmApr)
+                  //     ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+                  //     : undefined
+                  // }
                   network={d.network}
                   align="flex-end"
                 />

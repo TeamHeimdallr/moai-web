@@ -6,7 +6,7 @@ import { uniqBy } from 'lodash-es';
 import { useUserLpFarmsDeposited } from '~/api/api-contract/_evm/balance/lp-farm-balance';
 import { useGetPoolsInfinityQuery } from '~/api/api-server/pools/get-pools';
 
-import { ASSET_URL, MILLION, TRILLION } from '~/constants';
+import { ASSET_URL, MILLION } from '~/constants';
 
 import { NetworkChip } from '~/components/network-chip';
 import {
@@ -120,11 +120,11 @@ export const useTableLiquidityPool = () => {
           apr: (
             <TableColumnApr
               value={hasPrice ? `${formatNumber(d.apr)}%` : '-'}
-              value2={
-                isFinite(d.farmApr)
-                  ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
-                  : undefined
-              }
+              // value2={
+              //   isFinite(d.farmApr)
+              //     ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+              //     : undefined
+              // }
               align="flex-end"
               network={d.network}
             />
@@ -237,11 +237,11 @@ export const useTableLiquidityPool = () => {
               value: (
                 <TableColumnApr
                   value={hasPrice ? `${formatNumber(d.apr)}%` : '-'}
-                  value2={
-                    isFinite(d.farmApr)
-                      ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
-                      : undefined
-                  }
+                  // value2={
+                  //   isFinite(d.farmApr)
+                  //     ? `${formatNumber(d.farmApr, 0, 'floor', TRILLION, 0)}%`
+                  //     : undefined
+                  // }
                   align="flex-end"
                   network={d.network}
                 />

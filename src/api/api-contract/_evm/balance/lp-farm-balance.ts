@@ -113,7 +113,7 @@ interface UseUserLpFarmsDepositedProps {
 }
 export const useUserLpFarmsDeposited = ({ pools }: UseUserLpFarmsDepositedProps) => {
   // TODO: if currentblock > endblock => apr = 0
-  const ended = false;
+  const ended = true;
 
   const { isFpass } = useNetwork();
   const { evm, fpass } = useConnectedWallet();

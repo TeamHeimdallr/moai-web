@@ -85,11 +85,13 @@ export const PoolInfo = () => {
       (rootToken?.price || 0)) /
     blocktime;
   const totalDepositedValue = totalDeposited * lpTokenPrice;
-  const _formattedFarmApr =
-    totalDepositedValue !== 0
-      ? formatNumber((100 * rewardValuesInYear) / totalDepositedValue, 0, 'round', TRILLION, 0)
-      : Infinity;
-  const formattedFarmApr = isLpFarmExisted ? `${_formattedFarmApr}%` : '';
+  const ended = true; // TODO: ended
+  const _formattedFarmApr = ended
+    ? 0
+    : totalDepositedValue !== 0
+    ? formatNumber((100 * rewardValuesInYear) / totalDepositedValue, 0, 'round', TRILLION, 0)
+    : Infinity;
+  // const formattedFarmApr = isLpFarmExisted ? `${_formattedFarmApr}%` : '';
 
   const formattedValue = value ? `$${formatNumber(value)}` : '-';
   const formattedVolume = volume ? `$${formatNumber(volume)}` : '-';
@@ -141,7 +143,7 @@ export const PoolInfo = () => {
             )
           }
           subValue={isRoot ? `+ ${t('Moai Points')}` : undefined}
-          subValue2={isRoot ? (formattedFarmApr ? `+ ${formattedFarmApr}` : '') : undefined}
+          // subValue2={isRoot ? (formattedFarmApr ? `+ ${formattedFarmApr}` : '') : undefined}
         />
         <PoolInfoCard
           name={t('Trading Fee')}
