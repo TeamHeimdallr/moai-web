@@ -167,7 +167,7 @@ export const LpFarmTool = () => {
                   <ButtonPrimaryLarge
                     text={t('Farm')}
                     onClick={handleFarm}
-                    disabled={userLpTokenBalanceValue <= 0}
+                    disabled={userLpTokenBalanceValue <= 0 || ended}
                   ></ButtonPrimaryLarge>
                   {!!deposited && deposited > 0 && (
                     <ButtonPrimaryLarge
