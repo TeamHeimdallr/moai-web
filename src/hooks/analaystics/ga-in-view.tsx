@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 import { ENABLE_GA_LOG, IS_LOCAL } from '~/constants';
 
-import { analytics } from '~/configs/analystics';
+// import { analytics } from '~/configs/analystics';
 
 interface Props {
   name?: string;
@@ -24,10 +24,10 @@ export const useGAInView = ({ name, threshold }: Props) => {
         return;
       }
 
-      analytics.track('show', {
-        page: location.pathname,
-        name,
-      });
+      // analytics.track('show', {
+      //   page: location.pathname,
+      //   name,
+      // });
     }
   }, [inView, location.pathname, name]);
 
