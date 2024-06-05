@@ -65,7 +65,8 @@ const RewardsPage = () => {
     }
   );
 
-  const { currentWave, waves } = data || {};
+  const { currentWave, waves: _waves } = data || {};
+  const waves = _waves?.sort((a, b) => a.waveId - b.waveId);
   const legacy = !currentWave || currentWave?.waveId === 0;
 
   const { data: myWaveInfo } = useGetRewardsWaveNInfoQuery(
