@@ -24,6 +24,7 @@ import LendingPage from './lending';
 import Pool from './pool';
 import Rewards from './rewards';
 import Swap from './swap';
+import { Test } from './test';
 
 const Page = () => {
   useGAIdenitiy();
@@ -32,7 +33,7 @@ const Page = () => {
 
   useXummWalletClient();
 
-  const { getMaintanence } = useMaintanence();
+  // const { getMaintanence } = useMaintanence();
 
   const { opened: connectWalletOpened } = usePopup(POPUP_ID.CONNECT_WALLET);
   const { opened: xummQrOpened } = usePopup(POPUP_ID.XUMM_QR);
@@ -44,16 +45,17 @@ const Page = () => {
   return (
     <>
       <ReactRoutes>
-        {IS_LANDING && (
+        {/* {IS_LANDING && (
           <>
             <Route path="/" element={getMaintanence('/', <Landing />)} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
-        )}
+        )} */}
 
         {!IS_LANDING && (
           <>
-            <Route path="/" element={getMaintanence('/', <Home />)} />
+            <Route path="/test" element={<Test />} />
+            {/* <Route path="/" element={getMaintanence('/', <Home />)} />
             <Route path="/swap" element={getMaintanence('/swap', <Swap />)} />
             <Route path="/pools/*" element={getMaintanence('/pools/*', <Pool />)} />
             <Route path="/rewards" element={getMaintanence('/rewards', <Rewards />)} />
@@ -66,7 +68,7 @@ const Page = () => {
             )}
             <Route path="/events/*" element={getMaintanence('/events', <EventPage />)} />
 
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} /> */}
           </>
         )}
       </ReactRoutes>
