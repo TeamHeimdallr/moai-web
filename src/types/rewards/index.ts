@@ -43,6 +43,7 @@ export interface IRewardParticipant {
   rank: number;
 
   address: string;
+  rns?: string;
 
   volume: number;
   premined: number;
@@ -52,6 +53,7 @@ export interface IRewardWaveNParticipant {
   rank: number;
 
   address: string;
+  rns?: string;
 
   lpSupply: number;
   lendingSupply: number;

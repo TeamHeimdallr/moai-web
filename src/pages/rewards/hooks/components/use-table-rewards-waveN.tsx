@@ -4,7 +4,9 @@ import { useParams } from 'react-router-dom';
 import { ColumnDef } from '@tanstack/react-table';
 import tw from 'twin.macro';
 import { toHex } from 'viem';
+import { usePublicClient } from 'wagmi';
 
+import { useGetRnses } from '~/api/api-contract/_evm/rns/get-rnses';
 import { useGetRewardsListInfinityQuery } from '~/api/api-server/rewards/get-reward-list-waveN';
 
 import { COLOR } from '~/assets/colors';
@@ -23,6 +25,7 @@ import { NETWORK } from '~/types';
 import { useRewardSelectWaveIdStore } from '../../states';
 
 export const useTableRewards = () => {
+  const publicClient = usePublicClient();
   const { network } = useParams();
   const { selectedNetwork, isFpass, isXrp } = useNetwork();
 
@@ -58,13 +61,27 @@ export const useTableRewards = () => {
   );
 
   const myReward = useMemo(() => rewardListData?.pages?.[0]?.my, [rewardListData?.pages]);
-  const rewardLists = useMemo(
+  const _rewardLists = useMemo(
     () =>
       myReward
         ? [myReward, ...(rewardListData?.pages?.flatMap(page => page.participants) || [])]
         : rewardListData?.pages?.flatMap(page => page.participants) || [],
     [myReward, rewardListData?.pages]
   );
+
+  const { data: rnses } = useGetRnses({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    publicClient: publicClient as any,
+    network: currentNetwork,
+    addresses: _rewardLists?.map(d => d.address),
+  });
+  const rewardLists = useMemo(() => {
+    if (!isRoot) return _rewardLists;
+    return _rewardLists?.map((d, i) => ({
+      ...d,
+      rns: rnses?.[i],
+    }));
+  }, [isRoot, _rewardLists, rnses]);
 
   const tableData = useMemo(
     () =>
@@ -95,7 +112,7 @@ export const useTableRewards = () => {
           ),
           account: (
             <TableColumnIconTextLink
-              text={truncateAddress(d?.address, 4)}
+              text={d?.rns ? d?.rns : truncateAddress(d?.address, 4)}
               align="flex-start"
               icon={
                 <Jazzicon
@@ -209,7 +226,7 @@ export const useTableRewards = () => {
                 }}
               />
               <TableColumnIconTextLink
-                text={truncateAddress(d?.address, 4)}
+                text={d?.rns ? d?.rns : truncateAddress(d?.address, 4)}
                 icon={
                   <Jazzicon
                     diameter={24}
