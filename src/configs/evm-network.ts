@@ -1,3 +1,4 @@
+import { addresses } from 'rootnameservice';
 import { Chain, defineChain } from 'viem';
 
 import { IS_MAINNET } from '~/constants';
@@ -25,6 +26,14 @@ export const theRootNetwork: Chain = defineChain(
             // webSocket: ['wss://mainnet.rpc-moai-finance.xyz/ws'],
             http: ['https://root.rootnet.live/archive'],
             webSocket: ['wss://root.rootnet.live/archive/ws'],
+          },
+        },
+        contracts: {
+          ...addresses[7668],
+        },
+        subgraphs: {
+          ens: {
+            url: 'https://subgraph.rootnameservice.com/subgraphs/name/graphprotocol/ens/graphql',
           },
         },
         blockExplorers: {
@@ -56,6 +65,14 @@ export const theRootNetwork: Chain = defineChain(
             // webSocket: ['wss://porcini.rpc-moai-finance.xyz/ws'],
             http: ['https://porcini.rootnet.app/archive'],
             webSocket: ['wss://porcini.rootnet.app/archive/ws'],
+          },
+        },
+        contracts: {
+          ...addresses[7672],
+        },
+        subgraphs: {
+          ens: {
+            url: 'https://subgraph-stage.rootnameservice.com/subgraphs/name/graphprotocol/ens/graphql',
           },
         },
         blockExplorers: {

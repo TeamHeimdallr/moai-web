@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useParams } from 'react-router-dom';
 import tw, { styled } from 'twin.macro';
 import { useOnClickOutside } from 'usehooks-ts';
 
@@ -12,9 +13,13 @@ import {
   imageWalletXumm,
 } from '~/assets/images';
 
+import { useNetwork } from '~/hooks/contexts/use-network';
 import { useMediaQuery } from '~/hooks/utils';
 import { useConnectedWallet } from '~/hooks/wallets';
+import { getNetworkFull } from '~/utils';
 import { truncateAddress } from '~/utils/util-string';
+import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
+import { NETWORK } from '~/types';
 
 import { AccountDetail } from '../account-detail';
 
@@ -28,7 +33,25 @@ export const Account = () => {
 
   useOnClickOutside(ref, () => open(false));
 
-  const { evm, fpass, xrp } = useConnectedWallet();
+  const { network } = useParams();
+  const { selectedNetwork } = useNetwork();
+
+  const currentNetwork = getNetworkFull(network) ?? selectedNetwork;
+  const isRoot = currentNetwork === NETWORK.THE_ROOT_NETWORK;
+
+  const { evm, fpass, xrp, rns, fpassRns } = useConnectedWallet();
+  const { selectedWallet: selectedWalletTRN } = useTheRootNetworkSwitchWalletStore();
+
+  const addressOrRns = useMemo(() => {
+    if (!isRoot) return truncateAddress(evm.address || xrp.address || '', 4);
+
+    if (selectedWalletTRN === 'fpass') {
+      if (fpassRns) return fpassRns;
+      return truncateAddress(fpass.address || '', 4);
+    }
+    if (rns) return rns;
+    return truncateAddress(evm.address || '', 4);
+  }, [evm.address, fpass.address, fpassRns, isRoot, rns, selectedWalletTRN, xrp.address]);
 
   const connectedWalletCount =
     (evm.address ? 1 : 0) + (xrp.address ? 1 : 0) + (fpass.address ? 1 : 0);
@@ -85,11 +108,7 @@ export const Account = () => {
                 )}
               </ConnectedBase>
             </InnerWrapper>
-            {isLG && (
-              <ContentWrapper opened={opened}>
-                {truncateAddress(evm.address || xrp.address || '', 4)}
-              </ContentWrapper>
-            )}
+            {isLG && <ContentWrapper opened={opened}>{addressOrRns}</ContentWrapper>}
           </AccountWrapper>
         )}
       </Banner>

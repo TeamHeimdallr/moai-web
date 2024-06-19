@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Dispatch, Fragment, SetStateAction, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useParams } from 'react-router-dom';
@@ -41,7 +41,7 @@ export const AccountDetail = () => {
 
   const { network } = useParams();
 
-  const { evm, xrp, fpass } = useConnectedWallet();
+  const { evm, xrp, fpass, rns, fpassRns } = useConnectedWallet();
   const { selectedNetwork, name, isEvm, isFpass, isXrp } = useNetwork();
   const { setWalletConnectorType } = useWalletConnectorTypeStore();
 
@@ -55,6 +55,12 @@ export const AccountDetail = () => {
   const { toggleWallet: toggleWalletTRN, selectedWallet: selectedWalletTRN } =
     useTheRootNetworkSwitchWalletStore();
 
+  const fpassRnsOrAddress = fpassRns || fpass.truncatedAddress;
+  const fpassEvmRnsOrAddress = rns || evm.truncatedAddress;
+
+  const fpassRnsOrAddressFull = fpassRns || fpass.address;
+  const fpassEvmRnsOrAddressFull = rns || evm.address;
+
   const [xrpAddress, setXrpAddress] = useState(xrp.truncatedAddress || '');
   const [fpassAddress, setFpassAddress] = useState(fpass.truncatedAddress || '');
   const [fpassEvmAddress, setFpassEvmAddress] = useState(evm.truncatedAddress || '');
@@ -62,7 +68,11 @@ export const AccountDetail = () => {
 
   const { t } = useTranslation();
 
-  const handleCopy = (address: string, callback: (truncatedAddress: string) => void) => {
+  const handleCopy = (
+    address: string,
+    callback: Dispatch<SetStateAction<string>>,
+    truncate?: boolean
+  ) => {
     gaAction({
       action: 'copy-address',
       buttonType: 'icon-small',
@@ -72,7 +82,7 @@ export const AccountDetail = () => {
     copy(address);
 
     callback(t('Copied!'));
-    setTimeout(() => callback(truncateAddress(address)), 2000);
+    setTimeout(() => callback(truncate ? truncateAddress(address) : address), 2000);
   };
 
   const handleGoToFpass = () => {
@@ -98,6 +108,14 @@ export const AccountDetail = () => {
     toggleWalletTRN();
   };
 
+  useEffect(() => {
+    setFpassAddress(fpassRnsOrAddress || '');
+    setFpassEvmAddress(fpassEvmRnsOrAddress || '');
+    if (isRoot && !fpass?.address) {
+      setEvmAddress(fpassEvmRnsOrAddress || '');
+    }
+  }, [fpass?.address, fpassEvmRnsOrAddress, fpassRnsOrAddress, isRoot]);
+
   const fpassComponent = (
     <AccountWrapper key="fpass" isConnected={isRoot}>
       {fpass.address && fpass.address !== zeroAddress ? (
@@ -119,8 +137,8 @@ export const AccountDetail = () => {
                     icon={<IconCopy />}
                     onClick={() => {
                       if (selectedWalletTRN === 'fpass')
-                        return handleCopy(fpass.address, setFpassAddress);
-                      return handleCopy(evm.address, setFpassEvmAddress);
+                        return handleCopy(fpassRnsOrAddressFull, setFpassAddress, !fpassRns);
+                      return handleCopy(fpassEvmRnsOrAddressFull, setFpassEvmAddress, !rns);
                     }}
                   />
                   {selectedWalletTRN === 'fpass' && (
@@ -163,8 +181,8 @@ export const AccountDetail = () => {
                   icon={<IconCopy />}
                   onClick={() => {
                     if (selectedWalletTRN === 'fpass')
-                      return handleCopy(evm.address, setFpassEvmAddress);
-                    return handleCopy(fpass.address, setFpassAddress);
+                      return handleCopy(fpassEvmRnsOrAddressFull, setFpassEvmAddress, !rns);
+                    return handleCopy(fpassRnsOrAddressFull, setFpassAddress, !fpassRns);
                   }}
                 />
               </MetamaskWallet>
@@ -226,7 +244,7 @@ export const AccountDetail = () => {
               <InnerWrapper>
                 <ButtonIconSmall
                   icon={<IconCopy />}
-                  onClick={() => handleCopy(evm.address, setEvmAddress)}
+                  onClick={() => handleCopy(fpassEvmRnsOrAddressFull, setEvmAddress, !rns)}
                 />
                 <ButtonIconSmall
                   icon={<IconLogout />}
@@ -242,7 +260,9 @@ export const AccountDetail = () => {
               </InnerWrapper>
             </AddressTextWrapper>
 
-            <SmallText>EVM Sidechain</SmallText>
+            <SmallText>
+              {isRoot && !fpass?.address ? 'The Root Network' : 'EVM Sidechain'}
+            </SmallText>
           </AddressWrapper>
         </Account>
       ) : (
@@ -288,7 +308,7 @@ export const AccountDetail = () => {
               <InnerWrapper>
                 <ButtonIconSmall
                   icon={<IconCopy />}
-                  onClick={() => handleCopy(xrp.address, setXrpAddress)}
+                  onClick={() => handleCopy(xrp.address, setXrpAddress, true)}
                 />
                 <ButtonIconSmall icon={<IconLogout />} onClick={xrp.disconnect} />
               </InnerWrapper>
