@@ -69,12 +69,17 @@ export const useTableRewards = () => {
     [myReward, rewardListData?.pages]
   );
 
-  const { data: rnses } = useGetRnses({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    publicClient: publicClient as any,
-    network: currentNetwork,
-    addresses: _rewardLists?.map(d => d.address),
-  });
+  const { data: rnses } = useGetRnses(
+    {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      publicClient: publicClient as any,
+      network: currentNetwork,
+      addresses: _rewardLists?.map(d => d.address),
+    },
+    {
+      staleTime: 1000 * 60 * 60 * 2,
+    }
+  );
   const rewardLists = useMemo(() => {
     if (!isRoot) return _rewardLists;
     return _rewardLists?.map((d, i) => ({
