@@ -26,7 +26,6 @@ declare module 'react' {
 declare global {
   interface Window {
     gemWallet?: boolean;
-    crossmark?: any;
     ethereum: {
       isMetaMask?: boolean;
       [key: string]: any;
