@@ -222,7 +222,7 @@ export const useConnectedXrplWallet = () => {
         connectedConnector: 'crossmark',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         submitTransaction: async (tx: any) => {
-          const res = await crossmarkSdk.signAndSubmitAndWait(tx);
+          const res = await crossmarkSdk.async.signAndSubmitAndWait(tx);
           return res?.response?.data?.resp?.result;
         },
       }
