@@ -101,7 +101,7 @@ export const useTableRewards = () => {
           ),
           account: (
             <TableColumnIconTextLink
-              text={truncateAddress(d?.address, 4)}
+              text={d?.rns ? d?.rns : truncateAddress(d?.address, 4)}
               align="flex-start"
               icon={
                 <Jazzicon
@@ -182,7 +182,7 @@ export const useTableRewards = () => {
                 }}
               />
               <TableColumnIconTextLink
-                text={truncateAddress(d?.address, 4)}
+                text={d?.rns ? d?.rns : truncateAddress(d?.address, 4)}
                 icon={
                   <Jazzicon
                     diameter={24}
