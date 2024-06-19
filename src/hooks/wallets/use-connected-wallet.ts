@@ -6,7 +6,10 @@ import {
 import dcent from 'dcent-web-connector';
 import { encode } from 'ripple-binary-codec';
 import { zeroAddress } from 'viem';
+import { usePublicClient } from 'wagmi';
 import { Transaction } from 'xrpl';
+
+import { useGetRns } from '~/api/api-contract/_evm/rns/get-rns';
 
 import { BLOCKCHAIN_ENV, IS_DEVNET } from '~/constants';
 
@@ -51,10 +54,15 @@ interface UseConnectedWallet {
     refetch: () => void;
   };
 
+  rns: string;
+  fpassRns: string;
+
   anyAddress: string | undefined;
   currentAddress: string | undefined;
 }
 export const useConnectedWallet = (_network?: NETWORK): UseConnectedWallet => {
+  const publicClient = usePublicClient();
+
   const { selectedWallet: selectedWalletTRN } = useTheRootNetworkSwitchWalletStore();
   const { selectedNetwork } = useNetwork();
   const network = _network || selectedNetwork;
@@ -74,10 +82,28 @@ export const useConnectedWallet = (_network?: NETWORK): UseConnectedWallet => {
       ? xrp?.address
       : undefined;
 
+  const { data: rnsData } = useGetRns(
+    {
+      network,
+      publicClient,
+      evmAddress: evm?.address,
+      fpassAddress: fpass?.address,
+    },
+    {
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 5,
+    }
+  );
+  const rns = rnsData?.rns || '';
+  const fpassRns = rnsData?.fpassRns || '';
+
   return {
     evm,
     xrp,
     fpass,
+
+    rns,
+    fpassRns,
 
     anyAddress,
     currentAddress,
