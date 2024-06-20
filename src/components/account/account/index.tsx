@@ -50,7 +50,7 @@ export const Account = () => {
       return truncateAddress(fpass.address || '', 4);
     }
     if (rns) return rns;
-    return truncateAddress(evm.address || '', 4);
+    return truncateAddress(evm.address || xrp.address || '', 4);
   }, [evm.address, fpass.address, fpassRns, isRoot, rns, selectedWalletTRN, xrp.address]);
 
   const connectedWalletCount =

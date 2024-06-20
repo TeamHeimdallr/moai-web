@@ -156,6 +156,11 @@ const _LiquidityPoolLayout = () => {
     }
   };
 
+  useEffect(() => {
+    setSelectedTokens([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNetwork, showAllPools]);
+
   const sortTokensBySelection = (tokens: IPoolTokenList[], selectedTokens: IPoolTokenList[]) => {
     return tokens.sort((a, b) => {
       const isASelected = selectedTokens.find(
