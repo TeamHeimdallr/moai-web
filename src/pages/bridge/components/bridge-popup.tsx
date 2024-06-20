@@ -322,15 +322,16 @@ export const BridgePopup = ({ amount, value }: Props) => {
             <List title={t('Summary')}>
               <ListInnerWrapper>
                 <ListItem
+                  type="medium"
                   image={<ListImage src={NETWORK_IMAGE_MAPPER.THE_ROOT_NETWORK} />}
                   title={`${getNetworkName('THE_ROOT_NETWORK')} Bridge`}
-                  titleCaption={`${t('minutes', { minute: 15 })}`}
                   value={`${formatNumber(amount, 2)} ${token?.symbol}`}
                   valueType="large"
                   valueCaption={`$${formatNumber(value, 2, 'floor', MILLION, 2)}`}
                 />
                 <Divider />
                 <ListItem
+                  type="medium"
                   title={t('Gas fee')}
                   value={`~${formatNumber(estimatedFee, 8, 'floor', THOUSAND, 0)} ${gasToken}`}
                   valueType="medium"

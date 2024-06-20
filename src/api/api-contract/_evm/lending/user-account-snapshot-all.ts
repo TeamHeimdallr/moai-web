@@ -32,10 +32,9 @@ export const useUserAccountSnapshotAll = () => {
     chainId,
 
     staleTime: 1000 * 3,
-    enabled: !!chainId && isEvm && !!walletAddress,
+    enabled: !!chainId && isEvm,
   });
-
-  const marketAddrs = (marketsData as Array<string>)?.map((m: string) => m);
+  const marketAddrs = (marketsData as string[])?.map(m => m);
 
   const { data: assetsInData } = useContractRead({
     address: UNITROLLER_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
@@ -48,7 +47,7 @@ export const useUserAccountSnapshotAll = () => {
     enabled: !!chainId && isEvm && !!walletAddress,
   });
 
-  const assetsIn = (assetsInData as Array<string>)?.map((m: string) => m);
+  const assetsIn = (assetsInData as string[])?.map(m => m);
 
   const { data: balanceData, refetch: refetchSnapshots } = useContractRead({
     address: MOAILENS_ADDRESS[NETWORK.THE_ROOT_NETWORK] as Address,
@@ -71,7 +70,7 @@ export const useUserAccountSnapshotAll = () => {
     staleTime: 1000 * 3,
     enabled: !!chainId && isEvm && !!marketAddrs && marketAddrs.length > 0,
   });
-  const metadataList = (metadataAll as Array<IMTokenMetadata>)?.map((m: IMTokenMetadata) => m);
+  const metadataList = (metadataAll as IMTokenMetadata[])?.map(m => m);
 
   const accountSnapshots = (balances?.map((d, i) => {
     return {

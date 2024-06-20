@@ -35,7 +35,7 @@ export const calcNetApy = ({ markets, snapshots }: Props) => {
   const weightedBorrows = markets?.map((m, i) => {
     const borrowValues =
       Number(formatUnits(snapshots?.[i]?.borrowBalance || 0n, m?.underlyingDecimals || 0)) *
-      (m.price || 0);
+      (m?.price || 0);
     return Number(m?.borrowApy?.toFixed(6) || 0) * borrowValues;
   });
   const weightedSupplies = markets?.map((m, i) => {

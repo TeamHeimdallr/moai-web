@@ -106,7 +106,7 @@ const _SwapPopup = ({ refetchBalance }: Props) => {
               toTokenReserve -
                 toTokenReserve *
                   (fromTokenReserve / (fromTokenReserve + Number(fromInput) * (1 - fee)))
-            ).toFixed(6)
+            )
           )
         : undefined
       : undefined;
