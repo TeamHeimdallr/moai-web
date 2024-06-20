@@ -148,7 +148,7 @@ export const SelectFromTokenPopupXrpl = ({
                 <RecommendList>
                   {recentlySelectedTokens?.map(token => (
                     <Token
-                      key={token.symbol}
+                      key={`${token.address}-${token.symbol}`}
                       token={token.symbol}
                       image
                       imageUrl={token.image}
@@ -166,7 +166,7 @@ export const SelectFromTokenPopupXrpl = ({
                 <RecommendList>
                   {trendingTokens?.map(token => (
                     <Token
-                      key={token.symbol}
+                      key={`${token.address}-${token.symbol}`}
                       token={token.symbol}
                       image
                       imageUrl={token.image}
@@ -183,7 +183,7 @@ export const SelectFromTokenPopupXrpl = ({
             <TokenLists>
               {tokens?.map(token => (
                 <TokenList
-                  key={`${token.network}-${token.symbol}`}
+                  key={`${token.address}-${token.symbol}`}
                   title={token.symbol}
                   image={token.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   description={

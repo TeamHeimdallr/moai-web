@@ -85,7 +85,7 @@ const _SwapInputGroup = () => {
               toTokenReserve -
                 toTokenReserve *
                   (fromTokenReserve / (fromTokenReserve + Number(fromInput) * (1 - fee)))
-            ).toFixed(6)
+            )
           )
         : undefined
       : undefined;

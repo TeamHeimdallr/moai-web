@@ -105,5 +105,5 @@ export const formatNumber = (
 };
 
 export const xrplForceDecimal = (num: number) => {
-  return Math.floor(num * 100) / 100;
+  return Math.floor(num * 1000000) / 1000000;
 };
