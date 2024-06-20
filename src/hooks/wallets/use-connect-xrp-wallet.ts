@@ -60,35 +60,45 @@ export const useConnectWithGemWallet = () => {
 
 export const useConnectWithCrossmarkWallet = () => {
   const { isConnected, address, setInfo } = useCrossmarkWalletStore();
+  try {
+    const isInstalled = crossmarkSdk.sync.isInstalled() || false;
+    const connect = async () => {
+      const connected = await crossmarkSdk.async.connect(60 * 60 * 1000); // 1 minute
+      const signed = await crossmarkSdk.async.signInAndWait();
 
-  const isInstalled = crossmarkSdk.sync.isInstalled() || false;
-  const connect = async () => {
-    const connected = await crossmarkSdk.async.connect(60 * 60 * 1000); // 1 minute
-    const signed = await crossmarkSdk.async.signInAndWait();
+      const address = crossmarkSdk.session.address;
 
-    const address = crossmarkSdk.session.address;
+      setInfo({
+        isConnected: connected && !!signed && !!address,
+        address,
+      });
+    };
 
-    setInfo({
-      isConnected: connected && !!signed && !!address,
+    const disconnect = () => {
+      setInfo({
+        isConnected: false,
+        address: '',
+      });
+    };
+
+    return {
+      connect,
+      disconnect,
+      isInstalled,
+      isConnected,
       address,
-    });
-  };
-
-  const disconnect = () => {
-    setInfo({
+      truncatedAddress: truncateAddress(address),
+    };
+  } catch (e) {
+    return {
+      connect: () => {},
+      disconnect: () => {},
+      isInstalled: false,
       isConnected: false,
       address: '',
-    });
-  };
-
-  return {
-    connect,
-    disconnect,
-    isInstalled,
-    isConnected,
-    address,
-    truncatedAddress: truncateAddress(address),
-  };
+      truncatedAddress: '',
+    };
+  }
 };
 
 export const useConnectWithXummWallet = () => {
