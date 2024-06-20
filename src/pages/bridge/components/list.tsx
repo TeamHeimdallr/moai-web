@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import tw from 'twin.macro';
+import tw, { styled } from 'twin.macro';
 
 interface Props {
   image?: ReactNode;
@@ -10,23 +10,32 @@ interface Props {
   value?: string;
   valueCaption?: string;
 
+  type?: 'medium' | 'large';
   valueType?: 'medium' | 'large';
 }
 
-export const ListItem = ({ image, title, titleCaption, value, valueCaption, valueType }: Props) => {
+export const ListItem = ({
+  type,
+  image,
+  title,
+  titleCaption,
+  value,
+  valueCaption,
+  valueType,
+}: Props) => {
   return (
     <Wrapper>
       {image && <ImageWrapper>{image}</ImageWrapper>}
       <ContentWrapper>
         <Content>
-          <Title>{title}</Title>
+          <Title type={type}>{title}</Title>
+          <TitleCaption type={type}>{titleCaption}</TitleCaption>
+        </Content>
+        <ContentRight>
           {valueType === 'medium' && <ValueMedium>{value}</ValueMedium>}
           {valueType === 'large' && <ValueLarge>{value}</ValueLarge>}
-        </Content>
-        <Content>
-          <TitleCaption>{titleCaption}</TitleCaption>
           <ValueCaption>{valueCaption}</ValueCaption>
-        </Content>
+        </ContentRight>
       </ContentWrapper>
     </Wrapper>
   );
@@ -41,21 +50,35 @@ const ImageWrapper = tw.div`
 `;
 
 const ContentWrapper = tw.div`
-  flex flex-col gap-1 w-full
+  flex justify-between w-full
 `;
 
 const Content = tw.div`
-  flex gap-8 items-center justify-between
+  flex flex-col justify-center 
+`;
+const ContentRight = tw.div`
+  flex flex-col items-end
 `;
 
-const Title = tw.div`
-  font-r-14 text-neutral-100
-`;
+interface TextProps {
+  type?: 'medium' | 'large';
+}
+const Title = styled.div<TextProps>(({ type }) => [
+  tw`
+    font-r-18 text-neutral-100 leading-26
+  `,
+  type === 'medium' && tw`font-r-14`,
+]);
 
-const TitleCaption = tw.div`
-  font-r-12 text-neutral-60 address
-`;
-
+interface TextProps {
+  type?: 'medium' | 'large';
+}
+const TitleCaption = styled.div<TextProps>(({ type }) => [
+  tw`
+    font-r-14 text-neutral-60 address
+  `,
+  type === 'medium' && tw`font-r-12`,
+]);
 const ValueMedium = tw.div`
   font-m-14 text-neutral-100
 `;
