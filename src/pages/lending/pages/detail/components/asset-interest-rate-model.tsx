@@ -169,7 +169,7 @@ export const AsseInterestModel = () => {
 
               const yScaleBorrow = scaleLinear<number>({
                 range: [height - 20, 0],
-                domain: [0, yMaxBorrow + 10],
+                domain: [0, yMaxBorrow],
               });
 
               const changeHeader = (d: IChartXYData | undefined) => {
