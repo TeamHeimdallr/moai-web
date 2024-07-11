@@ -66,7 +66,7 @@ export const AccountDetail = () => {
   const [fpassEvmAddress, setFpassEvmAddress] = useState(evm.truncatedAddress || '');
   const [evmAddress, setEvmAddress] = useState(evm.truncatedAddress || '');
 
-  const [uid, setUid] = useState(getUid(fpassEvmAddress) || '');
+  const [uid, setUid] = useState(getUid(evm?.address || '') || '');
 
   const { t } = useTranslation();
 
@@ -119,7 +119,9 @@ export const AccountDetail = () => {
   }, [fpass?.address, fpassEvmRnsOrAddress, fpassRnsOrAddress, isRoot]);
 
   useEffect(() => {
-    setUid(selectedWalletTRN === 'fpass' ? getUid(fpassAddress) : getUid(fpassEvmAddress));
+    setUid(
+      selectedWalletTRN === 'fpass' ? getUid(fpass?.address || '') : getUid(evm?.address || '')
+    );
   }, [fpass?.address, fpassEvmRnsOrAddress, fpassRnsOrAddress, selectedWalletTRN]);
 
   const fpassComponent = (
