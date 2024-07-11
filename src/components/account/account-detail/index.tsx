@@ -28,7 +28,7 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getNetworkFull, truncateAddress } from '~/utils';
+import { getUid, getNetworkFull, truncateAddress } from '~/utils';
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { NETWORK, POPUP_ID } from '~/types';
@@ -65,6 +65,8 @@ export const AccountDetail = () => {
   const [fpassAddress, setFpassAddress] = useState(fpass.truncatedAddress || '');
   const [fpassEvmAddress, setFpassEvmAddress] = useState(evm.truncatedAddress || '');
   const [evmAddress, setEvmAddress] = useState(evm.truncatedAddress || '');
+
+  const [uid, setUid] = useState(getUid(fpassEvmAddress) || '');
 
   const { t } = useTranslation();
 
@@ -115,6 +117,10 @@ export const AccountDetail = () => {
       setEvmAddress(fpassEvmRnsOrAddress || '');
     }
   }, [fpass?.address, fpassEvmRnsOrAddress, fpassRnsOrAddress, isRoot]);
+
+  useEffect(() => {
+    setUid(selectedWalletTRN === 'fpass' ? getUid(fpassAddress) : getUid(fpassEvmAddress));
+  }, [fpass?.address, fpassEvmRnsOrAddress, fpassRnsOrAddress, selectedWalletTRN]);
 
   const fpassComponent = (
     <AccountWrapper key="fpass" isConnected={isRoot}>
@@ -198,6 +204,18 @@ export const AccountDetail = () => {
               onClick={handleToggleWalletTrn}
             />
           </TRNAccountSwitchButtonWrapper>
+          <TRNUIDWrapper>
+            <Text>{'My UID'}</Text>
+            <UidInnerWrapper>
+              <UIDText>{uid}</UIDText>
+              <ButtonIconSmall
+                icon={<IconCopy />}
+                onClick={() => {
+                  return handleCopy(uid, setUid);
+                }}
+              />
+            </UidInnerWrapper>
+          </TRNUIDWrapper>
         </TRNAccountWrapper>
       ) : (
         <AccountNotConnected
@@ -421,6 +439,9 @@ const TRNAccountWrapper = tw.div``;
 const TRNAccountSwitchButtonWrapper = tw.div`
   px-10 pb-10 w-full flex
 `;
+const TRNUIDWrapper = tw.div`
+  rounded-b-8 w-full flex bg-neutral-20 gap-8 px-16 pb-8 pt-6 justify-between
+`;
 
 const AccountNotConnected = tw.div`
   flex gap-12 px-10 py-12 w-full items-center clickable
@@ -440,6 +461,12 @@ const NetworkWrapper = tw.div`
 
 const Text = tw.span`
   text-neutral-100 font-r-14
+`;
+const UIDText = tw.span`
+  text-primary-50 font-r-14 flex-center
+`;
+const UidInnerWrapper = tw.div`
+  flex gap-8 flex-center
 `;
 
 const CurrentNetwork = tw.div`
