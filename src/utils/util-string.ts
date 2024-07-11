@@ -1,3 +1,6 @@
+import * as crypto from 'crypto';
+import { UID_HASHING_KEY } from '~/constants';
+
 export const truncateAddress = (addr?: string, limit = 4) => {
   if (!addr) return '';
 
@@ -18,3 +21,11 @@ export const formatComma = (value: string) => {
 };
 
 export const parseComma = (value: string) => value?.replace(/,/g, '');
+
+export const hashing = (input: string, key: string) => {
+  return crypto.createHmac('sha256', key).update(input).digest('hex').slice(0, 16);
+};
+
+export const getUid = (address: string) => {
+  return hashing(address, UID_HASHING_KEY);
+};
