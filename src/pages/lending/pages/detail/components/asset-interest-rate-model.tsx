@@ -53,7 +53,7 @@ export const AsseInterestModel = () => {
   const borrowApyNum = Number(borrowApy);
   const supplyApyNum = Number(supplyApy);
 
-  const utilizationRateNum = Number(utilizationRate || 0);
+  const utilizationRateNum = Number((utilizationRate || 0) > 100 ? 100 : utilizationRate);
   const formattedUtilizationRate =
     utilizationRateNum < 0.01 ? '< 0.01%' : `${formatNumber(utilizationRateNum)}%`;
 
