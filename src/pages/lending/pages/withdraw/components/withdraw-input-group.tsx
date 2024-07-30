@@ -49,8 +49,8 @@ export const LendingWithdrawInputGroup = () => {
   const image = market?.underlyingImage;
   const price = market?.price;
   const cash = market?.cash || 0n;
-  const reserve = market?.totalReserves || 0n;
-  const remain = Number(formatUnits(cash - reserve, market?.underlyingDecimals || 18));
+  // const reserve = market?.totalReserves || 0n;
+  const remain = Number(formatUnits(cash, market?.underlyingDecimals || 18));
 
   const { accountSnapshot } = useUserAccountSnapshot({
     mTokenAddress: (address ?? '0x0') as Address,
