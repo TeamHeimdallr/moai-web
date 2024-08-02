@@ -69,12 +69,11 @@ export const useTableLiquidityPool = () => {
     },
     { enabled: true }
   );
-  const _pools = useMemo(
+  const pools = useMemo(
     () => (data?.pages?.flatMap(page => page.pools) || []) as IPoolList[],
     [data?.pages]
   );
   // TODO: 서버코드로 수정
-  const pools = [..._pools.filter(p => !!p.apr), ..._pools.filter(p => !p.apr)];
 
   const poolTokens = useMemo(
     () => uniqBy(data?.pages?.flatMap(page => page.poolTokens) || [], 'symbol'),
