@@ -393,10 +393,10 @@ const _AddLiquidity = () => {
             value={inputValue}
             handleChange={debounce(val => {
               setInputValue(val);
-              setInputValueRaw(parseUnits((val || 0).toFixed(6), 6));
+              // setInputValueRaw(parseUnits((val || 0).toFixed(6), 6));
             }, 300)}
             handleChangeRaw={debounce(val => {
-              setInputValue(Number(formatUnits(val || 0n, 6)));
+              // setInputValue(Number(formatUnits(val || 0n, 6)));
               setInputValueRaw(val);
             }, 300)}
             maxButton

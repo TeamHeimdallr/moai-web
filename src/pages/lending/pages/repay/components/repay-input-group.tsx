@@ -133,10 +133,10 @@ export const LendingRepayInputGroup = () => {
           value={inputValue}
           handleChange={val => {
             setInputValue(val);
-            setInputValueRaw(parseUnits((val || 0).toFixed(18), 18));
+            // setInputValueRaw(parseUnits((val || 0).toFixed(18), 18));
           }}
           handleChangeRaw={val => {
-            setInputValue(Number(formatUnits(val || 0n, 18)));
+            // setInputValue(Number(formatUnits(val || 0n, 18)));
             setInputValueRaw(val);
           }}
           maxButton
