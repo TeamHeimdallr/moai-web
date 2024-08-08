@@ -5,9 +5,10 @@ import { useXummQrStore } from '~/states/components/xumm-qr';
 import { POPUP_ID } from '~/types';
 
 import { Popup } from '..';
+import { ButtonPrimaryLarge } from '~/components/buttons';
 
 export const XummQrPopup = () => {
-  const { qr } = useXummQrStore();
+  const { qr, next } = useXummQrStore();
   const { t } = useTranslation();
 
   return (
@@ -22,6 +23,7 @@ export const XummQrPopup = () => {
           <Qr style={{ backgroundImage: `url(${qr})` }} />
         </QrWrapper>
         <Text>{t('xumm-qr-description')}</Text>
+        <ButtonPrimaryLarge text={t('Open Xaman')} onClick={() => window.open(next)}/>
       </Wrapper>
     </Popup>
   );

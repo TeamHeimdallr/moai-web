@@ -153,7 +153,7 @@ export const useConnectedXrplWallet = () => {
   const { client: xrplClient } = useXrpl();
 
   const { open, close } = usePopup(POPUP_ID.XUMM_QR);
-  const { setQr } = useXummQrStore();
+  const { setQr, setNext } = useXummQrStore();
 
   const {
     isConnected: isXrpCrossmarkConnected,
@@ -202,11 +202,11 @@ export const useConnectedXrplWallet = () => {
             if (!xummWalletClient) return;
 
             const options: Record<string, string> = {
-              force_network: BLOCKCHAIN_ENV,
+              force_network: 'DEVNET'
             };
 
             if (tx.TransactionType === 'Payment' && !!tx.Memos?.[0]?.Memo) {
-              options.force_network = IS_DEVNET ? 'testnet' : BLOCKCHAIN_ENV;
+              options.force_network = BLOCKCHAIN_ENV;
             }
             xummWalletClient.payload
               .createAndSubscribe({ txjson: tx, options }, e => {
@@ -233,7 +233,9 @@ export const useConnectedXrplWallet = () => {
                   });
               })
               .then(res => {
+                console.log(res)
                 setQr(res.created.refs.qr_png);
+                setNext(res.created.next.always);
                 open();
               });
           }),
