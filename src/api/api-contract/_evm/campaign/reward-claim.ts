@@ -97,7 +97,7 @@ export const useClaim = () => {
     const gasCostInEth = BigNumber.from(gas).mul(Number(maxFeePerGas).toFixed());
     const remainder = gasCostInEth.mod(10 ** 12);
     const gasCostInXRP = gasCostInEth.div(10 ** 12).add(remainder.gt(0) ? 1 : 0);
-    const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+    const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 11n) / 10n;
 
     const formatted = Number(formatUnits(gasCostInXrpPriority, 6));
     return formatted;

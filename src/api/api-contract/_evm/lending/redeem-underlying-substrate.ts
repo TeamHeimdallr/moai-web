@@ -145,7 +145,7 @@ export const useRedeemUnderlying = ({ token, enabled, isMax }: Props) => {
       const info = await extrinsic.paymentInfo(signer);
       const fee = Number(formatUnits(info.partialFee.toBigInt(), 6));
 
-      const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 15n) / 10n;
+      const gasCostInXrpPriority = (gasCostInXRP.toBigInt() * 11n) / 10n;
 
       const evmFee = Number(formatUnits(gasCostInXrpPriority, 6));
 
