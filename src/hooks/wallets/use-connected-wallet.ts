@@ -202,7 +202,7 @@ export const useConnectedXrplWallet = () => {
             if (!xummWalletClient) return;
 
             const options: Record<string, string> = {
-              force_network: 'DEVNET'
+              force_network: BLOCKCHAIN_ENV,
             };
 
             if (tx.TransactionType === 'Payment' && !!tx.Memos?.[0]?.Memo) {
@@ -233,7 +233,7 @@ export const useConnectedXrplWallet = () => {
                   });
               })
               .then(res => {
-                console.log(res)
+                console.log(res);
                 setQr(res.created.refs.qr_png);
                 setNext(res.created.next.always);
                 open();
