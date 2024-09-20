@@ -63,7 +63,9 @@ export const useUserAllTokenBalances = () => {
   const otherBalances =
     others?.map(token => {
       const accountLine = accountLines?.result?.lines?.find(
-        line => line.account === token.address && line.currency === token.currency
+        line =>
+          line.account === token.address &&
+          line.currency.toLocaleLowerCase() === token.currency.toLocaleLowerCase()
       );
       const calcBalance = Number(accountLine?.balance || '0');
 
