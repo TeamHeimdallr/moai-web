@@ -3325,7 +3325,7 @@ __metadata:
     wagmi: ^1.4.12
     xrpl: 2.13.0
     xumm-oauth2-pkce: ^2.8.4
-    xumm-sdk: ^1.10.1
+    xumm-sdk: ^1.11.1
     yup: ^1.3.2
     zustand: ^4.4.3
   languageName: unknown
@@ -19914,6 +19914,24 @@ __metadata:
     os-browserify: ^0.3.0
     websocket: ^1.0.34
   checksum: fae2549ba7d341672c18e271f9236d616a2a30148c7c868eae5ee7f534718b9c6dabbb94ab32b117d02a16075541ddbf9b04e4154e72f49253d491f813bb9746
+  languageName: node
+  linkType: hard
+
+"xumm-sdk@npm:^1.11.1":
+  version: 1.11.1
+  resolution: "xumm-sdk@npm:1.11.1"
+  dependencies:
+    "@types/websocket": ^1.0.5
+    assert: ^2.0.0
+    bignumber.js: ^9.0.0
+    buffer: ^6.0.3
+    debug: ^4.1.1
+    events: ^3.3.0
+    fetch-ponyfill: ^7.1.0
+    node-fetch: ^2.6.1
+    os-browserify: ^0.3.0
+    websocket: ^1.0.34
+  checksum: 83eca9253437f890b871f28d83bd6223d50fee6efd8e0db9030b3b70472c53ef8f4bc9f1e27a332ce7d00d6943d342caf75e1e914ba3bbc4fa21c2dbfc6f0f19
   languageName: node
   linkType: hard
 

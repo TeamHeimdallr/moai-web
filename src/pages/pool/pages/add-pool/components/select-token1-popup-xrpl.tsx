@@ -200,7 +200,7 @@ export const SelectToken1PopupXrpl = ({ showAddToken }: Props) => {
             <TokenLists>
               {tokens?.map(token => (
                 <TokenList
-                  key={`${token.network}-${token.symbol}`}
+                  key={`${token.network}-${token.symbol}-${token.address}-${token.currency}`}
                   title={token.symbol}
                   image={token.image || `${ASSET_URL}/tokens/token-unknown.png`}
                   description={

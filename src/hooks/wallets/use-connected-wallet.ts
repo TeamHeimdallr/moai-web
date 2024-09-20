@@ -201,15 +201,8 @@ export const useConnectedXrplWallet = () => {
           new Promise((resolve, reject) => {
             if (!xummWalletClient) return;
 
-            const options: Record<string, string> = {
-              force_network: BLOCKCHAIN_ENV,
-            };
-
-            if (tx.TransactionType === 'Payment' && !!tx.Memos?.[0]?.Memo) {
-              options.force_network = BLOCKCHAIN_ENV;
-            }
             xummWalletClient.payload
-              .createAndSubscribe({ txjson: tx, options }, e => {
+              .createAndSubscribe({ txjson: tx }, e => {
                 if (typeof e.data.signed === 'undefined') return;
 
                 if (e.data.signed === false) {
