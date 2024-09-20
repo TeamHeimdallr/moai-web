@@ -29,7 +29,7 @@ export const useUserTokenBalances = ({ targetTokens }: Props) => {
 
   const { data: tokensData } = useGetTokensQuery(
     {
-      queries: { filter: `address:in:${addresses.join(',')}_currency:in:${currencies}`, take: 100 },
+      queries: { filter: `address:in:${addresses.join(',')}_currency:in:${currencies}`, take: 300 },
     },
     { staleTime: 10 * 1000, enabled: !!addresses && addresses.length > 0 }
   );
