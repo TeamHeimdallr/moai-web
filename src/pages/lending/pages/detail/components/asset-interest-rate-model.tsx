@@ -126,13 +126,13 @@ export const AsseInterestModel = () => {
             <HeaderValue id="header-value-borrow-apr">{`${formatNumber(
               borrowApyNum
             )}%`}</HeaderValue>
-            <HeaderValueLabel>{t('Borrow APR')}</HeaderValueLabel>
+            <HeaderValueLabel>{t('Borrow APY')}</HeaderValueLabel>
           </HeaderValueWrapper>
           <HeaderValueWrapper>
             <HeaderValue id="header-value-supply-apr">{`${formatNumber(
               supplyApyNum
             )}%`}</HeaderValue>
-            <HeaderValueLabel>{t('Supply APR')}</HeaderValueLabel>
+            <HeaderValueLabel>{t('Supply APY')}</HeaderValueLabel>
           </HeaderValueWrapper>
         </HeaderValueOuterWrapper>
       </Header>
@@ -450,13 +450,13 @@ export const AsseInterestModel = () => {
           <LabelWrapper>
             <Label>
               <LabelDot style={{ backgroundColor: '#A3B6FF' }} />
-              {t('Borrow APR')}
+              {t('Borrow APY')}
             </Label>
           </LabelWrapper>
           <LabelWrapper>
             <Label>
               <LabelDot />
-              {t('Supply APR')}
+              {t('Supply APY')}
             </Label>
           </LabelWrapper>
         </LabelOuterWrapper>
