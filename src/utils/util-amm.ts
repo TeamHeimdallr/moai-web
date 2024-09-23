@@ -39,8 +39,7 @@ export const tokenToAmmAssetWithValue = (token?: IToken & { amount: number }): A
       value: '0',
     };
 
-  if (token.symbol === 'XRP')
-    return { currency: 'XRP', issuer: '', value: xrpToDrops(token.amount) };
+  if (token.symbol === 'XRP') return xrpToDrops(token.amount);
 
   return {
     currency: token.currency,
