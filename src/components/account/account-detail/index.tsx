@@ -28,7 +28,7 @@ import { useGAAction } from '~/hooks/analaystics/ga-action';
 import { usePopup } from '~/hooks/components';
 import { useNetwork } from '~/hooks/contexts/use-network';
 import { useConnectedWallet } from '~/hooks/wallets';
-import { getUid, getNetworkFull, truncateAddress } from '~/utils';
+import { getNetworkFull, getUid, truncateAddress } from '~/utils';
 import { useWalletConnectorTypeStore } from '~/states/contexts/wallets/connector-type';
 import { useTheRootNetworkSwitchWalletStore } from '~/states/contexts/wallets/switch-wallet';
 import { NETWORK, POPUP_ID } from '~/types';

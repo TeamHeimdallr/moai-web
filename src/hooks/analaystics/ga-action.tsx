@@ -2,8 +2,6 @@ import { useLocation } from 'react-router-dom';
 
 import { ENABLE_GA_LOG, IS_LOCAL } from '~/constants';
 
-import { analytics } from '~/configs/analystics';
-
 import { useConnectedWallet } from '../wallets';
 
 interface GAActionProps {
@@ -54,16 +52,6 @@ export const useGAAction = () => {
 
       return;
     }
-    analytics.track(action, {
-      walletAddress,
-      page,
-      action,
-      text,
-      type,
-      buttonType,
-      event,
-      data,
-    });
   };
 
   const gaLanguageChange = (
@@ -78,7 +66,6 @@ export const useGAAction = () => {
 
       return;
     }
-    analytics.track(action, { page, action });
   };
 
   return { gaAction, gaLanguageChange };

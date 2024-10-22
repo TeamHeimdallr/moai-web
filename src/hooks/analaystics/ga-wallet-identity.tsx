@@ -4,8 +4,6 @@ import { ENABLE_GA_LOG, IS_LOCAL } from '~/constants';
 
 import { NETWORK } from '~/types';
 
-import { analytics } from '~/configs/analystics';
-
 import { useNetwork } from '../contexts/use-network';
 import { useConnectedWallet } from '../wallets';
 
@@ -31,10 +29,5 @@ export const useGAIdenitiy = () => {
       });
       return;
     }
-    analytics.identify(currentAddress, {
-      evm: evm.address,
-      fpass: fpass.address,
-      xrp: xrp.address,
-    });
   }, [currentAddress, evm.address, fpass.address, xrp.address]);
 };

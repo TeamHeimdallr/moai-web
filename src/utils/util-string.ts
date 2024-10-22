@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+
 import { UID_HASHING_KEY } from '~/constants';
 
 export const truncateAddress = (addr?: string, limit = 4) => {

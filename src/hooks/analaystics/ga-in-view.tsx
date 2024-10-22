@@ -4,8 +4,6 @@ import { useLocation } from 'react-router-dom';
 
 import { ENABLE_GA_LOG, IS_LOCAL } from '~/constants';
 
-// import { analytics } from '~/configs/analystics';
-
 interface Props {
   name?: string;
   threshold?: number;
@@ -23,11 +21,6 @@ export const useGAInView = ({ name, threshold }: Props) => {
         console.log(`[GTM] show ${name}`);
         return;
       }
-
-      // analytics.track('show', {
-      //   page: location.pathname,
-      //   name,
-      // });
     }
   }, [inView, location.pathname, name]);
 
