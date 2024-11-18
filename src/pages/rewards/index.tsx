@@ -220,7 +220,7 @@ const ContentWaveWrapper = tw.div`
 `;
 
 const TitleWrapper = tw.div`
-  flex gap-24 px-20 overflow-x-auto
+  flex gap-24 px-20 overflow-x-auto pb-16
   md:(px-0)
 `;
 interface TitleProps {
