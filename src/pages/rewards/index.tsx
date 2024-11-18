@@ -66,7 +66,7 @@ const RewardsPage = () => {
   );
 
   const { currentWave, waves: _waves } = data || {};
-  const waves = _waves?.sort((a, b) => a.waveId - b.waveId);
+  const waves = _waves?.sort((a, b) => b.waveId - a.waveId);
   const legacy = !currentWave || currentWave?.waveId === 0;
 
   const { data: myWaveInfo } = useGetRewardsWaveNInfoQuery(
@@ -216,11 +216,11 @@ const ContentInnerWrapper = tw.div`
 `;
 
 const ContentWaveWrapper = tw.div`
-  flex flex-col gap-24
+  flex flex-col gap-8
 `;
 
 const TitleWrapper = tw.div`
-  flex gap-24 px-20
+  flex gap-24 px-20 overflow-x-auto
   md:(px-0)
 `;
 interface TitleProps {
@@ -228,7 +228,7 @@ interface TitleProps {
 }
 const Title = styled.div<TitleProps>(({ selected }) => [
   tw`
-    font-b-20 flex items-center text-neutral-60 clickable relative
+    font-b-20 flex items-center text-neutral-60 clickable relative flex-shrink-0
     md:(font-b-24)
   `,
   selected && tw`text-neutral-100`,
