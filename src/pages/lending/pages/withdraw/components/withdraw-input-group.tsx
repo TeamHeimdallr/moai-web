@@ -126,7 +126,7 @@ export const LendingWithdrawInputGroup = () => {
     mTokenAddress: Address;
   };
 
-  const isMax = inputValue?.toFixed(18) === supplied.toFixed(18);
+  const isMax = Math.abs((inputValue ?? 0) - (supplied ?? 0)) < 1e-5;
   const { isPrepareLoading, isPrepareError } = useRedeemUnderlyingPrepare({
     token: tokenIn,
     isMax,
