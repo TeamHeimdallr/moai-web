@@ -107,7 +107,7 @@ export const LendingRepayInputGroup = () => {
     mTokenAddress: Address;
   };
 
-  const isMax = inputValue === debt;
+  const isMax = Math.abs((inputValue ?? 0) - (debt ?? 0)) < 1e-5;
   const { isPrepareLoading, isPrepareError } = useRepayPrepare({
     token: tokenIn,
     isMax,
