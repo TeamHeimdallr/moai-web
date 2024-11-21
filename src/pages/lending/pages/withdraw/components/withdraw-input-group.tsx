@@ -9,7 +9,7 @@ import * as yup from 'yup';
 
 import { useRedeemUnderlyingPrepare } from '~/api/api-contract/_evm/lending/redeem-underlying-substrate';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
-import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
+// import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
@@ -52,10 +52,11 @@ export const LendingWithdrawInputGroup = () => {
   // const reserve = market?.totalReserves || 0n;
   const remain = Number(formatUnits(cash, market?.underlyingDecimals || 18));
 
-  const { accountSnapshot } = useUserAccountSnapshot({
-    mTokenAddress: (address ?? '0x0') as Address,
-  });
+  // const { accountSnapshot } = useUserAccountSnapshot({
+  //   mTokenAddress: (address ?? '0x0') as Address,
+  // });
   const { accountSnapshots: snapshotsAll } = useUserAccountSnapshotAll();
+  const accountSnapshot = snapshotsAll.filter(s => s.mTokenAddress === address)?.[0];
 
   const { data: tokenData } = useGetTokenQuery(
     { queries: { networkAbbr, address: market?.underlyingAsset } },

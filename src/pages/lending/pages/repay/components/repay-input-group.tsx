@@ -10,7 +10,7 @@ import * as yup from 'yup';
 
 import { useRepayPrepare } from '~/api/api-contract/_evm/lending/repay-substrate';
 import { useGetAllMarkets } from '~/api/api-contract/lending/get-all-markets';
-import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
+// import { useUserAccountSnapshot } from '~/api/api-contract/lending/user-account-snapshot';
 import { useUserAccountSnapshotAll } from '~/api/api-contract/lending/user-account-snapshot-all';
 import { useGetTokenQuery } from '~/api/api-server/token/get-token';
 
@@ -43,10 +43,11 @@ export const LendingRepayInputGroup = () => {
 
   const networkAbbr = getNetworkAbbr(selectedNetwork);
 
-  const { accountSnapshot: snapshot } = useUserAccountSnapshot({
-    mTokenAddress: (address ?? '0x0') as Address,
-  });
+  // const { accountSnapshot: snapshot } = useUserAccountSnapshot({
+  //   mTokenAddress: (address ?? '0x0') as Address,
+  // });
   const { accountSnapshots: snapshotsAll } = useUserAccountSnapshotAll();
+  const snapshot = snapshotsAll.filter(s => s.mTokenAddress === address)?.[0];
 
   const { markets } = useGetAllMarkets();
   const market = markets?.find(m => m.address === address);
